@@ -253,7 +253,7 @@ function WorkflowBuilderContent() {
         const workflow = { nodes: getNodes(), edges: getEdges() };
         console.log("Workflow diagram:", workflow);
         localStorage.setItem("workflow-draft", JSON.stringify(workflow));
-        alert("บันทึกแบบร่างเรียบร้อย!");
+        // alert("บันทึกแบบร่างเรียบร้อย!");
     };
 
     return (

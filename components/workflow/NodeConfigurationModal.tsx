@@ -29,46 +29,56 @@ export function NodeConfigurationModal({
     const { getNodes, getEdges } = useReactFlow();
     const [upstreamNodes, setUpstreamNodes] = useState<Node[]>([]);
     const [selectedSourceNodeId, setSelectedSourceNodeId] = useState<string>("");
-    
-    // Config state
-    const [message, setMessage] = useState((nodeData.message as string) || "");
+
+    // Config state - use key to reset when modal opens for a different node
+    const [message, setMessage] = useState("");
+    const [syncKey, setSyncKey] = useState("");
+
+    // Sync message state when modal opens - create unique key from nodeId + open state
+    useEffect(() => {
+        const newKey = isOpen ? `${nodeId}-open` : "";
+        if (newKey && newKey !== syncKey) {
+            // Modal just opened for this node - sync the message from props
+            setMessage((nodeData?.message as string) ?? "");
+            setSyncKey(newKey);
+        } else if (!isOpen) {
+            setSyncKey("");
+        }
+    }, [isOpen, nodeId, nodeData?.message, syncKey]);
 
     useEffect(() => {
         if (isOpen) {
             const timer = setTimeout(() => setAnimateIn(true), 10);
             document.body.style.overflow = "hidden";
-            
-            // Sync local state
-            setMessage((nodeData.message as string) || "");
 
             // Find upstream nodes logic
             const allNodes = getNodes();
             const allEdges = getEdges();
             const currentNode = allNodes.find(n => n.id === nodeId);
-            
+
             if (currentNode) {
-               // Simple recursive upstream finder
-               const getAncestors = (node: Node, visited = new Set<string>()): Node[] => {
-                   if (visited.has(node.id)) return [];
-                   visited.add(node.id);
-                   
-                   const incomers = getIncomers(node, allNodes, allEdges);
-                   let ancestors: Node[] = [...incomers];
-                   
-                   for (const incomer of incomers) {
-                       ancestors = [...ancestors, ...getAncestors(incomer, visited)];
-                   }
-                   return ancestors;
-               };
-               
-               // Filter duplicates
-               const ancestors = getAncestors(currentNode);
-               const uniqueAncestors = Array.from(new Map(ancestors.map(n => [n.id, n])).values());
-               
-               setUpstreamNodes(uniqueAncestors);
-               if (uniqueAncestors.length > 0 && !selectedSourceNodeId) {
-                   setSelectedSourceNodeId(uniqueAncestors[0].id);
-               }
+                // Simple recursive upstream finder
+                const getAncestors = (node: Node, visited = new Set<string>()): Node[] => {
+                    if (visited.has(node.id)) return [];
+                    visited.add(node.id);
+
+                    const incomers = getIncomers(node, allNodes, allEdges);
+                    let ancestors: Node[] = [...incomers];
+
+                    for (const incomer of incomers) {
+                        ancestors = [...ancestors, ...getAncestors(incomer, visited)];
+                    }
+                    return ancestors;
+                };
+
+                // Filter duplicates
+                const ancestors = getAncestors(currentNode);
+                const uniqueAncestors = Array.from(new Map(ancestors.map(n => [n.id, n])).values());
+
+                setUpstreamNodes(uniqueAncestors);
+                if (uniqueAncestors.length > 0 && !selectedSourceNodeId) {
+                    setSelectedSourceNodeId(uniqueAncestors[0].id);
+                }
             }
 
             return () => clearTimeout(timer);
@@ -78,7 +88,7 @@ export function NodeConfigurationModal({
             return () => clearTimeout(timer);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isOpen, nodeId, getNodes, getEdges, nodeData.message]); // source selection should not reset on re-render unless isOpen changes or nodes change
+    }, [isOpen, nodeId, getNodes, getEdges]); // Don't include nodeData to avoid re-sync loop
 
     if (!isOpen && !animateIn) return null;
 
@@ -100,9 +110,10 @@ export function NodeConfigurationModal({
     const sourceNode = upstreamNodes.find(n => n.id === selectedSourceNodeId);
     const sourceVariables = sourceNode ? getVariablesForNode(sourceNode) : {};
 
-    const handleDragStart = (e: React.DragEvent, variableName: string) => {
-        e.dataTransfer.setData("application/blaze-variable", variableName);
-        e.dataTransfer.setData("text/plain", `{{ $${variableName} }}`); // Fallback
+    const handleDragStart = (e: React.DragEvent, variableName: string, nodeSlug: string) => {
+        const fullVariable = `${nodeSlug}.${variableName}`;
+        e.dataTransfer.setData("application/blaze-variable", fullVariable);
+        e.dataTransfer.setData("text/plain", `{{ $${fullVariable} }}`); // Fallback
         e.dataTransfer.effectAllowed = "copy";
     };
 
@@ -110,7 +121,7 @@ export function NodeConfigurationModal({
     if (typeof document === "undefined") return null;
 
     const isTrigger = nodeType.startsWith("trigger");
-    
+
     // Mock Data for "New Follower" 
     const isNewFollower = nodeLabel === "New Follower";
     const twitchMockData = {
@@ -127,10 +138,10 @@ export function NodeConfigurationModal({
         <div className={`fixed inset-0 z-50 flex items-center justify-center ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"} transition-opacity duration-200`}>
             {/* Backdrop */}
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            
+
             {/* Modal Content */}
             <div className={`relative w-[90vw] max-w-6xl h-[80vh] glass border border-purple-500/30 rounded-xl overflow-hidden shadow-2xl flex flex-col transform ${isOpen ? "scale-100" : "scale-95"} transition-transform duration-200`}>
-                
+
                 {/* Header */}
                 <div className="h-16 border-b border-purple-500/20 flex items-center justify-between px-6 bg-black/20">
                     <div className="flex items-center gap-3">
@@ -150,7 +161,7 @@ export function NodeConfigurationModal({
 
                 {/* 3-Column Layout */}
                 <div className="flex-1 grid grid-cols-12 min-h-0 divide-x divide-purple-500/20">
-                    
+
                     {/* Left Column: Input Data (Previous Step) */}
                     <div className="col-span-3 bg-black/10 flex flex-col min-h-0">
                         <div className="p-4 border-b border-purple-500/10">
@@ -166,8 +177,8 @@ export function NodeConfigurationModal({
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label className="text-xs text-muted-foreground uppercase tracking-wider">เลือกโหนดต้นทาง</Label>
-                                        <Select 
-                                            value={selectedSourceNodeId} 
+                                        <Select
+                                            value={selectedSourceNodeId}
                                             onValueChange={setSelectedSourceNodeId}
                                             disabled={upstreamNodes.length === 0}
                                         >
@@ -189,10 +200,10 @@ export function NodeConfigurationModal({
                                         {sourceNode ? (
                                             <div className="space-y-1">
                                                 {Object.keys(sourceVariables).map((key) => (
-                                                    <div 
+                                                    <div
                                                         key={key}
                                                         draggable
-                                                        onDragStart={(e) => handleDragStart(e, key)}
+                                                        onDragStart={(e) => handleDragStart(e, key, sourceNode.data.slug as string)}
                                                         className="group flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 border border-transparent hover:border-blue-500/30 cursor-grab active:cursor-grabbing transition-all text-xs"
                                                     >
                                                         <div className="flex items-center gap-2 overflow-hidden">
@@ -206,9 +217,9 @@ export function NodeConfigurationModal({
                                                 ))}
                                             </div>
                                         ) : (
-                                           <div className="text-center py-4 text-xs text-muted-foreground border border-dashed border-white/10 rounded">
-                                               Please select a source node
-                                           </div>
+                                            <div className="text-center py-4 text-xs text-muted-foreground border border-dashed border-white/10 rounded">
+                                                Please select a source node
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -223,7 +234,7 @@ export function NodeConfigurationModal({
                             <p className="text-xs text-muted-foreground mt-1">กำหนดค่าสำหรับโหนดนี้</p>
                         </div>
                         <div className="flex-1 p-6 overflow-y-auto">
-                           {nodeLabel === "Send Message" ? (
+                            {nodeLabel === "Send Message" ? (
                                 <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label className="flex items-center justify-between">
@@ -239,11 +250,11 @@ export function NodeConfigurationModal({
                                             onDrop={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                
+
                                                 let variableName = e.dataTransfer.getData("application/blaze-variable");
                                                 console.log("Drop event received, variableName:", variableName);
                                                 console.log("All data types:", e.dataTransfer.types);
-                                                
+
                                                 // Fallback if custom type fails
                                                 if (!variableName) {
                                                     const textData = e.dataTransfer.getData("text/plain");
@@ -260,14 +271,14 @@ export function NodeConfigurationModal({
                                                     const end = textArea.selectionEnd;
                                                     const text = textArea.value;
                                                     const newText = text.substring(0, start) + `{{ $${variableName} }}` + text.substring(end);
-                                                    
+
                                                     setMessage(newText);
                                                     updateNodeData(nodeId, { message: newText });
 
                                                     // Use timeout to ensure focus and cursor update works after render
                                                     setTimeout(() => {
                                                         textArea.focus();
-                                                        textArea.selectionStart = textArea.selectionEnd = start + variableName.length + 5; 
+                                                        textArea.selectionStart = textArea.selectionEnd = start + variableName.length + 5;
                                                     }, 0);
                                                 }
                                             }}
@@ -289,26 +300,26 @@ export function NodeConfigurationModal({
                                         </p>
                                     </div>
                                 </div>
-                           ) : isNewFollower ? (
-                               <div className="space-y-6">
-                                   <div className="space-y-2">
-                                       <Label>เลือกช่องทาง (Channel)</Label>
-                                       <Select disabled defaultValue="blaze">
-                                           <SelectTrigger className="glass border-purple-500/30">
-                                               <SelectValue placeholder="เลือกช่องทาง" />
-                                           </SelectTrigger>
-                                           <SelectContent>
-                                               <SelectItem value="blaze">Blaze Channel (Connected)</SelectItem>
-                                           </SelectContent>
-                                       </Select>
-                                       <p className="text-xs text-muted-foreground">ช่องทางที่เชื่อมต่อไว้ (ปัจจุบันรองรับเพียง 1 ช่องทาง)</p>
-                                   </div>
+                            ) : isNewFollower ? (
+                                <div className="space-y-6">
+                                    <div className="space-y-2">
+                                        <Label>เลือกช่องทาง (Channel)</Label>
+                                        <Select disabled defaultValue="blaze">
+                                            <SelectTrigger className="glass border-purple-500/30">
+                                                <SelectValue placeholder="เลือกช่องทาง" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="blaze">Blaze Channel (Connected)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <p className="text-xs text-muted-foreground">ช่องทางที่เชื่อมต่อไว้ (ปัจจุบันรองรับเพียง 1 ช่องทาง)</p>
+                                    </div>
                                 </div>
-                           ) : (
-                               <div className="text-center text-muted-foreground mt-10">
-                                   ยังไม่มีการตั้งค่าสำหรับโหนดนี้
-                               </div>
-                           )}
+                            ) : (
+                                <div className="text-center text-muted-foreground mt-10">
+                                    ยังไม่มีการตั้งค่าสำหรับโหนดนี้
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -319,29 +330,29 @@ export function NodeConfigurationModal({
                             <p className="text-xs text-muted-foreground mt-1">ข้อมูลที่จะถูกส่งต่อไปยังโหนดถัดไป</p>
                         </div>
                         <div className="flex-1 p-4 overflow-y-auto">
-                             {nodeLabel === "Send Message" ? (
-                                 <div className="text-sm text-muted-foreground italic text-center mt-10 opacity-50">
-                                     Action Node - No Output
-                                 </div>
-                             ) : isNewFollower ? (
-                                 <div className="space-y-2">
-                                     {Object.entries(twitchMockData).map(([key, value]) => (
-                                         <div key={key} className="group font-mono flex items-start justify-between p-2 rounded hover:bg-white/5 transition-colors text-xs border border-transparent hover:border-purple-500/20">
-                                             <div className="overflow-hidden">
-                                                 <div className="text-purple-300 font-medium truncate" title={key}>{key}</div>
-                                                 <div className="text-muted-foreground truncate mt-0.5" title={value as string}>{value}</div>
-                                             </div>
-                                             <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity -mr-1">
-                                                 <Copy className="w-3 h-3" />
-                                             </Button>
-                                         </div>
-                                     ))}
-                                 </div>
-                             ) : (
-                                 <div className="text-sm text-muted-foreground italic text-center mt-10">
-                                     ไม่มีข้อมูลตัวอย่าง
-                                 </div>
-                             )}
+                            {nodeLabel === "Send Message" ? (
+                                <div className="text-sm text-muted-foreground italic text-center mt-10 opacity-50">
+                                    Action Node - No Output
+                                </div>
+                            ) : isNewFollower ? (
+                                <div className="space-y-2">
+                                    {Object.entries(twitchMockData).map(([key, value]) => (
+                                        <div key={key} className="group font-mono flex items-start justify-between p-2 rounded hover:bg-white/5 transition-colors text-xs border border-transparent hover:border-purple-500/20">
+                                            <div className="overflow-hidden">
+                                                <div className="text-purple-300 font-medium truncate" title={key}>{key}</div>
+                                                <div className="text-muted-foreground truncate mt-0.5" title={value as string}>{value}</div>
+                                            </div>
+                                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity -mr-1">
+                                                <Copy className="w-3 h-3" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-sm text-muted-foreground italic text-center mt-10">
+                                    ไม่มีข้อมูลตัวอย่าง
+                                </div>
+                            )}
                         </div>
                     </div>
 
