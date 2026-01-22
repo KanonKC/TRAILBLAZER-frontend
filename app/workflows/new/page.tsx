@@ -24,12 +24,58 @@ import Link from "next/link";
 // Import node components
 import { NodeActionsContext, TriggerNode, ActionNode, ConditionNode } from "@/components/workflow/nodes";
 
+// Custom WorkflowNode type with slug at top level
+interface WorkflowNode extends Node {
+    slug: string;  // Unique snake_case identifier at top level
+}
+
+// Helper function to convert label to snake_case
+const toSnakeCase = (str: string): string => {
+    return str
+        .toLowerCase()
+        .replace(/\s+/g, "_")
+        .replace(/[^a-z0-9_]/g, "");
+};
+
+// Helper function to generate unique slug with deduplication
+const generateUniqueSlug = (baseLabel: string, existingNodes: WorkflowNode[]): string => {
+    const snakeLabel = toSnakeCase(baseLabel);
+    const existingSlugs = existingNodes.map(n => n.slug);
+    
+    if (!existingSlugs.includes(snakeLabel)) {
+        return snakeLabel;
+    }
+    
+    // Find the next available number
+    let counter = 1;
+    while (existingSlugs.includes(`${snakeLabel}_${counter}`)) {
+        counter++;
+    }
+    return `${snakeLabel}_${counter}`;
+};
+
+// Helper function to generate node type in format "prefix.suffix"
+const generateNodeType = (category: string, displayLabel: string): string => {
+    const prefix = category; // "trigger", "action", "condition"
+    const suffix = toSnakeCase(displayLabel);
+    return `${prefix}.${suffix}`;
+};
+
 // Custom node types configuration
-const nodeTypes = {
+// We use a Proxy to dynamically resolve types like "trigger.new_follower" to TriggerNode
+const nodeTypeComponents: Record<string, typeof TriggerNode | typeof ActionNode | typeof ConditionNode> = {
     trigger: TriggerNode,
     action: ActionNode,
     condition: ConditionNode,
 };
+
+const nodeTypes = new Proxy(nodeTypeComponents, {
+    get(target, prop: string) {
+        // Handle types like "trigger.new_follower" by extracting prefix
+        const prefix = prop.split(".")[0];
+        return target[prefix] || target.trigger;
+    },
+});
 
 // Node palette items for drag & drop
 const paletteItems = [
@@ -42,12 +88,13 @@ const paletteItems = [
 ];
 
 // Initial nodes for demo
-const initialNodes: Node[] = [
+const initialNodes: WorkflowNode[] = [
     {
         id: "1",
-        type: "trigger",
+        type: "trigger.new_follower",
+        slug: "new_follower",  // Unique identifier at top level
         position: { x: 250, y: 50 },
-        data: { label: "New Follower" },
+        data: { label: "New Follower" },  // Human-readable name in data
     },
 ];
 
@@ -107,6 +154,15 @@ function Flow() {
                 node.id === id ? { ...node, data: { ...node.data, label } } : node
             )
         );
+
+    }, [setNodes]);
+
+    const updateNodeData = useCallback((id: string, data: any) => {
+        setNodes((nds) =>
+            nds.map((node) =>
+                node.id === id ? { ...node, data: { ...node.data, ...data } } : node
+            )
+        );
     }, [setNodes]);
 
     const onConnect = useCallback(
@@ -132,27 +188,31 @@ function Flow() {
                 y: event.clientY,
             });
 
-            const newNode: Node = {
-                id: `${Date.now()}`,
-                type,
-                position,
-                data: { label },
-            };
-
-            setNodes((nds) => nds.concat(newNode));
+            // Generate type in format "prefix.suffix" (e.g., "trigger.new_follower")
+            const nodeType = generateNodeType(type, label);
+            
+            // Generate unique slug with deduplication
+            setNodes((nds) => {
+                const uniqueSlug = generateUniqueSlug(label, nds as WorkflowNode[]);
+                
+                const newNode: WorkflowNode = {
+                    id: `${Date.now()}`,
+                    type: nodeType,
+                    slug: uniqueSlug,  // Unique snake_case identifier at top level
+                    position,
+                    data: { label },  // Human-readable name in data
+                };
+                
+                return nds.concat(newNode);
+            });
         },
         [screenToFlowPosition, setNodes]
     );
 
-    const handleSaveDraft = () => {
-        const workflow = { nodes, edges };
-        console.log("Workflow diagram:", workflow);
-        localStorage.setItem("workflow-draft", JSON.stringify(workflow));
-        alert("บันทึกแบบร่างเรียบร้อย!");
-    };
+
 
     return (
-        <NodeActionsContext.Provider value={{ deleteNode, updateNodeLabel }}>
+        <NodeActionsContext.Provider value={{ deleteNode, updateNodeLabel, updateNodeData }}>
             <div className="flex-1 h-full" ref={reactFlowWrapper}>
                 <ReactFlow
                     nodes={nodes}
@@ -170,12 +230,11 @@ function Flow() {
                     <MiniMap
                         className="!bg-background/80 !border-purple-500/20"
                         nodeColor={(node) => {
-                            switch (node.type) {
-                                case "trigger": return "#9333ea";
-                                case "action": return "#2563eb";
-                                case "condition": return "#d97706";
-                                default: return "#6b7280";
-                            }
+                            const type = node.type || "";
+                            if (type.startsWith("trigger")) return "#9333ea";
+                            if (type.startsWith("action")) return "#2563eb";
+                            if (type.startsWith("condition")) return "#d97706";
+                            return "#6b7280";
                         }}
                     />
                     <Background variant={BackgroundVariant.Dots} gap={20} size={1} color="#a855f7" className="opacity-30" />
