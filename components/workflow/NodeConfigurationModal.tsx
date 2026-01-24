@@ -188,7 +188,7 @@ export function NodeConfigurationModal({
                                             <SelectContent>
                                                 {upstreamNodes.map(node => (
                                                     <SelectItem key={node.id} value={node.id}>
-                                                        {node.data.label as string}
+                                                        {node.data.label as string} <span className="text-muted-foreground text-xs opacity-50 ml-1 font-mono">{(node as any).slug}</span>
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
