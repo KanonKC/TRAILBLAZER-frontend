@@ -17,6 +17,7 @@ export function ActionNode({ id, data }: NodeProps) {
             borderClass="border border-blue-400/30"
             sublabelClass="text-blue-200"
             className={isSendMessage ? "w-[300px]" : ""}
+            data={data}
         >
             {isSendMessage && (
                 <div className="mt-2 text-xs bg-black/20 border border-blue-400/30 rounded p-2 text-white/80 min-h-[40px] max-h-[100px] overflow-hidden text-ellipsis line-clamp-3 font-mono cursor-pointer hover:bg-black/30 transition-colors pointer-events-none">

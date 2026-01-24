@@ -16,6 +16,7 @@ export function TriggerNode({ id, data }: NodeProps) {
             gradientClass="bg-gradient-to-br from-purple-600 to-purple-800"
             borderClass="border border-purple-400/30"
             sublabelClass="text-purple-200"
+            data={data}
         />
     );
 }

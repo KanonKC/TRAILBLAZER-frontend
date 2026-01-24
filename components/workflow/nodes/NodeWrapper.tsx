@@ -22,6 +22,7 @@ export interface NodeWrapperProps {
     borderClass: string;
     sublabelClass: string;
     className?: string;
+    data?: any;
 }
 
 export function NodeWrapper({
@@ -34,6 +35,7 @@ export function NodeWrapper({
     borderClass,
     sublabelClass,
     className,
+    data = {},
 }: NodeWrapperProps) {
     const actions = useContext(NodeActionsContext);
     const [isEditing, setIsEditing] = useState(false);
@@ -87,14 +89,14 @@ export function NodeWrapper({
                         className="p-1.5 rounded bg-background/90 border border-purple-500/30 hover:bg-purple-500/20 transition-colors"
                         title="เปลี่ยนชื่อ"
                     >
-                         {/* Using a text icon or different icon for rename if Pencil is used for modal? 
+                        {/* Using a text icon or different icon for rename if Pencil is used for modal? 
                              Let's keep Pencil for rename, and maybe Settings/Cog for modal? 
                              User said: "open modal on double-click or edit button".  
                              Let's assume the existing edit button was just for rename? 
                              I'll add a separate Settings button or hijack the edit button.
                              Let's add a Settings button.
                          */}
-                   <span className="text-[10px] font-bold">RENAME</span>
+                        <span className="text-[10px] font-bold">RENAME</span>
                     </button>
                     <button
                         onClick={() => actions?.deleteNode(id)}
@@ -146,7 +148,7 @@ export function NodeWrapper({
                     nodeId={id}
                     nodeType={sublabel} // sublabel usually contains "Trigger" or "Action"
                     nodeLabel={label}
-                    nodeData={{}} // We'll need to pass actual data if we want
+                    nodeData={data} // Pass actual data
                     updateNodeData={actions.updateNodeData}
                 />
             )}

@@ -16,6 +16,7 @@ export function ConditionNode({ id, data }: NodeProps) {
             gradientClass="bg-gradient-to-br from-amber-600 to-amber-800"
             borderClass="border border-amber-400/30"
             sublabelClass="text-amber-200"
+            data={data}
         />
     );
 }
