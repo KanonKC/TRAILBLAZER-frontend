@@ -203,7 +203,7 @@ export function NodeConfigurationModal({
                                                     <div
                                                         key={key}
                                                         draggable
-                                                        onDragStart={(e) => handleDragStart(e, key, sourceNode.data.slug as string)}
+                                                        onDragStart={(e) => handleDragStart(e, key, (sourceNode as any).slug as string)}
                                                         className="group flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 border border-transparent hover:border-blue-500/30 cursor-grab active:cursor-grabbing transition-all text-xs"
                                                     >
                                                         <div className="flex items-center gap-2 overflow-hidden">
