@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   description: "เชื่อมต่อและยกระดับประสบการณ์ Twitch ของคุณด้วยเครื่องมือและการเชื่อมต่อที่ทรงพลัง",
 };
 
+import { UserProvider } from "@/components/user-context";
+import Navbar from "@/components/navbar";
+
+// ... existing imports
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +34,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <UserProvider>
+          <Navbar />
+          {children}
+        </UserProvider>
       </body>
     </html>
   );
