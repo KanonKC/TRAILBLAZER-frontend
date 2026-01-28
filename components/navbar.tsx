@@ -28,6 +28,12 @@ export default function Navbar() {
                     <span className="text-primary">Blaze</span>
                 </Link>
 
+                <div className="flex items-center gap-6">
+                    <Link href="/dashboard/widgets/first-word" className="text-sm font-medium transition-colors hover:text-primary">
+                        First Word
+                    </Link>
+                </div>
+
                 <div className="flex items-center gap-4">
                     {isLoading ? (
                         <div className="flex items-center gap-2">

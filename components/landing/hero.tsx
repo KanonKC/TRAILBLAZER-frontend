@@ -38,7 +38,7 @@ export function Hero() {
 
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link href="/workflows">
+                    <Link href="/dashboard/widgets">
                         <Button
                             size="lg"
                             className="blaze-gradient text-white font-semibold px-8 py-6 text-lg hover:opacity-90 transition-opacity"
