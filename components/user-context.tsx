@@ -27,6 +27,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             try {
                 // Fetch user from backend using cookies
                 // Note: credentials: 'include' is crucial for sending cookies
+                console.log("Fetching user...");
                 const res = await fetch("http://localhost:8080/api/v1/user/me", {
                     credentials: "include",
                 });
@@ -36,6 +37,31 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
                 if (res.ok) {
                     const userData = await res.json();
                     setUser(userData);
+                } else if (res.status === 401) {
+                    // Try to refresh token
+                    console.log("Access token expired, attempting refesh...");
+                    const refreshRes = await fetch("http://localhost:8080/api/v1/refresh-token", {
+                        method: "POST",
+                        credentials: "include"
+                    });
+
+                    if (refreshRes.ok) {
+                        console.log("Token refreshed, retrying user fetch...");
+                        // Retry fetching user
+                        const retryRes = await fetch("http://localhost:8080/api/v1/user/me", {
+                            credentials: "include",
+                        });
+
+                        if (retryRes.ok) {
+                            const userData = await retryRes.json();
+                            setUser(userData);
+                        } else {
+                            setUser(null);
+                        }
+                    } else {
+                        console.log("Refresh failed");
+                        setUser(null);
+                    }
                 } else {
                     setUser(null);
                 }
