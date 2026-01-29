@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+import { useEffect, useState, useRef } from "react";
 import { useUser } from "@/components/user-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info, MessageSquare, Eye, EyeOff, Copy, Check, Play } from "lucide-react";
+import { Info, MessageSquare, Eye, EyeOff, Copy, Check, Play, Music } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import {
     AlertDialog,
@@ -27,6 +28,7 @@ interface FirstWordConfig {
     owner_id: string;
     reply_message: string | null;
     enabled: boolean;
+    audio_key?: string | null;
 }
 
 export default function FirstWordWidgetPage() {
@@ -41,6 +43,7 @@ export default function FirstWordWidgetPage() {
     const [showConfirmReveal, setShowConfirmReveal] = useState(false);
     const [copied, setCopied] = useState(false);
     const [isTesting, setIsTesting] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const overlayUrl = typeof window !== 'undefined' && user ? `${window.location.origin}/overlays/first-word/${user.id}` : "";
 
@@ -136,8 +139,7 @@ export default function FirstWordWidgetPage() {
             if (res.ok) {
                 console.log("OK")
                 const updated = await res.json();
-                console.log("OK")
-                setConfig(updated);
+                console.log("OK", updated)
                 console.log("OK")
 
                 if (audioFile) {
@@ -155,6 +157,10 @@ export default function FirstWordWidgetPage() {
 
                     if (audioRes.ok) {
                         setAudioFile(null);
+                        const newConfig = await fetch("http://localhost:8080/api/v1/first-word", {
+                            credentials: "include"
+                        });
+                        setConfig(await newConfig.json());
                         console.log("OK")
                     }
                     console.log("OK")
@@ -407,30 +413,74 @@ export default function FirstWordWidgetPage() {
 
                         <div className="space-y-2 pt-4 border-t">
                             <Label htmlFor="audio_file">ไฟล์เสียง</Label>
-                            <Input
-                                id="audio_file"
-                                type="file"
-                                accept="audio/*"
-                                onChange={(e) => {
-                                    if (e.target.files && e.target.files[0]) {
-                                        setAudioFile(e.target.files[0]);
-                                    }
-                                }}
-                            />
-                            <p className="text-sm text-muted-foreground">
-                                อัปโหลดไฟล์เสียงที่จะเล่นเมื่อมีผู้ใช้งานใหม่ทักทายเข้ามา
-                            </p>
+                            {config?.audio_key && !audioFile ? (
+                                <div className="flex items-center justify-between p-3 border rounded-lg bg-card">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-secondary rounded-md">
+                                            <Music className="w-4 h-4 text-primary" />
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-medium">
+                                                {config.audio_key.split('/').pop()}
+                                            </span>
+                                            <span className="text-xs text-muted-foreground">
+                                                ไฟล์เสียงปัจจุบัน
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => fileInputRef.current?.click()}
+                                    >
+                                        เปลี่ยนไฟล์ใหม่
+                                    </Button>
+                                </div>
+                            ) : null}
+
+                            <div className={cn("space-y-2 animated fadeIn", config?.audio_key && !audioFile ? "hidden" : "")}>
+                                <Input
+                                    ref={fileInputRef}
+                                    id="audio_file"
+                                    type="file"
+                                    accept="audio/*"
+                                    onChange={(e) => {
+                                        if (e.target.files && e.target.files[0]) {
+                                            setAudioFile(e.target.files[0]);
+                                        }
+                                    }}
+                                />
+                                <div className="flex justify-between items-center">
+                                    <p className="text-sm text-muted-foreground">
+                                        อัปโหลดไฟล์เสียงที่จะเล่นเมื่อมีผู้ใช้งานใหม่ทักทายเข้ามา
+                                    </p>
+                                    {config?.audio_key && audioFile && (
+                                        <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() => {
+                                                setAudioFile(null);
+                                                // Reset input value if needed, though react state is source of truth for our logic
+                                                if (fileInputRef.current) fileInputRef.current.value = "";
+                                            }}
+                                            className="h-auto p-0 text-muted-foreground hover:text-foreground"
+                                        >
+                                            ยกเลิก
+                                        </Button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </CardContent>
                 <CardFooter className="flex justify-end gap-2 border-t px-6 py-4">
-                    <Button variant="outline" onClick={handleTestAudio} disabled={isTesting}>
+                    <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config.audio_key && !config.reply_message}>
                         {isTesting ? (
                             <>Testing...</>
                         ) : (
                             <>
                                 <Play className="mr-2 h-4 w-4" />
-                                Test Audio
+                                Test
                             </>
                         )}
                     </Button>
