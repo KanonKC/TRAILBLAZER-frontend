@@ -22,14 +22,15 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-interface FirstWordConfig {
-    id: string;
-    twitch_id: string;
-    owner_id: string;
-    reply_message: string | null;
-    enabled: boolean;
-    audio_key?: string | null;
-}
+import {
+    getFirstWordConfig,
+    enableFirstWord,
+    updateFirstWordConfig,
+    uploadFirstWordAudio,
+    testFirstWordAudio,
+    type FirstWordConfig
+} from "@/services/firstWord.service";
+
 
 export default function FirstWordWidgetPage() {
     const { user, isLoading: isUserLoading } = useUser();
@@ -67,11 +68,8 @@ export default function FirstWordWidgetPage() {
 
         const fetchConfig = async () => {
             try {
-                const res = await fetch("http://localhost:8080/api/v1/first-word", {
-                    credentials: "include"
-                });
-                if (res.ok) {
-                    const data = await res.json();
+                const data = await getFirstWordConfig();
+                if (data) {
                     setConfig(data);
                     setReplyMessage(data.reply_message || "");
                     setIsEnabled(data.enabled ?? true);
@@ -92,27 +90,11 @@ export default function FirstWordWidgetPage() {
         if (!user) return;
         setIsSaving(true);
         try {
-            const res = await fetch("http://localhost:8080/api/v1/first-word", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    twitch_id: user.twitchId,
-                    owner_id: user.id,
-                }),
-                credentials: "include"
-            });
-
-            if (res.ok) {
-                // Refresh config
-                const configRes = await fetch("http://localhost:8080/api/v1/first-word", {
-                    credentials: "include"
-                });
-                if (configRes.ok) {
-                    const data = await configRes.json();
-                    setConfig(data);
-                    setReplyMessage(data.reply_message || "");
-                    setIsEnabled(data.enabled ?? true);
-                }
+            const data = await enableFirstWord(user.twitchId, user.id);
+            if (data) {
+                setConfig(data);
+                setReplyMessage(data.reply_message || "");
+                setIsEnabled(data.enabled ?? true);
             }
         } catch (error) {
             console.error("Failed to enable", error);
@@ -125,45 +107,23 @@ export default function FirstWordWidgetPage() {
         if (!config) return;
         setIsSaving(true);
         try {
-            const res = await fetch("http://localhost:8080/api/v1/first-word", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    reply_message: replyMessage
-                }),
-                credentials: "include"
+            const updated = await updateFirstWordConfig({
+                reply_message: replyMessage
             });
 
-            console.log(res);
-
-            if (res.ok) {
-                console.log("OK")
-                const updated = await res.json();
-                console.log("OK", updated)
-                console.log("OK")
+            if (updated) {
+                setConfig(updated);
 
                 if (audioFile) {
-                    const formData = new FormData();
-                    console.log("OK")
-                    formData.append("file", audioFile);
-                    console.log("OK")
-
-                    const audioRes = await fetch("http://localhost:8080/api/v1/first-word/audio", {
-                        method: "POST",
-                        body: formData,
-                        credentials: "include"
-                    });
-                    console.log("OK")
-
-                    if (audioRes.ok) {
+                    const audioSuccess = await uploadFirstWordAudio(audioFile);
+                    if (audioSuccess) {
                         setAudioFile(null);
-                        const newConfig = await fetch("http://localhost:8080/api/v1/first-word", {
-                            credentials: "include"
-                        });
-                        setConfig(await newConfig.json());
-                        console.log("OK")
+                        // Refresh config to get new audio key
+                        const newConfig = await getFirstWordConfig();
+                        if (newConfig) {
+                            setConfig(newConfig);
+                        }
                     }
-                    console.log("OK")
                 }
                 // Optionally show toast
             }
@@ -217,13 +177,7 @@ export default function FirstWordWidgetPage() {
                 }
             };
 
-            await fetch("http://localhost:8080/webhook/v1/twitch/event-sub/chat-message-events", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(mockEvent)
-            });
+            await testFirstWordAudio(mockEvent);
 
             // toast({
             //     title: "Test Sent",
@@ -246,17 +200,11 @@ export default function FirstWordWidgetPage() {
         if (!config) return;
 
         try {
-            const res = await fetch("http://localhost:8080/api/v1/first-word", {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    enabled: checked
-                }),
-                credentials: "include"
+            const updated = await updateFirstWordConfig({
+                enabled: checked
             });
 
-            if (res.ok) {
-                const updated = await res.json();
+            if (updated) {
                 setConfig(updated);
             } else {
                 // Revert if failed

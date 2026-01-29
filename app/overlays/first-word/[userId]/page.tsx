@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useParams } from "next/navigation"
+import { getFirstWordEventUrl } from "@/services/firstWord.service";
 
 export default function FirstWordOverlayPage() {
     const params = useParams()
@@ -12,7 +13,7 @@ export default function FirstWordOverlayPage() {
     useEffect(() => {
         if (!userId) return
 
-        const eventSource = new EventSource(`http://localhost:8080/api/v1/events/first-word/${userId}`)
+        const eventSource = new EventSource(getFirstWordEventUrl(userId))
 
         eventSource.onopen = () => {
             console.log("Connected to FirstWord events")
