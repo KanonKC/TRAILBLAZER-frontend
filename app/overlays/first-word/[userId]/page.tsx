@@ -51,14 +51,9 @@ export default function FirstWordOverlayPage() {
     }, [userId])
 
     return (
-        <div className="w-screen h-screen bg-transparent overflow-hidden">
+        <div className="w-screen h-screen bg-transparent overflow-hidden pointer-events-none">
             {/* Hidden audio element */}
             <audio ref={audioRef} className="hidden" />
-            <div className="p-4 text-green-500 font-bold bg-black/50 inline-block rounded m-4">
-                FirstWord Overlay Active
-                <div className="text-xs font-normal text-white">Listening for user: {userId}</div>
-                {lastAudio && <div className="text-xs text-gray-300 mt-1 max-w-[200px] truncate">Last audio: {lastAudio}</div>}
-            </div>
         </div>
     )
 }

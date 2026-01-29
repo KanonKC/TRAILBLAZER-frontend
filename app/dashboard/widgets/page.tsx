@@ -7,7 +7,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/ca
 const widgets = [
     {
         id: "first-word",
-        title: "First Word",
+        title: "Greeting Message",
         description: "ตอบกลับผู้ใช้งานที่แชทเข้ามาครั้งแรกในสตรีมของคุณโดยอัตโนมัติ",
         icon: MessageSquare,
         href: "/dashboard/widgets/first-word",

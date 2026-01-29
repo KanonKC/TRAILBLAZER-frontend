@@ -14,9 +14,16 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, User as UserIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
     const { user, isLoading, logout } = useUser();
+    const pathname = usePathname();
+
+    // Hide navbar on overlay pages
+    if (pathname?.startsWith("/overlays")) {
+        return null;
+    }
 
     // Twitch OAuth URL
     const LOGIN_URL = "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=lnn0xjhakjukg3r77tgnjpquxt1y2t&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Fv1%2Flogin&scope=channel%3Abot+user%3Aread%3Aemail+user%3Aread%3Achat+user%3Awrite%3Achat+user%3Abot+channel%3Aread%3Asubscriptions&state=c3ab8aa609ea11e793ae92361f002671";
@@ -29,8 +36,8 @@ export default function Navbar() {
                 </Link>
 
                 <div className="flex items-center gap-6">
-                    <Link href="/dashboard/widgets/first-word" className="text-sm font-medium transition-colors hover:text-primary">
-                        First Word
+                    <Link href="/dashboard/widgets" className="text-sm font-medium transition-colors hover:text-primary">
+                        Widgets
                     </Link>
                 </div>
 
