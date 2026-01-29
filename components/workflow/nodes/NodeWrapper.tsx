@@ -78,7 +78,7 @@ export function NodeWrapper({
                 >
                     <button
                         onClick={() => setShowModal(true)}
-                        className="p-1.5 rounded bg-background/90 border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 transition-colors"
+                        className="p-1.5 rounded bg-background/90 border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 transition-colors cursor-pointer"
                         title="ตั้งค่า"
                     >
                         <Pencil className="w-3 h-3" />
@@ -86,7 +86,7 @@ export function NodeWrapper({
                     {/* Pencil is now setting, maybe use Cog? keeping Pencil as requested "edit button" */}
                     <button
                         onClick={() => setIsEditing(true)}
-                        className="p-1.5 rounded bg-background/90 border border-purple-500/30 hover:bg-purple-500/20 transition-colors"
+                        className="p-1.5 rounded bg-background/90 border border-purple-500/30 hover:bg-purple-500/20 transition-colors cursor-pointer"
                         title="เปลี่ยนชื่อ"
                     >
                         {/* Using a text icon or different icon for rename if Pencil is used for modal? 
@@ -100,7 +100,7 @@ export function NodeWrapper({
                     </button>
                     <button
                         onClick={() => actions?.deleteNode(id)}
-                        className="p-1.5 rounded bg-background/90 border border-red-500/30 hover:bg-red-500/20 text-red-400 transition-colors"
+                        className="p-1.5 rounded bg-background/90 border border-red-500/30 hover:bg-red-500/20 text-red-400 transition-colors cursor-pointer"
                         title="ลบ"
                     >
                         <Trash2 className="w-3 h-3" />
@@ -122,10 +122,10 @@ export function NodeWrapper({
                                     autoFocus
                                     className="bg-white/20 rounded px-1 py-0.5 text-sm font-medium w-24 outline-none"
                                 />
-                                <button onClick={handleSaveEdit} className="p-0.5 hover:bg-white/20 rounded">
+                                <button onClick={handleSaveEdit} className="p-0.5 hover:bg-white/20 rounded cursor-pointer">
                                     <Check className="w-3 h-3" />
                                 </button>
-                                <button onClick={handleCancelEdit} className="p-0.5 hover:bg-white/20 rounded">
+                                <button onClick={handleCancelEdit} className="p-0.5 hover:bg-white/20 rounded cursor-pointer">
                                     <X className="w-3 h-3" />
                                 </button>
                             </div>
