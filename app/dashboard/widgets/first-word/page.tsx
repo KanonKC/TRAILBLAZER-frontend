@@ -19,7 +19,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { Check, Copy, Eye, EyeOff, Info, MessageSquare, Music, Play } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import {
@@ -29,6 +29,7 @@ import {
     testFirstWordAudio,
     updateFirstWordConfig,
     uploadFirstWordAudio,
+    refreshFirstWordOverlayKey,
     type FirstWordConfig
 } from "@/services/firstWord.service";
 
@@ -44,6 +45,7 @@ export default function FirstWordWidgetPage() {
     const [showUrl, setShowUrl] = useState(false);
     const [showConfirmReveal, setShowConfirmReveal] = useState(false);
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+    const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
     const [copied, setCopied] = useState(false);
 
     // ... (rest of state)
@@ -64,10 +66,29 @@ export default function FirstWordWidgetPage() {
             setIsSaving(false);
         }
     };
+
+    const handleRefreshKey = async () => {
+        setIsSaving(true);
+        try {
+            const data = await refreshFirstWordOverlayKey();
+            if (data) {
+                setConfig(data);
+                // toast success
+            }
+        } catch (error) {
+            console.error("Failed to refresh key", error);
+        } finally {
+            setIsSaving(false);
+            setShowConfirmRefresh(false);
+        }
+    };
+
     const [isTesting, setIsTesting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const overlayUrl = typeof window !== 'undefined' && user ? `${window.location.origin}/overlays/first-word/${user.id}` : "";
+    const overlayUrl = typeof window !== 'undefined' && user
+        ? `${window.location.origin}/overlays/first-word/${user.id}${config?.overlay_key ? `?key=${config.overlay_key}` : ''}`
+        : "";
 
     const handleCopyUrl = async () => {
         if (!overlayUrl) return;
@@ -329,6 +350,15 @@ export default function FirstWordWidgetPage() {
                                         <Eye className="h-4 w-4 text-muted-foreground" />
                                     )}
                                 </Button>
+
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 hover:bg-transparent"
+                                    onClick={() => setShowConfirmRefresh(true)}
+                                >
+                                    <RefreshCcw className="h-4 w-4 text-muted-foreground" />
+                                </Button>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -501,6 +531,23 @@ export default function FirstWordWidgetPage() {
                             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                         >
                             ยืนยันการลบ
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={showConfirmRefresh} onOpenChange={setShowConfirmRefresh}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>คุณต้องการรีเซ็ต Overlay Key หรือไม่?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            การรีเซ็ต Key จะทำให้ URL เดิมใช้งานไม่ได้ คุณจะต้องคัดลอก URL ใหม่ไปใส่ในโปรแกรมสตรีมของคุณ
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleRefreshKey}>
+                            ยืนยันการรีเซ็ต
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

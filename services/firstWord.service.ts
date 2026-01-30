@@ -7,6 +7,7 @@ export interface FirstWordConfig {
     reply_message: string | null;
     enabled: boolean;
     audio_key?: string | null;
+    overlay_key: string;
 }
 
 export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
@@ -68,14 +69,27 @@ export const testFirstWordAudio = async (eventData: any): Promise<void> => {
     // Note: Webhook endpoint is usually not called by frontend client directly in production loop, 
     // but useful for testing. Using apiClient ensures auth if needed (though webhooks might be public/different auth).
     // Assuming this is a protected test endpoint or similar.
-    await apiClient.post("/webhook/v1/twitch/event-sub/chat-message-events", eventData);
+    await apiClient.post("/webhook/v1/twitch/event-sub/channel-chat-message", eventData);
 };
 
-export const getFirstWordEventUrl = (userId: string): string => {
+export const refreshFirstWordOverlayKey = async (): Promise<FirstWordConfig | null> => {
+    try {
+        const response = await apiClient.post<FirstWordConfig>("/api/v1/first-word/refresh-key");
+        return response.data;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const getFirstWordEventUrl = (userId: string, key?: string): string => {
     // This returns a URL string for SSE, so we can't use apiClient directly for the connection itself 
     // without using a specialized SSE client that handles headers. 
     // Standard EventSource doesn't support custom headers easily, but does support cookies.
     // Since we rely on cookies, this URL is fine.
     const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    return `${BASE_URL}/api/v1/events/first-word/${userId}`;
+    const url = `${BASE_URL}/api/v1/events/first-word/${userId}`;
+    if (key) {
+        return `${url}?key=${key}`;
+    }
+    return url;
 };
