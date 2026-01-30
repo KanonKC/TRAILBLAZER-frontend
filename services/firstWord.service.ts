@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+import { apiClient } from "@/lib/api-client";
 
 export interface FirstWordConfig {
     id: string;
@@ -10,69 +10,56 @@ export interface FirstWordConfig {
 }
 
 export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
-    const res = await fetch(`${BASE_URL}/api/v1/first-word`, {
-        credentials: "include"
-    });
-    if (res.ok) {
-        return await res.json();
+    try {
+        return await apiClient.get<FirstWordConfig>("/api/v1/first-word");
+    } catch (error) {
+        return null;
     }
-    return null;
 };
 
 export const enableFirstWord = async (twitchId: string, ownerId: string): Promise<FirstWordConfig | null> => {
-    const res = await fetch(`${BASE_URL}/api/v1/first-word`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+    try {
+        return await apiClient.post<FirstWordConfig>("/api/v1/first-word", {
             twitch_id: twitchId,
             owner_id: ownerId,
-        }),
-        credentials: "include"
-    });
-
-    if (res.ok) {
-        return getFirstWordConfig();
+        });
+    } catch (error) {
+        return null;
     }
-    return null;
 };
 
 export const updateFirstWordConfig = async (data: Partial<FirstWordConfig>): Promise<FirstWordConfig | null> => {
-    const res = await fetch(`${BASE_URL}/api/v1/first-word`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include"
-    });
-
-    if (res.ok) {
-        return await res.json();
+    try {
+        return await apiClient.put<FirstWordConfig>("/api/v1/first-word", data);
+    } catch (error) {
+        return null;
     }
-    return null;
 };
 
 export const uploadFirstWordAudio = async (file: File): Promise<boolean> => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch(`${BASE_URL}/api/v1/first-word/audio`, {
-        method: "POST",
-        body: formData,
-        credentials: "include"
-    });
-
-    return res.ok;
+    try {
+        await apiClient.upload("/api/v1/first-word/audio", formData);
+        return true;
+    } catch (error) {
+        return false;
+    }
 };
 
 export const testFirstWordAudio = async (eventData: any): Promise<void> => {
-    await fetch(`${BASE_URL}/webhook/v1/twitch/event-sub/chat-message-events`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(eventData)
-    });
+    // Note: Webhook endpoint is usually not called by frontend client directly in production loop, 
+    // but useful for testing. Using apiClient ensures auth if needed (though webhooks might be public/different auth).
+    // Assuming this is a protected test endpoint or similar.
+    await apiClient.post("/webhook/v1/twitch/event-sub/chat-message-events", eventData);
 };
 
 export const getFirstWordEventUrl = (userId: string): string => {
+    // This returns a URL string for SSE, so we can't use apiClient directly for the connection itself 
+    // without using a specialized SSE client that handles headers. 
+    // Standard EventSource doesn't support custom headers easily, but does support cookies.
+    // Since we rely on cookies, this URL is fine.
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
     return `${BASE_URL}/api/v1/events/first-word/${userId}`;
 };
