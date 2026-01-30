@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
 import { Check, Copy, Eye, EyeOff, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
@@ -301,203 +302,490 @@ export default function FirstWordWidgetPage() {
     }
 
     return (
-        <div className="container mx-auto py-10 flex justify-center">
-            <Card className="w-full max-w-2xl">
-                <CardHeader>
-                    <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
-                                <MessageSquare className="w-5 h-5" />
-                            </div>
-                            ตั้งค่า Greeting Message
-                        </CardTitle>
-                        <Switch
-                            checked={isEnabled}
-                            onCheckedChange={handleSwitchChange}
-                        />
+        <div className="container mx-auto py-10 flex flex-col items-center">
+            <div className="w-full max-w-2xl mb-8">
+                <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                        <MessageSquare className="w-6 h-6" />
                     </div>
-                    <CardDescription>
-                        กำหนดข้อความที่จะส่งหาผู้ใช้งานใหม่
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label>Overlay URL</Label>
-                        <div className="relative">
-                            <Input
-                                type={showUrl ? "text" : "password"}
-                                value={overlayUrl}
-                                readOnly
-                                onClick={handleCopyUrl}
-                                className="pr-30 cursor-pointer font-mono text-sm"
-                            />
-                            <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-transparent"
-                                    onClick={() => {
-                                        if (showUrl) {
-                                            setShowUrl(false);
-                                        } else {
-                                            setShowConfirmReveal(true);
-                                        }
-                                    }}
-                                >
-                                    {showUrl ? (
-                                        <EyeOff className="h-4 w-4 text-muted-foreground" />
-                                    ) : (
-                                        <Eye className="h-4 w-4 text-muted-foreground" />
-                                    )}
-                                </Button>
+                    <h1 className="text-3xl font-bold">First Word Widget</h1>
+                </div>
+                <p className="text-muted-foreground text-lg">
+                    Automatically welcome new chatters with a custom greeting and sound effect.
+                </p>
+            </div>
 
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-transparent"
-                                    onClick={() => setShowConfirmRefresh(true)}
-                                >
-                                    <RefreshCcw className="h-4 w-4 text-muted-foreground" />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 hover:bg-transparent"
-                                    onClick={handleCopyUrl}
-                                >
-                                    {copied ? (
-                                        <Check className="h-4 w-4 text-green-500" />
-                                    ) : (
-                                        <Copy className="h-4 w-4 text-muted-foreground" />
-                                    )}
-                                </Button>
-                            </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                            คลิกที่ช่องเพื่อคัดลอก URL แล้วนำไปใส่ใน Browser Source ของโปรแกรมสตรีม (OBS/Streamlabs)
-                        </p>
-                    </div>
+            <Tabs defaultValue="settings" className="w-full max-w-2xl">
+                <TabsList className="grid w-full grid-cols-3 mb-4">
+                    <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                    <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
+                    <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                </TabsList>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="reply_message">ข้อความตอบกลับ</Label>
-                        <Input
-                            id="reply_message"
-                            placeholder="ยินดีต้อนรับสู่สตรีมนะ {{user_name}}!"
-                            value={replyMessage}
-                            onChange={(e) => setReplyMessage(e.target.value)}
-                        />
-                        <div className="flex items-center gap-2 pt-2">
-                            <p className="text-sm text-muted-foreground font-medium">
-                                ตัวแปรที่ใช้ได้:
-                            </p>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p>คุณสามารถพิมพ์ตัวแปรเหล่านี้ลงในช่องข้อความ เพื่อให้ระบบแทนที่ด้วยข้อมูลจริงโดยอัตโนมัติ</p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </div>
-                        <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-                            <li><code className="bg-muted px-1 rounded">{"{{user_name}}"}</code> - ชื่อที่แสดงผลของผู้ทักทาย (เช่น "User123")</li>
-                            <li><code className="bg-muted px-1 rounded">{"{{user_login}}"}</code> - Twitch Username ของผู้ทักทาย (เช่น "user123")</li>
-                            <li><code className="bg-muted px-1 rounded">{"{{broadcaster_user_name}}"}</code> - ชื่อที่แสดงผลของช่อง (เช่น "Streamer")</li>
-                            <li><code className="bg-muted px-1 rounded">{"{{broadcaster_user_login}}"}</code> - Twitch Username ของช่อง (เช่น "streamer")</li>
-                            <li><code className="bg-muted px-1 rounded">{"{{message_text}}"}</code> - ข้อความที่พิมพ์มา</li>
-                            <li><code className="bg-muted px-1 rounded">{"{{color}}"}</code> - สีแชทของผู้ใช้งาน</li>
-                        </ul>
-
-
-                        <div className="space-y-2 pt-4 border-t">
-                            <Label htmlFor="audio_file">ไฟล์เสียง</Label>
-                            {config?.audio_key && !audioFile ? (
-                                <div className="flex items-center justify-between p-3 border rounded-lg bg-card">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-secondary rounded-md">
-                                            <Music className="w-4 h-4 text-primary" />
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-medium">
-                                                {config.audio_key.split('/').pop()}
-                                            </span>
-                                            <span className="text-xs text-muted-foreground">
-                                                ไฟล์เสียงปัจจุบัน
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => fileInputRef.current?.click()}
-                                    >
-                                        เปลี่ยนไฟล์ใหม่
-                                    </Button>
+                <TabsContent value="overview">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Info className="w-5 h-5 text-blue-500" />
+                                Overview
+                            </CardTitle>
+                            <CardDescription>
+                                Discover what the First Word Widget can do for your stream.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="aspect-video bg-muted rounded-xl flex items-center justify-center relative overflow-hidden group border">
+                                <div className="text-center p-6">
+                                    <Play className="w-12 h-12 mx-auto text-muted-foreground/50 mb-2" />
+                                    <p className="text-muted-foreground font-medium">Video Overview</p>
+                                    <p className="text-xs text-muted-foreground/70">Coming soon</p>
                                 </div>
-                            ) : null}
+                            </div>
+                            <div className="grid gap-4 md:grid-cols-2">
+                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
+                                    <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
+                                        <MessageSquare className="w-5 h-5" />
+                                    </div>
+                                    <h3 className="font-semibold mb-1">Auto Greeting</h3>
+                                    <p className="text-sm text-muted-foreground">Automatically welcomes new chatters when they send their first message.</p>
+                                </div>
+                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
+                                    <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
+                                        <Music className="w-5 h-5" />
+                                    </div>
+                                    <h3 className="font-semibold mb-1">Sound Alerts</h3>
+                                    <p className="text-sm text-muted-foreground">Play a custom sound effect to announce a new visitor.</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
 
-                            <div className={cn("space-y-2 animated fadeIn", config?.audio_key && !audioFile ? "hidden" : "")}>
-                                <Input
-                                    ref={fileInputRef}
-                                    id="audio_file"
-                                    type="file"
-                                    accept="audio/*"
-                                    onChange={(e) => {
-                                        if (e.target.files && e.target.files[0]) {
-                                            setAudioFile(e.target.files[0]);
-                                        }
-                                    }}
+                <TabsContent value="quick-start">
+                    <Card className="bg-transparent border-none shadow-none">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-white">
+                                <Play className="w-5 h-5 text-green-500" />
+                                Quick Start
+                            </CardTitle>
+                            <CardDescription className="text-white/70">
+                                Get up and running in minutes.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {[
+                                {
+                                    step: 1,
+                                    title: "เปิดใช้งาน Widget",
+                                    description: (
+                                        <div className="space-y-2">
+                                            <p className="text-sm text-white/70">กดปุ่มเพื่อเปิดใช้งาน Greeting Message</p>
+                                            {isEnabled ? (
+                                                <div className="flex items-center gap-2 text-green-400 bg-green-500/10 px-3 py-2 rounded-md border border-green-500/20 w-fit">
+                                                    <Check className="w-4 h-4" />
+                                                    <span className="text-sm font-medium">เปิดใช้งานแล้ว</span>
+                                                </div>
+                                            ) : (
+                                                <Button onClick={handleEnable} disabled={isSaving} size="sm" className="gap-2">
+                                                    <Play className="w-4 h-4" />
+                                                    เปิดใช้งาน
+                                                </Button>
+                                            )}
+                                        </div>
+                                    )
+                                },
+                                {
+                                    step: 2,
+                                    title: "ใส่ข้อความ",
+                                    description: (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="qs_reply_message" className="text-white">ข้อความตอบกลับ</Label>
+                                                <Input
+                                                    id="qs_reply_message"
+                                                    placeholder="ยินดีต้อนรับสู่สตรีมนะ {{user_name}}!"
+                                                    value={replyMessage}
+                                                    onChange={(e) => setReplyMessage(e.target.value)}
+                                                    className="bg-transparent border-white/20 text-white placeholder:text-white/40"
+                                                />
+                                                <p className="text-xs text-white/50">
+                                                    ตัวแปรที่ใช้ได้: <code className="bg-white/10 px-1 rounded text-white/90">{"{{user_name}}"}</code>, <code className="bg-white/10 px-1 rounded text-white/90">{"{{message_text}}"}</code>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    step: 3,
+                                    title: "ใส่เสียง",
+                                    description: (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
+                                            <div className="space-y-2">
+                                                <Label htmlFor="qs_audio_file" className="text-white">ไฟล์เสียง</Label>
+                                                {config?.audio_key && !audioFile ? (
+                                                    <div className="flex items-center justify-between p-3 border border-white/20 rounded-lg bg-white/5">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="p-2 bg-white/10 rounded-md">
+                                                                <Music className="w-4 h-4 text-white" />
+                                                            </div>
+                                                            <div className="flex flex-col">
+                                                                <span className="text-sm font-medium text-white">
+                                                                    {config.audio_key.split('/').pop()}
+                                                                </span>
+                                                                <span className="text-xs text-white/50">
+                                                                    ไฟล์เสียงปัจจุบัน
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => fileInputRef.current?.click()}
+                                                            className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+                                                        >
+                                                            เปลี่ยนไฟล์ใหม่
+                                                        </Button>
+                                                    </div>
+                                                ) : null}
+                                                <div className={cn("space-y-2", config?.audio_key && !audioFile ? "hidden" : "")}>
+                                                    <Input
+                                                        ref={fileInputRef}
+                                                        id="qs_audio_file"
+                                                        type="file"
+                                                        accept="audio/*"
+                                                        className="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
+                                                        onChange={(e) => {
+                                                            if (e.target.files && e.target.files[0]) {
+                                                                setAudioFile(e.target.files[0]);
+                                                            }
+                                                        }}
+                                                    />
+                                                    {config?.audio_key && audioFile && (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setAudioFile(null);
+                                                                if (fileInputRef.current) fileInputRef.current.value = "";
+                                                            }}
+                                                            className="text-white/70 hover:text-white hover:bg-white/10"
+                                                        >
+                                                            ยกเลิกการเปลี่ยน
+                                                        </Button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    step: 4,
+                                    title: "นำ Overlay สำหรับเสียงไปใส่บน OBS",
+                                    description: (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
+
+                                            <div className="space-y-2">
+                                                <Label className="text-white">Overlay URL</Label>
+                                                <div className="relative">
+                                                    <Input
+                                                        type={showUrl ? "text" : "password"}
+                                                        value={overlayUrl}
+                                                        readOnly
+                                                        onClick={handleCopyUrl}
+                                                        className="pr-20 cursor-pointer font-mono text-sm bg-transparent border-white/20 text-white"
+                                                    />
+                                                    <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 hover:bg-white/10"
+                                                            onClick={() => {
+                                                                if (showUrl) {
+                                                                    setShowUrl(false);
+                                                                } else {
+                                                                    setShowConfirmReveal(true);
+                                                                }
+                                                            }}
+                                                        >
+                                                            {showUrl ? (
+                                                                <EyeOff className="h-4 w-4 text-white/70" />
+                                                            ) : (
+                                                                <Eye className="h-4 w-4 text-white/70" />
+                                                            )}
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 hover:bg-white/10"
+                                                            onClick={handleCopyUrl}
+                                                        >
+                                                            {copied ? (
+                                                                <Check className="h-4 w-4 text-green-500" />
+                                                            ) : (
+                                                                <Copy className="h-4 w-4 text-white/70" />
+                                                            )}
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <ul className="text-sm text-white/70 list-disc pl-5 space-y-1 mt-2">
+                                                <li>ไปที่โปรแกรม OBS จากนั้นไปที่ Sources {">"} Add Source {">"} Browser</li>
+                                                <li>นำลิงก์ไปใส่ไว้ที่ช่อง URL</li>
+                                                <li>กดติ๊กถูกที่ตัวเลือก Control audio via OBS จากนั้นกด OK</li>
+                                                <li>ตามหาแทร็กเสียงของ Browser ที่เราตั้งค่าไปก่อนหน้า จากนั้นเลือก Audio Monitoring เป็นแบบ Monitor and Output</li>
+                                            </ul>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    step: 5,
+                                    title: "ทดสอบ",
+                                    description: (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">ทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+                                            <div className="flex flex-wrap gap-2">
+                                                <Button onClick={handleSave} disabled={isSaving}>
+                                                    {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
+                                                </Button>
+                                                <Button variant="outline" onClick={handleTestAudio} disabled={isTesting || (!config?.audio_key && !config?.reply_message)} className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white">
+                                                    {isTesting ? "กำลังทดสอบ..." : (
+                                                        <>
+                                                            <Play className="mr-2 h-4 w-4" />
+                                                            Test
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </div>
+
+                                            <ul className="text-sm text-white/70 list-disc pl-5 space-y-1 mt-2">
+                                                <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                                                <li>ต้องมีเสียงดังออกมาจากโปรแกรม OBS</li>
+                                            </ul>
+                                        </div>
+                                    )
+                                }
+                            ].map((item, index, array) => (
+                                <div key={item.step} className="flex gap-4 relative pb-10 last:pb-0">
+                                    <div className="flex flex-col items-center">
+                                        <div className="flex-none flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm z-10 bg-transparent ring-4 ring-transparent">
+                                            {item.step}
+                                        </div>
+                                        {index !== array.length - 1 && (
+                                            <div className="w-[2px] bg-white/10 absolute top-8 bottom-0 left-4 -ml-[1px]" />
+                                        )}
+                                    </div>
+                                    <div className="space-y-1 pt-1 flex-1">
+                                        <h3 className="font-semibold leading-none mb-2 text-white">{item.title}</h3>
+                                        <div className="text-sm">{item.description}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="settings">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 justify-between">
+                                <span className="flex items-center gap-2">
+                                    <Info className="w-5 h-5 text-blue-500" />
+                                    Settings
+                                </span>
+                                <Switch
+                                    checked={isEnabled}
+                                    onCheckedChange={handleSwitchChange}
                                 />
-                                <div className="flex justify-between items-center">
-                                    <p className="text-sm text-muted-foreground">
-                                        อัปโหลดไฟล์เสียงที่จะเล่นเมื่อมีผู้ใช้งานใหม่ทักทายเข้ามา
-                                    </p>
-                                    {config?.audio_key && audioFile && (
+                            </CardTitle>
+                            <CardDescription>
+                                Discover what the First Word Widget can do for your stream.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="space-y-2">
+                                <Label>Overlay URL</Label>
+                                <div className="relative">
+                                    <Input
+                                        type={showUrl ? "text" : "password"}
+                                        value={overlayUrl}
+                                        readOnly
+                                        onClick={handleCopyUrl}
+                                        className="pr-30 cursor-pointer font-mono text-sm"
+                                    />
+                                    <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="icon"
+                                            className="h-8 w-8 hover:bg-transparent"
                                             onClick={() => {
-                                                setAudioFile(null);
-                                                // Reset input value if needed, though react state is source of truth for our logic
-                                                if (fileInputRef.current) fileInputRef.current.value = "";
+                                                if (showUrl) {
+                                                    setShowUrl(false);
+                                                } else {
+                                                    setShowConfirmReveal(true);
+                                                }
                                             }}
-                                            className="h-auto p-0 text-muted-foreground hover:text-foreground"
                                         >
-                                            ยกเลิก
+                                            {showUrl ? (
+                                                <EyeOff className="h-4 w-4 text-muted-foreground" />
+                                            ) : (
+                                                <Eye className="h-4 w-4 text-muted-foreground" />
+                                            )}
                                         </Button>
-                                    )}
+
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 hover:bg-transparent"
+                                            onClick={() => setShowConfirmRefresh(true)}
+                                        >
+                                            <RefreshCcw className="h-4 w-4 text-muted-foreground" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 hover:bg-transparent"
+                                            onClick={handleCopyUrl}
+                                        >
+                                            {copied ? (
+                                                <Check className="h-4 w-4 text-green-500" />
+                                            ) : (
+                                                <Copy className="h-4 w-4 text-muted-foreground" />
+                                            )}
+                                        </Button>
+                                    </div>
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    คลิกที่ช่องเพื่อคัดลอก URL แล้วนำไปใส่ใน Browser Source ของโปรแกรมสตรีม (OBS/Streamlabs)
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="reply_message">ข้อความตอบกลับ</Label>
+                                <Input
+                                    id="reply_message"
+                                    placeholder="ยินดีต้อนรับสู่สตรีมนะ {{user_name}}!"
+                                    value={replyMessage}
+                                    onChange={(e) => setReplyMessage(e.target.value)}
+                                />
+                                <div className="flex items-center gap-2 pt-2">
+                                    <p className="text-sm text-muted-foreground font-medium">
+                                        ตัวแปรที่ใช้ได้:
+                                    </p>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>คุณสามารถพิมพ์ตัวแปรเหล่านี้ลงในช่องข้อความ เพื่อให้ระบบแทนที่ด้วยข้อมูลจริงโดยอัตโนมัติ</p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
+                                <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                                    <li><code className="bg-muted px-1 rounded">{"{{user_name}}"}</code> - ชื่อที่แสดงผลของผู้ทักทาย (เช่น "User123")</li>
+                                    <li><code className="bg-muted px-1 rounded">{"{{user_login}}"}</code> - Twitch Username ของผู้ทักทาย (เช่น "user123")</li>
+                                    <li><code className="bg-muted px-1 rounded">{"{{broadcaster_user_name}}"}</code> - ชื่อที่แสดงผลของช่อง (เช่น "Streamer")</li>
+                                    <li><code className="bg-muted px-1 rounded">{"{{broadcaster_user_login}}"}</code> - Twitch Username ของช่อง (เช่น "streamer")</li>
+                                    <li><code className="bg-muted px-1 rounded">{"{{message_text}}"}</code> - ข้อความที่พิมพ์มา</li>
+                                    <li><code className="bg-muted px-1 rounded">{"{{color}}"}</code> - สีแชทของผู้ใช้งาน</li>
+                                </ul>
+
+
+                                <div className="space-y-2 pt-4 border-t">
+                                    <Label htmlFor="audio_file">ไฟล์เสียง</Label>
+                                    {config?.audio_key && !audioFile ? (
+                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-card">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-secondary rounded-md">
+                                                    <Music className="w-4 h-4 text-primary" />
+                                                </div>
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-medium">
+                                                        {config.audio_key.split('/').pop()}
+                                                    </span>
+                                                    <span className="text-xs text-muted-foreground">
+                                                        ไฟล์เสียงปัจจุบัน
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => fileInputRef.current?.click()}
+                                            >
+                                                เปลี่ยนไฟล์ใหม่
+                                            </Button>
+                                        </div>
+                                    ) : null}
+
+                                    <div className={cn("space-y-2 animated fadeIn", config?.audio_key && !audioFile ? "hidden" : "")}>
+                                        <Input
+                                            ref={fileInputRef}
+                                            id="audio_file"
+                                            type="file"
+                                            accept="audio/*"
+                                            onChange={(e) => {
+                                                if (e.target.files && e.target.files[0]) {
+                                                    setAudioFile(e.target.files[0]);
+                                                }
+                                            }}
+                                        />
+                                        <div className="flex justify-between items-center">
+                                            <p className="text-sm text-muted-foreground">
+                                                อัปโหลดไฟล์เสียงที่จะเล่นเมื่อมีผู้ใช้งานใหม่ทักทายเข้ามา
+                                            </p>
+                                            {config?.audio_key && audioFile && (
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setAudioFile(null);
+                                                        // Reset input value if needed, though react state is source of truth for our logic
+                                                        if (fileInputRef.current) fileInputRef.current.value = "";
+                                                    }}
+                                                    className="h-auto p-0 text-muted-foreground hover:text-foreground"
+                                                >
+                                                    ยกเลิก
+                                                </Button>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </CardContent>
-                <CardFooter className="flex justify-between border-t px-6 py-4">
-                    <Button
-                        variant="destructive"
-                        onClick={() => setShowConfirmDelete(true)}
-                        disabled={isSaving}
-                    >
-                        ลบวิดเจ็ต
-                    </Button>
-                    <div className="flex gap-2">
-                        <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config.audio_key && !config.reply_message}>
-                            {isTesting ? (
-                                <>Testing...</>
-                            ) : (
-                                <>
-                                    <Play className="mr-2 h-4 w-4" />
-                                    Test
-                                </>
-                            )}
-                        </Button>
-                        <Button onClick={handleSave} disabled={isSaving}>
-                            {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
-                        </Button>
-                    </div>
-                </CardFooter>
-            </Card>
+                        </CardContent>
+                        <CardFooter className="flex justify-between border-t px-6 py-4">
+                            <Button
+                                variant="destructive"
+                                onClick={() => setShowConfirmDelete(true)}
+                                disabled={isSaving}
+                            >
+                                ลบวิดเจ็ต
+                            </Button>
+                            <div className="flex gap-2">
+                                <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config.audio_key && !config.reply_message}>
+                                    {isTesting ? (
+                                        <>Testing...</>
+                                    ) : (
+                                        <>
+                                            <Play className="mr-2 h-4 w-4" />
+                                            Test
+                                        </>
+                                    )}
+                                </Button>
+                                <Button onClick={handleSave} disabled={isSaving}>
+                                    {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
+                                </Button>
+                            </div>
+                        </CardFooter>
+                    </Card>
+                </TabsContent>
+            </Tabs>
 
             <AlertDialog open={showConfirmReveal} onOpenChange={setShowConfirmReveal}>
                 <AlertDialogContent>
@@ -558,6 +846,6 @@ export default function FirstWordWidgetPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div >
+        </div>
     );
 }
