@@ -1,16 +1,5 @@
 "use client"
 
-import { cn } from "@/lib/utils";
-import { useEffect, useState, useRef } from "react";
-import { useUser } from "@/components/user-context";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Info, MessageSquare, Eye, EyeOff, Copy, Check, Play, Music } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -21,13 +10,25 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useUser } from "@/components/user-context";
+import { cn } from "@/lib/utils";
+import { Check, Copy, Eye, EyeOff, Info, MessageSquare, Music, Play } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import {
-    getFirstWordConfig,
+    deleteFirstWordConfig,
     enableFirstWord,
+    getFirstWordConfig,
+    testFirstWordAudio,
     updateFirstWordConfig,
     uploadFirstWordAudio,
-    testFirstWordAudio,
     type FirstWordConfig
 } from "@/services/firstWord.service";
 
@@ -42,7 +43,27 @@ export default function FirstWordWidgetPage() {
     const [audioFile, setAudioFile] = useState<File | null>(null);
     const [showUrl, setShowUrl] = useState(false);
     const [showConfirmReveal, setShowConfirmReveal] = useState(false);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [copied, setCopied] = useState(false);
+
+    // ... (rest of state)
+
+    const handleDelete = async () => {
+        setIsSaving(true);
+        try {
+            const success = await deleteFirstWordConfig();
+            if (success) {
+                setConfig(null);
+                setReplyMessage("");
+                setIsEnabled(false);
+                setAudioFile(null);
+            }
+        } catch (error) {
+            console.error("Failed to delete", error);
+        } finally {
+            setIsSaving(false);
+        }
+    };
     const [isTesting, setIsTesting] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -91,6 +112,7 @@ export default function FirstWordWidgetPage() {
         setIsSaving(true);
         try {
             const data = await enableFirstWord(user.twitchId, user.id);
+            console.log('enable', data);
             if (data) {
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
@@ -421,20 +443,29 @@ export default function FirstWordWidgetPage() {
                         </div>
                     </div>
                 </CardContent>
-                <CardFooter className="flex justify-end gap-2 border-t px-6 py-4">
-                    <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config.audio_key && !config.reply_message}>
-                        {isTesting ? (
-                            <>Testing...</>
-                        ) : (
-                            <>
-                                <Play className="mr-2 h-4 w-4" />
-                                Test
-                            </>
-                        )}
+                <CardFooter className="flex justify-between border-t px-6 py-4">
+                    <Button
+                        variant="destructive"
+                        onClick={() => setShowConfirmDelete(true)}
+                        disabled={isSaving}
+                    >
+                        ลบวิดเจ็ต
                     </Button>
-                    <Button onClick={handleSave} disabled={isSaving}>
-                        {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config.audio_key && !config.reply_message}>
+                            {isTesting ? (
+                                <>Testing...</>
+                            ) : (
+                                <>
+                                    <Play className="mr-2 h-4 w-4" />
+                                    Test
+                                </>
+                            )}
+                        </Button>
+                        <Button onClick={handleSave} disabled={isSaving}>
+                            {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
+                        </Button>
+                    </div>
                 </CardFooter>
             </Card>
 
@@ -450,6 +481,26 @@ export default function FirstWordWidgetPage() {
                         <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                         <AlertDialogAction onClick={() => setShowUrl(true)}>
                             แสดง URL
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={showConfirmDelete} onOpenChange={setShowConfirmDelete}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>คุณต้องการลบวิดเจ็ตนี้หรือไม่?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            การลบวิดเจ็ตจะทำให้การตั้งค่าทั้งหมดหายไป และวิดเจ็ตจะถูกปิดการใช้งาน คุณจะต้องเปิดใช้งานใหม่อีกครั้งหากต้องการใช้งาน
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={handleDelete}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            ยืนยันการลบ
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

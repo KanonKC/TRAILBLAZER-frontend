@@ -55,6 +55,15 @@ export const uploadFirstWordAudio = async (file: File): Promise<boolean> => {
     }
 };
 
+export const deleteFirstWordConfig = async (): Promise<boolean> => {
+    try {
+        await apiClient.delete("/api/v1/first-word");
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 export const testFirstWordAudio = async (eventData: any): Promise<void> => {
     // Note: Webhook endpoint is usually not called by frontend client directly in production loop, 
     // but useful for testing. Using apiClient ensures auth if needed (though webhooks might be public/different auth).
