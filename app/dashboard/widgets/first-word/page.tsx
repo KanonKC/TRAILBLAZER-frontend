@@ -329,7 +329,7 @@ export default function FirstWordWidgetPage() {
                                 value={overlayUrl}
                                 readOnly
                                 onClick={handleCopyUrl}
-                                className="pr-20 cursor-pointer font-mono text-sm"
+                                className="pr-30 cursor-pointer font-mono text-sm"
                             />
                             <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
                                 <Button
@@ -509,7 +509,10 @@ export default function FirstWordWidgetPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => setShowUrl(true)}>
+                        <AlertDialogAction
+                            variant="destructive"
+                            onClick={() => setShowUrl(true)}
+                        >
                             แสดง URL
                         </AlertDialogAction>
                     </AlertDialogFooter>
@@ -546,7 +549,10 @@ export default function FirstWordWidgetPage() {
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleRefreshKey}>
+                        <AlertDialogAction
+                            variant="destructive"
+                            onClick={handleRefreshKey}
+                        >
                             ยืนยันการรีเซ็ต
                         </AlertDialogAction>
                     </AlertDialogFooter>
