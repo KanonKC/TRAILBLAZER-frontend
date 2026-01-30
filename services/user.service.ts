@@ -10,7 +10,8 @@ export interface User {
 
 export const getCurrentUser = async (): Promise<User | null> => {
     try {
-        return await apiClient.get<User>("/api/v1/user/me");
+        const response = await apiClient.get<User>("/api/v1/user/me");
+        return response.data;
     } catch (error) {
         // console.error("Failed to fetch user", error);
         return null;

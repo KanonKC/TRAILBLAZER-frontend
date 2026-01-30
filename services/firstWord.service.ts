@@ -11,7 +11,8 @@ export interface FirstWordConfig {
 
 export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
     try {
-        return await apiClient.get<FirstWordConfig>("/api/v1/first-word");
+        const response = await apiClient.get<FirstWordConfig>("/api/v1/first-word");
+        return response.data;
     } catch (error) {
         return null;
     }
@@ -19,10 +20,11 @@ export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
 
 export const enableFirstWord = async (twitchId: string, ownerId: string): Promise<FirstWordConfig | null> => {
     try {
-        return await apiClient.post<FirstWordConfig>("/api/v1/first-word", {
+        const response = await apiClient.post<FirstWordConfig>("/api/v1/first-word", {
             twitch_id: twitchId,
             owner_id: ownerId,
         });
+        return response.data;
     } catch (error) {
         return null;
     }
@@ -30,7 +32,8 @@ export const enableFirstWord = async (twitchId: string, ownerId: string): Promis
 
 export const updateFirstWordConfig = async (data: Partial<FirstWordConfig>): Promise<FirstWordConfig | null> => {
     try {
-        return await apiClient.put<FirstWordConfig>("/api/v1/first-word", data);
+        const response = await apiClient.put<FirstWordConfig>("/api/v1/first-word", data);
+        return response.data;
     } catch (error) {
         return null;
     }
@@ -41,7 +44,11 @@ export const uploadFirstWordAudio = async (file: File): Promise<boolean> => {
     formData.append("file", file);
 
     try {
-        await apiClient.upload("/api/v1/first-word/audio", formData);
+        await apiClient.post("/api/v1/first-word/audio", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
         return true;
     } catch (error) {
         return false;

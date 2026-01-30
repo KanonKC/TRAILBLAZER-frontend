@@ -1,129 +1,35 @@
-
-interface ApiClientConfig extends RequestInit {
-    headers?: HeadersInit;
-}
+import axios from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-class ApiClient {
-    private baseUrl: string;
+export const apiClient = axios.create({
+    baseURL: BASE_URL,
+    withCredentials: true,
+    headers: {
+        "Content-Type": "application/json",
+    },
+});
 
-    constructor(baseUrl: string) {
-        this.baseUrl = baseUrl;
-    }
+apiClient.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
 
-    async request<T>(endpoint: string, config: ApiClientConfig = {}): Promise<T> {
-        const url = `${this.baseUrl}${endpoint}`;
-        const headers = {
-            "Content-Type": "application/json",
-            ...config.headers,
-        };
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
-        const response = await fetch(url, {
-            ...config,
-            headers,
-            credentials: "include", // Always send cookies
-        });
-
-        if (response.status === 401) {
-            // Attempt Silent Refresh
-            const refreshSuccessful = await this.refreshToken();
-            if (refreshSuccessful) {
-                // Retry original request
-                return this.request<T>(endpoint, config);
-            } else {
-                // Refresh failed, throw error (or optionally handle logout here)
-                throw new Error("Unauthorized");
+            try {
+                await axios.post(
+                    `${BASE_URL}/api/v1/refresh-token`,
+                    {},
+                    { withCredentials: true }
+                );
+                return apiClient(originalRequest);
+            } catch (refreshError) {
+                return Promise.reject(refreshError);
             }
         }
 
-        if (!response.ok) {
-            // Handle other errors
-            const errorBody = await response.json().catch(() => ({}));
-            throw new Error(errorBody.message || `Request failed with status ${response.status}`);
-        }
-
-        // Handle 204 No Content
-        if (response.status === 204) {
-            return {} as T;
-        }
-
-        // Attempt to parse JSON
-        try {
-            return await response.json();
-        } catch (e) {
-            // Fallback for non-JSON responses if needed, or just return null/empty
-            return {} as T;
-        }
+        return Promise.reject(error);
     }
-
-    private async refreshToken(): Promise<boolean> {
-        try {
-            const res = await fetch(`${this.baseUrl}/api/v1/refresh-token`, {
-                method: "POST",
-                credentials: "include",
-            });
-            return res.ok;
-        } catch (error) {
-            console.error("Failed to refresh token", error);
-            return false;
-        }
-    }
-
-    // Helper methods for common HTTP verbs
-    get<T>(endpoint: string, config?: ApiClientConfig) {
-        return this.request<T>(endpoint, { ...config, method: "GET" });
-    }
-
-    post<T>(endpoint: string, body: any, config?: ApiClientConfig) {
-        return this.request<T>(endpoint, {
-            ...config,
-            method: "POST",
-            body: JSON.stringify(body)
-        });
-    }
-
-    put<T>(endpoint: string, body: any, config?: ApiClientConfig) {
-        return this.request<T>(endpoint, {
-            ...config,
-            method: "PUT",
-            body: JSON.stringify(body)
-        });
-    }
-
-    delete<T>(endpoint: string, config?: ApiClientConfig) {
-        return this.request<T>(endpoint, { ...config, method: "DELETE" });
-    }
-
-    // Special case for file uploads which shouldn't have Content-Type: application/json
-    upload<T>(endpoint: string, formData: FormData, config: ApiClientConfig = {}) {
-        const url = `${this.baseUrl}${endpoint}`;
-        // Let browser set Content-Type for FormData (multipart/form-data with boundary)
-        const { "Content-Type": _, ...restHeaders } = (config.headers as any) || {};
-
-        return fetch(url, {
-            ...config,
-            method: "POST", // Usually POST for uploads
-            body: formData,
-            headers: {
-                ...restHeaders
-            },
-            credentials: "include"
-        }).then(async (res) => {
-            if (res.status === 401) {
-                const refreshSuccessful = await this.refreshToken();
-                if (refreshSuccessful) {
-                    return this.upload<T>(endpoint, formData, config);
-                }
-                throw new Error("Unauthorized");
-            }
-            if (!res.ok) {
-                const errorBody = await res.json().catch(() => ({}));
-                throw new Error(errorBody.message || `Upload failed with status ${res.status}`);
-            }
-            try { return await res.json() } catch { return {} as T }
-        });
-    }
-}
-
-export const apiClient = new ApiClient(BASE_URL);
+);
