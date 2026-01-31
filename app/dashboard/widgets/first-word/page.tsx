@@ -16,12 +16,12 @@ import { ReplyMessageInput } from "@/components/first-word/ReplyMessageInput";
 import { WidgetTestControl } from "@/components/first-word/WidgetTestControl";
 import { OverlayUrlInput } from "@/components/first-word/OverlayUrlInput";
 import { AudioFileUploader } from "@/components/first-word/AudioFileUploader";
+import { OBSSetupHelp } from "@/components/first-word/OBSSetupHelp";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
@@ -51,6 +51,7 @@ export default function FirstWordWidgetPage() {
 
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
+    const [activeTab, setActiveTab] = useState("overview");
 
     // ... (rest of state)
 
@@ -63,6 +64,7 @@ export default function FirstWordWidgetPage() {
                 setReplyMessage("");
                 setIsEnabled(false);
                 setAudioFile(null);
+                setActiveTab("overview");
             }
         } catch (error) {
             console.error("Failed to delete", error);
@@ -109,6 +111,7 @@ export default function FirstWordWidgetPage() {
                     setConfig(data);
                     setReplyMessage(data.reply_message || "");
                     setIsEnabled(data.enabled ?? true);
+                    setActiveTab("settings");
                 } else {
                     setConfig(null);
                 }
@@ -132,6 +135,7 @@ export default function FirstWordWidgetPage() {
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
                 setIsEnabled(data.enabled ?? true);
+                setActiveTab("quick-start");
             }
         } catch (error) {
             console.error("Failed to enable", error);
@@ -285,7 +289,7 @@ export default function FirstWordWidgetPage() {
                 </p>
             </div>
 
-            <Tabs defaultValue={config ? "settings" : "overview"} className="w-full max-w-2xl">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-2xl">
                 <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
                     <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
                     {config && (
@@ -404,12 +408,7 @@ export default function FirstWordWidgetPage() {
                                                 onRefresh={() => setShowConfirmRefresh(true)}
                                             />
 
-                                            <ul className="text-sm text-white/70 list-disc pl-5 space-y-1 mt-2">
-                                                <li>ไปที่โปรแกรม OBS จากนั้นไปที่ Sources {">"} Add Source {">"} Browser</li>
-                                                <li>นำลิงก์ไปใส่ไว้ที่ช่อง URL</li>
-                                                <li>กดติ๊กถูกที่ตัวเลือก Control audio via OBS จากนั้นกด OK</li>
-                                                <li>ตามหาแทร็กเสียงของ Browser ที่เราตั้งค่าไปก่อนหน้า จากนั้นเลือก Audio Monitoring เป็นแบบ Monitor and Output</li>
-                                            </ul>
+                                            <OBSSetupHelp />
                                         </div>
                                     )
                                 },
@@ -476,36 +475,11 @@ export default function FirstWordWidgetPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="reply_message">ข้อความตอบกลับ</Label>
-                                <Input
-                                    id="reply_message"
-                                    placeholder="ยินดีต้อนรับสู่สตรีมนะ {{user_name}}!"
+                                <ReplyMessageInput
                                     value={replyMessage}
-                                    onChange={(e) => setReplyMessage(e.target.value)}
+                                    onChange={setReplyMessage}
+                                    variant="default"
                                 />
-                                <div className="flex items-center gap-2 pt-2">
-                                    <p className="text-sm text-muted-foreground font-medium">
-                                        ตัวแปรที่ใช้ได้:
-                                    </p>
-                                    <TooltipProvider>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>คุณสามารถพิมพ์ตัวแปรเหล่านี้ลงในช่องข้อความ เพื่อให้ระบบแทนที่ด้วยข้อมูลจริงโดยอัตโนมัติ</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                </div>
-                                <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
-                                    <li><code className="bg-muted px-1 rounded">{"{{user_name}}"}</code> - ชื่อที่แสดงผลของผู้ทักทาย (เช่น "User123")</li>
-                                    <li><code className="bg-muted px-1 rounded">{"{{user_login}}"}</code> - Twitch Username ของผู้ทักทาย (เช่น "user123")</li>
-                                    <li><code className="bg-muted px-1 rounded">{"{{broadcaster_user_name}}"}</code> - ชื่อที่แสดงผลของช่อง (เช่น "Streamer")</li>
-                                    <li><code className="bg-muted px-1 rounded">{"{{broadcaster_user_login}}"}</code> - Twitch Username ของช่อง (เช่น "streamer")</li>
-                                    <li><code className="bg-muted px-1 rounded">{"{{message_text}}"}</code> - ข้อความที่พิมพ์มา</li>
-                                    <li><code className="bg-muted px-1 rounded">{"{{color}}"}</code> - สีแชทของผู้ใช้งาน</li>
-                                </ul>
 
 
                                 <div className="space-y-2 pt-4 border-t">
