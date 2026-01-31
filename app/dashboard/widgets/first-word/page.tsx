@@ -11,6 +11,11 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { WidgetStatusControl } from "@/components/first-word/WidgetStatusControl";
+import { ReplyMessageInput } from "@/components/first-word/ReplyMessageInput";
+import { WidgetTestControl } from "@/components/first-word/WidgetTestControl";
+import { OverlayUrlInput } from "@/components/first-word/OverlayUrlInput";
+import { AudioFileUploader } from "@/components/first-word/AudioFileUploader";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,8 +25,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { Check, Copy, Eye, EyeOff, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Check, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import {
     deleteFirstWordConfig,
@@ -43,11 +48,9 @@ export default function FirstWordWidgetPage() {
     const [isEnabled, setIsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | null>(null);
-    const [showUrl, setShowUrl] = useState(false);
-    const [showConfirmReveal, setShowConfirmReveal] = useState(false);
+
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
-    const [copied, setCopied] = useState(false);
 
     // ... (rest of state)
 
@@ -85,22 +88,12 @@ export default function FirstWordWidgetPage() {
     };
 
     const [isTesting, setIsTesting] = useState(false);
-    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const overlayUrl = typeof window !== 'undefined' && user
         ? `${window.location.origin}/overlays/first-word/${user.id}${config?.overlay_key ? `?key=${config.overlay_key}` : ''}`
         : "";
 
-    const handleCopyUrl = async () => {
-        if (!overlayUrl) return;
-        try {
-            await navigator.clipboard.writeText(overlayUrl);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (err) {
-            console.error("Failed to copy:", err);
-        }
-    };
+
 
     useEffect(() => {
         if (isUserLoading) return;
@@ -378,20 +371,11 @@ export default function FirstWordWidgetPage() {
                                     step: 1,
                                     title: "เปิดใช้งาน Widget",
                                     description: (
-                                        <div className="space-y-2">
-                                            <p className="text-sm text-white/70">กดปุ่มเพื่อเปิดใช้งาน Greeting Message</p>
-                                            {isEnabled ? (
-                                                <div className="flex items-center gap-2 text-green-400 bg-green-500/10 px-3 py-2 rounded-md border border-green-500/20 w-fit">
-                                                    <Check className="w-4 h-4" />
-                                                    <span className="text-sm font-medium">เปิดใช้งานแล้ว</span>
-                                                </div>
-                                            ) : (
-                                                <Button onClick={handleEnable} disabled={isSaving} size="sm" className="gap-2">
-                                                    <Play className="w-4 h-4" />
-                                                    เปิดใช้งาน
-                                                </Button>
-                                            )}
-                                        </div>
+                                        <WidgetStatusControl
+                                            isEnabled={isEnabled}
+                                            isSaving={isSaving}
+                                            onEnable={handleEnable}
+                                        />
                                     )
                                 },
                                 {
@@ -400,19 +384,10 @@ export default function FirstWordWidgetPage() {
                                     description: (
                                         <div className="space-y-3">
                                             <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="qs_reply_message" className="text-white">ข้อความตอบกลับ</Label>
-                                                <Input
-                                                    id="qs_reply_message"
-                                                    placeholder="ยินดีต้อนรับสู่สตรีมนะ {{user_name}}!"
-                                                    value={replyMessage}
-                                                    onChange={(e) => setReplyMessage(e.target.value)}
-                                                    className="bg-transparent border-white/20 text-white placeholder:text-white/40"
-                                                />
-                                                <p className="text-xs text-white/50">
-                                                    ตัวแปรที่ใช้ได้: <code className="bg-white/10 px-1 rounded text-white/90">{"{{user_name}}"}</code>, <code className="bg-white/10 px-1 rounded text-white/90">{"{{message_text}}"}</code>
-                                                </p>
-                                            </div>
+                                            <ReplyMessageInput
+                                                value={replyMessage}
+                                                onChange={setReplyMessage}
+                                            />
                                         </div>
                                     )
                                 },
@@ -422,61 +397,13 @@ export default function FirstWordWidgetPage() {
                                     description: (
                                         <div className="space-y-3">
                                             <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
-                                            <div className="space-y-2">
-                                                <Label htmlFor="qs_audio_file" className="text-white">ไฟล์เสียง</Label>
-                                                {config?.audio_key && !audioFile ? (
-                                                    <div className="flex items-center justify-between p-3 border border-white/20 rounded-lg bg-white/5">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="p-2 bg-white/10 rounded-md">
-                                                                <Music className="w-4 h-4 text-white" />
-                                                            </div>
-                                                            <div className="flex flex-col">
-                                                                <span className="text-sm font-medium text-white">
-                                                                    {config.audio_key.split('/').pop()}
-                                                                </span>
-                                                                <span className="text-xs text-white/50">
-                                                                    ไฟล์เสียงปัจจุบัน
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <Button
-                                                            variant="outline"
-                                                            size="sm"
-                                                            onClick={() => fileInputRef.current?.click()}
-                                                            className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
-                                                        >
-                                                            เปลี่ยนไฟล์ใหม่
-                                                        </Button>
-                                                    </div>
-                                                ) : null}
-                                                <div className={cn("space-y-2", config?.audio_key && !audioFile ? "hidden" : "")}>
-                                                    <Input
-                                                        ref={fileInputRef}
-                                                        id="qs_audio_file"
-                                                        type="file"
-                                                        accept="audio/*"
-                                                        className="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
-                                                        onChange={(e) => {
-                                                            if (e.target.files && e.target.files[0]) {
-                                                                setAudioFile(e.target.files[0]);
-                                                            }
-                                                        }}
-                                                    />
-                                                    {config?.audio_key && audioFile && (
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="sm"
-                                                            onClick={() => {
-                                                                setAudioFile(null);
-                                                                if (fileInputRef.current) fileInputRef.current.value = "";
-                                                            }}
-                                                            className="text-white/70 hover:text-white hover:bg-white/10"
-                                                        >
-                                                            ยกเลิกการเปลี่ยน
-                                                        </Button>
-                                                    )}
-                                                </div>
-                                            </div>
+                                            <AudioFileUploader
+                                                currentFileName={config?.audio_key}
+                                                selectedFile={audioFile}
+                                                onFileSelect={setAudioFile}
+                                                className="text-white"
+                                                inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
+                                            />
                                         </div>
                                     )
                                 },
@@ -487,50 +414,13 @@ export default function FirstWordWidgetPage() {
                                         <div className="space-y-3">
                                             <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
 
-                                            <div className="space-y-2">
-                                                <Label className="text-white">Overlay URL</Label>
-                                                <div className="relative">
-                                                    <Input
-                                                        type={showUrl ? "text" : "password"}
-                                                        value={overlayUrl}
-                                                        readOnly
-                                                        onClick={handleCopyUrl}
-                                                        className="pr-20 cursor-pointer font-mono text-sm bg-transparent border-white/20 text-white"
-                                                    />
-                                                    <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 hover:bg-white/10"
-                                                            onClick={() => {
-                                                                if (showUrl) {
-                                                                    setShowUrl(false);
-                                                                } else {
-                                                                    setShowConfirmReveal(true);
-                                                                }
-                                                            }}
-                                                        >
-                                                            {showUrl ? (
-                                                                <EyeOff className="h-4 w-4 text-white/70" />
-                                                            ) : (
-                                                                <Eye className="h-4 w-4 text-white/70" />
-                                                            )}
-                                                        </Button>
-                                                        <Button
-                                                            variant="ghost"
-                                                            size="icon"
-                                                            className="h-8 w-8 hover:bg-white/10"
-                                                            onClick={handleCopyUrl}
-                                                        >
-                                                            {copied ? (
-                                                                <Check className="h-4 w-4 text-green-500" />
-                                                            ) : (
-                                                                <Copy className="h-4 w-4 text-white/70" />
-                                                            )}
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            <OverlayUrlInput
+                                                url={overlayUrl}
+                                                className="text-white"
+                                                inputClassName="bg-transparent border-white/20 text-white"
+                                                showRefresh={true}
+                                                onRefresh={() => setShowConfirmRefresh(true)}
+                                            />
 
                                             <ul className="text-sm text-white/70 list-disc pl-5 space-y-1 mt-2">
                                                 <li>ไปที่โปรแกรม OBS จากนั้นไปที่ Sources {">"} Add Source {">"} Browser</li>
@@ -545,28 +435,13 @@ export default function FirstWordWidgetPage() {
                                     step: 5,
                                     title: "ทดสอบ",
                                     description: (
-                                        <div className="space-y-3">
-                                            <p className="text-sm text-white/70">ทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
-
-                                            <div className="flex flex-wrap gap-2">
-                                                <Button onClick={handleSave} disabled={isSaving}>
-                                                    {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
-                                                </Button>
-                                                <Button variant="outline" onClick={handleTestAudio} disabled={isTesting || (!config?.audio_key && !config?.reply_message)} className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white">
-                                                    {isTesting ? "กำลังทดสอบ..." : (
-                                                        <>
-                                                            <Play className="mr-2 h-4 w-4" />
-                                                            Test
-                                                        </>
-                                                    )}
-                                                </Button>
-                                            </div>
-
-                                            <ul className="text-sm text-white/70 list-disc pl-5 space-y-1 mt-2">
-                                                <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
-                                                <li>ต้องมีเสียงดังออกมาจากโปรแกรม OBS</li>
-                                            </ul>
-                                        </div>
+                                        <WidgetTestControl
+                                            isSaving={isSaving}
+                                            isTesting={isTesting}
+                                            onSave={handleSave}
+                                            onTest={handleTestAudio}
+                                            canTest={!!(config?.audio_key || config?.reply_message)}
+                                        />
                                     )
                                 }
                             ].map((item, index, array) => (
@@ -608,57 +483,11 @@ export default function FirstWordWidgetPage() {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Overlay URL</Label>
-                                <div className="relative">
-                                    <Input
-                                        type={showUrl ? "text" : "password"}
-                                        value={overlayUrl}
-                                        readOnly
-                                        onClick={handleCopyUrl}
-                                        className="pr-30 cursor-pointer font-mono text-sm"
-                                    />
-                                    <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 hover:bg-transparent"
-                                            onClick={() => {
-                                                if (showUrl) {
-                                                    setShowUrl(false);
-                                                } else {
-                                                    setShowConfirmReveal(true);
-                                                }
-                                            }}
-                                        >
-                                            {showUrl ? (
-                                                <EyeOff className="h-4 w-4 text-muted-foreground" />
-                                            ) : (
-                                                <Eye className="h-4 w-4 text-muted-foreground" />
-                                            )}
-                                        </Button>
-
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 hover:bg-transparent"
-                                            onClick={() => setShowConfirmRefresh(true)}
-                                        >
-                                            <RefreshCcw className="h-4 w-4 text-muted-foreground" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="h-8 w-8 hover:bg-transparent"
-                                            onClick={handleCopyUrl}
-                                        >
-                                            {copied ? (
-                                                <Check className="h-4 w-4 text-green-500" />
-                                            ) : (
-                                                <Copy className="h-4 w-4 text-muted-foreground" />
-                                            )}
-                                        </Button>
-                                    </div>
-                                </div>
+                                <OverlayUrlInput
+                                    url={overlayUrl}
+                                    onRefresh={() => setShowConfirmRefresh(true)}
+                                    showRefresh={true}
+                                />
                                 <p className="text-xs text-muted-foreground">
                                     คลิกที่ช่องเพื่อคัดลอก URL แล้วนำไปใส่ใน Browser Source ของโปรแกรมสตรีม (OBS/Streamlabs)
                                 </p>
@@ -698,64 +527,11 @@ export default function FirstWordWidgetPage() {
 
 
                                 <div className="space-y-2 pt-4 border-t">
-                                    <Label htmlFor="audio_file">ไฟล์เสียง</Label>
-                                    {config?.audio_key && !audioFile ? (
-                                        <div className="flex items-center justify-between p-3 border rounded-lg bg-card">
-                                            <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-secondary rounded-md">
-                                                    <Music className="w-4 h-4 text-primary" />
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-sm font-medium">
-                                                        {config.audio_key.split('/').pop()}
-                                                    </span>
-                                                    <span className="text-xs text-muted-foreground">
-                                                        ไฟล์เสียงปัจจุบัน
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                variant="outline"
-                                                size="sm"
-                                                onClick={() => fileInputRef.current?.click()}
-                                            >
-                                                เปลี่ยนไฟล์ใหม่
-                                            </Button>
-                                        </div>
-                                    ) : null}
-
-                                    <div className={cn("space-y-2 animated fadeIn", config?.audio_key && !audioFile ? "hidden" : "")}>
-                                        <Input
-                                            ref={fileInputRef}
-                                            id="audio_file"
-                                            type="file"
-                                            accept="audio/*"
-                                            onChange={(e) => {
-                                                if (e.target.files && e.target.files[0]) {
-                                                    setAudioFile(e.target.files[0]);
-                                                }
-                                            }}
-                                        />
-                                        <div className="flex justify-between items-center">
-                                            <p className="text-sm text-muted-foreground">
-                                                อัปโหลดไฟล์เสียงที่จะเล่นเมื่อมีผู้ใช้งานใหม่ทักทายเข้ามา
-                                            </p>
-                                            {config?.audio_key && audioFile && (
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        setAudioFile(null);
-                                                        // Reset input value if needed, though react state is source of truth for our logic
-                                                        if (fileInputRef.current) fileInputRef.current.value = "";
-                                                    }}
-                                                    className="h-auto p-0 text-muted-foreground hover:text-foreground"
-                                                >
-                                                    ยกเลิก
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </div>
+                                    <AudioFileUploader
+                                        currentFileName={config?.audio_key}
+                                        selectedFile={audioFile}
+                                        onFileSelect={setAudioFile}
+                                    />
                                 </div>
                             </div>
                         </CardContent>
@@ -787,25 +563,7 @@ export default function FirstWordWidgetPage() {
                 </TabsContent>
             </Tabs>
 
-            <AlertDialog open={showConfirmReveal} onOpenChange={setShowConfirmReveal}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>คุณต้องการแสดง Overlay URL หรือไม่?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Overlay URL เปรียบเสมือนรหัสผ่านสำหรับสตรีมของคุณ หากหลุดออกไป ผู้อื่นอาจสามารถส่งข้อความขี้นหน้าจอสตรีมของคุณได้โดยไม่ได้รับอนุญาต
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction
-                            variant="destructive"
-                            onClick={() => setShowUrl(true)}
-                        >
-                            แสดง URL
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+
 
             <AlertDialog open={showConfirmDelete} onOpenChange={setShowConfirmDelete}>
                 <AlertDialogContent>
