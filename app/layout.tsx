@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blaze - แพลตฟอร์มเชื่อมต่อ Twitch",
+  title: "TrailBlazer - แพลตฟอร์มเชื่อมต่อ Twitch",
   description: "เชื่อมต่อและยกระดับประสบการณ์ Twitch ของคุณด้วยเครื่องมือและการเชื่อมต่อที่ทรงพลัง",
 };
 

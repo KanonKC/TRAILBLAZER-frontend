@@ -8,11 +8,11 @@ export function Hero() {
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Animated background */}
-            <div className="absolute inset-0 blaze-gradient animate-gradient opacity-20" />
+            <div className="absolute inset-0 trailblazer-gradient animate-gradient opacity-20" />
 
             {/* Floating orbs */}
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full blaze-gradient opacity-30 blur-3xl animate-float" />
-            <div className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full blaze-gradient opacity-20 blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full trailblazer-gradient opacity-30 blur-3xl animate-float" />
+            <div className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full trailblazer-gradient opacity-20 blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
 
             {/* Content */}
             <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
@@ -25,7 +25,7 @@ export function Hero() {
 
                 {/* Main heading */}
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-                    <span className="blaze-gradient-text">Blaze</span>
+                    <span className="trailblazer-gradient-text">TrailBlazer</span>
                 </h1>
 
                 {/* Subtitle */}
@@ -41,7 +41,7 @@ export function Hero() {
                     <Link href="/dashboard/widgets">
                         <Button
                             size="lg"
-                            className="blaze-gradient text-white font-semibold px-8 py-6 text-lg hover:opacity-90 transition-opacity"
+                            className="trailblazer-gradient text-white font-semibold px-8 py-6 text-lg hover:opacity-90 transition-opacity"
                         >
                             เริ่มต้นใช้งาน
                         </Button>

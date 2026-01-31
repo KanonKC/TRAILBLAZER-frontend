@@ -41,11 +41,11 @@ const toSnakeCase = (str: string): string => {
 const generateUniqueSlug = (baseLabel: string, existingNodes: WorkflowNode[]): string => {
     const snakeLabel = toSnakeCase(baseLabel);
     const existingSlugs = existingNodes.map(n => n.slug);
-    
+
     if (!existingSlugs.includes(snakeLabel)) {
         return snakeLabel;
     }
-    
+
     // Find the next available number
     let counter = 1;
     while (existingSlugs.includes(`${snakeLabel}_${counter}`)) {
@@ -111,7 +111,7 @@ function Sidebar() {
 
     return (
         <div className="w-64 glass border-r border-purple-500/20 p-4 overflow-y-auto">
-            <h3 className="text-lg font-semibold mb-4 blaze-gradient-text">โหนด</h3>
+            <h3 className="text-lg font-semibold mb-4 trailblazer-gradient-text">โหนด</h3>
             {categories.map((category) => (
                 <div key={category} className="mb-4">
                     <h4 className="text-xs uppercase text-muted-foreground mb-2">{category}</h4>
@@ -190,11 +190,11 @@ function Flow() {
 
             // Generate type in format "prefix.suffix" (e.g., "trigger.new_follower")
             const nodeType = generateNodeType(type, label);
-            
+
             // Generate unique slug with deduplication
             setNodes((nds) => {
                 const uniqueSlug = generateUniqueSlug(label, nds as WorkflowNode[]);
-                
+
                 const newNode: WorkflowNode = {
                     id: `${Date.now()}`,
                     type: nodeType,
@@ -202,7 +202,7 @@ function Flow() {
                     position,
                     data: { label },  // Human-readable name in data
                 };
-                
+
                 return nds.concat(newNode);
             });
         },
@@ -278,7 +278,7 @@ function WorkflowBuilderContent() {
                         <Save className="w-4 h-4 mr-2" />
                         บันทึกแบบร่าง
                     </Button>
-                    <Button className="blaze-gradient text-white font-semibold">
+                    <Button className="trailblazer-gradient text-white font-semibold">
                         เผยแพร่
                     </Button>
                 </div>

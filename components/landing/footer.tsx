@@ -10,10 +10,10 @@ export function Footer() {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     {/* Logo & brand */}
                     <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg blaze-gradient">
+                        <div className="p-2 rounded-lg trailblazer-gradient">
                             <Flame className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-lg font-semibold">Blaze</span>
+                        <span className="text-lg font-semibold">TrailBlazer</span>
                     </div>
 
                     {/* Links */}
@@ -34,7 +34,7 @@ export function Footer() {
 
                     {/* Copyright */}
                     <p className="text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} Blaze. สงวนลิขสิทธิ์
+                        © {new Date().getFullYear()} TrailBlazer. สงวนลิขสิทธิ์
                     </p>
                 </div>
             </div>

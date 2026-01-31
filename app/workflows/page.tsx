@@ -70,14 +70,14 @@ export default function WorkflowsPage() {
                     </Link>
                     <div className="flex-1">
                         <h1 className="text-3xl font-bold">
-                            <span className="blaze-gradient-text">Workflows</span>
+                            <span className="trailblazer-gradient-text">Workflows</span>
                         </h1>
                         <p className="text-muted-foreground mt-1">
                             จัดการ Workflow อัตโนมัติของคุณ
                         </p>
                     </div>
                     <Link href="/workflows/new">
-                        <Button className="blaze-gradient text-white font-semibold gap-2">
+                        <Button className="trailblazer-gradient text-white font-semibold gap-2">
                             <Plus className="w-4 h-4" />
                             สร้าง Workflow
                         </Button>
@@ -88,7 +88,7 @@ export default function WorkflowsPage() {
                 {workflows.length === 0 ? (
                     <Card className="glass border-purple-500/10">
                         <CardContent className="flex flex-col items-center justify-center py-16">
-                            <div className="p-4 rounded-2xl blaze-gradient mb-4">
+                            <div className="p-4 rounded-2xl trailblazer-gradient mb-4">
                                 <Zap className="w-8 h-8 text-white" />
                             </div>
                             <h3 className="text-xl font-semibold mb-2">ยังไม่มี Workflow</h3>
@@ -96,7 +96,7 @@ export default function WorkflowsPage() {
                                 เริ่มสร้าง Workflow แรกของคุณเพื่อทำให้การสตรีมเป็นอัตโนมัติ
                             </p>
                             <Link href="/workflows/new">
-                                <Button className="blaze-gradient text-white font-semibold gap-2">
+                                <Button className="trailblazer-gradient text-white font-semibold gap-2">
                                     <Plus className="w-4 h-4" />
                                     สร้าง Workflow แรก
                                 </Button>
@@ -117,7 +117,7 @@ export default function WorkflowsPage() {
                                             <Badge
                                                 variant={workflow.status === "active" ? "default" : "secondary"}
                                                 className={workflow.status === "active"
-                                                    ? "blaze-gradient text-white border-0"
+                                                    ? "trailblazer-gradient text-white border-0"
                                                     : ""
                                                 }
                                             >

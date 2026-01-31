@@ -112,7 +112,7 @@ export function NodeConfigurationModal({
 
     const handleDragStart = (e: React.DragEvent, variableName: string, nodeSlug: string) => {
         const fullVariable = `${nodeSlug}.${variableName}`;
-        e.dataTransfer.setData("application/blaze-variable", fullVariable);
+        e.dataTransfer.setData("application/trailblazer-variable", fullVariable);
         e.dataTransfer.setData("text/plain", `{{ $${fullVariable} }}`); // Fallback
         e.dataTransfer.effectAllowed = "copy";
     };
@@ -127,7 +127,7 @@ export function NodeConfigurationModal({
     const twitchMockData = {
         broadcaster_id: "12345678",
         login: "blaze_user",
-        display_name: "BlazeUser",
+        display_name: "TrailBlazerUser",
         user_id: "87654321",
         user_login: "new_follower",
         user_name: "NewFollower123",
@@ -251,7 +251,7 @@ export function NodeConfigurationModal({
                                                 e.preventDefault();
                                                 e.stopPropagation();
 
-                                                let variableName = e.dataTransfer.getData("application/blaze-variable");
+                                                let variableName = e.dataTransfer.getData("application/trailblazer-variable");
                                                 console.log("Drop event received, variableName:", variableName);
                                                 console.log("All data types:", e.dataTransfer.types);
 
@@ -309,7 +309,7 @@ export function NodeConfigurationModal({
                                                 <SelectValue placeholder="เลือกช่องทาง" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="blaze">Blaze Channel (Connected)</SelectItem>
+                                                <SelectItem value="blaze">TrailBlazer Channel (Connected)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <p className="text-xs text-muted-foreground">ช่องทางที่เชื่อมต่อไว้ (ปัจจุบันรองรับเพียง 1 ช่องทาง)</p>

@@ -42,7 +42,7 @@ export function Features() {
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">
                         ทุกสิ่งที่คุณต้องการเพื่อ{" "}
-                        <span className="blaze-gradient-text">ยกระดับ</span>
+                        <span className="trailblazer-gradient-text">ยกระดับ</span>
                     </h2>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                         ฟีเจอร์ที่ทรงพลังออกแบบมาเพื่อเสริมประสิทธิภาพการสตรีมและขยายชุมชนของคุณ
@@ -57,7 +57,7 @@ export function Features() {
                             className="glass border-purple-500/10 hover:border-purple-500/30 transition-all duration-300 hover:-translate-y-1"
                         >
                             <CardHeader>
-                                <div className="w-12 h-12 rounded-xl blaze-gradient flex items-center justify-center mb-4">
+                                <div className="w-12 h-12 rounded-xl trailblazer-gradient flex items-center justify-center mb-4">
                                     <feature.icon className="w-6 h-6 text-white" />
                                 </div>
                                 <CardTitle className="text-xl">{feature.title}</CardTitle>
