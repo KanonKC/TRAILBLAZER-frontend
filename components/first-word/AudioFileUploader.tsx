@@ -79,12 +79,12 @@ export function AudioFileUploader({
                     "flex items-center justify-between p-3 border rounded-lg",
                     className?.includes("text-white") ? "border-white/20 bg-white/5" : "bg-card"
                 )}>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
                             <Music className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
                         </div>
-                        <div className="flex flex-col">
-                            <span className={cn("text-sm font-medium", className?.includes("text-white") ? "text-white" : "")}>
+                        <div className="flex flex-col min-w-0">
+                            <span className={cn("text-sm font-medium truncate", className?.includes("text-white") ? "text-white" : "")}>
                                 {currentFileName?.split('/').pop()}
                             </span>
                             <span className={cn("text-xs", className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")}>
@@ -122,12 +122,12 @@ export function AudioFileUploader({
                     className?.includes("text-white") ? "border-white/20 bg-white/5" : "bg-card",
                     error ? "border-red-500/50 bg-red-500/5" : ""
                 )}>
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
                         <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
                             <Music className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
                         </div>
-                        <div className="flex flex-col">
-                            <span className={cn("text-sm font-medium", className?.includes("text-white") ? "text-white" : "")}>
+                        <div className="flex flex-col min-w-0">
+                            <span className={cn("text-sm font-medium truncate", className?.includes("text-white") ? "text-white" : "")}>
                                 {selectedFile ? selectedFile.name : "ไม่ได้เลือกไฟล์"}
                             </span>
                             <span className={cn(

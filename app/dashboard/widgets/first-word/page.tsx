@@ -479,7 +479,7 @@ export default function FirstWordWidgetPage() {
                                             <div className="w-[2px] bg-white/10 absolute top-8 bottom-0 left-4 -ml-[1px]" />
                                         )}
                                     </div>
-                                    <div className="space-y-1 pt-1 flex-1">
+                                    <div className="space-y-1 pt-1 flex-1 min-w-0">
                                         <h3 className="font-semibold leading-none mb-2 text-white">{item.title}</h3>
                                         <div className="text-sm">{item.description}</div>
                                     </div>
