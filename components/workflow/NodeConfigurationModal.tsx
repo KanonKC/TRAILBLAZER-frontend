@@ -127,7 +127,7 @@ export function NodeConfigurationModal({
     const twitchMockData = {
         broadcaster_id: "12345678",
         login: "blaze_user",
-        display_name: "TrailBlazerUser",
+        display_name: "TRAILBLAZERUser",
         user_id: "87654321",
         user_login: "new_follower",
         user_name: "NewFollower123",
@@ -309,7 +309,7 @@ export function NodeConfigurationModal({
                                                 <SelectValue placeholder="เลือกช่องทาง" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="blaze">TrailBlazer Channel (Connected)</SelectItem>
+                                                <SelectItem value="blaze">TRAILBLAZER Channel (Connected)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                         <p className="text-xs text-muted-foreground">ช่องทางที่เชื่อมต่อไว้ (ปัจจุบันรองรับเพียง 1 ช่องทาง)</p>

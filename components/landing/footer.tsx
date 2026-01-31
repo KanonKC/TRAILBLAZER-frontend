@@ -13,7 +13,7 @@ export function Footer() {
                         <div className="p-2 rounded-lg trailblazer-gradient">
                             <Flame className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-lg font-semibold">TrailBlazer</span>
+                        <span className="text-lg font-semibold">TRAILBLAZER</span>
                     </div>
 
                     {/* Links */}
@@ -34,7 +34,7 @@ export function Footer() {
 
                     {/* Copyright */}
                     <p className="text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} TrailBlazer. สงวนลิขสิทธิ์
+                        © {new Date().getFullYear()} TRAILBLAZER. สงวนลิขสิทธิ์
                     </p>
                 </div>
             </div>

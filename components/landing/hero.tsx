@@ -25,7 +25,7 @@ export function Hero() {
 
                 {/* Main heading */}
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-                    <span className="trailblazer-gradient-text">TrailBlazer</span>
+                    <span className="trailblazer-gradient-text">TRAILBLAZER</span>
                 </h1>
 
                 {/* Subtitle */}
