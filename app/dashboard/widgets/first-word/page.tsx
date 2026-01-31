@@ -414,7 +414,7 @@ export default function FirstWordWidgetPage() {
                                 },
                                 {
                                     step: 5,
-                                    title: "ทดสอบ",
+                                    title: "บันทึกและทดสอบ",
                                     description: (
                                         <WidgetTestControl
                                             isSaving={isSaving}
@@ -423,6 +423,27 @@ export default function FirstWordWidgetPage() {
                                             onTest={handleTestAudio}
                                             canTest={!!(config?.audio_key || config?.reply_message)}
                                         />
+                                    )
+                                },
+                                {
+                                    step: 6,
+                                    title: "การตั้งค่าเพิ่มเติม",
+                                    description: (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">
+                                                Quick Start เป็นเพียงการตั้งค่าเบื้องต้นเท่านั้น คุณสามารถปรับแต่งการตั้งค่าอื่นๆ เพิ่มเติมได้ที่เมนู Settings
+                                            </p>
+                                            <div className="flex justify-start">
+                                                <Button
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    onClick={() => setActiveTab("settings")}
+                                                    className="bg-white/10 text-white hover:bg-white/20 border-0"
+                                                >
+                                                    ไปที่การตั้งค่า (Settings)
+                                                </Button>
+                                            </div>
+                                        </div>
                                     )
                                 }
                             ].map((item, index, array) => (

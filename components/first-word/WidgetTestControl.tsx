@@ -13,6 +13,11 @@ export function WidgetTestControl({ isSaving, isTesting, onSave, onTest, canTest
     return (
         <div className="space-y-3">
             <p className="text-sm text-white/70">ทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+            <ul className="text-sm text-white/70 list-disc pl-5 space-y-1 mt-2">
+                <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                <li>ต้องมีเสียงดังออกมาจากโปรแกรม OBS</li>
+            </ul>
             <div className="flex flex-wrap gap-2">
                 <Button onClick={onSave} disabled={isSaving}>
                     {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
@@ -31,10 +36,6 @@ export function WidgetTestControl({ isSaving, isTesting, onSave, onTest, canTest
                     )}
                 </Button>
             </div>
-            <ul className="text-sm text-white/70 list-disc pl-5 space-y-1 mt-2">
-                <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
-                <li>ต้องมีเสียงดังออกมาจากโปรแกรม OBS</li>
-            </ul>
         </div>
     );
 }
