@@ -269,30 +269,7 @@ export default function FirstWordWidgetPage() {
         )
     }
 
-    if (!config) {
-        return (
-            <div className="container mx-auto py-10 flex justify-center">
-                <Card className="w-full max-w-2xl">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
-                                <MessageSquare className="w-5 h-5" />
-                            </div>
-                            วิดเจ็ต Greeting Message
-                        </CardTitle>
-                        <CardDescription>
-                            เปิดใช้งานวิดเจ็ต Greeting Message เพื่อตอบกลับผู้ใช้งานที่แชทเข้ามาครั้งแรกในสตรีมของคุณโดยอัตโนมัติ
-                        </CardDescription>
-                    </CardHeader>
-                    <CardFooter>
-                        <Button onClick={handleEnable} disabled={isSaving}>
-                            {isSaving ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน"}
-                        </Button>
-                    </CardFooter>
-                </Card>
-            </div>
-        )
-    }
+
 
     return (
         <div className="container mx-auto py-10 flex flex-col items-center">
@@ -301,18 +278,22 @@ export default function FirstWordWidgetPage() {
                     <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
                         <MessageSquare className="w-6 h-6" />
                     </div>
-                    <h1 className="text-3xl font-bold">First Word Widget</h1>
+                    <h1 className="text-3xl font-bold">Greeting Message</h1>
                 </div>
                 <p className="text-muted-foreground text-lg">
-                    Automatically welcome new chatters with a custom greeting and sound effect.
+                    ต้อนรับผู้ชมใหม่โดยอัตโนมัติด้วยข้อความทักทายและเสียงเอฟเฟกต์ที่คุณกำหนดเอง
                 </p>
             </div>
 
-            <Tabs defaultValue="settings" className="w-full max-w-2xl">
-                <TabsList className="grid w-full grid-cols-3 mb-4">
+            <Tabs defaultValue={config ? "settings" : "overview"} className="w-full max-w-2xl">
+                <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
                     <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
-                    <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                    <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                    {config && (
+                        <>
+                            <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
+                            <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                        </>
+                    )}
                 </TabsList>
 
                 <TabsContent value="overview">
@@ -323,34 +304,35 @@ export default function FirstWordWidgetPage() {
                                 Overview
                             </CardTitle>
                             <CardDescription>
-                                Discover what the First Word Widget can do for your stream.
+                                อธิบายความสามารถและการทำงานของวิดเจ็ตตัวนี้
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="aspect-video bg-muted rounded-xl flex items-center justify-center relative overflow-hidden group border">
-                                <div className="text-center p-6">
-                                    <Play className="w-12 h-12 mx-auto text-muted-foreground/50 mb-2" />
-                                    <p className="text-muted-foreground font-medium">Video Overview</p>
-                                    <p className="text-xs text-muted-foreground/70">Coming soon</p>
-                                </div>
-                            </div>
+
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                     <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
                                         <MessageSquare className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Auto Greeting</h3>
-                                    <p className="text-sm text-muted-foreground">Automatically welcomes new chatters when they send their first message.</p>
+                                    <p className="text-sm text-muted-foreground">ต้อนรับผู้ชมใหม่โดยอัตโนมัติเมื่อพวกเขาพิมพ์ข้อความแรก</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                     <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
                                         <Music className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Sound Alerts</h3>
-                                    <p className="text-sm text-muted-foreground">Play a custom sound effect to announce a new visitor.</p>
+                                    <p className="text-sm text-muted-foreground">เล่นเสียงเอฟเฟกต์เพื่อประกาศผู้มาเยือนคนใหม่</p>
                                 </div>
                             </div>
                         </CardContent>
+                        {!config && (
+                            <CardFooter>
+                                <Button onClick={handleEnable} disabled={isSaving} className="w-full">
+                                    {isSaving ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน Widget"}
+                                </Button>
+                            </CardFooter>
+                        )}
                     </Card>
                 </TabsContent>
 
@@ -362,7 +344,7 @@ export default function FirstWordWidgetPage() {
                                 Quick Start
                             </CardTitle>
                             <CardDescription className="text-white/70">
-                                Get up and running in minutes.
+                                เริ่มต้นใช้งานได้ในไม่กี่นาที
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -478,7 +460,7 @@ export default function FirstWordWidgetPage() {
                                 />
                             </CardTitle>
                             <CardDescription>
-                                Discover what the First Word Widget can do for your stream.
+                                ปรับแต่งการตั้งค่าสำหรับวิดเจ็ต
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -544,7 +526,7 @@ export default function FirstWordWidgetPage() {
                                 ลบวิดเจ็ต
                             </Button>
                             <div className="flex gap-2">
-                                <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config.audio_key && !config.reply_message}>
+                                <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config?.audio_key && !config?.reply_message}>
                                     {isTesting ? (
                                         <>Testing...</>
                                     ) : (

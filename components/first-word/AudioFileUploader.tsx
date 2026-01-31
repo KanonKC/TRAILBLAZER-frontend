@@ -89,31 +89,55 @@ export function AudioFileUploader({
                     accept="audio/*"
                     disabled={disabled}
                     onChange={handleFileChange}
-                    className={cn(
-                        inputClassName,
-                        className?.includes("text-white")
-                            ? "bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
-                            : ""
-                    )}
+                    className="hidden"
                 />
 
-                {hasCurrentFile && isReplacing && (
-                    <div className="flex justify-end">
+                <div className={cn(
+                    "flex items-center justify-between p-3 border rounded-lg",
+                    className?.includes("text-white") ? "border-white/20 bg-white/5" : "bg-card"
+                )}>
+                    <div className="flex items-center gap-3">
+                        <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
+                            <Music className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className={cn("text-sm font-medium", className?.includes("text-white") ? "text-white" : "")}>
+                                {selectedFile ? selectedFile.name : "ไม่ได้เลือกไฟล์"}
+                            </span>
+                            <span className={cn("text-xs", className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")}>
+                                {selectedFile ? "ไฟล์ที่เลือก" : "รองรับไฟล์ .mp3, .wav, .ogg"}
+                            </span>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {hasCurrentFile && isReplacing && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleCancelReplace}
+                                disabled={disabled}
+                                className={cn(
+                                    className?.includes("text-white")
+                                        ? "text-white/70 hover:text-white hover:bg-white/10"
+                                        : "text-muted-foreground hover:text-foreground"
+                                )}
+                            >
+                                ยกเลิก
+                            </Button>
+                        )}
                         <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
-                            onClick={handleCancelReplace}
+                            onClick={() => fileInputRef.current?.click()}
                             disabled={disabled}
                             className={cn(
-                                className?.includes("text-white")
-                                    ? "text-white/70 hover:text-white hover:bg-white/10"
-                                    : "text-muted-foreground hover:text-foreground"
+                                className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
                             )}
                         >
-                            ยกเลิกการเปลี่ยน
+                            {selectedFile ? "เปลี่ยนไฟล์" : "เลือกไฟล์"}
                         </Button>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );
