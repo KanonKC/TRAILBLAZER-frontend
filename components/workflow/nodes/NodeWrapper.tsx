@@ -86,7 +86,7 @@ export function NodeWrapper({
                     {/* Pencil is now setting, maybe use Cog? keeping Pencil as requested "edit button" */}
                     <button
                         onClick={() => setIsEditing(true)}
-                        className="p-1.5 rounded bg-background/90 border border-purple-500/30 hover:bg-purple-500/20 transition-colors cursor-pointer"
+                        className="p-1.5 rounded bg-background/90 border border-primary/30 hover:bg-primary/20 transition-colors cursor-pointer"
                         title="เปลี่ยนชื่อ"
                     >
                         {/* Using a text icon or different icon for rename if Pencil is used for modal? 
@@ -107,7 +107,7 @@ export function NodeWrapper({
                     </button>
                 </NodeToolbar>
 
-                <Handle type="target" position={Position.Left} className="!bg-purple-400 !w-3 !h-3 !border-2 !border-background" />
+                <Handle type="target" position={Position.Left} className="!bg-primary !w-3 !h-3 !border-2 !border-background" />
 
                 <div className={`px-4 py-3 rounded-lg ${gradientClass} text-white shadow-lg ${borderClass} min-w-[150px] ${className || ""}`}>
                     <div className="flex items-center gap-2">
@@ -137,7 +137,7 @@ export function NodeWrapper({
                     {children}
                 </div>
 
-                <Handle type="source" position={Position.Right} className="!bg-purple-400 !w-3 !h-3 !border-2 !border-background" />
+                <Handle type="source" position={Position.Right} className="!bg-primary !w-3 !h-3 !border-2 !border-background" />
             </div>
 
             {/* Modal */}

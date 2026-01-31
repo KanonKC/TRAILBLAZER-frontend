@@ -31,8 +31,8 @@ export default function Navbar() {
     return (
         <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-16 items-center px-4 container mx-auto justify-between">
-                <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                    <span className="text-primary">TRAILBLAZER</span>
+                <Link href="/" className="flex items-center font-bold text-xl tracking-tight">
+                    <span className="text-white">TRAIL</span><span className="trailblazer-gradient-text">BLAZER</span>
                 </Link>
 
                 <div className="flex items-center gap-6">

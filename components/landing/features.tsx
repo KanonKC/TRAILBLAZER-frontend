@@ -54,7 +54,7 @@ export function Features() {
                     {features.map((feature, index) => (
                         <Card
                             key={index}
-                            className="glass border-purple-500/10 hover:border-purple-500/30 transition-all duration-300 hover:-translate-y-1"
+                            className="glass border-primary/10 hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
                         >
                             <CardHeader>
                                 <div className="w-12 h-12 rounded-xl trailblazer-gradient flex items-center justify-center mb-4">

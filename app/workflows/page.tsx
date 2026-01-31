@@ -64,7 +64,7 @@ export default function WorkflowsPage() {
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
                     <Link href="/">
-                        <Button variant="outline" size="icon" className="glass border-purple-500/20">
+                        <Button variant="outline" size="icon" className="glass border-primary/20">
                             <ArrowLeft className="w-4 h-4" />
                         </Button>
                     </Link>
@@ -86,7 +86,7 @@ export default function WorkflowsPage() {
 
                 {/* Workflow List */}
                 {workflows.length === 0 ? (
-                    <Card className="glass border-purple-500/10">
+                    <Card className="glass border-primary/10">
                         <CardContent className="flex flex-col items-center justify-center py-16">
                             <div className="p-4 rounded-2xl trailblazer-gradient mb-4">
                                 <Zap className="w-8 h-8 text-white" />
@@ -108,7 +108,7 @@ export default function WorkflowsPage() {
                         {workflows.map((workflow) => (
                             <Card
                                 key={workflow.id}
-                                className="glass border-purple-500/10 hover:border-purple-500/30 transition-all duration-300"
+                                className="glass border-primary/10 hover:border-primary/30 transition-all duration-300"
                             >
                                 <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                                     <div className="space-y-1">
@@ -130,7 +130,7 @@ export default function WorkflowsPage() {
                                         <Button
                                             variant="outline"
                                             size="icon"
-                                            className="glass border-purple-500/20 hover:bg-purple-500/10"
+                                            className="glass border-primary/20 hover:bg-primary/10"
                                             onClick={() => toggleWorkflowStatus(workflow.id)}
                                         >
                                             {workflow.status === "active" ? (
@@ -142,7 +142,7 @@ export default function WorkflowsPage() {
                                         <Button
                                             variant="outline"
                                             size="icon"
-                                            className="glass border-purple-500/20 hover:bg-purple-500/10"
+                                            className="glass border-primary/20 hover:bg-primary/10"
                                         >
                                             <Settings className="w-4 h-4" />
                                         </Button>
@@ -159,7 +159,7 @@ export default function WorkflowsPage() {
                                 <CardContent>
                                     <div className="flex items-center gap-6 text-sm text-muted-foreground">
                                         <div className="flex items-center gap-2">
-                                            <Zap className="w-4 h-4 text-purple-400" />
+                                            <Zap className="w-4 h-4 text-primary" />
                                             <span>Trigger: {workflow.trigger}</span>
                                         </div>
                                         <div>

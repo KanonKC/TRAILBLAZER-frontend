@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Anuphan } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const anuphan = Anuphan({
+  subsets: ['latin', 'thai'],
+  variable: '--font-sans',
 });
 
 export const metadata: Metadata = {
@@ -30,9 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${inter.variable} dark`}>
+    <html lang="th" className={`${anuphan.variable} dark`}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`font-sans antialiased`}
       >
         <UserProvider>
           <Navbar />

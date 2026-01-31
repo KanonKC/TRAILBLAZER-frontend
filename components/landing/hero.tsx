@@ -19,13 +19,13 @@ export function Hero() {
                 {/* Logo/Icon */}
                 <div className="flex justify-center mb-8">
                     <div className="p-4 rounded-2xl glass animate-pulse-glow">
-                        <Flame className="w-16 h-16 text-purple-400" />
+                        <Flame className="w-16 h-16 text-primary" />
                     </div>
                 </div>
 
                 {/* Main heading */}
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-                    <span className="trailblazer-gradient-text">TRAILBLAZER</span>
+                    <span className="text-white">TRAIL</span><span className="trailblazer-gradient-text">BLAZER</span>
                 </h1>
 
                 {/* Subtitle */}
@@ -49,7 +49,7 @@ export function Hero() {
                     <Button
                         size="lg"
                         variant="outline"
-                        className="glass border-purple-500/30 hover:bg-purple-500/10 px-8 py-6 text-lg"
+                        className="glass border-primary/30 hover:bg-primary/10 px-8 py-6 text-lg"
                     >
                         เรียนรู้เพิ่มเติม
                     </Button>
