@@ -27,6 +27,7 @@ import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
 import { Check, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
+import { z } from "zod";
 
 import {
     deleteFirstWordConfig,
@@ -45,6 +46,7 @@ export default function FirstWordWidgetPage() {
     const [config, setConfig] = useState<FirstWordConfig | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [replyMessage, setReplyMessage] = useState("");
+    const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
     const [isEnabled, setIsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | null>(null);
@@ -144,8 +146,28 @@ export default function FirstWordWidgetPage() {
         }
     }
 
+    const replyMessageSchema = z.string().max(500, "ข้อความต้องไม่เกิน 500 ตัวอักษร");
+
+    const handleReplyMessageChange = (value: string) => {
+        setReplyMessage(value);
+        if (replyMessageError) {
+            const result = replyMessageSchema.safeParse(value);
+            if (result.success) {
+                setReplyMessageError(null);
+            }
+        }
+    };
+
     const handleSave = async () => {
         if (!config) return;
+
+        // Validation
+        const result = replyMessageSchema.safeParse(replyMessage);
+        if (!result.success) {
+            setReplyMessageError(result.error.issues[0].message);
+            return;
+        }
+
         setIsSaving(true);
         try {
             const updated = await updateFirstWordConfig({
@@ -372,7 +394,8 @@ export default function FirstWordWidgetPage() {
                                             <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
                                             <ReplyMessageInput
                                                 value={replyMessage}
-                                                onChange={setReplyMessage}
+                                                onChange={handleReplyMessageChange}
+                                                error={replyMessageError}
                                             />
                                         </div>
                                     )
@@ -399,7 +422,7 @@ export default function FirstWordWidgetPage() {
                                     description: (
                                         <div className="space-y-3">
                                             <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
-
+                                            <p className="text-sm text-white/70 italic">* คุณสามารถข้ามขั้นตอนนี้ได้ หากไม่ต้องการใช้เสียง</p>
                                             <OverlayUrlInput
                                                 url={overlayUrl}
                                                 className="text-white"
@@ -498,8 +521,9 @@ export default function FirstWordWidgetPage() {
                             <div className="space-y-2">
                                 <ReplyMessageInput
                                     value={replyMessage}
-                                    onChange={setReplyMessage}
+                                    onChange={handleReplyMessageChange}
                                     variant="default"
+                                    error={replyMessageError}
                                 />
 
 

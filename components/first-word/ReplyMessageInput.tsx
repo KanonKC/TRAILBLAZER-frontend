@@ -7,9 +7,10 @@ interface ReplyMessageInputProps {
     value: string;
     onChange: (value: string) => void;
     variant?: "default" | "overlay";
+    error?: string | null;
 }
 
-export function ReplyMessageInput({ value, onChange, variant = "overlay" }: ReplyMessageInputProps) {
+export function ReplyMessageInput({ value, onChange, variant = "overlay", error }: ReplyMessageInputProps) {
     const isOverlay = variant === "overlay";
 
     return (
@@ -28,6 +29,16 @@ export function ReplyMessageInput({ value, onChange, variant = "overlay" }: Repl
                 )}
                 rows={3}
             />
+            <div className="flex justify-between items-start">
+                {error ? (
+                    <p className="text-sm text-red-500 font-medium">{error}</p>
+                ) : (
+                    <div></div>
+                )}
+                <span className={cn("text-xs", isOverlay ? "text-white/50" : "text-muted-foreground", value.length > 500 ? "text-red-500" : "")}>
+                    {value.length}/500
+                </span>
+            </div>
             <ReplyMessageHelp variant={variant} />
         </div>
     );

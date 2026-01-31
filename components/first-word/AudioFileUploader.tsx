@@ -1,7 +1,8 @@
 "use client"
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Music } from "lucide-react";
+import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -25,6 +26,18 @@ export function AudioFileUploader({
     inputClassName
 }: AudioFileUploaderProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [error, setError] = useState<string | null>(null);
+
+    const MAX_FILE_SIZE = 2.5 * 1024 * 1024; // 2.5MB
+    const ACCEPTED_FILE_TYPES = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp3"];
+
+    const fileSchema = z
+        .custom<File>((file) => file instanceof File, "ข้อมูลไม่ถูกต้อง")
+        .refine((file) => file.size <= MAX_FILE_SIZE, "ขนาดไฟล์ต้องไม่เกิน 2.5 MB")
+        .refine(
+            (file) => ACCEPTED_FILE_TYPES.includes(file.type) || file.name.endsWith('.mp3') || file.name.endsWith('.wav') || file.name.endsWith('.ogg'),
+            "รองรับเฉพาะไฟล์ .mp3, .wav, .ogg"
+        );
 
     const hasCurrentFile = !!currentFileName;
     const isReplacing = !!selectedFile;
@@ -32,11 +45,23 @@ export function AudioFileUploader({
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            onFileSelect(e.target.files[0]);
+            const file = e.target.files[0];
+            const result = fileSchema.safeParse(file);
+
+            if (!result.success) {
+                setError(result.error.issues[0].message);
+                // Reset input to allow selecting the same invalid file again to trigger error if needed, or just leave it
+                if (fileInputRef.current) fileInputRef.current.value = "";
+                return;
+            }
+
+            setError(null);
+            onFileSelect(file);
         }
     };
 
     const handleCancelReplace = () => {
+        setError(null);
         onFileSelect(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
@@ -86,7 +111,7 @@ export function AudioFileUploader({
                     ref={fileInputRef}
                     id="qs_audio_file"
                     type="file"
-                    accept="audio/*"
+                    accept=".mp3,.wav,.ogg"
                     disabled={disabled}
                     onChange={handleFileChange}
                     className="hidden"
@@ -94,7 +119,8 @@ export function AudioFileUploader({
 
                 <div className={cn(
                     "flex items-center justify-between p-3 border rounded-lg",
-                    className?.includes("text-white") ? "border-white/20 bg-white/5" : "bg-card"
+                    className?.includes("text-white") ? "border-white/20 bg-white/5" : "bg-card",
+                    error ? "border-red-500/50 bg-red-500/5" : ""
                 )}>
                     <div className="flex items-center gap-3">
                         <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
@@ -104,8 +130,13 @@ export function AudioFileUploader({
                             <span className={cn("text-sm font-medium", className?.includes("text-white") ? "text-white" : "")}>
                                 {selectedFile ? selectedFile.name : "ไม่ได้เลือกไฟล์"}
                             </span>
-                            <span className={cn("text-xs", className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")}>
-                                {selectedFile ? "ไฟล์ที่เลือก" : "รองรับไฟล์ .mp3, .wav, .ogg"}
+                            <span className={cn(
+                                "text-xs",
+                                error
+                                    ? "text-red-500"
+                                    : (className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")
+                            )}>
+                                {error || (selectedFile ? "ไฟล์ที่เลือก" : "รองรับไฟล์ .mp3, .wav, .ogg")}
                             </span>
                         </div>
                     </div>
