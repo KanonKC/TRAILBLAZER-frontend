@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Flame } from "lucide-react";
 import Link from "next/link";
 import LightPillar from "@/components/fancy/light-pillar";
+import { BrandLogo } from "@/components/brand-logo";
 
 export function Hero() {
     return (
@@ -31,15 +32,15 @@ export function Hero() {
             {/* Content */}
             <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
                 {/* Logo/Icon */}
-                <div className="flex justify-center mb-8">
+                {/* <div className="flex justify-center mb-8">
                     <div className="p-4 rounded-2xl glass animate-pulse-glow">
                         <Flame className="w-16 h-16 text-primary" />
                     </div>
-                </div>
+                </div> */}
 
                 {/* Main heading */}
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-                    <span className="text-white">TRAIL</span><span className="trailblazer-gradient-text">BLAZER</span>
+                    <BrandLogo />
                 </h1>
 
                 {/* Subtitle */}

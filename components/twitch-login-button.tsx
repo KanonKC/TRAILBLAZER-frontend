@@ -12,9 +12,17 @@ interface TwitchLoginButtonProps extends React.ComponentProps<typeof Button> {
 export function TwitchLoginButton({ className, children, ...props }: TwitchLoginButtonProps) {
   const LOGIN_URL = process.env.NEXT_PUBLIC_TWITCH_LOGIN_URL
 
+  const handleClick = () => {
+    if (LOGIN_URL) {
+      window.location.href = LOGIN_URL
+    } else {
+      console.error("LOGIN_URL is not defined")
+    }
+  }
+
   return (
     <Button asChild variant="twitch" className={cn(className)} {...props}>
-      <a href={LOGIN_URL} className="flex items-center justify-center">
+      <a onClick={handleClick} className="flex items-center justify-center">
         <Twitch className="mr-2 h-4 w-4" />
         {children || "Login with Twitch"}
       </a>

@@ -16,6 +16,7 @@ import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "./user-context";
+import { BrandLogo } from "@/components/brand-logo";
 
 export default function Navbar() {
     const { user, isLoading, logout } = useUser();
@@ -32,7 +33,7 @@ export default function Navbar() {
         <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-16 items-center px-4 container mx-auto justify-between">
                 <Link href="/" className="flex items-center font-bold text-xl tracking-tight">
-                    <span className="text-white">TRAIL</span><span className="trailblazer-gradient-text">BLAZER</span>
+                    <BrandLogo />
                 </Link>
 
                 <div className="flex items-center gap-6">

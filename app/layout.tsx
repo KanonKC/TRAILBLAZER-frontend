@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
-import { Anuphan } from "next/font/google";
+import { Anuphan, Kanit } from "next/font/google";
 import "./globals.css";
 
 const anuphan = Anuphan({
   subsets: ['latin', 'thai'],
   variable: '--font-sans',
+});
+
+const kanit = Kanit({
+  subsets: ['latin'],
+  weight: ['400', '700', '800'],
+  variable: '--font-kanit',
 });
 
 export const metadata: Metadata = {
@@ -23,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${anuphan.variable} dark`}>
+    <html lang="th" className={`${anuphan.variable} ${kanit.variable} dark`}>
       <body
         className={`font-sans antialiased`}
       >
