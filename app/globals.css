@@ -84,17 +84,17 @@
 }
 
 .dark {
-  --background: #121212;
+  --background: #070a14;
   --foreground: #f8fafc;
-  --card: #1a1f2c;
+  --card: #131720;
   --card-foreground: #f8fafc;
   --popover: #121212;
   --popover-foreground: #f8fafc;
   --primary: #FF8C00;
   --primary-foreground: #FFFFFF;
-  --secondary: #2C3E50;
+  --secondary: #1F2937;
   --secondary-foreground: #f8fafc;
-  --muted: #2C3E50;
+  --muted: #1F2937;
   --muted-foreground: #94a3b8;
   --accent: #FFD700;
   --accent-foreground: #121212;
@@ -180,11 +180,11 @@
 }
 
 .trailblazer-gradient {
-  background: linear-gradient(135deg, #FF8C00 0%, #FFB700 50%, #FFD700 100%);
+  background: linear-gradient(135deg, #F97316 0%, #F59E0B 50%, #EAB308 100%);
 }
 
 .trailblazer-gradient-text {
-  background: linear-gradient(135deg, #FF8C00 0%, #FFB700 50%, #FFD700 100%);
+  background: linear-gradient(135deg, #F97316 0%, #F59E0B 50%, #EAB308 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

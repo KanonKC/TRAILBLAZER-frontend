@@ -345,14 +345,15 @@ export default function FirstWordWidgetPage() {
                             </div>
                         </CardContent>
                         <CardFooter>
-                                {user ? (
-                                    <Button onClick={handleEnable} disabled={isSaving} className="w-full">
-                                        {isSaving ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน Widget"}
-                                    </Button>
-                                ) : (
-                                    <TwitchLoginButton className="w-full" />
-                                )}
-                            </CardFooter>
+                            {!user && (
+                                <TwitchLoginButton className="w-full" />
+                            )}
+                            {user && !config && (
+                                <Button onClick={handleEnable} disabled={isSaving} className="w-full">
+                                    {isSaving ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน Widget"}
+                                </Button>
+                            )}
+                        </CardFooter>
                     </Card>
                 </TabsContent>
 
@@ -526,6 +527,8 @@ export default function FirstWordWidgetPage() {
                                         currentFileName={config?.audio_key}
                                         selectedFile={audioFile}
                                         onFileSelect={setAudioFile}
+                                        className="text-white"
+                                        inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
                                     />
                                 </div>
                             </div>

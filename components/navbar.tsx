@@ -36,11 +36,11 @@ export default function Navbar() {
                     <BrandLogo />
                 </Link>
 
-                <div className="flex items-center gap-6">
+                {/* <div className="flex items-center gap-6">
                     <Link href="/dashboard/widgets" className="text-sm font-medium transition-colors hover:text-primary">
                         Widgets
                     </Link>
-                </div>
+                </div> */}
 
                 <div className="flex items-center gap-4">
                     {isLoading ? (
@@ -61,7 +61,7 @@ export default function Navbar() {
                             <DropdownMenuContent className="w-56" align="end" forceMount>
                                 <DropdownMenuLabel className="font-normal">
                                     <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                                        <p className="text-sm text-white font-medium leading-none">{user.displayName}</p>
                                         <p className="text-xs leading-none text-muted-foreground">
                                             {user.username}
                                         </p>

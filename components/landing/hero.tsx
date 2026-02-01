@@ -15,16 +15,16 @@ export function Hero() {
                 topColor="#FFD700"
                 bottomColor="#FF8C00"
                 intensity={1}
-                rotationSpeed={0.3}
+                rotationSpeed={0.7}
                 glowAmount={0.002}
-                pillarWidth={3}
+                pillarWidth={5}
                 pillarHeight={0.4}
                 noiseIntensity={0.5}
                 pillarRotation={25}
                 interactive={false}
                 mixBlendMode="screen"
                 quality="high"
-                className="opacity-70"
+                className="opacity-80"
             />
             {/* Overlay gradient to ensure text readability if needed */}
             <div className="absolute inset-0 bg-background/30 -z-5" />
@@ -61,13 +61,13 @@ export function Hero() {
                             เริ่มต้นใช้งาน
                         </Button>
                     </Link>
-                    <Button
+                    {/* <Button
                         size="lg"
                         variant="outline"
                         className="glass border-primary/30 hover:bg-primary/10 px-8 py-6 text-lg"
                     >
                         เรียนรู้เพิ่มเติม
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
 

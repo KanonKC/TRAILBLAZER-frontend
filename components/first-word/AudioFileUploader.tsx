@@ -123,8 +123,8 @@ export function AudioFileUploader({
                     error ? "border-red-500/50 bg-red-500/5" : ""
                 )}>
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
-                            <Music className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
+                        <div className={cn("p-2 rounded-md", "bg-white/10")}>
+                            <Music className={cn("w-4 h-4", "text-white")} />
                         </div>
                         <div className="flex flex-col min-w-0">
                             <span className={cn("text-sm font-medium truncate", className?.includes("text-white") ? "text-white" : "")}>

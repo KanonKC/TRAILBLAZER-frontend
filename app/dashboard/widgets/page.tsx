@@ -36,7 +36,7 @@ export default function WidgetsPage() {
                                     <div className={`p-3 rounded-xl ${widget.bgColor} ${widget.color} group-hover:scale-110 transition-transform`}>
                                         <widget.icon className="w-6 h-6" />
                                     </div>
-                                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                                    <CardTitle className="text-xl transition-colors">
                                         {widget.title}
                                     </CardTitle>
                                 </div>
