@@ -23,6 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TwitchLoginButton } from "@/components/twitch-login-button";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
 import { Check, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
@@ -39,6 +40,7 @@ import {
     refreshFirstWordOverlayKey,
     type FirstWordConfig
 } from "@/services/firstWord.service";
+
 
 
 export default function FirstWordWidgetPage() {
@@ -287,16 +289,6 @@ export default function FirstWordWidgetPage() {
         )
     }
 
-    if (!user) {
-        return (
-            <div className="container mx-auto py-10 text-center">
-                <p>Please login to configure widgets.</p>
-            </div>
-        )
-    }
-
-
-
     return (
         <div className="container mx-auto py-10 flex flex-col items-center">
             <div className="w-full max-w-2xl mb-8">
@@ -352,13 +344,15 @@ export default function FirstWordWidgetPage() {
                                 </div>
                             </div>
                         </CardContent>
-                        {!config && (
-                            <CardFooter>
-                                <Button onClick={handleEnable} disabled={isSaving} className="w-full">
-                                    {isSaving ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน Widget"}
-                                </Button>
+                        <CardFooter>
+                                {user ? (
+                                    <Button onClick={handleEnable} disabled={isSaving} className="w-full">
+                                        {isSaving ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน Widget"}
+                                    </Button>
+                                ) : (
+                                    <TwitchLoginButton className="w-full" />
+                                )}
                             </CardFooter>
-                        )}
                     </Card>
                 </TabsContent>
 

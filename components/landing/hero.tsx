@@ -3,36 +3,51 @@
 import { Button } from "@/components/ui/button";
 import { Flame } from "lucide-react";
 import Link from "next/link";
+import LightPillar from "@/components/fancy/light-pillar";
+import { BrandLogo } from "@/components/brand-logo";
 
 export function Hero() {
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Animated background */}
-            <div className="absolute inset-0 trailblazer-gradient animate-gradient opacity-20" />
-
-            {/* Floating orbs */}
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full trailblazer-gradient opacity-30 blur-3xl animate-float" />
-            <div className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full trailblazer-gradient opacity-20 blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
+            {/* Animated background - Light Pillar */}
+            <LightPillar
+                topColor="#FFD700"
+                bottomColor="#FF8C00"
+                intensity={1}
+                rotationSpeed={0.3}
+                glowAmount={0.002}
+                pillarWidth={3}
+                pillarHeight={0.4}
+                noiseIntensity={0.5}
+                pillarRotation={25}
+                interactive={false}
+                mixBlendMode="screen"
+                quality="high"
+                className="opacity-70"
+            />
+            {/* Overlay gradient to ensure text readability if needed */}
+            <div className="absolute inset-0 bg-background/30 -z-5" />
 
             {/* Content */}
             <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
                 {/* Logo/Icon */}
-                <div className="flex justify-center mb-8">
+                {/* <div className="flex justify-center mb-8">
                     <div className="p-4 rounded-2xl glass animate-pulse-glow">
-                        <Flame className="w-16 h-16 text-purple-400" />
+                        <Flame className="w-16 h-16 text-primary" />
                     </div>
-                </div>
+                </div> */}
 
                 {/* Main heading */}
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-                    <span className="trailblazer-gradient-text">TRAILBLAZER</span>
+                    <BrandLogo />
                 </h1>
 
                 {/* Subtitle */}
-                <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-2xl mx-auto">
+                <p className="text-xl md:text-2xl mb-4 max-w-2xl mx-auto">
                     แพลตฟอร์มเชื่อมต่อ Twitch ของคุณ
                 </p>
-                <p className="text-lg text-muted-foreground/70 mb-10 max-w-xl mx-auto">
+                <p className="text-lg mb-10 max-w-xl mx-auto">
                     เชื่อมต่อ ปรับปรุง และเสริมพลังประสบการณ์การสตรีมของคุณด้วยเครื่องมือที่ทรงพลังและการเชื่อมต่อที่ราบรื่น
                 </p>
 
@@ -49,7 +64,7 @@ export function Hero() {
                     <Button
                         size="lg"
                         variant="outline"
-                        className="glass border-purple-500/30 hover:bg-purple-500/10 px-8 py-6 text-lg"
+                        className="glass border-primary/30 hover:bg-primary/10 px-8 py-6 text-lg"
                     >
                         เรียนรู้เพิ่มเติม
                     </Button>

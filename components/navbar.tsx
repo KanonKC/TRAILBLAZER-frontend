@@ -1,8 +1,7 @@
 "use client"
 
-import { useUser } from "./user-context";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -12,9 +11,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LogOut, User as UserIcon } from "lucide-react";
+import { TwitchLoginButton } from "@/components/twitch-login-button";
+import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useUser } from "./user-context";
+import { BrandLogo } from "@/components/brand-logo";
 
 export default function Navbar() {
     const { user, isLoading, logout } = useUser();
@@ -26,13 +28,12 @@ export default function Navbar() {
     }
 
     // Twitch OAuth URL
-    const LOGIN_URL = "https://id.twitch.tv/oauth2/authorize?response_type=code&client_id=lnn0xjhakjukg3r77tgnjpquxt1y2t&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Fv1%2Flogin&scope=channel%3Abot+user%3Aread%3Aemail+user%3Aread%3Achat+user%3Awrite%3Achat+user%3Abot+channel%3Aread%3Asubscriptions&state=c3ab8aa609ea11e793ae92361f002671";
 
     return (
         <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex h-16 items-center px-4 container mx-auto justify-between">
-                <Link href="/" className="flex items-center gap-2 font-bold text-xl tracking-tight">
-                    <span className="text-primary">TRAILBLAZER</span>
+                <Link href="/" className="flex items-center font-bold text-xl tracking-tight">
+                    <BrandLogo />
                 </Link>
 
                 <div className="flex items-center gap-6">
@@ -74,11 +75,7 @@ export default function Navbar() {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     ) : (
-                        <Button asChild>
-                            <a href={LOGIN_URL}>
-                                Login with Twitch
-                            </a>
-                        </Button>
+                        <TwitchLoginButton />
                     )}
                 </div>
             </div>

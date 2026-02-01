@@ -140,12 +140,12 @@ export function NodeConfigurationModal({
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal Content */}
-            <div className={`relative w-[90vw] max-w-6xl h-[80vh] glass border border-purple-500/30 rounded-xl overflow-hidden shadow-2xl flex flex-col transform ${isOpen ? "scale-100" : "scale-95"} transition-transform duration-200`}>
+            <div className={`relative w-[90vw] max-w-6xl h-[80vh] glass border border-primary/30 rounded-xl overflow-hidden shadow-2xl flex flex-col transform ${isOpen ? "scale-100" : "scale-95"} transition-transform duration-200`}>
 
                 {/* Header */}
-                <div className="h-16 border-b border-purple-500/20 flex items-center justify-between px-6 bg-black/20">
+                <div className="h-16 border-b border-primary/20 flex items-center justify-between px-6 bg-black/20">
                     <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isTrigger ? "bg-purple-600" : "bg-blue-600"}`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isTrigger ? "bg-primary" : "bg-blue-600"}`}>
                             {/* Icon placeholder (can be passed as prop but keeping simple) */}
                             <span className="font-bold text-white text-lg">{nodeLabel.charAt(0)}</span>
                         </div>
@@ -160,12 +160,12 @@ export function NodeConfigurationModal({
                 </div>
 
                 {/* 3-Column Layout */}
-                <div className="flex-1 grid grid-cols-12 min-h-0 divide-x divide-purple-500/20">
+                <div className="flex-1 grid grid-cols-12 min-h-0 divide-x divide-primary/20">
 
                     {/* Left Column: Input Data (Previous Step) */}
                     <div className="col-span-3 bg-black/10 flex flex-col min-h-0">
-                        <div className="p-4 border-b border-purple-500/10">
-                            <h3 className="font-medium text-sm text-purple-200">ข้อมูลขาเข้า</h3>
+                        <div className="p-4 border-b border-primary/10">
+                            <h3 className="font-medium text-sm text-primary/80">ข้อมูลขาเข้า</h3>
                             <p className="text-xs text-muted-foreground mt-1">ข้อมูลจากโหนดก่อนหน้า</p>
                         </div>
                         <div className="flex-1 p-4 overflow-y-auto">
@@ -229,8 +229,8 @@ export function NodeConfigurationModal({
 
                     {/* Middle Column: Configuration */}
                     <div className="col-span-6 bg-black/5 flex flex-col min-h-0">
-                        <div className="p-4 border-b border-purple-500/10">
-                            <h3 className="font-medium text-sm text-purple-200">ตั้งค่า</h3>
+                        <div className="p-4 border-b border-primary/10">
+                            <h3 className="font-medium text-sm text-primary/80">ตั้งค่า</h3>
                             <p className="text-xs text-muted-foreground mt-1">กำหนดค่าสำหรับโหนดนี้</p>
                         </div>
                         <div className="flex-1 p-6 overflow-y-auto">
@@ -305,7 +305,7 @@ export function NodeConfigurationModal({
                                     <div className="space-y-2">
                                         <Label>เลือกช่องทาง (Channel)</Label>
                                         <Select disabled defaultValue="blaze">
-                                            <SelectTrigger className="glass border-purple-500/30">
+                                            <SelectTrigger className="glass border-primary/30">
                                                 <SelectValue placeholder="เลือกช่องทาง" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -325,8 +325,8 @@ export function NodeConfigurationModal({
 
                     {/* Right Column: Output / Result */}
                     <div className="col-span-3 bg-black/10 flex flex-col min-h-0">
-                        <div className="p-4 border-b border-purple-500/10">
-                            <h3 className="font-medium text-sm text-purple-200">ผลลัพธ์ตัวอย่าง</h3>
+                        <div className="p-4 border-b border-primary/10">
+                            <h3 className="font-medium text-sm text-primary/80">ผลลัพธ์ตัวอย่าง</h3>
                             <p className="text-xs text-muted-foreground mt-1">ข้อมูลที่จะถูกส่งต่อไปยังโหนดถัดไป</p>
                         </div>
                         <div className="flex-1 p-4 overflow-y-auto">
@@ -337,9 +337,9 @@ export function NodeConfigurationModal({
                             ) : isNewFollower ? (
                                 <div className="space-y-2">
                                     {Object.entries(twitchMockData).map(([key, value]) => (
-                                        <div key={key} className="group font-mono flex items-start justify-between p-2 rounded hover:bg-white/5 transition-colors text-xs border border-transparent hover:border-purple-500/20">
+                                        <div key={key} className="group font-mono flex items-start justify-between p-2 rounded hover:bg-white/5 transition-colors text-xs border border-transparent hover:border-primary/20">
                                             <div className="overflow-hidden">
-                                                <div className="text-purple-300 font-medium truncate" title={key}>{key}</div>
+                                                <div className="text-primary/80 font-medium truncate" title={key}>{key}</div>
                                                 <div className="text-muted-foreground truncate mt-0.5" title={value as string}>{value}</div>
                                             </div>
                                             <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity -mr-1">
