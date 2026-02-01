@@ -326,7 +326,9 @@ export default function FirstWordWidgetPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-
+                            <p className="text-gray-200 text-base leading-relaxed">
+                                อยากให้ช่องคึกคัก ต้องเริ่มที่การทักทาย! วิดเจ็ตนี้จะช่วยต้อนรับผู้ชมหน้าใหม่ทันทีที่เขาพิมพ์แชทครั้งแรก ไม่ต้องกลัวหลุดโฟกัสตอนเล่นเกม หรือคุยเพลินจนลืมทัก ช่วยสร้างความประทับใจแรกสุดปัง ให้ทุกคนรู้สึกอบอุ่นเหมือนเพื่อนสนิท แถมยังตั้งค่าข้อความและเสียงเอฟเฟกต์กวนๆ ได้ตามสไตล์คุณ!
+                            </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                     <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
