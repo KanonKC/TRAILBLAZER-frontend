@@ -29,10 +29,10 @@ export function Hero() {
                 </h1>
 
                 {/* Subtitle */}
-                <p className="text-xl md:text-2xl text-muted-foreground mb-4 max-w-2xl mx-auto">
+                <p className="text-xl md:text-2xl mb-4 max-w-2xl mx-auto">
                     แพลตฟอร์มเชื่อมต่อ Twitch ของคุณ
                 </p>
-                <p className="text-lg text-muted-foreground/70 mb-10 max-w-xl mx-auto">
+                <p className="text-lg mb-10 max-w-xl mx-auto">
                     เชื่อมต่อ ปรับปรุง และเสริมพลังประสบการณ์การสตรีมของคุณด้วยเครื่องมือที่ทรงพลังและการเชื่อมต่อที่ราบรื่น
                 </p>
 
