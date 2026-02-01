@@ -212,7 +212,7 @@ export default function FirstWordWidgetPage() {
                     broadcaster_user_id: user.twitchId,
                     broadcaster_user_login: user.username,
                     broadcaster_user_name: user.displayName,
-                    chatter_user_id: "123456789", // Mock ID
+                    chatter_user_id: "0", // Mock ID
                     chatter_user_login: "testuser",
                     chatter_user_name: "Test User",
                     message_id: crypto.randomUUID(),

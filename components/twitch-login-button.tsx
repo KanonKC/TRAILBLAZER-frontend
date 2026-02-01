@@ -4,6 +4,7 @@ import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Twitch } from "@/components/icons/twitch"
 import { cn } from "@/lib/utils"
+import crypto from "crypto"
 
 interface TwitchLoginButtonProps extends React.ComponentProps<typeof Button> {
   children?: React.ReactNode
@@ -13,8 +14,9 @@ export function TwitchLoginButton({ className, children, ...props }: TwitchLogin
   const LOGIN_URL = process.env.NEXT_PUBLIC_TWITCH_LOGIN_URL
 
   const handleClick = () => {
+    const state = crypto.randomBytes(32).toString("hex")
     if (LOGIN_URL) {
-      window.location.href = LOGIN_URL
+      window.location.href = LOGIN_URL + "&state=" + state
     } else {
       console.error("LOGIN_URL is not defined")
     }
