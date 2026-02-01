@@ -3,16 +3,30 @@
 import { Button } from "@/components/ui/button";
 import { Flame } from "lucide-react";
 import Link from "next/link";
+import LightPillar from "@/components/fancy/light-pillar";
 
 export function Hero() {
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Animated background */}
-            <div className="absolute inset-0 trailblazer-gradient animate-gradient opacity-20" />
-
-            {/* Floating orbs */}
-            <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full trailblazer-gradient opacity-30 blur-3xl animate-float" />
-            <div className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full trailblazer-gradient opacity-20 blur-3xl animate-float" style={{ animationDelay: '-3s' }} />
+            {/* Animated background - Light Pillar */}
+            <LightPillar
+                topColor="#FFD700"
+                bottomColor="#FF8C00"
+                intensity={1}
+                rotationSpeed={0.3}
+                glowAmount={0.002}
+                pillarWidth={3}
+                pillarHeight={0.4}
+                noiseIntensity={0.5}
+                pillarRotation={25}
+                interactive={false}
+                mixBlendMode="screen"
+                quality="high"
+                className="opacity-70"
+            />
+            {/* Overlay gradient to ensure text readability if needed */}
+            <div className="absolute inset-0 bg-background/30 -z-5" />
 
             {/* Content */}
             <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
