@@ -47,7 +47,7 @@ export default function FirstWordOverlayPage() {
             eventSource.onerror = (error) => {
                 console.error("EventSource error:", error)
                 eventSource.close()
-                router.push('/overlays/not-found')
+                // router.push('/overlays/not-found')
             }
 
             return eventSource
