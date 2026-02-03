@@ -203,6 +203,7 @@ export default function FirstWordWidgetPage() {
         if (!user || isTesting) return;
 
         setIsTesting(true);
+        const dummyUser = `TestUser_${Math.random().toString(36).substring(2, 8)}`
         try {
             const mockEvent = {
                 subscription: {
@@ -213,8 +214,8 @@ export default function FirstWordWidgetPage() {
                     broadcaster_user_login: user.username,
                     broadcaster_user_name: user.displayName,
                     chatter_user_id: "0", // Mock ID
-                    chatter_user_login: "testuser",
-                    chatter_user_name: "Test User",
+                    chatter_user_login: dummyUser.toLowerCase(),
+                    chatter_user_name: dummyUser,
                     message_id: crypto.randomUUID(),
                     message: {
                         text: "Test Message",
