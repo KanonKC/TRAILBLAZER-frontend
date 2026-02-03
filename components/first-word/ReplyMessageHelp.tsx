@@ -4,16 +4,37 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Info } from "lucide-react"
+import { Info, MousePointerClick } from "lucide-react"
 import { cn } from "@/lib/utils"
+
+interface VariableItem {
+    variable: string;
+    description: string;
+    example: string;
+}
+
+const AVAILABLE_VARIABLES: VariableItem[] = [
+    {
+        variable: "{{user_name}}",
+        description: "ชื่อที่แสดงผลของผู้ทักทาย",
+        example: "User123"
+    }
+];
 
 interface ReplyMessageHelpProps {
     className?: string;
     variant?: "default" | "overlay";
+    onInsertVariable?: (variable: string) => void;
 }
 
-export function ReplyMessageHelp({ className, variant = "default" }: ReplyMessageHelpProps) {
+export function ReplyMessageHelp({ className, variant = "default", onInsertVariable }: ReplyMessageHelpProps) {
     const isOverlay = variant === "overlay";
+
+    const handleVariableClick = (variable: string) => {
+        if (onInsertVariable) {
+            onInsertVariable(variable);
+        }
+    };
 
     return (
         <Accordion type="single" collapsible className={cn("w-full border rounded-lg", isOverlay ? "bg-white/5 border-white/10" : "bg-card border-border", className)}>
@@ -30,16 +51,54 @@ export function ReplyMessageHelp({ className, variant = "default" }: ReplyMessag
                     </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4 pt-3">
-                    <div className={cn("text-sm space-y-2", isOverlay ? "text-white/70" : "text-muted-foreground")}>
-                        <p>คุณสามารถพิมพ์ตัวแปรเหล่านี้ลงในช่องข้อความ เพื่อให้ระบบแทนที่ด้วยข้อมูลจริงโดยอัตโนมัติ</p>
-                        <ul className="list-disc pl-5 space-y-1">
-                            <li><code className={cn("px-1 rounded", isOverlay ? "bg-white/10 text-white/90" : "bg-muted text-foreground")}>{"{{user_name}}"}</code> - ชื่อที่แสดงผลของผู้ทักทาย (เช่น "User123")</li>
-                            <li><code className={cn("px-1 rounded", isOverlay ? "bg-white/10 text-white/90" : "bg-muted text-foreground")}>{"{{user_login}}"}</code> - Twitch Username ของผู้ทักทาย (เช่น "user123")</li>
-                            <li><code className={cn("px-1 rounded", isOverlay ? "bg-white/10 text-white/90" : "bg-muted text-foreground")}>{"{{broadcaster_user_name}}"}</code> - ชื่อที่แสดงผลของช่อง (เช่น "Streamer")</li>
-                            <li><code className={cn("px-1 rounded", isOverlay ? "bg-white/10 text-white/90" : "bg-muted text-foreground")}>{"{{broadcaster_user_login}}"}</code> - Twitch Username ของช่อง (เช่น "streamer")</li>
-                            <li><code className={cn("px-1 rounded", isOverlay ? "bg-white/10 text-white/90" : "bg-muted text-foreground")}>{"{{message_text}}"}</code> - ข้อความที่พิมพ์มา</li>
-                            <li><code className={cn("px-1 rounded", isOverlay ? "bg-white/10 text-white/90" : "bg-muted text-foreground")}>{"{{color}}"}</code> - สีแชทของผู้ใช้งาน</li>
-                        </ul>
+                    <div className={cn("text-sm space-y-4", isOverlay ? "text-white/70" : "text-muted-foreground")}>
+                        {/* Instructions with click hint */}
+                        <div className="flex items-start gap-2">
+                            <MousePointerClick className={cn("h-4 w-4 mt-0.5 shrink-0", isOverlay ? "text-blue-400" : "text-primary")} />
+                            <p className="leading-relaxed">
+                                คลิกที่ตัวแปรด้านล่างเพื่อเพิ่มลงในข้อความ หรือพิมพ์เองได้โดยตรง
+                            </p>
+                        </div>
+
+                        {/* Variable cards */}
+                        <div className="space-y-2">
+                            {AVAILABLE_VARIABLES.map((item) => (
+                                <div
+                                    key={item.variable}
+                                    className={cn(
+                                        "flex items-center justify-between gap-4 p-3 rounded-lg border transition-all",
+                                        isOverlay
+                                            ? "bg-white/5 border-white/10"
+                                            : "bg-muted/30 border-border"
+                                    )}
+                                >
+                                    <div className="flex flex-col gap-1 min-w-0">
+                                        <span className={cn("text-sm", isOverlay ? "text-white/50" : "text-white/70")}>
+                                            {item.description}
+                                        </span>
+                                        <span className={cn("text-xs", isOverlay ? "text-white/40" : "text-white/50")}>
+                                            ตัวอย่าง: <span className="italic">&quot;{item.example}&quot;</span>
+                                        </span>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleVariableClick(item.variable)}
+                                        className={cn(
+                                            "shrink-0 px-3 py-1.5 rounded-md font-mono text-sm font-medium transition-all",
+                                            "border shadow-sm",
+                                            "hover:scale-105 active:scale-95",
+                                            isOverlay
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-white/20 text-white hover:from-blue-500/30 hover:to-purple-500/30 hover:border-white/30"
+                                                : "bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20 text-primary hover:from-primary/20 hover:to-primary/10 hover:border-primary/30",
+                                            "cursor-pointer"
+                                        )}
+                                        title="คลิกเพื่อเพิ่มลงในข้อความ"
+                                    >
+                                        {item.variable}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </AccordionContent>
             </AccordionItem>

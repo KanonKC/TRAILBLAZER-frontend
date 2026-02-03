@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { ReplyMessageHelp } from "./ReplyMessageHelp";
@@ -12,11 +13,33 @@ interface ReplyMessageInputProps {
 
 export function ReplyMessageInput({ value, onChange, variant = "overlay", error }: ReplyMessageInputProps) {
     const isOverlay = variant === "overlay";
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+    const handleInsertVariable = (variable: string) => {
+        const textarea = textareaRef.current;
+        if (textarea) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const newValue = value.substring(0, start) + variable + value.substring(end);
+            onChange(newValue);
+
+            // Set cursor position after the inserted variable
+            requestAnimationFrame(() => {
+                textarea.focus();
+                const newCursorPos = start + variable.length;
+                textarea.setSelectionRange(newCursorPos, newCursorPos);
+            });
+        } else {
+            // Fallback: append to end
+            onChange(value + variable);
+        }
+    };
 
     return (
         <div className="space-y-3">
             <Label htmlFor="qs_reply_message" className={cn(isOverlay ? "text-white" : "text-foreground")}>ข้อความตอบกลับ</Label>
             <Textarea
+                ref={textareaRef}
                 id="qs_reply_message"
                 placeholder="ยินดีต้อนรับสู่สตรีมนะ {{user_name}}!"
                 value={value}
@@ -39,7 +62,7 @@ export function ReplyMessageInput({ value, onChange, variant = "overlay", error 
                     {value.length}/500
                 </span>
             </div>
-            <ReplyMessageHelp variant={variant} />
+            <ReplyMessageHelp variant={variant} onInsertVariable={handleInsertVariable} />
         </div>
     );
 }
