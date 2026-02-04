@@ -60,7 +60,7 @@ export default function FirstWordWidgetPage() {
     const [isEnabled, setIsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | null>(null);
-    const [botProfile, setBotProfile] = useState<BotProfileType>("default");
+    const [botProfile, setBotProfile] = useState<string>(user?.twitchId || "");
 
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
@@ -124,7 +124,7 @@ export default function FirstWordWidgetPage() {
                     setConfig(data);
                     setReplyMessage(data.reply_message || "");
                     setIsEnabled(data.enabled ?? true);
-                    setBotProfile(data.twitch_bot_id ? "self" : "default");
+                    setBotProfile(data.twitch_bot_id || "default");
                     setActiveTab("settings");
                 } else {
                     setConfig(null);
@@ -184,7 +184,7 @@ export default function FirstWordWidgetPage() {
         try {
             const updated = await updateFirstWordConfig({
                 reply_message: replyMessage,
-                twitch_bot_id: botProfile === "self" ? user?.twitchId : null
+                twitch_bot_id: botProfile === "default" ? null : botProfile
             });
 
             if (updated) {
@@ -518,28 +518,42 @@ export default function FirstWordWidgetPage() {
                                 ปรับแต่งการตั้งค่าสำหรับวิดเจ็ต
                             </CardDescription>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="space-y-2 flex flex-col gap-4">
-                                <BotProfileSelector
-                                    value={botProfile}
-                                    onValueChange={setBotProfile}
-                                />
-
+                        <CardContent className="space-y-8">
+                            {/* Message Section */}
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 border-b pb-2">
+                                    <MessageSquare className="w-5 h-5 text-blue-500" />
+                                    <h3 className="text-lg font-semibold">ข้อความ</h3>
+                                </div>
+                                <div className="">
+                                    <BotProfileSelector
+                                        value={botProfile}
+                                        onValueChange={setBotProfile}
+                                    />
+                                </div>
                                 <ReplyMessageInput
                                     value={replyMessage}
                                     onChange={handleReplyMessageChange}
                                     variant="default"
                                     error={replyMessageError}
                                 />
+                            </div>
 
-                                <AudioFileUploader
-                                    currentFileName={config?.audio_key}
-                                    selectedFile={audioFile}
-                                    onFileSelect={setAudioFile}
-                                    className="text-white"
-                                    inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
-                                />
-
+                            {/* Audio Section */}
+                            <div className="space-y-4 ">
+                                <div className="flex items-center gap-2 border-b pb-2">
+                                    <Music className="w-5 h-5 text-purple-500" />
+                                    <h3 className="text-lg font-semibold">เสียงและโอเวอร์เลย์</h3>
+                                </div>
+                                <div className="">
+                                    <AudioFileUploader
+                                        currentFileName={config?.audio_key}
+                                        selectedFile={audioFile}
+                                        onFileSelect={setAudioFile}
+                                        className="text-white"
+                                        inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
+                                    />
+                                </div>
                                 <OverlayUrlInput
                                     url={overlayUrl}
                                     onRefresh={() => setShowConfirmRefresh(true)}
