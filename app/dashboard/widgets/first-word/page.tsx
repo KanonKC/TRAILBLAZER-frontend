@@ -16,9 +16,17 @@ import { ReplyMessageInput } from "@/components/first-word/ReplyMessageInput";
 import { WidgetTestControl } from "@/components/first-word/WidgetTestControl";
 import { OverlayUrlInput } from "@/components/first-word/OverlayUrlInput";
 import { AudioFileUploader } from "@/components/first-word/AudioFileUploader";
+import { BotProfileSelector, type BotProfileType } from "@/components/first-word/BotProfileSelector";
 import { OBSSetupHelp } from "@/components/first-word/OBSSetupHelp";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 
@@ -26,7 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TwitchLoginButton } from "@/components/twitch-login-button";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { Check, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
+import { AlertTriangle, Check, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -52,6 +60,7 @@ export default function FirstWordWidgetPage() {
     const [isEnabled, setIsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | null>(null);
+    const [botProfile, setBotProfile] = useState<BotProfileType>("default");
 
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
@@ -115,6 +124,7 @@ export default function FirstWordWidgetPage() {
                     setConfig(data);
                     setReplyMessage(data.reply_message || "");
                     setIsEnabled(data.enabled ?? true);
+                    setBotProfile(data.twitch_bot_id ? "self" : "default");
                     setActiveTab("settings");
                 } else {
                     setConfig(null);
@@ -173,7 +183,8 @@ export default function FirstWordWidgetPage() {
         setIsSaving(true);
         try {
             const updated = await updateFirstWordConfig({
-                reply_message: replyMessage
+                reply_message: replyMessage,
+                twitch_bot_id: botProfile === "self" ? user?.twitchId : null
             });
 
             if (updated) {
@@ -203,7 +214,7 @@ export default function FirstWordWidgetPage() {
         if (!user || isTesting) return;
 
         setIsTesting(true);
-        const dummyUser = `TestUser_${Math.random().toString(36).substring(2, 8)}`
+        const dummyUser = `TestUser_${Math.random().toString().substring(2, 8)}`
         try {
             const mockEvent = {
                 subscription: {
@@ -391,6 +402,7 @@ export default function FirstWordWidgetPage() {
                                         <div className="space-y-3">
                                             <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
                                             <ReplyMessageInput
+                                                hideLabel
                                                 value={replyMessage}
                                                 onChange={handleReplyMessageChange}
                                                 error={replyMessageError}
@@ -410,6 +422,7 @@ export default function FirstWordWidgetPage() {
                                                 onFileSelect={setAudioFile}
                                                 className="text-white"
                                                 inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
+                                                hideLabel
                                             />
                                         </div>
                                     )
@@ -427,6 +440,7 @@ export default function FirstWordWidgetPage() {
                                                 inputClassName="bg-transparent border-white/20 text-white"
                                                 showRefresh={true}
                                                 onRefresh={() => setShowConfirmRefresh(true)}
+                                                hideLabel
                                             />
 
                                             <OBSSetupHelp />
@@ -505,18 +519,12 @@ export default function FirstWordWidgetPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <OverlayUrlInput
-                                    url={overlayUrl}
-                                    onRefresh={() => setShowConfirmRefresh(true)}
-                                    showRefresh={true}
+                            <div className="space-y-2 flex flex-col gap-4">
+                                <BotProfileSelector
+                                    value={botProfile}
+                                    onValueChange={setBotProfile}
                                 />
-                                <p className="text-xs text-muted-foreground">
-                                    คลิกที่ช่องเพื่อคัดลอก URL แล้วนำไปใส่ใน Browser Source ของโปรแกรมสตรีม (OBS/Streamlabs)
-                                </p>
-                            </div>
 
-                            <div className="space-y-2">
                                 <ReplyMessageInput
                                     value={replyMessage}
                                     onChange={handleReplyMessageChange}
@@ -524,16 +532,19 @@ export default function FirstWordWidgetPage() {
                                     error={replyMessageError}
                                 />
 
+                                <AudioFileUploader
+                                    currentFileName={config?.audio_key}
+                                    selectedFile={audioFile}
+                                    onFileSelect={setAudioFile}
+                                    className="text-white"
+                                    inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
+                                />
 
-                                <div className="space-y-2 pt-4 border-t">
-                                    <AudioFileUploader
-                                        currentFileName={config?.audio_key}
-                                        selectedFile={audioFile}
-                                        onFileSelect={setAudioFile}
-                                        className="text-white"
-                                        inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
-                                    />
-                                </div>
+                                <OverlayUrlInput
+                                    url={overlayUrl}
+                                    onRefresh={() => setShowConfirmRefresh(true)}
+                                    showRefresh={true}
+                                />
                             </div>
                         </CardContent>
                         <CardFooter className="flex justify-between border-t px-6 py-4">
@@ -605,6 +616,6 @@ export default function FirstWordWidgetPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div>
+        </div >
     );
 }

@@ -15,6 +15,7 @@ interface AudioFileUploaderProps {
     disabled?: boolean;
     className?: string;
     inputClassName?: string;
+    hideLabel?: boolean;
 }
 
 export function AudioFileUploader({
@@ -23,7 +24,8 @@ export function AudioFileUploader({
     onFileSelect,
     disabled = false,
     className,
-    inputClassName
+    inputClassName,
+    hideLabel = false
 }: AudioFileUploaderProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [error, setError] = useState<string | null>(null);
@@ -70,10 +72,16 @@ export function AudioFileUploader({
 
     return (
         <div className={cn("space-y-2", className)}>
-            <Label htmlFor="qs_audio_file" className={cn(className?.includes("text-white") ? "text-white" : "")}>
-                ไฟล์เสียง
-            </Label>
-
+            {
+                !hideLabel && (<>
+                    <Label htmlFor="qs_audio_file" className={cn(className?.includes("text-white") ? "text-white" : "")}>
+                        ไฟล์เสียง
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                        อัปโหลดไฟล์เสียงที่จะเล่นเมื่อมีผู้ชมใหม่เข้ามาพิมพ์ข้อความแรก (รองรับไฟล์ MP3, WAV)
+                    </p>
+                </>)
+            }
             {showCurrentFileView && (
                 <div className={cn(
                     "flex items-center justify-between p-3 border rounded-lg",

@@ -23,6 +23,7 @@ interface OverlayUrlInputProps {
     showRefresh?: boolean;
     className?: string;
     inputClassName?: string;
+    hideLabel?: boolean;
 }
 
 export function OverlayUrlInput({
@@ -30,7 +31,8 @@ export function OverlayUrlInput({
     onRefresh,
     showRefresh = false,
     className,
-    inputClassName
+    inputClassName,
+    hideLabel = false
 }: OverlayUrlInputProps) {
     const [showUrl, setShowUrl] = useState(false);
     const [showConfirmReveal, setShowConfirmReveal] = useState(false);
@@ -49,7 +51,16 @@ export function OverlayUrlInput({
 
     return (
         <div className={cn("space-y-2", className)}>
-            <Label>Overlay URL</Label>
+            {
+                !hideLabel && (
+                    <>
+                        <Label>Overlay URL</Label>
+                        <p className="text-sm text-muted-foreground">
+                            คลิกที่ช่องเพื่อคัดลอก URL แล้วนำไปใส่ใน Browser Source ของโปรแกรมสตรีม (OBS/Streamlabs)
+                        </p>
+                    </>
+                )
+            }
             <div className="relative">
                 <Input
                     type={showUrl ? "text" : "password"}
