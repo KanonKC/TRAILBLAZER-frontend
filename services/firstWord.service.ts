@@ -8,6 +8,7 @@ export interface FirstWordConfig {
     enabled: boolean;
     audio_key?: string | null;
     overlay_key: string;
+    twitch_bot_id?: string | null;
 }
 
 export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {

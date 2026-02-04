@@ -30,12 +30,13 @@ export function OBSSetupHelp({ className, variant = "overlay" }: OBSSetupHelpPro
                     </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4 pt-3">
-                    <ul className={cn("text-sm list-disc pl-5 space-y-1", isOverlay ? "text-white/70" : "text-muted-foreground")}>
+                    <ol className={cn("text-sm list-decimal pl-5 space-y-1", isOverlay ? "text-white/70" : "text-muted-foreground")}>
                         <li>ไปที่โปรแกรม OBS จากนั้นไปที่ Sources {">"} Add Source {">"} Browser</li>
                         <li>นำลิงก์ไปใส่ไว้ที่ช่อง URL</li>
-                        <li>กดติ๊กถูกที่ตัวเลือก Control audio via OBS จากนั้นกด OK</li>
-                        <li>ตามหาแทร็กเสียงของ Browser ที่เราตั้งค่าไปก่อนหน้า จากนั้นเลือก Audio Monitoring เป็นแบบ Monitor and Output</li>
-                    </ul>
+                        <li>กดติ๊กถูกที่ตัวเลือก Control audio via OBS {">"} กด OK</li>
+                        <li>เลื่อนหาแทร็กเสียงของ Browser ที่เราตั้งค่าไปก่อนหน้า {">"} กดปุ่ม 3 จุด {">"} เลือก Advanced Audio Properties (อยู่ข้างล่างสุด)</li>
+                        <li>เลื่อนหาแทร็กเสียงของ Browser ที่เราตั้งค่าไปก่อนหน้า {">"} หัวข้อ Audio Monitoring เลือกเป็นแบบ Monitor and Output (ตัวเลือกที่ 3)</li>
+                    </ol>
                 </AccordionContent>
             </AccordionItem>
         </Accordion>
