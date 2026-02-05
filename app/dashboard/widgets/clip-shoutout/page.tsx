@@ -214,7 +214,7 @@ export default function ClipShoutoutWidgetPage() {
                     system_message: "TestUser raided you with 100 viewers!",
                     notice_type: "raid",
                     raid: {
-                        user_id: "135783794",
+                        user_id: user.twitchId,
                         user_login: "testuser",
                         user_name: `TestUser_${Math.random().toString().slice(2, 8)}`,
                         viewer_count: 100,
