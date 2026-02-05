@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, Video } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -14,6 +14,16 @@ const widgets = [
         color: "text-blue-500",
         bgColor: "bg-blue-500/10",
         borderColor: "border-blue-500/20"
+    },
+    {
+        id: "clip-shoutout",
+        title: "Clip Shoutout",
+        description: "โปรโมทเพื่อนสตรีมเมอร์ที่มา Raid ด้วยการโชว์คลิปล่าสุดของอัตโนมัติ",
+        icon: Video,
+        href: "/dashboard/widgets/clip-shoutout",
+        color: "text-orange-500",
+        bgColor: "bg-orange-500/10",
+        borderColor: "border-orange-500/20"
     }
 ];
 

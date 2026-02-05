@@ -15,68 +15,57 @@ import { WidgetStatusControl } from "@/components/first-word/WidgetStatusControl
 import { ReplyMessageInput } from "@/components/first-word/ReplyMessageInput";
 import { WidgetTestControl } from "@/components/first-word/WidgetTestControl";
 import { OverlayUrlInput } from "@/components/first-word/OverlayUrlInput";
-import { AudioFileUploader } from "@/components/first-word/AudioFileUploader";
-import { BotProfileSelector, type BotProfileType } from "@/components/first-word/BotProfileSelector";
+import { BotProfileSelector } from "@/components/first-word/BotProfileSelector";
 import { OBSSetupHelp } from "@/components/first-word/OBSSetupHelp";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TwitchLoginButton } from "@/components/twitch-login-button";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Check, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
+import { AlertTriangle, Info, MessageSquare, Play, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import {
-    deleteFirstWordConfig,
-    enableFirstWord,
-    getFirstWordConfig,
-    testFirstWordAudio,
-    updateFirstWordConfig,
-    uploadFirstWordAudio,
-    refreshFirstWordOverlayKey,
-    type FirstWordConfig
-} from "@/services/firstWord.service";
+    deleteClipShoutoutConfig,
+    enableClipShoutout,
+    getClipShoutoutConfig,
+    testClipShoutout,
+    updateClipShoutoutConfig,
+    refreshClipShoutoutOverlayKey,
+    type ClipShoutoutConfig
+} from "@/services/clipShoutout.service";
 
-
-
-export default function FirstWordWidgetPage() {
+export default function ClipShoutoutWidgetPage() {
     const { user, isLoading: isUserLoading } = useUser();
-    const [config, setConfig] = useState<FirstWordConfig | null>(null);
+    const [config, setConfig] = useState<ClipShoutoutConfig | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [replyMessage, setReplyMessage] = useState("");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
     const [isEnabled, setIsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [audioFile, setAudioFile] = useState<File | null>(null);
-    const [botProfile, setBotProfile] = useState<string>(user?.twitchId || "");
+    const [botProfile, setBotProfile] = useState<string>("");
+
+    // New states for Clip Shoutout
+    const [enabledClip, setEnabledClip] = useState(true);
+    const [enabledHighlightOnly, setEnabledHighlightOnly] = useState(false);
 
     const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
 
-    // ... (rest of state)
-
     const handleDelete = async () => {
         setIsSaving(true);
         try {
-            const success = await deleteFirstWordConfig();
+            const success = await deleteClipShoutoutConfig();
             if (success) {
                 setConfig(null);
                 setReplyMessage("");
                 setIsEnabled(false);
-                setAudioFile(null);
                 setActiveTab("overview");
             }
         } catch (error) {
@@ -89,10 +78,9 @@ export default function FirstWordWidgetPage() {
     const handleRefreshKey = async () => {
         setIsSaving(true);
         try {
-            const data = await refreshFirstWordOverlayKey();
+            const data = await refreshClipShoutoutOverlayKey();
             if (data) {
                 setConfig(data);
-                // toast success
             }
         } catch (error) {
             console.error("Failed to refresh key", error);
@@ -105,10 +93,8 @@ export default function FirstWordWidgetPage() {
     const [isTesting, setIsTesting] = useState(false);
 
     const overlayUrl = typeof window !== 'undefined' && user
-        ? `${window.location.origin}/overlays/first-word/${user.id}${config?.overlay_key ? `?key=${config.overlay_key}` : ''}`
+        ? `${window.location.origin}/overlays/clip-shoutout/${user.id}${config?.overlay_key ? `?key=${config.overlay_key}` : ''}`
         : "";
-
-
 
     useEffect(() => {
         if (isUserLoading) return;
@@ -119,15 +105,18 @@ export default function FirstWordWidgetPage() {
 
         const fetchConfig = async () => {
             try {
-                const data = await getFirstWordConfig();
+                const data = await getClipShoutoutConfig();
                 if (data) {
                     setConfig(data);
                     setReplyMessage(data.reply_message || "");
                     setIsEnabled(data.enabled ?? true);
                     setBotProfile(data.twitch_bot_id || "default");
+                    setEnabledClip(data.enabled_clip ?? true);
+                    setEnabledHighlightOnly(data.enabled_highlight_only ?? false);
                     setActiveTab("settings");
                 } else {
                     setConfig(null);
+                    setBotProfile(user?.twitchId || "");
                 }
             } catch (error) {
                 console.error("Failed to fetch config", error);
@@ -143,12 +132,13 @@ export default function FirstWordWidgetPage() {
         if (!user) return;
         setIsSaving(true);
         try {
-            const data = await enableFirstWord(user.twitchId, user.id);
-            console.log('enable', data);
+            const data = await enableClipShoutout(user.twitchId, user.id);
             if (data) {
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
                 setIsEnabled(data.enabled ?? true);
+                setEnabledClip(data.enabled_clip ?? true);
+                setEnabledHighlightOnly(data.enabled_highlight_only ?? false);
                 setActiveTab("quick-start");
             }
         } catch (error) {
@@ -173,7 +163,6 @@ export default function FirstWordWidgetPage() {
     const handleSave = async () => {
         if (!config) return;
 
-        // Validation
         const result = replyMessageSchema.safeParse(replyMessage);
         if (!result.success) {
             setReplyMessageError(result.error.issues[0].message);
@@ -182,26 +171,15 @@ export default function FirstWordWidgetPage() {
 
         setIsSaving(true);
         try {
-            const updated = await updateFirstWordConfig({
+            const updated = await updateClipShoutoutConfig({
                 reply_message: replyMessage,
-                twitch_bot_id: botProfile === "default" ? null : botProfile
+                twitch_bot_id: botProfile === "default" ? null : botProfile,
+                enabled_clip: enabledClip,
+                enabled_highlight_only: enabledHighlightOnly
             });
 
             if (updated) {
                 setConfig(updated);
-
-                if (audioFile) {
-                    const audioSuccess = await uploadFirstWordAudio(audioFile);
-                    if (audioSuccess) {
-                        setAudioFile(null);
-                        // Refresh config to get new audio key
-                        const newConfig = await getFirstWordConfig();
-                        if (newConfig) {
-                            setConfig(newConfig);
-                        }
-                    }
-                }
-                // Optionally show toast
             }
         } catch (error) {
             console.error("Failed to update", error);
@@ -210,63 +188,45 @@ export default function FirstWordWidgetPage() {
         }
     }
 
-    const handleTestAudio = async () => {
+    const handleTest = async () => {
         if (!user || isTesting) return;
 
         setIsTesting(true);
-        const dummyUser = `TestUser_${Math.random().toString().substring(2, 8)}`
         try {
             const mockEvent = {
                 subscription: {
-                    status: "enabled"
+                    status: "enabled",
+                    type: "channel.chat.notification"
                 },
                 event: {
                     broadcaster_user_id: user.twitchId,
                     broadcaster_user_login: user.username,
                     broadcaster_user_name: user.displayName,
-                    chatter_user_id: "0", // Mock ID
-                    chatter_user_login: dummyUser.toLowerCase(),
-                    chatter_user_name: dummyUser,
-                    message_id: crypto.randomUUID(),
+                    chatter_user_id: "0",
+                    chatter_user_login: "testuser",
+                    chatter_user_name: "TestUser",
                     message: {
-                        text: "Test Message",
-                        fragments: [
-                            {
-                                type: "text",
-                                text: "Test Message",
-                                cheermote: null,
-                                emote: null,
-                                mention: null
-                            }
-                        ]
+                        text: "Test Shoutout",
+                        fragments: []
                     },
                     color: "#FF0000",
                     badges: [],
-                    message_type: "text",
-                    cheer: null,
-                    reply: null,
-                    channel_points_custom_reward_id: null,
-                    source_broadcaster_user_id: null,
-                    source_broadcaster_user_login: null,
-                    source_broadcaster_user_name: null,
-                    source_message_id: null,
-                    source_badges: null
+                    system_message: "TestUser raided you with 100 viewers!",
+                    notice_type: "raid",
+                    raid: {
+                        user_id: user.twitchId,
+                        user_login: "testuser",
+                        user_name: `TestUser_${Math.random().toString().slice(2, 8)}`,
+                        viewer_count: 100,
+                        profile_image_url: ""
+                    }
                 }
             };
 
-            await testFirstWordAudio(mockEvent);
+            await testClipShoutout(mockEvent);
 
-            // toast({
-            //     title: "Test Sent",
-            //     description: "Audio trigger event has been sent.",
-            // });
         } catch (error) {
             console.error("Test failed:", error);
-            // toast({
-            //     title: "Test Failed",
-            //     description: "Failed to send test event.",
-            //     variant: "destructive",
-            // });
         } finally {
             setIsTesting(false);
         }
@@ -277,14 +237,13 @@ export default function FirstWordWidgetPage() {
         if (!config) return;
 
         try {
-            const updated = await updateFirstWordConfig({
+            const updated = await updateClipShoutoutConfig({
                 enabled: checked
             });
 
             if (updated) {
                 setConfig(updated);
             } else {
-                // Revert if failed
                 setIsEnabled(!checked);
             }
         } catch (error) {
@@ -305,13 +264,13 @@ export default function FirstWordWidgetPage() {
         <div className="container mx-auto py-10 flex flex-col items-center">
             <div className="w-full max-w-2xl mb-8">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
-                        <MessageSquare className="w-6 h-6" />
+                    <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500">
+                        <Video className="w-6 h-6" />
                     </div>
-                    <h1 className="text-3xl font-bold">Greeting Message</h1>
+                    <h1 className="text-3xl font-bold">Clip Shoutout</h1>
                 </div>
                 <p className="text-muted-foreground text-lg">
-                    ต้อนรับผู้ชมใหม่โดยอัตโนมัติด้วยข้อความทักทายและเสียงเอฟเฟกต์ที่คุณกำหนดเอง
+                    โปรโมทเพื่อนสตรีมเมอร์ที่มา Raid ด้วยการโชว์คลิปล่าสุดของอัตโนมัติ
                 </p>
             </div>
 
@@ -334,27 +293,28 @@ export default function FirstWordWidgetPage() {
                                 Overview
                             </CardTitle>
                             <CardDescription>
-                                อธิบายความสามารถและการทำงานของวิดเจ็ตตัวนี้
+                                อธิบายความสามารถและการทำงานของวิดเจ็ตนี้
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <p className="text-gray-200 text-base leading-relaxed">
-                                อยากให้ช่องคึกคัก ต้องเริ่มที่การทักทาย! วิดเจ็ตนี้จะช่วยต้อนรับผู้ชมหน้าใหม่ทันทีที่เขาพิมพ์แชทครั้งแรก ไม่ต้องกลัวหลุดโฟกัสตอนเล่นเกม หรือคุยเพลินจนลืมทัก ช่วยสร้างความประทับใจแรกสุดปัง ให้ทุกคนรู้สึกอบอุ่นเหมือนเพื่อนสนิท แถมยังตั้งค่าข้อความและเสียงเอฟเฟกต์กวนๆ ได้ตามสไตล์คุณ!
+                                เมื่อมีสตรีมเมอร์ท่านอื่นเข้ามาร่วม Raid ช่องของคุณ วิดเจ็ตนี้ช่วยให้การ Shoutout ดูโปรและน่าสนใจขึ้น!
+                                ระบบจะค้นหาและเล่นคลิปล่าสุดของพวกเขาบนหน้าจอของคุณอัตโนมัติ ทำให้ผู้ชมของคุณได้รู้จักแขกผู้มาเยือนแบบเห็นภาพจริง
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
+                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
+                                    <div className="p-2 w-fit rounded-lg bg-orange-500/10 text-orange-500 mb-3">
+                                        <Video className="w-5 h-5" />
+                                    </div>
+                                    <h3 className="font-semibold mb-1">Auto Clip Player</h3>
+                                    <p className="text-sm text-muted-foreground">เล่นคลิปล่าสุดของ Raider อัตโนมัติบน Overlay</p>
+                                </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                     <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
                                         <MessageSquare className="w-5 h-5" />
                                     </div>
-                                    <h3 className="font-semibold mb-1">Auto Greeting</h3>
-                                    <p className="text-sm text-muted-foreground">ต้อนรับผู้ชมใหม่โดยอัตโนมัติเมื่อพวกเขาพิมพ์ข้อความแรก</p>
-                                </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
-                                        <Music className="w-5 h-5" />
-                                    </div>
-                                    <h3 className="font-semibold mb-1">Sound Alerts</h3>
-                                    <p className="text-sm text-muted-foreground">เล่นเสียงเอฟเฟกต์เพื่อประกาศผู้มาเยือนคนใหม่</p>
+                                    <h3 className="font-semibold mb-1">Custom Shoutout</h3>
+                                    <p className="text-sm text-muted-foreground">ส่งข้อความขอบคุณและแนะนำช่องของ Raider ในแชท</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -397,10 +357,10 @@ export default function FirstWordWidgetPage() {
                                 },
                                 {
                                     step: 2,
-                                    title: "ใส่ข้อความ",
+                                    title: "ตั้งค่าข้อความ",
                                     description: (
                                         <div className="space-y-3">
-                                            <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
+                                            <p className="text-sm text-white/70">ข้อความที่จะส่งในแชทเมื่อมีการ Raid เข้ามา</p>
                                             <ReplyMessageInput
                                                 hideLabel
                                                 value={replyMessage}
@@ -411,6 +371,16 @@ export default function FirstWordWidgetPage() {
                                                         variable: "{{user_name}}",
                                                         description: "ชื่อที่แสดงผลของผู้ทักทาย",
                                                         example: "User123"
+                                                    },
+                                                    {
+                                                        variable: "{{viewer_count}}",
+                                                        description: "จำนวนผู้ชมที่มาพร้อม Raid",
+                                                        example: "150"
+                                                    },
+                                                    {
+                                                        variable: "{{channel_link}}",
+                                                        description: "ลิงก์ไปยังช่องของผู้ Raid",
+                                                        example: "https://twitch.tv/user123"
                                                     }
                                                 ]}
                                             />
@@ -419,28 +389,10 @@ export default function FirstWordWidgetPage() {
                                 },
                                 {
                                     step: 3,
-                                    title: "ใส่เสียง",
+                                    title: "นำ Overlay ไปใส่ใน OBS",
                                     description: (
                                         <div className="space-y-3">
-                                            <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
-                                            <AudioFileUploader
-                                                currentFileName={config?.audio_key}
-                                                selectedFile={audioFile}
-                                                onFileSelect={setAudioFile}
-                                                className="text-white"
-                                                inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
-                                                hideLabel
-                                            />
-                                        </div>
-                                    )
-                                },
-                                {
-                                    step: 4,
-                                    title: "นำ Overlay สำหรับเสียงไปใส่บน OBS",
-                                    description: (
-                                        <div className="space-y-3">
-                                            <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
-                                            <p className="text-sm text-white/70 italic">* คุณสามารถข้ามขั้นตอนนี้ได้ หากไม่ต้องการใช้เสียง</p>
+                                            <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล</p>
                                             <OverlayUrlInput
                                                 url={overlayUrl}
                                                 className="text-white"
@@ -449,31 +401,30 @@ export default function FirstWordWidgetPage() {
                                                 onRefresh={() => setShowConfirmRefresh(true)}
                                                 hideLabel
                                             />
-
                                             <OBSSetupHelp />
                                         </div>
                                     )
                                 },
                                 {
-                                    step: 5,
+                                    step: 4,
                                     title: "บันทึกและทดสอบ",
                                     description: (
                                         <WidgetTestControl
                                             isSaving={isSaving}
                                             isTesting={isTesting}
                                             onSave={handleSave}
-                                            onTest={handleTestAudio}
-                                            canTest={!!(config?.audio_key || config?.reply_message)}
+                                            onTest={handleTest}
+                                            canTest={true}
                                         />
                                     )
                                 },
                                 {
-                                    step: 6,
+                                    step: 5,
                                     title: "การตั้งค่าเพิ่มเติม",
                                     description: (
                                         <div className="space-y-3">
                                             <p className="text-sm text-white/70">
-                                                Quick Start เป็นเพียงการตั้งค่าเบื้องต้นเท่านั้น คุณสามารถปรับแต่งการตั้งค่าอื่นๆ เพิ่มเติมได้ที่เมนู Settings
+                                                คุณสามารถเลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ใน Settings
                                             </p>
                                             <div className="flex justify-start">
                                                 <Button
@@ -530,7 +481,7 @@ export default function FirstWordWidgetPage() {
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 border-b pb-2">
                                     <MessageSquare className="w-5 h-5 text-blue-500" />
-                                    <h3 className="text-lg font-semibold">ข้อความ</h3>
+                                    <h3 className="text-lg font-semibold">ข้อความ Shoutout</h3>
                                 </div>
                                 <div className="">
                                     <BotProfileSelector
@@ -548,31 +499,66 @@ export default function FirstWordWidgetPage() {
                                             variable: "{{user_name}}",
                                             description: "ชื่อที่แสดงผลของผู้ทักทาย",
                                             example: "User123"
+                                        },
+                                        {
+                                            variable: "{{viewer_count}}",
+                                            description: "จำนวนผู้ชมที่มาพร้อม Raid",
+                                            example: "150"
+                                        },
+                                        {
+                                            variable: "{{channel_link}}",
+                                            description: "ลิงก์ไปยังช่องของผู้ Raid",
+                                            example: "https://twitch.tv/user123"
                                         }
                                     ]}
                                 />
                             </div>
 
-                            {/* Audio Section */}
-                            <div className="space-y-4 ">
+                            {/* Clip Options */}
+                            <div className="space-y-4">
                                 <div className="flex items-center gap-2 border-b pb-2">
-                                    <Music className="w-5 h-5 text-purple-500" />
-                                    <h3 className="text-lg font-semibold">เสียงและโอเวอร์เลย์</h3>
+                                    <Video className="w-5 h-5 text-orange-500" />
+                                    <h3 className="text-lg font-semibold">ตัวเลือกวิดีโอ</h3>
                                 </div>
-                                <div className="">
-                                    <AudioFileUploader
-                                        currentFileName={config?.audio_key}
-                                        selectedFile={audioFile}
-                                        onFileSelect={setAudioFile}
-                                        className="text-white"
-                                        inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
+                                <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                    <div className="space-y-0.5">
+                                        <Label>แสดง Clip ของช่องที่ Raid</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            แสดง Clip ของช่องที่ Raid ขึ้นมาบนสตรีมของคุณ
+                                        </p>
+                                    </div>
+                                    <Switch
+                                        checked={enabledClip}
+                                        onCheckedChange={setEnabledClip}
                                     />
                                 </div>
-                                <OverlayUrlInput
-                                    url={overlayUrl}
-                                    onRefresh={() => setShowConfirmRefresh(true)}
-                                    showRefresh={true}
-                                />
+
+                                {
+                                    enabledClip && (
+                                        <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                            <div className="space-y-0.5">
+                                                <Label>เล่นเฉพาะ Highlight</Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    หากเปิด จะเล่นเฉพาะคลิปที่ถูกตั้งเป็น Highlight เท่านั้น (หากไม่มี Highlight จะไม่เล่น)
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                checked={enabledHighlightOnly}
+                                                onCheckedChange={setEnabledHighlightOnly}
+                                            />
+                                        </div>
+                                    )
+                                }
+
+                                {
+                                    enabledClip && (
+                                        <OverlayUrlInput
+                                            url={overlayUrl}
+                                            onRefresh={() => setShowConfirmRefresh(true)}
+                                            showRefresh={true}
+                                        />
+                                    )
+                                }
                             </div>
                         </CardContent>
                         <CardFooter className="flex justify-between border-t px-6 py-4">
@@ -584,10 +570,8 @@ export default function FirstWordWidgetPage() {
                                 ลบวิดเจ็ต
                             </Button>
                             <div className="flex gap-2">
-                                <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config?.audio_key && !config?.reply_message}>
-                                    {isTesting ? (
-                                        <>Testing...</>
-                                    ) : (
+                                <Button variant="outline" onClick={handleTest} disabled={isTesting}>
+                                    {isTesting ? "Testing..." : (
                                         <>
                                             <Play className="mr-2 h-4 w-4" />
                                             Test
@@ -603,14 +587,12 @@ export default function FirstWordWidgetPage() {
                 </TabsContent>
             </Tabs>
 
-
-
             <AlertDialog open={showConfirmDelete} onOpenChange={setShowConfirmDelete}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>คุณต้องการลบวิดเจ็ตนี้หรือไม่?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            การลบวิดเจ็ตจะทำให้การตั้งค่าทั้งหมดหายไป และวิดเจ็ตจะถูกปิดการใช้งาน คุณจะต้องเปิดใช้งานใหม่อีกครั้งหากต้องการใช้งาน
+                            การลบวิดเจ็ตจะทำให้การตั้งค่าทั้งหมดหายไป และวิดเจ็ตจะถูกปิดการใช้งาน
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -644,6 +626,6 @@ export default function FirstWordWidgetPage() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-        </div >
+        </div>
     );
 }

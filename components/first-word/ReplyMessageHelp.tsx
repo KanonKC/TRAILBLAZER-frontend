@@ -7,26 +7,19 @@ import {
 import { Info, MousePointerClick } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-interface VariableItem {
+export interface VariableItem {
     variable: string;
     description: string;
     example: string;
 }
 
-const AVAILABLE_VARIABLES: VariableItem[] = [
-    {
-        variable: "{{user_name}}",
-        description: "ชื่อที่แสดงผลของผู้ทักทาย",
-        example: "User123"
-    }
-];
-
 interface ReplyMessageHelpProps {
     className?: string;
     onInsertVariable?: (variable: string) => void;
+    variables: VariableItem[];
 }
 
-export function ReplyMessageHelp({ className, onInsertVariable }: ReplyMessageHelpProps) {
+export function ReplyMessageHelp({ className, onInsertVariable, variables }: ReplyMessageHelpProps) {
 
     const handleVariableClick = (variable: string) => {
         if (onInsertVariable) {
@@ -55,7 +48,7 @@ export function ReplyMessageHelp({ className, onInsertVariable }: ReplyMessageHe
 
                         {/* Variable cards */}
                         <div className="space-y-2">
-                            {AVAILABLE_VARIABLES.map((item) => (
+                            {variables.map((item) => (
                                 <div
                                     key={item.variable}
                                     className="flex items-center justify-between gap-4 p-3 rounded-lg border transition-all bg-white/5 border-white/10"

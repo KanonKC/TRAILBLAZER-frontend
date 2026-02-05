@@ -77,7 +77,7 @@ export function BotProfileSelector({ value, onValueChange, hideLabel }: BotProfi
             {value === "default" && (
                 <div className="flex items-start gap-2 p-3 rounded-md bg-amber-500/10 text-amber-500">
                     <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                    <p className="text-xs">
+                    <p className="text-sm">
                         บอทจะไม่สามารถส่งข้อความได้ หากช่องของคุณเปิดใช้งานโหมด Follower-only Chat
                     </p>
                 </div>
