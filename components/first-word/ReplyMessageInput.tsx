@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { ReplyMessageHelp } from "./ReplyMessageHelp";
+import { ReplyMessageHelp, VariableItem } from "./ReplyMessageHelp";
 import { cn } from "@/lib/utils";
 
 interface ReplyMessageInputProps {
@@ -10,9 +10,10 @@ interface ReplyMessageInputProps {
     variant?: "default" | "overlay";
     error?: string | null;
     hideLabel?: boolean;
+    variables: VariableItem[];
 }
 
-export function ReplyMessageInput({ value, onChange, variant = "overlay", error, hideLabel }: ReplyMessageInputProps) {
+export function ReplyMessageInput({ value, onChange, variant = "overlay", error, hideLabel, variables }: ReplyMessageInputProps) {
     const isOverlay = variant === "overlay";
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -72,7 +73,7 @@ export function ReplyMessageInput({ value, onChange, variant = "overlay", error,
                     </span>
                 </div>
             </div>
-            <ReplyMessageHelp onInsertVariable={handleInsertVariable} />
+            <ReplyMessageHelp onInsertVariable={handleInsertVariable} variables={variables} />
         </div>
     );
 }

@@ -366,6 +366,23 @@ export default function ClipShoutoutWidgetPage() {
                                                 value={replyMessage}
                                                 onChange={handleReplyMessageChange}
                                                 error={replyMessageError}
+                                                variables={[
+                                                    {
+                                                        variable: "{{user_name}}",
+                                                        description: "ชื่อที่แสดงผลของผู้ทักทาย",
+                                                        example: "User123"
+                                                    },
+                                                    {
+                                                        variable: "{{viewer_count}}",
+                                                        description: "จำนวนผู้ชมที่มาพร้อม Raid",
+                                                        example: "150"
+                                                    },
+                                                    {
+                                                        variable: "{{channel_link}}",
+                                                        description: "ลิงก์ไปยังช่องของผู้ Raid",
+                                                        example: "https://twitch.tv/user123"
+                                                    }
+                                                ]}
                                             />
                                         </div>
                                     )
@@ -477,6 +494,23 @@ export default function ClipShoutoutWidgetPage() {
                                     onChange={handleReplyMessageChange}
                                     variant="default"
                                     error={replyMessageError}
+                                    variables={[
+                                        {
+                                            variable: "{{user_name}}",
+                                            description: "ชื่อที่แสดงผลของผู้ทักทาย",
+                                            example: "User123"
+                                        },
+                                        {
+                                            variable: "{{viewer_count}}",
+                                            description: "จำนวนผู้ชมที่มาพร้อม Raid",
+                                            example: "150"
+                                        },
+                                        {
+                                            variable: "{{channel_link}}",
+                                            description: "ลิงก์ไปยังช่องของผู้ Raid",
+                                            example: "https://twitch.tv/user123"
+                                        }
+                                    ]}
                                 />
                             </div>
 

@@ -406,6 +406,13 @@ export default function FirstWordWidgetPage() {
                                                 value={replyMessage}
                                                 onChange={handleReplyMessageChange}
                                                 error={replyMessageError}
+                                                variables={[
+                                                    {
+                                                        variable: "{{user_name}}",
+                                                        description: "ชื่อที่แสดงผลของผู้ทักทาย",
+                                                        example: "User123"
+                                                    }
+                                                ]}
                                             />
                                         </div>
                                     )
@@ -536,6 +543,13 @@ export default function FirstWordWidgetPage() {
                                     onChange={handleReplyMessageChange}
                                     variant="default"
                                     error={replyMessageError}
+                                    variables={[
+                                        {
+                                            variable: "{{user_name}}",
+                                            description: "ชื่อที่แสดงผลของผู้ทักทาย",
+                                            example: "User123"
+                                        }
+                                    ]}
                                 />
                             </div>
 
