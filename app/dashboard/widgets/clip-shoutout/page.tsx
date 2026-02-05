@@ -522,10 +522,10 @@ export default function ClipShoutoutWidgetPage() {
                                 </div>
                                 <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
                                     <div className="space-y-0.5">
-                                        <Label className="text-base">แสดงคลิปอัตโนมัติ</Label>
-                                        <div className="text-sm text-muted-foreground">
-                                            เปิด/ปิด การเล่นคลิปบนหน้าจอ Overlay
-                                        </div>
+                                        <Label>แสดง Clip ของช่องที่ Raid</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            แสดง Clip ของช่องที่ Raid ขึ้นมาบนสตรีมของคุณ
+                                        </p>
                                     </div>
                                     <Switch
                                         checked={enabledClip}
@@ -533,24 +533,32 @@ export default function ClipShoutoutWidgetPage() {
                                     />
                                 </div>
 
-                                <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                                    <div className="space-y-0.5">
-                                        <Label className="text-base">เล่นเฉพาะ Highlight</Label>
-                                        <div className="text-sm text-muted-foreground">
-                                            หากเปิด จะเล่นเฉพาะคลิปที่ถูกตั้งเป็น Highlight เท่านั้น (หากไม่มี Highlight จะไม่เล่น)
+                                {
+                                    enabledClip && (
+                                        <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                            <div className="space-y-0.5">
+                                                <Label>เล่นเฉพาะ Highlight</Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    หากเปิด จะเล่นเฉพาะคลิปที่ถูกตั้งเป็น Highlight เท่านั้น (หากไม่มี Highlight จะไม่เล่น)
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                checked={enabledHighlightOnly}
+                                                onCheckedChange={setEnabledHighlightOnly}
+                                            />
                                         </div>
-                                    </div>
-                                    <Switch
-                                        checked={enabledHighlightOnly}
-                                        onCheckedChange={setEnabledHighlightOnly}
-                                    />
-                                </div>
+                                    )
+                                }
 
-                                <OverlayUrlInput
-                                    url={overlayUrl}
-                                    onRefresh={() => setShowConfirmRefresh(true)}
-                                    showRefresh={true}
-                                />
+                                {
+                                    enabledClip && (
+                                        <OverlayUrlInput
+                                            url={overlayUrl}
+                                            onRefresh={() => setShowConfirmRefresh(true)}
+                                            showRefresh={true}
+                                        />
+                                    )
+                                }
                             </div>
                         </CardContent>
                         <CardFooter className="flex justify-between border-t px-6 py-4">

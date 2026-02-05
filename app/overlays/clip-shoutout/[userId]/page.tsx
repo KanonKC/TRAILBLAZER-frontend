@@ -15,7 +15,7 @@ export default function ClipShoutoutOverlayPage() {
     const userId = params.userId as string
     const key = searchParams.get("key") ?? undefined
 
-    const [clipId, setClipId] = useState<string | null>(null);
+    const [url, setUrl] = useState<string | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
     const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -48,8 +48,8 @@ export default function ClipShoutoutOverlayPage() {
             try {
                 const data = JSON.parse(event.data)
                 console.log("Received clip event:", data)
-                if (data.clipId) {
-                    setClipId(data.clipId);
+                if (data.url) {
+                    setUrl(data.url);
                     setIsVisible(true);
 
                     // Duration is in seconds, convert to ms and add a small buffer (e.g. 1s)
@@ -58,7 +58,7 @@ export default function ClipShoutoutOverlayPage() {
                     if (timerRef.current) clearTimeout(timerRef.current);
                     timerRef.current = setTimeout(() => {
                         setIsVisible(false);
-                        setClipId(null);
+                        setUrl(null);
                     }, durationMs);
                 }
             } catch (error) {
@@ -116,17 +116,17 @@ export default function ClipShoutoutOverlayPage() {
                 </Button>
             </div>
 
-            {isVisible && clipId && (
+            {isVisible && url && (
                 <div className="shadow-2xl rounded-xl overflow-hidden animate-in fade-in zoom-in duration-500">
-                    <iframe
-                        src={`https://clips.twitch.tv/embed?clip=${clipId}&parent=${parentDomain}&autoplay=true&muted=false`}
-                        frameBorder="0"
-                        allowFullScreen={true}
-                        scrolling="no"
-                        height="720"
+                    <video
+                        src={url}
+                        autoPlay
+                        // muted={false} // React video tag specific: muted prop is boolean, false by default. But browsers often block autoplay with sound. 
+                        // However, since this is likely an overlay in OBS, it might be allowed.
                         width="1280"
+                        height="720"
                         className="bg-black block"
-                    ></iframe>
+                    />
                 </div>
             )}
         </div>

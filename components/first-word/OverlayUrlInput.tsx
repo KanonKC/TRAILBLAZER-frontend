@@ -24,6 +24,7 @@ interface OverlayUrlInputProps {
     className?: string;
     inputClassName?: string;
     hideLabel?: boolean;
+    disabled?: boolean;
 }
 
 export function OverlayUrlInput({
@@ -32,7 +33,8 @@ export function OverlayUrlInput({
     showRefresh = false,
     className,
     inputClassName,
-    hideLabel = false
+    hideLabel = false,
+    disabled = false
 }: OverlayUrlInputProps) {
     const [showUrl, setShowUrl] = useState(false);
     const [showConfirmReveal, setShowConfirmReveal] = useState(false);
@@ -40,6 +42,7 @@ export function OverlayUrlInput({
 
     const handleCopyUrl = async () => {
         if (!url) return;
+        if (disabled) return;
         try {
             await navigator.clipboard.writeText(url);
             setCopied(true);
@@ -67,6 +70,7 @@ export function OverlayUrlInput({
                     value={url}
                     readOnly
                     onClick={handleCopyUrl}
+                    disabled={disabled}
                     className={cn("pr-30 cursor-pointer font-mono text-sm", inputClassName)}
                 />
                 <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
@@ -75,6 +79,7 @@ export function OverlayUrlInput({
                         size="icon"
                         className="h-8 w-8 hover:bg-transparent"
                         onClick={() => {
+                            if (disabled) return;
                             if (showUrl) {
                                 setShowUrl(false);
                             } else {
@@ -95,6 +100,7 @@ export function OverlayUrlInput({
                             size="icon"
                             className="h-8 w-8 hover:bg-transparent"
                             onClick={onRefresh}
+                            disabled={disabled}
                         >
                             <RefreshCcw className="h-4 w-4 text-muted-foreground" />
                         </Button>
@@ -105,6 +111,7 @@ export function OverlayUrlInput({
                         size="icon"
                         className="h-8 w-8 hover:bg-transparent"
                         onClick={handleCopyUrl}
+                        disabled={disabled}
                     >
                         {copied ? (
                             <Check className="h-4 w-4 text-green-500" />
