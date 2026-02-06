@@ -26,7 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TwitchLoginButton } from "@/components/twitch-login-button";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Info, MessageSquare, Play, Video } from "lucide-react";
+import { AlertTriangle, ExternalLink, Info, MessageSquare, Play, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -409,13 +409,21 @@ export default function ClipShoutoutWidgetPage() {
                                     step: 4,
                                     title: "บันทึกและทดสอบ",
                                     description: (
-                                        <WidgetTestControl
-                                            isSaving={isSaving}
-                                            isTesting={isTesting}
-                                            onSave={handleSave}
-                                            onTest={handleTest}
-                                            canTest={true}
-                                        />
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+                                            <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                                                <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                                                <li>ต้องมี Clip ของช่องที่ Raid เข้ามาแสดงขึ้นมาบนหน้าจอของคุณ</li>
+                                            </ol>
+                                            <WidgetTestControl
+                                                isSaving={isSaving}
+                                                isTesting={isTesting}
+                                                onSave={handleSave}
+                                                onTest={handleTest}
+                                                canTest={true}
+                                            />
+                                        </div>
                                     )
                                 },
                                 {
@@ -429,11 +437,11 @@ export default function ClipShoutoutWidgetPage() {
                                             <div className="flex justify-start">
                                                 <Button
                                                     variant="secondary"
-                                                    size="sm"
                                                     onClick={() => setActiveTab("settings")}
-                                                    className="bg-white/10 text-white hover:bg-white/20 border-0"
+                                                    className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
                                                 >
                                                     ไปที่การตั้งค่า (Settings)
+                                                    <ExternalLink className="h-4 w-4" />
                                                 </Button>
                                             </div>
                                         </div>

@@ -34,7 +34,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TwitchLoginButton } from "@/components/twitch-login-button";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Check, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
+import { AlertTriangle, Check, ExternalLink, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -478,11 +478,11 @@ export default function FirstWordWidgetPage() {
                                             <div className="flex justify-start">
                                                 <Button
                                                     variant="secondary"
-                                                    size="sm"
                                                     onClick={() => setActiveTab("settings")}
-                                                    className="bg-white/10 text-white hover:bg-white/20 border-0"
+                                                    className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
                                                 >
                                                     ไปที่การตั้งค่า (Settings)
+                                                    <ExternalLink className="h-4 w-4" />
                                                 </Button>
                                             </div>
                                         </div>
