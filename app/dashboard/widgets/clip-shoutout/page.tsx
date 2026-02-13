@@ -93,7 +93,8 @@ export default function ClipShoutoutWidgetPage() {
     const [isTesting, setIsTesting] = useState(false);
 
     const overlayUrl = typeof window !== 'undefined' && user
-        ? `${window.location.origin}/overlays/clip-shoutout/${user.id}${config?.overlay_key ? `?key=${config.overlay_key}` : ''}`
+        ? `${window.location.origin}/overlays/clip-shoutout/${user.id}${config?.widget && config.widget.overlay_key ? `?key=${config.widget.overlay_key}` : ''}`
+
         : "";
 
     useEffect(() => {
