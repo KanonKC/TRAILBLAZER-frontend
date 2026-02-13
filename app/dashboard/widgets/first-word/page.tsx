@@ -11,13 +11,13 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { WidgetStatusControl } from "@/components/first-word/WidgetStatusControl";
-import { ReplyMessageInput } from "@/components/first-word/ReplyMessageInput";
-import { WidgetTestControl } from "@/components/first-word/WidgetTestControl";
-import { OverlayUrlInput } from "@/components/first-word/OverlayUrlInput";
-import { AudioFileUploader } from "@/components/first-word/AudioFileUploader";
-import { BotProfileSelector, type BotProfileType } from "@/components/first-word/BotProfileSelector";
-import { OBSSetupHelp } from "@/components/first-word/OBSSetupHelp";
+import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
+import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
+import { AudioFileUploader } from "@/components/widget/AudioFileUploader";
+import { BotProfileSelector, type BotProfileType } from "@/components/widget/BotProfileSelector";
+import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -105,7 +105,8 @@ export default function FirstWordWidgetPage() {
     const [isTesting, setIsTesting] = useState(false);
 
     const overlayUrl = typeof window !== 'undefined' && user
-        ? `${window.location.origin}/overlays/first-word/${user.id}${config?.overlay_key ? `?key=${config.overlay_key}` : ''}`
+        ? `${window.location.origin}/overlays/first-word/${user.id}${config?.widget && config.widget.overlay_key ? `?key=${config.widget.overlay_key}` : ''}`
+
         : "";
 
 
@@ -401,7 +402,7 @@ export default function FirstWordWidgetPage() {
                                     description: (
                                         <div className="space-y-3">
                                             <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
-                                            <ReplyMessageInput
+                                            <ReplyMessageTextarea
                                                 hideLabel
                                                 value={replyMessage}
                                                 onChange={handleReplyMessageChange}
@@ -538,7 +539,7 @@ export default function FirstWordWidgetPage() {
                                         onValueChange={setBotProfile}
                                     />
                                 </div>
-                                <ReplyMessageInput
+                                <ReplyMessageTextarea
                                     value={replyMessage}
                                     onChange={handleReplyMessageChange}
                                     variant="default"

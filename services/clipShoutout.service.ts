@@ -6,10 +6,12 @@ export interface ClipShoutoutConfig {
     owner_id: string;
     reply_message: string | null;
     enabled: boolean;
-    overlay_key: string;
     twitch_bot_id?: string | null;
     enabled_clip?: boolean;
     enabled_highlight_only?: boolean;
+    widget: {
+        overlay_key: string;
+    }
 }
 
 export const getClipShoutoutConfig = async (): Promise<ClipShoutoutConfig | null> => {

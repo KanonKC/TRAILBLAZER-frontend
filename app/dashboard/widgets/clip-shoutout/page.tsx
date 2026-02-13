@@ -11,12 +11,12 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { WidgetStatusControl } from "@/components/first-word/WidgetStatusControl";
-import { ReplyMessageInput } from "@/components/first-word/ReplyMessageInput";
-import { WidgetTestControl } from "@/components/first-word/WidgetTestControl";
-import { OverlayUrlInput } from "@/components/first-word/OverlayUrlInput";
-import { BotProfileSelector } from "@/components/first-word/BotProfileSelector";
-import { OBSSetupHelp } from "@/components/first-word/OBSSetupHelp";
+import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
+import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
+import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
+import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
@@ -93,7 +93,8 @@ export default function ClipShoutoutWidgetPage() {
     const [isTesting, setIsTesting] = useState(false);
 
     const overlayUrl = typeof window !== 'undefined' && user
-        ? `${window.location.origin}/overlays/clip-shoutout/${user.id}${config?.overlay_key ? `?key=${config.overlay_key}` : ''}`
+        ? `${window.location.origin}/overlays/clip-shoutout/${user.id}${config?.widget && config.widget.overlay_key ? `?key=${config.widget.overlay_key}` : ''}`
+
         : "";
 
     useEffect(() => {
@@ -361,7 +362,7 @@ export default function ClipShoutoutWidgetPage() {
                                     description: (
                                         <div className="space-y-3">
                                             <p className="text-sm text-white/70">ข้อความที่จะส่งในแชทเมื่อมีการ Raid เข้ามา</p>
-                                            <ReplyMessageInput
+                                            <ReplyMessageTextarea
                                                 hideLabel
                                                 value={replyMessage}
                                                 onChange={handleReplyMessageChange}
@@ -497,7 +498,7 @@ export default function ClipShoutoutWidgetPage() {
                                         onValueChange={setBotProfile}
                                     />
                                 </div>
-                                <ReplyMessageInput
+                                <ReplyMessageTextarea
                                     value={replyMessage}
                                     onChange={handleReplyMessageChange}
                                     variant="default"

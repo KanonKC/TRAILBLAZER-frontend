@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { ReplyMessageHelp, VariableItem } from "./ReplyMessageHelp";
 import { cn } from "@/lib/utils";
 
-interface ReplyMessageInputProps {
+interface ReplyMessageTextareaProps {
     value: string;
     onChange: (value: string) => void;
     variant?: "default" | "overlay";
@@ -13,7 +13,7 @@ interface ReplyMessageInputProps {
     variables: VariableItem[];
 }
 
-export function ReplyMessageInput({ value, onChange, variant = "overlay", error, hideLabel, variables }: ReplyMessageInputProps) {
+export function ReplyMessageTextarea({ value, onChange, variant = "overlay", error, hideLabel, variables }: ReplyMessageTextareaProps) {
     const isOverlay = variant === "overlay";
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
