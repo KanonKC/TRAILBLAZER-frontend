@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageSquare, Video } from "lucide-react";
+import { MessageSquare, Video, Dices } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -24,6 +24,16 @@ const widgets = [
         color: "text-orange-500",
         bgColor: "bg-orange-500/10",
         borderColor: "border-orange-500/20"
+    },
+    {
+        id: "random-dbd-perk",
+        title: "Random DBD Perk",
+        description: "สุ่ม Perk Dead by Daylight สำหรับ Survivor และ Killer ผ่านการแลก Channel Points หรือคำสั่งแชท",
+        icon: Dices,
+        href: "/dashboard/widgets/random-dbd-perk",
+        color: "text-emerald-500",
+        bgColor: "bg-emerald-500/10",
+        borderColor: "border-emerald-500/20"
     }
 ];
 
