@@ -10,10 +10,11 @@ interface PerkConfigItemProps {
     item: RandomDbdPerkClass;
     index: number;
     rewards: TwitchCustomReward[];
+    isLoading?: boolean;
     updatePerkClass: (index: number, key: keyof RandomDbdPerkClass, value: string | null | boolean | number) => void;
 }
 
-export function PerkConfigItem({ item, index, rewards, updatePerkClass }: PerkConfigItemProps) {
+export function PerkConfigItem({ item, index, rewards, isLoading, updatePerkClass }: PerkConfigItemProps) {
     const selectedReward = rewards.find(r => r.id === item.twitch_reward_id);
     const selectedIcon = selectedReward?.image?.url_1x || selectedReward?.default_image?.url_1x;
     const [inputValue, setInputValue] = useState(selectedReward?.title || "");
@@ -79,36 +80,43 @@ export function PerkConfigItem({ item, index, rewards, updatePerkClass }: PerkCo
                                 />
                             )}
                             <ComboboxInput
-                                placeholder="Select a reward"
+                                placeholder={isLoading ? "Loading rewards..." : "Select a reward"}
                                 className={cn("w-full transition-all", selectedIcon && "pl-9")}
+                                disabled={isLoading}
                             />
                         </div>
                         <ComboboxContent>
                             <ComboboxList>
                                 <ComboboxItem value={null} textValue="None">None</ComboboxItem>
-                                {rewards.filter(reward => reward.title.toLowerCase().includes(inputValue.toLowerCase())).map((reward) => (
-                                    <ComboboxItem
-                                        key={reward.id}
-                                        value={reward.id}
-                                        textValue={reward.title}
-                                    >
-                                        <div className="flex items-center justify-between gap-2 w-full">
-                                            <div className="flex items-center gap-2">
-                                                {(reward.image?.url_1x || reward.default_image?.url_1x) && (
-                                                    <img
-                                                        src={reward.image?.url_1x || reward.default_image?.url_1x}
-                                                        alt={reward.title}
-                                                        className="w-4 h-4 object-contain"
-                                                    />
-                                                )}
-                                                <span className="truncate max-w-[150px]">{reward.title}</span>
-                                            </div>
-                                            <span className="text-muted-foreground text-xs">{reward.cost}</span>
-                                        </div>
-                                    </ComboboxItem>
-                                ))}
+                                {isLoading ? (
+                                    <div className="p-2 text-sm text-muted-foreground text-center">Loading rewards...</div>
+                                ) : (
+                                    <>
+                                        {rewards.filter(reward => reward.title.toLowerCase().includes(inputValue.toLowerCase())).map((reward) => (
+                                            <ComboboxItem
+                                                key={reward.id}
+                                                value={reward.id}
+                                                textValue={reward.title}
+                                            >
+                                                <div className="flex items-center justify-between gap-2 w-full">
+                                                    <div className="flex items-center gap-2">
+                                                        {(reward.image?.url_1x || reward.default_image?.url_1x) && (
+                                                            <img
+                                                                src={reward.image?.url_1x || reward.default_image?.url_1x}
+                                                                alt={reward.title}
+                                                                className="w-4 h-4 object-contain"
+                                                            />
+                                                        )}
+                                                        <span className="truncate max-w-[150px]">{reward.title}</span>
+                                                    </div>
+                                                    <span className="text-muted-foreground text-xs">{reward.cost}</span>
+                                                </div>
+                                            </ComboboxItem>
+                                        ))}
+                                    </>
+                                )}
                             </ComboboxList>
-                            {rewards.length === 0 && (
+                            {!isLoading && rewards.length === 0 && (
                                 <ComboboxEmpty>No rewards found</ComboboxEmpty>
                             )}
                         </ComboboxContent>

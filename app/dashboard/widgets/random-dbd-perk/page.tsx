@@ -47,12 +47,20 @@ export default function RandomDbdPerkWidgetPage() {
     // Local state for classes to handle edits before saving
     const [perkClasses, setPerkClasses] = useState<RandomDbdPerkClass[]>([]);
     const [rewards, setRewards] = useState<TwitchCustomReward[]>([]);
+    const [isRewardsLoading, setIsRewardsLoading] = useState(false);
 
     useEffect(() => {
         if (!user) return;
         const fetchRewards = async () => {
-            const data = await getTwitchChannelRewards();
-            setRewards(data);
+            setIsRewardsLoading(true);
+            try {
+                const data = await getTwitchChannelRewards();
+                setRewards(data);
+            } catch (error) {
+                console.error("Failed to fetch rewards", error);
+            } finally {
+                setIsRewardsLoading(false);
+            }
         };
         fetchRewards();
     }, [user]);
@@ -281,6 +289,7 @@ export default function RandomDbdPerkWidgetPage() {
                                     item={item}
                                     index={index}
                                     rewards={rewards}
+                                    isLoading={isRewardsLoading}
                                     updatePerkClass={updatePerkClass}
                                 />
                             ))}
