@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { updateWidgetEnabled, deleteWidget } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
+import RandomFormatInfo from "@/components/widget/random-dbd-perk/RandomFormatInfo";
 
 
 export default function RandomDbdPerkWidgetPage() {
@@ -214,7 +215,7 @@ export default function RandomDbdPerkWidgetPage() {
     const updatePerkClass = (index: number, field: keyof RandomDbdPerkClass, value: string | number | boolean | null) => {
         const newClasses = [...perkClasses];
         newClasses[index] = { ...newClasses[index], [field]: value };
-        
+
         // Auto-enable if changing other fields (like reward ID), 
         // but verify we aren't explicitly setting 'enabled'
         if (field !== 'enabled') {
@@ -236,9 +237,9 @@ export default function RandomDbdPerkWidgetPage() {
         // We need a reward ID to match what the backend expects if it looks up logic by reward ID.
         // The backend looks up RandomDbdPerkClass by twitch_reward_id.
         // So we MUST use a reward ID that exists in our config, OR we add a proper error if none found.
-        
+
         let rewardId = targetClass?.twitch_reward_id;
-        
+
         // If no rewardId configured for this type, we can't really test the full flow as backend logic depends on finding the class by reward ID.
         // However, for testing purpose, maybe we should alert the user if they haven't set a reward ID yet.
         if (!rewardId) {
@@ -253,7 +254,7 @@ export default function RandomDbdPerkWidgetPage() {
             // We could proceed with a fake ID but backend might ignore it.
             // Let's assume we proceed with a dummy if none found, to at least trigger the event.
             // But realistically, user should configure it first.
-            rewardId = "test-reward-id-" + type; 
+            rewardId = "test-reward-id-" + type;
         }
 
         setIsTesting(true);
@@ -333,13 +334,13 @@ export default function RandomDbdPerkWidgetPage() {
                                 Overview
                             </CardTitle>
                             <CardDescription>
-                                ระบบสุ่ม Perk ที่เชื่อมต่อกับ Twitch Channel Points โดยตรง
+                                ระบบสุ่ม Perk สำหรับ Dead by Daylight รองรับทั้ง Survivor และ Killer
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <p className="text-gray-200 text-base leading-relaxed">
-                                วิดเจ็ตนี้ช่วยให้ผู้ชมของคุณสามารถใช้ Channel Points เพื่อสุ่ม Perk ในเกม Dead by Daylight ได้
-                                ระบบจะตอบกลับในแชทพร้อมชื่อ Perk และรายละเอียด
+                                วิดเจ็ตนี้ช่วยให้ผู้ชมใช้แต้มช่องของคุณ เพื่อสุ่ม Perk โดยแยกการตั้งค่าระหว่าง Survivor และ Killer ได้อย่างอิสระ
+                                พร้อมระบบตอบกลับอัตโนมัติ
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
@@ -347,14 +348,14 @@ export default function RandomDbdPerkWidgetPage() {
                                         <Dices className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Randomizer</h3>
-                                    <p className="text-sm text-muted-foreground">สุ่ม Perk 1-4 อย่าง ตามที่คุณกำหนด</p>
+                                    <p className="text-sm text-muted-foreground">สุ่มได้ทั้งแบบราย Perk หรือแบบหน้า พร้อมระบบจำกัดจำนวนให้ตรงกับที่คุณมีในเกม</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                     <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
                                         <Gift className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Channel Points</h3>
-                                    <p className="text-sm text-muted-foreground">เชื่อมต่อกับ Reward ID ของ Twitch ได้โดยตรง</p>
+                                    <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch ได้โดยตรง</p>
                                 </div>
                             </div>
                         </CardContent>
@@ -460,7 +461,7 @@ export default function RandomDbdPerkWidgetPage() {
                                                         placeholder="เลือก Reward เพื่อใช้ในการสุ่ม..."
                                                     />
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
                                     )
@@ -479,7 +480,7 @@ export default function RandomDbdPerkWidgetPage() {
                                                     const currentLimitClass = perkClasses.find(c => c.type === wizardType);
                                                     const totalPerks = wizardType === 'killer' ? (config?.totalKillerPerks || 0) : (config?.totalSurvivorPerks || 0);
                                                     const unit = wizardType === 'survivor' ? survivorUnit : killerUnit;
-                                                    
+
                                                     const maxValue = unit === 'perk' ? totalPerks : Math.ceil(totalPerks / PERKS_PER_PAGE);
                                                     const effectiveMaxSize = Math.min(currentLimitClass?.maximum_random_size || 0, totalPerks);
                                                     const currentValue = unit === 'perk' ? effectiveMaxSize : Math.ceil(effectiveMaxSize / PERKS_PER_PAGE);
@@ -496,7 +497,7 @@ export default function RandomDbdPerkWidgetPage() {
                                                                     newValue = val * PERKS_PER_PAGE;
                                                                 }
                                                                 if (newValue > totalPerks) newValue = totalPerks;
-                                                                
+
                                                                 const index = perkClasses.findIndex(c => c.type === wizardType);
                                                                 if (index !== -1) {
                                                                     updatePerkClass(index, 'maximum_random_size', newValue);
@@ -514,9 +515,11 @@ export default function RandomDbdPerkWidgetPage() {
                                     title: "บันทึกและทดสอบ",
                                     description: (
                                         <div className="space-y-3">
-                                            <p className="text-sm text-white/70">
-                                                บันทึกการตั้งค่าแล้วทดลองกดปุ่มด้านล่างเพื่อจำลองการแลก Reward
-                                            </p>
+                                            <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+                                            <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                                                <li>ต้องมีข้อความแสดงผลการสุ่มขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                                            </ol>
                                             <WidgetTestControl
                                                 isSaving={isSaving}
                                                 isTesting={isTesting}
@@ -524,6 +527,7 @@ export default function RandomDbdPerkWidgetPage() {
                                                 onTest={() => handleTest(wizardType)}
                                                 canTest={!!perkClasses.find(c => c.type === wizardType)?.twitch_reward_id}
                                             />
+                                            <RandomFormatInfo />
                                         </div>
                                     )
                                 },
@@ -586,17 +590,7 @@ export default function RandomDbdPerkWidgetPage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-8">
-                            <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm flex gap-3">
-                                <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                                <div>
-                                    <p className="font-semibold mb-1">วิธีการใช้งาน:</p>
-                                    <p>
-                                        นำ <strong>Reward ID</strong> จาก Twitch Channel Points ของคุณมากรอกในช่องด้านล่าง
-                                        เมื่อผู้ชมแลกรางวัลนั้น บอทจะทำการสุ่ม Perk และตอบกลับในแชททันที
-                                    </p>
-                                </div>
-                            </div>
-
+                            <RandomFormatInfo />
                             {perkClasses.map((item, index) => (
                                 <PerkConfigItem
                                     key={item.id || index}

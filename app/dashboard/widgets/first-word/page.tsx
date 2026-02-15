@@ -460,13 +460,21 @@ export default function FirstWordWidgetPage() {
                                     step: 5,
                                     title: "บันทึกและทดสอบ",
                                     description: (
-                                        <WidgetTestControl
-                                            isSaving={isSaving}
-                                            isTesting={isTesting}
-                                            onSave={handleSave}
-                                            onTest={handleTestAudio}
-                                            canTest={!!(config?.audio_key || config?.reply_message)}
-                                        />
+                                        <>
+                                            <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+                                            <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                                                <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                                                <li>ต้องมีเสียงเล่นออกมาจากโปรแกรม OBS</li>
+                                            </ol>
+                                            <WidgetTestControl
+                                                isSaving={isSaving}
+                                                isTesting={isTesting}
+                                                onSave={handleSave}
+                                                onTest={handleTestAudio}
+                                                canTest={!!(config?.audio_key || config?.reply_message)}
+                                            />
+                                        </>
                                     )
                                 },
                                 {
