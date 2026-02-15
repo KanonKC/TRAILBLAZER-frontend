@@ -50,14 +50,7 @@ export const updateRandomDbdPerkConfig = async (data: Partial<RandomDbdPerkConfi
     }
 };
 
-export const deleteRandomDbdPerkConfig = async (): Promise<boolean> => {
-    try {
-        await apiClient.delete("/api/v1/random-dbd-perk");
-        return true;
-    } catch (error) {
-        return false;
-    }
-};
+
 
 export const getRandomDbdPerkEventUrl = (userId: string, key?: string) => {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";

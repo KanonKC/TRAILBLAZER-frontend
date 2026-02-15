@@ -39,7 +39,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import {
-    deleteFirstWordConfig,
     enableFirstWord,
     getFirstWordConfig,
     testFirstWordAudio,
@@ -48,6 +47,7 @@ import {
     refreshFirstWordOverlayKey,
     type FirstWordConfig
 } from "@/services/firstWord.service";
+import { deleteWidget } from "@/services/widget.service";
 
 
 
@@ -69,9 +69,10 @@ export default function FirstWordWidgetPage() {
     // ... (rest of state)
 
     const handleDelete = async () => {
+        if (!config?.widget?.id) return;
         setIsSaving(true);
         try {
-            const success = await deleteFirstWordConfig();
+            const success = await deleteWidget(config.widget.id);
             if (success) {
                 setConfig(null);
                 setReplyMessage("");
