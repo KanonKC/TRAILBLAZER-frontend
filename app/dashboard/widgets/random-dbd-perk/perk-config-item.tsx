@@ -6,6 +6,8 @@ import { RandomDbdPerkClass } from "@/services/randomDbdPerk.service";
 import { type TwitchCustomReward } from "@/services/twitch.service";
 import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { HelpCircle } from "lucide-react";
 
 interface PerkConfigItemProps {
     item: RandomDbdPerkClass;
@@ -143,7 +145,17 @@ export function PerkConfigItem({ item, index, rewards, isLoading, totalPerks, up
                 </div>
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <Label>จำนวนสูงสุด</Label>
+                        <div className="flex items-center gap-2">
+                            <Label>จำนวนสูงสุด</Label>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground" />
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80 p-3">
+                                    <p className="text-sm">สำหรับผู้เล่นที่มี Perk ไม่ครบ สามารถกำหนดจำนวน Perk สูงสุดที่จะให้ระบบสุ่มได้</p>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
                         <div className="flex items-center gap-2">
                             <input
                                 type="number"
@@ -166,6 +178,14 @@ export function PerkConfigItem({ item, index, rewards, isLoading, totalPerks, up
                                     <SelectItem value="page">Page</SelectItem>
                                 </SelectContent>
                             </Select>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground" />
+                                </PopoverTrigger>
+                                <PopoverContent className="w-80 p-3">
+                                    <p className="text-sm">เลือกหน่วยการนับเป็น &apos;Perk&apos; (จำนวนชิ้น) หรือ &apos;Page&apos; (หน้าในเกม) เพื่อให้ง่ายต่อการตั้งค่าตามความถนัด</p>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     </div>
                     <div className="pt-2 px-1">
