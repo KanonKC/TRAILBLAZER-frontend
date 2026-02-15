@@ -2,7 +2,7 @@ import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { RandomDbdPerkClass } from "@/services/randomDbdPerk.service";
+import { RandomDbdPerkClass, PERKS_PER_PAGE } from "@/services/randomDbdPerk.service";
 import { type TwitchCustomReward } from "@/services/twitch.service";
 import { MaxPerkSelector } from "@/components/widget/MaxPerkSelector";
 
@@ -22,14 +22,14 @@ export function PerkConfigItem({ item, index, rewards, isLoading, totalPerks, up
         updatePerkClass(index, 'twitch_reward_id', val);
     };
 
-    const maxValue = unit === 'perk' ? totalPerks : Math.ceil(totalPerks / 15);
+    const maxValue = unit === 'perk' ? totalPerks : Math.ceil(totalPerks / PERKS_PER_PAGE);
     const effectiveMaxSize = Math.min(item.maximum_random_size, totalPerks);
-    const currentValue = unit === 'perk' ? effectiveMaxSize : Math.ceil(effectiveMaxSize / 15);
+    const currentValue = unit === 'perk' ? effectiveMaxSize : Math.ceil(effectiveMaxSize / PERKS_PER_PAGE);
 
     const handleCountChange = (val: number) => {
         let newValue = val;
         if (unit === 'page') {
-            newValue = val * 15;
+            newValue = val * PERKS_PER_PAGE;
         }
         
         // Ensure within bounds relative to raw total

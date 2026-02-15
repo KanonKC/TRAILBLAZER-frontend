@@ -33,7 +33,8 @@ import {
     updateRandomDbdPerkConfig,
     testRandomDbdPerk,
     type RandomDbdPerkConfig,
-    type RandomDbdPerkClass
+    type RandomDbdPerkClass,
+    PERKS_PER_PAGE
 } from "@/services/randomDbdPerk.service";
 import {
     DropdownMenu,
@@ -195,7 +196,6 @@ export default function RandomDbdPerkWidgetPage() {
         if (!config) return;
         setIsSaving(true);
         try {
-            console.log("Saving classes", perkClasses);
             const updated = await updateRandomDbdPerkConfig({
                 classes: perkClasses,
             });
@@ -213,7 +213,13 @@ export default function RandomDbdPerkWidgetPage() {
 
     const updatePerkClass = (index: number, field: keyof RandomDbdPerkClass, value: string | number | boolean | null) => {
         const newClasses = [...perkClasses];
-        newClasses[index] = { ...newClasses[index], [field]: value, enabled: true };
+        newClasses[index] = { ...newClasses[index], [field]: value };
+        
+        // Auto-enable if changing other fields (like reward ID), 
+        // but verify we aren't explicitly setting 'enabled'
+        if (field !== 'enabled') {
+            newClasses[index].enabled = true;
+        }
         setPerkClasses(newClasses);
     };
 
@@ -474,9 +480,9 @@ export default function RandomDbdPerkWidgetPage() {
                                                     const totalPerks = wizardType === 'killer' ? (config?.totalKillerPerks || 0) : (config?.totalSurvivorPerks || 0);
                                                     const unit = wizardType === 'survivor' ? survivorUnit : killerUnit;
                                                     
-                                                    const maxValue = unit === 'perk' ? totalPerks : Math.ceil(totalPerks / 15);
+                                                    const maxValue = unit === 'perk' ? totalPerks : Math.ceil(totalPerks / PERKS_PER_PAGE);
                                                     const effectiveMaxSize = Math.min(currentLimitClass?.maximum_random_size || 0, totalPerks);
-                                                    const currentValue = unit === 'perk' ? effectiveMaxSize : Math.ceil(effectiveMaxSize / 15);
+                                                    const currentValue = unit === 'perk' ? effectiveMaxSize : Math.ceil(effectiveMaxSize / PERKS_PER_PAGE);
 
                                                     return (
                                                         <MaxPerkSelector
@@ -487,7 +493,7 @@ export default function RandomDbdPerkWidgetPage() {
                                                             onCountChange={(val) => {
                                                                 let newValue = val;
                                                                 if (unit === 'page') {
-                                                                    newValue = val * 15;
+                                                                    newValue = val * PERKS_PER_PAGE;
                                                                 }
                                                                 if (newValue > totalPerks) newValue = totalPerks;
                                                                 

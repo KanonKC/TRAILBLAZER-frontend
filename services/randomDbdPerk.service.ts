@@ -1,5 +1,7 @@
 import { apiClient } from "@/lib/api-client";
 
+export const PERKS_PER_PAGE = 15;
+
 export interface RandomDbdPerkClass {
     id: string;
     type: "survivor" | "killer";
