@@ -12,16 +12,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TwitchLoginButton } from "@/components/twitch-login-button";
 import { useUser } from "@/components/user-context";
 import { PerkConfigItem } from "./perk-config-item";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Dices, Gift, Info, Trash2, Play, ChevronDown } from "lucide-react";
+import { Dices, Gift, Info, Trash2, Play, ChevronDown, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
     deleteRandomDbdPerkConfig,
@@ -134,7 +133,7 @@ export default function RandomDbdPerkWidgetPage() {
                 setConfig(data);
                 setIsEnabled(data.widget?.enabled ?? false);
                 setPerkClasses(data.classes || []);
-                setActiveTab("settings");
+                setActiveTab("quick-start");
             }
         } catch (error) {
             console.error("Failed to enable", error);
@@ -302,10 +301,13 @@ export default function RandomDbdPerkWidgetPage() {
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-2xl">
-                <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-2" : "grid-cols-1")}>
+                <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
                     <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
                     {config && (
-                        <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                        <>
+                            <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
+                            <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                        </>
                     )}
                 </TabsList>
 
@@ -352,6 +354,132 @@ export default function RandomDbdPerkWidgetPage() {
                                 </Button>
                             )}
                         </CardFooter>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="quick-start">
+                    <Card className="bg-transparent border-none shadow-none">
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 text-white">
+                                <Play className="w-5 h-5 text-green-500" />
+                                Quick Start
+                            </CardTitle>
+                            <CardDescription className="text-white/70">
+                                เริ่มต้นใช้งานได้ในไม่กี่นาที
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {[
+                                {
+                                    step: 1,
+                                    title: "เปิดใช้งาน Widget",
+                                    description: (
+                                        <WidgetStatusControl
+                                            isEnabled={isEnabled}
+                                            isSaving={isSaving}
+                                            onEnable={handleEnable}
+                                        />
+                                    )
+                                },
+                                {
+                                    step: 2,
+                                    title: "สร้าง Channel Rewards บน Twitch",
+                                    description: (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">
+                                                ไปที่ <strong>Creator Dashboard &gt; Viewer Rewards &gt; Channel Points</strong> บน Twitch
+                                                และสร้าง Custom Reward ใหม่สำหรับ Survivor หรือ Killer Perk
+                                            </p>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="h-8 gap-2 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 hover:text-purple-300 border-purple-500/50"
+                                                onClick={() => window.open("https://dashboard.twitch.tv/viewer-rewards/channel-points/rewards", "_blank")}
+                                            >
+                                                ไปที่ Twitch Dashboard
+                                                <ExternalLink className="w-3 h-3" />
+                                            </Button>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    step: 3,
+                                    title: "ตั้งค่า Reward ใน Widget",
+                                    description: (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">
+                                                ไปที่แท็บ <strong>Settings</strong> ของ Widget นี้ แล้วเลือก Reward ที่คุณสร้างขึ้น
+                                                ให้กับหมวดหมู่ Perk ที่ต้องการ (Survivor/Killer)
+                                            </p>
+                                            <Button
+                                                variant="secondary"
+                                                onClick={() => setActiveTab("settings")}
+                                                className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
+                                            >
+                                                ไปที่การตั้งค่า (Settings)
+                                                <ExternalLink className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    )
+                                },
+                                {
+                                    step: 4,
+                                    title: "ทดสอบการทำงาน",
+                                    description: (
+                                        <div className="space-y-3">
+                                            <p className="text-sm text-white/70">
+                                                ทดลองกดปุ่มด้านล่างเพื่อจำลองการแลก Reward (คุณต้องตั้งค่า Reward ID ในขั้นตอนก่อนหน้าก่อน)
+                                            </p>
+                                            <div className="flex flex-wrap gap-2">
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm"
+                                                    onClick={() => handleTest('survivor')} 
+                                                    disabled={isTesting}
+                                                    className="bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border-blue-500/50"
+                                                >
+                                                    {isTesting ? "Testing..." : (
+                                                        <>
+                                                            <Play className="mr-2 h-4 w-4" />
+                                                            Test Survivor
+                                                        </>
+                                                    )}
+                                                </Button>
+                                                <Button 
+                                                    variant="outline" 
+                                                    size="sm"
+                                                    onClick={() => handleTest('killer')} 
+                                                    disabled={isTesting}
+                                                    className="bg-red-500/10 text-red-400 hover:bg-red-500/20 border-red-500/50"
+                                                >
+                                                    {isTesting ? "Testing..." : (
+                                                        <>
+                                                            <Play className="mr-2 h-4 w-4" />
+                                                            Test Killer
+                                                        </>
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )
+                                }
+                            ].map((item, index, array) => (
+                                <div key={item.step} className="flex gap-4 relative pb-10 last:pb-0">
+                                    <div className="flex flex-col items-center">
+                                        <div className="flex-none flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm z-10 bg-transparent ring-4 ring-transparent">
+                                            {item.step}
+                                        </div>
+                                        {index !== array.length - 1 && (
+                                            <div className="w-[2px] bg-white/10 absolute top-8 bottom-0 left-4 -ml-[1px]" />
+                                        )}
+                                    </div>
+                                    <div className="space-y-1 pt-1 flex-1 min-w-0">
+                                        <h3 className="font-semibold leading-none mb-2 text-white">{item.title}</h3>
+                                        <div className="text-sm">{item.description}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </CardContent>
                     </Card>
                 </TabsContent>
 
