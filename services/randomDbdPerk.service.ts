@@ -68,3 +68,8 @@ export const getRandomDbdPerkEventUrl = (userId: string, key?: string) => {
     return url.toString();
 };
 
+export const testRandomDbdPerk = async (eventData: any): Promise<void> => {
+    await apiClient.post("/webhook/v1/twitch/event-sub/channel-redemption-add", eventData);
+};
+
+

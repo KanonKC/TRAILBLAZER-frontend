@@ -21,16 +21,23 @@ import { TwitchLoginButton } from "@/components/twitch-login-button";
 import { useUser } from "@/components/user-context";
 import { PerkConfigItem } from "./perk-config-item";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Dices, Gift, Info, Trash2 } from "lucide-react";
+import { AlertTriangle, Dices, Gift, Info, Trash2, Play, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
     deleteRandomDbdPerkConfig,
     enableRandomDbdPerk,
     getRandomDbdPerkConfig,
     updateRandomDbdPerkConfig,
+    testRandomDbdPerk,
     type RandomDbdPerkConfig,
     type RandomDbdPerkClass
 } from "@/services/randomDbdPerk.service";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { updateWidgetEnabled } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
 
@@ -203,6 +210,75 @@ export default function RandomDbdPerkWidgetPage() {
         setPerkClasses(newClasses);
     };
 
+    const [isTesting, setIsTesting] = useState(false);
+
+    const handleTest = async (type: 'survivor' | 'killer') => {
+        if (!user || isTesting) return;
+
+        // Find a config class that matches the requested type and has a reward ID to simulate a real scenario
+        // If no such class exists, we can still test but ideally we use one that exists
+        const targetClass = perkClasses.find(c => c.type === type && c.enabled);
+
+        // Fallback or use a placeholder if no class found? 
+        // We need a reward ID to match what the backend expects if it looks up logic by reward ID.
+        // The backend looks up RandomDbdPerkClass by twitch_reward_id.
+        // So we MUST use a reward ID that exists in our config, OR we add a proper error if none found.
+        
+        let rewardId = targetClass?.twitch_reward_id;
+        
+        // If no rewardId configured for this type, we can't really test the full flow as backend logic depends on finding the class by reward ID.
+        // However, for testing purpose, maybe we should alert the user if they haven't set a reward ID yet.
+        if (!rewardId) {
+            // Try to find ANY class of this type to get a reward ID?
+            const anyClass = perkClasses.find(c => c.type === type && c.twitch_reward_id);
+            rewardId = anyClass?.twitch_reward_id;
+        }
+
+        if (!rewardId) {
+            // Show error/toast? For now just log
+            console.warn(`No reward ID found for ${type} test`);
+            // We could proceed with a fake ID but backend might ignore it.
+            // Let's assume we proceed with a dummy if none found, to at least trigger the event.
+            // But realistically, user should configure it first.
+            rewardId = "test-reward-id-" + type; 
+        }
+
+        setIsTesting(true);
+        try {
+            const mockEvent = {
+                subscription: {
+                    status: "enabled",
+                    type: "channel.channel_points_custom_reward_redemption.add"
+                },
+                event: {
+                    id: "test-redemption-id-" + Date.now(),
+                    broadcaster_user_id: user.twitchId,
+                    broadcaster_user_login: user.username,
+                    broadcaster_user_name: user.displayName,
+                    user_id: user.twitchId, // Self redemption
+                    user_login: user.username,
+                    user_name: user.displayName,
+                    user_input: "",
+                    status: "unfulfilled",
+                    reward: {
+                        id: rewardId,
+                        title: `Test ${type === 'survivor' ? 'Survivor' : 'Killer'} Perk`,
+                        cost: 1,
+                        prompt: ""
+                    },
+                    redeemed_at: new Date().toISOString()
+                }
+            };
+
+            await testRandomDbdPerk(mockEvent);
+
+        } catch (error) {
+            console.error("Test failed:", error);
+        } finally {
+            setIsTesting(false);
+        }
+    };
+
     if (isUserLoading || isLoading) {
         return (
             <div className="container mx-auto py-10">
@@ -333,9 +409,32 @@ export default function RandomDbdPerkWidgetPage() {
                                 <Trash2 className="w-4 h-4 mr-2" />
                                 ลบวิดเจ็ต
                             </Button>
-                            <Button onClick={handleSave} disabled={isSaving} className="ml-auto">
-                                {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
-                            </Button>
+                            <div className="flex gap-2 ml-auto">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" disabled={isTesting}>
+                                            {isTesting ? "Testing..." : (
+                                                <>
+                                                    <Play className="mr-2 h-4 w-4" />
+                                                    Test
+                                                    <ChevronDown className="ml-2 h-3 w-3 opacity-50" />
+                                                </>
+                                            )}
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem onClick={() => handleTest('survivor')}>
+                                            Test Survivor
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleTest('killer')}>
+                                            Test Killer
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <Button onClick={handleSave} disabled={isSaving}>
+                                    {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
+                                </Button>
+                            </div>
                         </CardFooter>
                     </Card>
                 </TabsContent>
