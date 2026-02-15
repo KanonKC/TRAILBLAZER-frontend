@@ -39,7 +39,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import {
-    deleteFirstWordConfig,
     enableFirstWord,
     getFirstWordConfig,
     testFirstWordAudio,
@@ -48,6 +47,7 @@ import {
     refreshFirstWordOverlayKey,
     type FirstWordConfig
 } from "@/services/firstWord.service";
+import { deleteWidget } from "@/services/widget.service";
 
 
 
@@ -69,9 +69,10 @@ export default function FirstWordWidgetPage() {
     // ... (rest of state)
 
     const handleDelete = async () => {
+        if (!config?.widget?.id) return;
         setIsSaving(true);
         try {
-            const success = await deleteFirstWordConfig();
+            const success = await deleteWidget(config.widget.id);
             if (success) {
                 setConfig(null);
                 setReplyMessage("");
@@ -459,13 +460,21 @@ export default function FirstWordWidgetPage() {
                                     step: 5,
                                     title: "บันทึกและทดสอบ",
                                     description: (
-                                        <WidgetTestControl
-                                            isSaving={isSaving}
-                                            isTesting={isTesting}
-                                            onSave={handleSave}
-                                            onTest={handleTestAudio}
-                                            canTest={!!(config?.audio_key || config?.reply_message)}
-                                        />
+                                        <>
+                                            <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+                                            <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                                                <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                                                <li>ต้องมีเสียงเล่นออกมาจากโปรแกรม OBS</li>
+                                            </ol>
+                                            <WidgetTestControl
+                                                isSaving={isSaving}
+                                                isTesting={isTesting}
+                                                onSave={handleSave}
+                                                onTest={handleTestAudio}
+                                                canTest={!!(config?.audio_key || config?.reply_message)}
+                                            />
+                                        </>
                                     )
                                 },
                                 {

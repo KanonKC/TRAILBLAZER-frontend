@@ -10,6 +10,7 @@ export interface ClipShoutoutConfig {
     enabled_clip?: boolean;
     enabled_highlight_only?: boolean;
     widget: {
+        id: string;
         overlay_key: string;
     }
 }
@@ -44,14 +45,7 @@ export const updateClipShoutoutConfig = async (data: Partial<ClipShoutoutConfig>
     }
 };
 
-export const deleteClipShoutoutConfig = async (): Promise<boolean> => {
-    try {
-        await apiClient.delete("/api/v1/clip-shoutout");
-        return true;
-    } catch (error) {
-        return false;
-    }
-};
+
 
 export const testClipShoutout = async (eventData: any): Promise<void> => {
     await apiClient.post("/webhook/v1/twitch/event-sub/channel-chat-notification", eventData);

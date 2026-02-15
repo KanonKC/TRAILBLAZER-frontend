@@ -31,7 +31,6 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 
 import {
-    deleteClipShoutoutConfig,
     enableClipShoutout,
     getClipShoutoutConfig,
     testClipShoutout,
@@ -39,6 +38,7 @@ import {
     refreshClipShoutoutOverlayKey,
     type ClipShoutoutConfig
 } from "@/services/clipShoutout.service";
+import { deleteWidget } from "@/services/widget.service";
 
 export default function ClipShoutoutWidgetPage() {
     const { user, isLoading: isUserLoading } = useUser();
@@ -59,9 +59,10 @@ export default function ClipShoutoutWidgetPage() {
     const [activeTab, setActiveTab] = useState("overview");
 
     const handleDelete = async () => {
+        if (!config?.widget?.id) return;
         setIsSaving(true);
         try {
-            const success = await deleteClipShoutoutConfig();
+            const success = await deleteWidget(config.widget.id);
             if (success) {
                 setConfig(null);
                 setReplyMessage("");
