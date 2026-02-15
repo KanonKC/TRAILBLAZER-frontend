@@ -49,6 +49,31 @@ export default function RandomDbdPerkWidgetPage() {
     const [rewards, setRewards] = useState<TwitchCustomReward[]>([]);
     const [isRewardsLoading, setIsRewardsLoading] = useState(false);
 
+    const [survivorUnit, setSurvivorUnit] = useState<"perk" | "page">("perk");
+    const [killerUnit, setKillerUnit] = useState<"perk" | "page">("perk");
+
+    useEffect(() => {
+        const savedSurvivorUnit = localStorage.getItem("random-dbd-perk-unit-preference-survivor");
+        if (savedSurvivorUnit === "perk" || savedSurvivorUnit === "page") {
+            setSurvivorUnit(savedSurvivorUnit);
+        }
+
+        const savedKillerUnit = localStorage.getItem("random-dbd-perk-unit-preference-killer");
+        if (savedKillerUnit === "perk" || savedKillerUnit === "page") {
+            setKillerUnit(savedKillerUnit);
+        }
+    }, []);
+
+    const handleSurvivorUnitChange = (val: "perk" | "page") => {
+        setSurvivorUnit(val);
+        localStorage.setItem("random-dbd-perk-unit-preference-survivor", val);
+    };
+
+    const handleKillerUnitChange = (val: "perk" | "page") => {
+        setKillerUnit(val);
+        localStorage.setItem("random-dbd-perk-unit-preference-killer", val);
+    };
+
     useEffect(() => {
         if (!user) return;
         const fetchRewards = async () => {
@@ -291,6 +316,9 @@ export default function RandomDbdPerkWidgetPage() {
                                     rewards={rewards}
                                     isLoading={isRewardsLoading}
                                     updatePerkClass={updatePerkClass}
+                                    totalPerks={item.type === 'killer' ? (config?.totalKillerPerks || 0) : (config?.totalSurvivorPerks || 0)}
+                                    unit={item.type === 'survivor' ? survivorUnit : killerUnit}
+                                    onUnitChange={item.type === 'survivor' ? handleSurvivorUnitChange : handleKillerUnitChange}
                                 />
                             ))}
 

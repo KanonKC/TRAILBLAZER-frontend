@@ -5,21 +5,23 @@ import { cn } from "@/lib/utils";
 import { RandomDbdPerkClass } from "@/services/randomDbdPerk.service";
 import { type TwitchCustomReward } from "@/services/twitch.service";
 import { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface PerkConfigItemProps {
     item: RandomDbdPerkClass;
     index: number;
     rewards: TwitchCustomReward[];
     isLoading?: boolean;
+    totalPerks: number;
     updatePerkClass: (index: number, key: keyof RandomDbdPerkClass, value: string | null | boolean | number) => void;
+    unit: "perk" | "page";
+    onUnitChange: (unit: "perk" | "page") => void;
 }
 
-export function PerkConfigItem({ item, index, rewards, isLoading, updatePerkClass }: PerkConfigItemProps) {
+export function PerkConfigItem({ item, index, rewards, isLoading, totalPerks, updatePerkClass, unit, onUnitChange }: PerkConfigItemProps) {
     const selectedReward = rewards.find(r => r.id === item.twitch_reward_id);
     const selectedIcon = selectedReward?.image?.url_1x || selectedReward?.default_image?.url_1x;
     const [inputValue, setInputValue] = useState(selectedReward?.title || "");
-
-
 
     useEffect(() => {
         if (selectedReward) {
@@ -35,6 +37,23 @@ export function PerkConfigItem({ item, index, rewards, isLoading, updatePerkClas
         if (reward) {
             setInputValue(reward.title);
         }
+    };
+
+    const maxValue = unit === 'perk' ? totalPerks : Math.ceil(totalPerks / 15);
+    const effectiveMaxSize = Math.min(item.maximum_random_size, totalPerks);
+    const currentValue = unit === 'perk' ? effectiveMaxSize : Math.ceil(effectiveMaxSize / 15);
+
+    const handleCountChange = (val: number) => {
+        let newValue = val;
+        if (unit === 'page') {
+            newValue = val * 15;
+        }
+        
+        // Ensure within bounds relative to raw total
+        if (newValue < 0) newValue = 0;
+        if (newValue > totalPerks) newValue = totalPerks;
+
+        updatePerkClass(index, 'maximum_random_size', newValue);
     };
 
     return (
@@ -99,17 +118,17 @@ export function PerkConfigItem({ item, index, rewards, isLoading, updatePerkClas
                                                 textValue={reward.title}
                                             >
                                                 <div className="flex items-center justify-between gap-2 w-full">
-                                                    <div className="flex items-center gap-2">
+                                                    <div className="flex items-center justify-start gap-2 max-w-[200px]">
                                                         {(reward.image?.url_1x || reward.default_image?.url_1x) && (
                                                             <img
                                                                 src={reward.image?.url_1x || reward.default_image?.url_1x}
                                                                 alt={reward.title}
-                                                                className="w-4 h-4 object-contain"
+                                                                className="w-4 h-4 object-contain shrink-0"
                                                             />
                                                         )}
-                                                        <span className="truncate max-w-[150px]">{reward.title}</span>
+                                                        <span className="truncate">{reward.title}</span>
                                                     </div>
-                                                    <span className="text-muted-foreground text-xs">{reward.cost}</span>
+                                                    <span className="text-muted-foreground text-xs shrink-0">{reward.cost}</span>
                                                 </div>
                                             </ComboboxItem>
                                         ))}
@@ -123,22 +142,46 @@ export function PerkConfigItem({ item, index, rewards, isLoading, updatePerkClas
                     </Combobox>
                 </div>
                 <div className="space-y-2">
-                    <Label>จำนวน Perk สูงสุด ({item.maximum_random_size})</Label>
+                    <div className="flex items-center justify-between">
+                        <Label>จำนวนสูงสุด</Label>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="number"
+                                min="0"
+                                max={maxValue}
+                                value={currentValue}
+                                onChange={(e) => {
+                                    let val = parseInt(e.target.value);
+                                    if (isNaN(val)) val = 0;
+                                    handleCountChange(val);
+                                }}
+                                className="w-16 h-8 text-sm text-center bg-transparent border rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                            />
+                            <Select value={unit} onValueChange={(val: "perk" | "page") => onUnitChange(val)}>
+                                <SelectTrigger className="h-8 w-[80px]">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="perk">Perk</SelectItem>
+                                    <SelectItem value="page">Page</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
                     <div className="pt-2 px-1">
                         <input
                             type="range"
-                            min="1"
-                            max="4"
+                            min="0"
+                            max={maxValue}
                             step="1"
                             className="w-full accent-emerald-500 cursor-pointer"
-                            value={item.maximum_random_size}
-                            onChange={(e) => updatePerkClass(index, 'maximum_random_size', parseInt(e.target.value))}
+                            value={currentValue}
+                            onChange={(e) => handleCountChange(parseInt(e.target.value))}
                         />
                         <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                            <span>1</span>
-                            <span>2</span>
-                            <span>3</span>
-                            <span>4</span>
+                            <span>0</span>
+                            <span>{Math.floor(maxValue / 2)}</span>
+                            <span>{maxValue}</span>
                         </div>
                     </div>
                 </div>

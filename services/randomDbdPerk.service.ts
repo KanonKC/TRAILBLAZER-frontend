@@ -17,6 +17,8 @@ export interface RandomDbdPerkConfig {
         enabled: boolean;
     };
     classes: RandomDbdPerkClass[];
+    totalKillerPerks: number;
+    totalSurvivorPerks: number;
 }
 
 export const getRandomDbdPerkConfig = async (): Promise<RandomDbdPerkConfig | null> => {
