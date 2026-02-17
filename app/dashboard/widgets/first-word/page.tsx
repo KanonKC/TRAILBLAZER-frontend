@@ -31,7 +31,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TwitchLoginButton } from "@/components/twitch-login-button";
+import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Check, ExternalLink, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
@@ -48,8 +48,17 @@ import {
     type FirstWordConfig
 } from "@/services/firstWord.service";
 import { deleteWidget } from "@/services/widget.service";
+import MultiStepProgressBar from "@/components/MultiStepProgressBar";
+import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
+import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
+import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
+import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
+import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
 
 
+
+import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
+import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 
 export default function FirstWordWidgetPage() {
     const { user, isLoading: isUserLoading } = useUser();
@@ -62,7 +71,6 @@ export default function FirstWordWidgetPage() {
     const [audioFile, setAudioFile] = useState<File | null>(null);
     const [botProfile, setBotProfile] = useState<string>(user?.twitchId || "");
 
-    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
 
@@ -329,213 +337,162 @@ export default function FirstWordWidgetPage() {
                 </TabsList>
 
                 <TabsContent value="overview">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <Info className="w-5 h-5 text-blue-500" />
-                                Overview
-                            </CardTitle>
-                            <CardDescription>
-                                อธิบายความสามารถและการทำงานของวิดเจ็ตตัวนี้
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <p className="text-gray-200 text-base leading-relaxed">
-                                อยากให้ช่องคึกคัก ต้องเริ่มที่การทักทาย! วิดเจ็ตนี้จะช่วยต้อนรับผู้ชมหน้าใหม่ทันทีที่เขาพิมพ์แชทครั้งแรก ไม่ต้องกลัวหลุดโฟกัสตอนเล่นเกม หรือคุยเพลินจนลืมทัก ช่วยสร้างความประทับใจแรกสุดปัง ให้ทุกคนรู้สึกอบอุ่นเหมือนเพื่อนสนิท แถมยังตั้งค่าข้อความและเสียงเอฟเฟกต์กวนๆ ได้ตามสไตล์คุณ!
-                            </p>
-                            <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
-                                        <MessageSquare className="w-5 h-5" />
-                                    </div>
-                                    <h3 className="font-semibold mb-1">Auto Greeting</h3>
-                                    <p className="text-sm text-muted-foreground">ต้อนรับผู้ชมใหม่โดยอัตโนมัติเมื่อพวกเขาพิมพ์ข้อความแรก</p>
+                    <WidgetOverviewCard
+                        showLoginButton={!user}
+                        showEnableButton={!!user && !config}
+                        onClickEnable={handleEnable}
+                        isLoading={isSaving}
+                    >
+                        <p className="text-gray-200 text-base leading-relaxed">
+                            อยากให้ช่องคึกคัก ต้องเริ่มที่การทักทาย! วิดเจ็ตนี้จะช่วยต้อนรับผู้ชมหน้าใหม่ทันทีที่เขาพิมพ์แชทครั้งแรก ไม่ต้องกลัวหลุดโฟกัสตอนเล่นเกม หรือคุยเพลินจนลืมทัก ช่วยสร้างความประทับใจแรกสุดปัง ให้ทุกคนรู้สึกอบอุ่นเหมือนเพื่อนสนิท แถมยังตั้งค่าข้อความและเสียงเอฟเฟกต์กวนๆ ได้ตามสไตล์คุณ!
+                        </p>
+                        <div className="grid gap-4 md:grid-cols-2">
+                            <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
+                                <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
+                                    <MessageSquare className="w-5 h-5" />
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
-                                        <Music className="w-5 h-5" />
-                                    </div>
-                                    <h3 className="font-semibold mb-1">Sound Alerts</h3>
-                                    <p className="text-sm text-muted-foreground">เล่นเสียงเอฟเฟกต์เพื่อประกาศผู้มาเยือนคนใหม่</p>
-                                </div>
+                                <h3 className="font-semibold mb-1">Auto Greeting</h3>
+                                <p className="text-sm text-muted-foreground">ต้อนรับผู้ชมใหม่โดยอัตโนมัติเมื่อพวกเขาพิมพ์ข้อความแรก</p>
                             </div>
-                        </CardContent>
-                        <CardFooter>
-                            {!user && (
-                                <TwitchLoginButton className="w-full" />
-                            )}
-                            {user && !config && (
-                                <Button onClick={handleEnable} disabled={isSaving} className="w-full">
-                                    {isSaving ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน Widget"}
-                                </Button>
-                            )}
-                        </CardFooter>
-                    </Card>
+                            <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
+                                <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
+                                    <Music className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-semibold mb-1">Sound Alerts</h3>
+                                <p className="text-sm text-muted-foreground">เล่นเสียงเอฟเฟกต์เพื่อประกาศผู้มาเยือนคนใหม่</p>
+                            </div>
+                        </div>
+                    </WidgetOverviewCard>
                 </TabsContent>
 
                 <TabsContent value="quick-start">
-                    <Card className="bg-transparent border-none shadow-none">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 text-white">
-                                <Play className="w-5 h-5 text-green-500" />
-                                Quick Start
-                            </CardTitle>
-                            <CardDescription className="text-white/70">
-                                เริ่มต้นใช้งานได้ในไม่กี่นาที
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            {[
-                                {
-                                    step: 1,
-                                    title: "เปิดใช้งาน Widget",
-                                    description: (
-                                        <WidgetStatusControl
-                                            isEnabled={isEnabled}
-                                            isSaving={isSaving}
-                                            onEnable={handleEnable}
+                    <WidgetQuickStartCard>
+                        {[
+                            {
+                                step: 1,
+                                title: "เปิดใช้งาน Widget",
+                                description: (
+                                    <WidgetStatusControl
+                                        isEnabled={isEnabled}
+                                        isSaving={isSaving}
+                                        onEnable={handleEnable}
+                                    />
+                                )
+                            },
+                            {
+                                step: 2,
+                                title: "ใส่ข้อความ",
+                                description: (
+                                    <div className="space-y-3">
+                                        <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
+                                        <ReplyMessageTextarea
+                                            hideLabel
+                                            value={replyMessage}
+                                            onChange={handleReplyMessageChange}
+                                            error={replyMessageError}
+                                            variables={[
+                                                {
+                                                    variable: "{{user_name}}",
+                                                    description: "ชื่อที่แสดงผลของผู้ทักทาย",
+                                                    example: "User123"
+                                                }
+                                            ]}
                                         />
-                                    )
-                                },
-                                {
-                                    step: 2,
-                                    title: "ใส่ข้อความ",
-                                    description: (
-                                        <div className="space-y-3">
-                                            <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
-                                            <ReplyMessageTextarea
-                                                hideLabel
-                                                value={replyMessage}
-                                                onChange={handleReplyMessageChange}
-                                                error={replyMessageError}
-                                                variables={[
-                                                    {
-                                                        variable: "{{user_name}}",
-                                                        description: "ชื่อที่แสดงผลของผู้ทักทาย",
-                                                        example: "User123"
-                                                    }
-                                                ]}
-                                            />
-                                        </div>
-                                    )
-                                },
-                                {
-                                    step: 3,
-                                    title: "ใส่เสียง",
-                                    description: (
-                                        <div className="space-y-3">
-                                            <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
-                                            <AudioFileUploader
-                                                currentFileName={config?.audio_key}
-                                                selectedFile={audioFile}
-                                                onFileSelect={setAudioFile}
-                                                className="text-white"
-                                                inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
-                                                hideLabel
-                                            />
-                                        </div>
-                                    )
-                                },
-                                {
-                                    step: 4,
-                                    title: "นำ Overlay สำหรับเสียงไปใส่บน OBS",
-                                    description: (
-                                        <div className="space-y-3">
-                                            <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
-                                            <p className="text-sm text-white/70 italic">* คุณสามารถข้ามขั้นตอนนี้ได้ หากไม่ต้องการใช้เสียง</p>
-                                            <OverlayUrlInput
-                                                url={overlayUrl}
-                                                className="text-white"
-                                                inputClassName="bg-transparent border-white/20 text-white"
-                                                showRefresh={true}
-                                                onRefresh={() => setShowConfirmRefresh(true)}
-                                                hideLabel
-                                            />
-
-                                            <OBSSetupHelp />
-                                        </div>
-                                    )
-                                },
-                                {
-                                    step: 5,
-                                    title: "บันทึกและทดสอบ",
-                                    description: (
-                                        <>
-                                            <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
-
-                                            <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
-                                                <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
-                                                <li>ต้องมีเสียงเล่นออกมาจากโปรแกรม OBS</li>
-                                            </ol>
-                                            <WidgetTestControl
-                                                isSaving={isSaving}
-                                                isTesting={isTesting}
-                                                onSave={handleSave}
-                                                onTest={handleTestAudio}
-                                                canTest={!!(config?.audio_key || config?.reply_message)}
-                                            />
-                                        </>
-                                    )
-                                },
-                                {
-                                    step: 6,
-                                    title: "การตั้งค่าเพิ่มเติม",
-                                    description: (
-                                        <div className="space-y-3">
-                                            <p className="text-sm text-white/70">
-                                                Quick Start เป็นเพียงการตั้งค่าเบื้องต้นเท่านั้น คุณสามารถปรับแต่งการตั้งค่าอื่นๆ เพิ่มเติมได้ที่เมนู Settings
-                                            </p>
-                                            <div className="flex justify-start">
-                                                <Button
-                                                    variant="secondary"
-                                                    onClick={() => setActiveTab("settings")}
-                                                    className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
-                                                >
-                                                    ไปที่การตั้งค่า (Settings)
-                                                    <ExternalLink className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    )
-                                }
-                            ].map((item, index, array) => (
-                                <div key={item.step} className="flex gap-4 relative pb-10 last:pb-0">
-                                    <div className="flex flex-col items-center">
-                                        <div className="flex-none flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm z-10 bg-transparent ring-4 ring-transparent">
-                                            {item.step}
-                                        </div>
-                                        {index !== array.length - 1 && (
-                                            <div className="w-[2px] bg-white/10 absolute top-8 bottom-0 left-4 -ml-[1px]" />
-                                        )}
                                     </div>
-                                    <div className="space-y-1 pt-1 flex-1 min-w-0">
-                                        <h3 className="font-semibold leading-none mb-2 text-white">{item.title}</h3>
-                                        <div className="text-sm">{item.description}</div>
+                                )
+                            },
+                            {
+                                step: 3,
+                                title: "ใส่เสียง",
+                                description: (
+                                    <div className="space-y-3">
+                                        <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
+                                        <AudioFileUploader
+                                            currentFileName={config?.audio_key}
+                                            selectedFile={audioFile}
+                                            onFileSelect={setAudioFile}
+                                            className="text-white"
+                                            inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
+                                            hideLabel
+                                        />
                                     </div>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
+                                )
+                            },
+                            {
+                                step: 4,
+                                title: "นำ Overlay สำหรับเสียงไปใส่บน OBS",
+                                description: (
+                                    <div className="space-y-3">
+                                        <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
+                                        <p className="text-sm text-white/70 italic">* คุณสามารถข้ามขั้นตอนนี้ได้ หากไม่ต้องการใช้เสียง</p>
+                                        <OverlayUrlInput
+                                            url={overlayUrl}
+                                            className="text-white"
+                                            inputClassName="bg-transparent border-white/20 text-white"
+                                            showRefresh={true}
+                                            onRefresh={() => setShowConfirmRefresh(true)}
+                                            hideLabel
+                                        />
+
+                                        <OBSSetupHelp />
+                                    </div>
+                                )
+                            },
+                            {
+                                step: 5,
+                                title: "บันทึกและทดสอบ",
+                                description: (
+                                    <>
+                                        <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+                                        <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                                            <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                                            <li>ต้องมีเสียงเล่นออกมาจากโปรแกรม OBS</li>
+                                        </ol>
+                                        <WidgetTestControl
+                                            isSaving={isSaving}
+                                            isTesting={isTesting}
+                                            onSave={handleSave}
+                                            onTest={handleTestAudio}
+                                            canTest={!!(config?.audio_key || config?.reply_message)}
+                                        />
+                                    </>
+                                )
+                            },
+                            {
+                                step: 6,
+                                title: "การตั้งค่าเพิ่มเติม",
+                                description: (
+                                    <div className="space-y-3">
+                                        <p className="text-sm text-white/70">
+                                            Quick Start เป็นเพียงการตั้งค่าเบื้องต้นเท่านั้น คุณสามารถปรับแต่งการตั้งค่าอื่นๆ เพิ่มเติมได้ที่เมนู Settings
+                                        </p>
+                                        <div className="flex justify-start">
+                                            <Button
+                                                variant="secondary"
+                                                onClick={() => setActiveTab("settings")}
+                                                className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
+                                            >
+                                                ไปที่การตั้งค่า (Settings)
+                                                <ExternalLink className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        ].map((item, index, array) => (
+                            <MultiStepProgressBar
+                                key={item.step}
+                                data={item}
+                                drawConnector={index !== array.length - 1}
+                            />
+                        ))}
+                    </WidgetQuickStartCard>
                 </TabsContent>
 
                 <TabsContent value="settings">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2 justify-between">
-                                <span className="flex items-center gap-2">
-                                    <Info className="w-5 h-5 text-blue-500" />
-                                    Settings
-                                </span>
-                                <Switch
-                                    checked={isEnabled}
-                                    onCheckedChange={handleSwitchChange}
-                                />
-                            </CardTitle>
-                            <CardDescription>
-                                ปรับแต่งการตั้งค่าสำหรับวิดเจ็ต
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-8">
+                    <WidgetSettingsCard>
+                        <WidgetSettingsCardContent>
                             {/* Message Section */}
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 border-b pb-2">
@@ -584,15 +541,12 @@ export default function FirstWordWidgetPage() {
                                     showRefresh={true}
                                 />
                             </div>
-                        </CardContent>
-                        <CardFooter className="flex justify-between border-t px-6 py-4">
-                            <Button
-                                variant="destructive"
-                                onClick={() => setShowConfirmDelete(true)}
-                                disabled={isSaving}
-                            >
-                                ลบวิดเจ็ต
-                            </Button>
+                        </WidgetSettingsCardContent>
+                        <WidgetSettingsCardFooter>
+                            <DeleteWidgetButton
+                                onDelete={handleDelete}
+                                isLoading={isSaving}
+                            />
                             <div className="flex gap-2">
                                 <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config?.audio_key && !config?.reply_message}>
                                     {isTesting ? (
@@ -604,36 +558,16 @@ export default function FirstWordWidgetPage() {
                                         </>
                                     )}
                                 </Button>
-                                <Button onClick={handleSave} disabled={isSaving}>
-                                    {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
-                                </Button>
+                                <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
                             </div>
-                        </CardFooter>
-                    </Card>
+                        </WidgetSettingsCardFooter>
+                    </WidgetSettingsCard>
                 </TabsContent>
             </Tabs>
 
 
 
-            <AlertDialog open={showConfirmDelete} onOpenChange={setShowConfirmDelete}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>คุณต้องการลบวิดเจ็ตนี้หรือไม่?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            การลบวิดเจ็ตจะทำให้การตั้งค่าทั้งหมดหายไป และวิดเจ็ตจะถูกปิดการใช้งาน คุณจะต้องเปิดใช้งานใหม่อีกครั้งหากต้องการใช้งาน
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDelete}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            ยืนยันการลบ
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+
 
             <AlertDialog open={showConfirmRefresh} onOpenChange={setShowConfirmRefresh}>
                 <AlertDialogContent>

@@ -23,7 +23,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TwitchLoginButton } from "@/components/twitch-login-button";
+import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, ExternalLink, Info, MessageSquare, Play, Video } from "lucide-react";

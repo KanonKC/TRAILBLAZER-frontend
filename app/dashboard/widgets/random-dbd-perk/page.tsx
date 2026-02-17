@@ -18,7 +18,7 @@ import { MaxPerkSelector } from "@/components/widget/MaxPerkSelector";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TwitchLoginButton } from "@/components/twitch-login-button";
+import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
 import { useUser } from "@/components/user-context";
 import { PerkConfigItem } from "./perk-config-item";
 import { cn } from "@/lib/utils";
