@@ -11,50 +11,44 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
-import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
-import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
-import { AudioFileUploader } from "@/components/widget/AudioFileUploader";
-import { BotProfileSelector, type BotProfileType } from "@/components/widget/BotProfileSelector";
-import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
+import { AudioFileUploader } from "@/components/widget/AudioFileUploader";
+import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
+import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
+import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
+import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Check, ExternalLink, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
+import { Copy, Save, ExternalLink, MessageSquare, Music, Play } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-import {
-    enableFirstWord,
-    getFirstWordConfig,
-    testFirstWordAudio,
-    updateFirstWordConfig,
-    uploadFirstWordAudio,
-    refreshFirstWordOverlayKey,
-    type FirstWordConfig
-} from "@/services/firstWord.service";
-import { deleteWidget } from "@/services/widget.service";
 import MultiStepProgressBar from "@/components/MultiStepProgressBar";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
-
+import {
+    enableFirstWord,
+    getFirstWordConfig,
+    refreshFirstWordOverlayKey,
+    testFirstWordAudio,
+    updateFirstWordConfig,
+    type FirstWordConfig
+} from "@/services/firstWord.service";
+import { deleteWidget } from "@/services/widget.service";
+import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
@@ -68,11 +62,12 @@ export default function FirstWordWidgetPage() {
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
     const [isEnabled, setIsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [audioFile, setAudioFile] = useState<File | null>(null);
+    const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
     const [botProfile, setBotProfile] = useState<string>(user?.twitchId || "");
 
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
+
 
     // ... (rest of state)
 
@@ -192,29 +187,36 @@ export default function FirstWordWidgetPage() {
 
         setIsSaving(true);
         try {
-            const updated = await updateFirstWordConfig({
+            const payload: Partial<FirstWordConfig> = {
                 reply_message: replyMessage,
                 twitch_bot_id: botProfile === "default" ? null : botProfile
-            });
+            };
+
+            if (audioFile) {
+                if (audioFile instanceof File) {
+                    const uploaded = await uploadFile(audioFile);
+                    payload.audio_file_id = uploaded.id;
+                } else {
+                    payload.audio_file_id = audioFile.id;
+                }
+            }
+
+            const updated = await updateFirstWordConfig(payload);
 
             if (updated) {
                 setConfig(updated);
+                setAudioFile(null);
 
-                if (audioFile) {
-                    const audioSuccess = await uploadFirstWordAudio(audioFile);
-                    if (audioSuccess) {
-                        setAudioFile(null);
-                        // Refresh config to get new audio key
-                        const newConfig = await getFirstWordConfig();
-                        if (newConfig) {
-                            setConfig(newConfig);
-                        }
-                    }
-                }
                 // Optionally show toast
+                toast.success("บันทึกสำเร็จ", {
+                    description: "การตั้งค่าของคุณถูกบันทึกเรียบร้อยแล้ว",
+                });
             }
         } catch (error) {
             console.error("Failed to update", error);
+            toast.error("บันทึกไม่สำเร็จ", {
+                description: "เกิดข้อผิดพลาดในการบันทึกการตั้งค่า",
+            });
         } finally {
             setIsSaving(false);
         }
