@@ -20,6 +20,7 @@ export const metadata: Metadata = {
 
 import { UserProvider } from "@/components/user-context";
 import Navbar from "@/components/navbar";
+import { Toaster } from "@/components/ui/sonner";
 
 // ... existing imports
 
@@ -36,6 +37,7 @@ export default function RootLayout({
         <UserProvider>
           <Navbar />
           {children}
+          <Toaster />
         </UserProvider>
       </body>
     </html>

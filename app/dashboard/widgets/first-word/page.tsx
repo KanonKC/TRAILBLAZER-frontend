@@ -11,50 +11,44 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
-import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
-import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
-import { AudioFileUploader } from "@/components/widget/AudioFileUploader";
-import { BotProfileSelector, type BotProfileType } from "@/components/widget/BotProfileSelector";
-import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Switch } from "@/components/ui/switch";
+import { AudioFileUploader } from "@/components/widget/AudioFileUploader";
+import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
+import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
+import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
+import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Check, ExternalLink, Info, MessageSquare, Music, Play, RefreshCcw } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Copy, Save, ExternalLink, MessageSquare, Music, Play } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 
-import {
-    enableFirstWord,
-    getFirstWordConfig,
-    testFirstWordAudio,
-    updateFirstWordConfig,
-    uploadFirstWordAudio,
-    refreshFirstWordOverlayKey,
-    type FirstWordConfig
-} from "@/services/firstWord.service";
-import { deleteWidget } from "@/services/widget.service";
 import MultiStepProgressBar from "@/components/MultiStepProgressBar";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
-
+import {
+    enableFirstWord,
+    getFirstWordConfig,
+    refreshFirstWordOverlayKey,
+    testFirstWordAudio,
+    updateFirstWordConfig,
+    type FirstWordConfig
+} from "@/services/firstWord.service";
+import { deleteWidget } from "@/services/widget.service";
+import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
@@ -68,13 +62,21 @@ export default function FirstWordWidgetPage() {
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
     const [isEnabled, setIsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [audioFile, setAudioFile] = useState<File | null>(null);
+    const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
     const [botProfile, setBotProfile] = useState<string>(user?.twitchId || "");
 
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
 
+
     // ... (rest of state)
+
+    const handleOnFileSelect = (file: File | UploadedFile | null, fileKey: string | null) => {
+        if (!fileKey) return;
+        updateFirstWordConfig({
+            audio_key: fileKey
+        }).then(fetchConfig);
+    };
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
@@ -119,31 +121,30 @@ export default function FirstWordWidgetPage() {
         : "";
 
 
+    const fetchConfig = useCallback(async () => {
+        try {
+            const data = await getFirstWordConfig();
+            if (data) {
+                setConfig(data);
+                setReplyMessage(data.reply_message || "");
+                setIsEnabled(data.enabled ?? true);
+                setBotProfile(data.twitch_bot_id || "default");
+                setActiveTab("settings");
+            } else {
+                setConfig(null);
+            }
+        } catch (error) {
+            console.error("Failed to fetch config", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         if (isUserLoading) return;
         if (!user) {
             setIsLoading(false);
             return;
-        }
-
-        const fetchConfig = async () => {
-            try {
-                const data = await getFirstWordConfig();
-                if (data) {
-                    setConfig(data);
-                    setReplyMessage(data.reply_message || "");
-                    setIsEnabled(data.enabled ?? true);
-                    setBotProfile(data.twitch_bot_id || "default");
-                    setActiveTab("settings");
-                } else {
-                    setConfig(null);
-                }
-            } catch (error) {
-                console.error("Failed to fetch config", error);
-            } finally {
-                setIsLoading(false);
-            }
         }
 
         fetchConfig();
@@ -192,29 +193,36 @@ export default function FirstWordWidgetPage() {
 
         setIsSaving(true);
         try {
-            const updated = await updateFirstWordConfig({
+            const payload: Partial<FirstWordConfig> = {
                 reply_message: replyMessage,
                 twitch_bot_id: botProfile === "default" ? null : botProfile
-            });
+            };
+
+            if (audioFile) {
+                if (audioFile instanceof File) {
+                    const uploaded = await uploadFile(audioFile);
+                    payload.audio_key = uploaded.id;
+                } else {
+                    payload.audio_key = audioFile.id;
+                }
+            }
+
+            const updated = await updateFirstWordConfig(payload);
 
             if (updated) {
                 setConfig(updated);
+                setAudioFile(null);
 
-                if (audioFile) {
-                    const audioSuccess = await uploadFirstWordAudio(audioFile);
-                    if (audioSuccess) {
-                        setAudioFile(null);
-                        // Refresh config to get new audio key
-                        const newConfig = await getFirstWordConfig();
-                        if (newConfig) {
-                            setConfig(newConfig);
-                        }
-                    }
-                }
                 // Optionally show toast
+                toast.success("บันทึกสำเร็จ", {
+                    description: "การตั้งค่าของคุณถูกบันทึกเรียบร้อยแล้ว",
+                });
             }
         } catch (error) {
             console.error("Failed to update", error);
+            toast.error("บันทึกไม่สำเร็จ", {
+                description: "เกิดข้อผิดพลาดในการบันทึกการตั้งค่า",
+            });
         } finally {
             setIsSaving(false);
         }
@@ -408,7 +416,7 @@ export default function FirstWordWidgetPage() {
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
                                         <AudioFileUploader
-                                            currentFileName={config?.audio_key}
+                                            currentFileName={config?.audio.name}
                                             selectedFile={audioFile}
                                             onFileSelect={setAudioFile}
                                             className="text-white"
@@ -528,9 +536,9 @@ export default function FirstWordWidgetPage() {
                                 </div>
                                 <div className="">
                                     <AudioFileUploader
-                                        currentFileName={config?.audio_key}
+                                        currentFileName={config?.audio.name}
                                         selectedFile={audioFile}
-                                        onFileSelect={setAudioFile}
+                                        onFileSelect={handleOnFileSelect}
                                         className="text-white"
                                         inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
                                     />

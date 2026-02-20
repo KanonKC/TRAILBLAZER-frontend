@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { UploadedFile } from "./uploadedFile.service";
 
 export interface FirstWordConfig {
     id: string;
@@ -8,6 +9,7 @@ export interface FirstWordConfig {
     enabled: boolean;
     audio_key?: string | null;
     twitch_bot_id?: string | null;
+    audio: UploadedFile
     widget: {
         id: string;
         overlay_key: string;
@@ -44,21 +46,21 @@ export const updateFirstWordConfig = async (data: Partial<FirstWordConfig>): Pro
     }
 };
 
-export const uploadFirstWordAudio = async (file: File): Promise<boolean> => {
-    const formData = new FormData();
-    formData.append("file", file);
+// export const uploadFirstWordAudio = async (file: File): Promise<boolean> => {
+//     const formData = new FormData();
+//     formData.append("file", file);
 
-    try {
-        await apiClient.post("/api/v1/first-word/audio", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-        return true;
-    } catch (error) {
-        return false;
-    }
-};
+//     try {
+//         await apiClient.post("/api/v1/first-word/audio", formData, {
+//             headers: {
+//                 "Content-Type": "multipart/form-data",
+//             },
+//         });
+//         return true;
+//     } catch (error) {
+//         return false;
+//     }
+// };
 
 
 
