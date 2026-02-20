@@ -24,7 +24,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
 import { Copy, Save, ExternalLink, MessageSquare, Music, Play } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 
 import MultiStepProgressBar from "@/components/MultiStepProgressBar";
@@ -71,6 +71,13 @@ export default function FirstWordWidgetPage() {
 
     // ... (rest of state)
 
+    const handleOnFileSelect = (file: File | UploadedFile | null, fileKey: string | null) => {
+        if (!fileKey) return;
+        updateFirstWordConfig({
+            audio_key: fileKey
+        }).then(fetchConfig);
+    };
+
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
         setIsSaving(true);
@@ -114,31 +121,30 @@ export default function FirstWordWidgetPage() {
         : "";
 
 
+    const fetchConfig = useCallback(async () => {
+        try {
+            const data = await getFirstWordConfig();
+            if (data) {
+                setConfig(data);
+                setReplyMessage(data.reply_message || "");
+                setIsEnabled(data.enabled ?? true);
+                setBotProfile(data.twitch_bot_id || "default");
+                setActiveTab("settings");
+            } else {
+                setConfig(null);
+            }
+        } catch (error) {
+            console.error("Failed to fetch config", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         if (isUserLoading) return;
         if (!user) {
             setIsLoading(false);
             return;
-        }
-
-        const fetchConfig = async () => {
-            try {
-                const data = await getFirstWordConfig();
-                if (data) {
-                    setConfig(data);
-                    setReplyMessage(data.reply_message || "");
-                    setIsEnabled(data.enabled ?? true);
-                    setBotProfile(data.twitch_bot_id || "default");
-                    setActiveTab("settings");
-                } else {
-                    setConfig(null);
-                }
-            } catch (error) {
-                console.error("Failed to fetch config", error);
-            } finally {
-                setIsLoading(false);
-            }
         }
 
         fetchConfig();
@@ -195,9 +201,9 @@ export default function FirstWordWidgetPage() {
             if (audioFile) {
                 if (audioFile instanceof File) {
                     const uploaded = await uploadFile(audioFile);
-                    payload.audio_file_id = uploaded.id;
+                    payload.audio_key = uploaded.id;
                 } else {
-                    payload.audio_file_id = audioFile.id;
+                    payload.audio_key = audioFile.id;
                 }
             }
 
@@ -410,7 +416,7 @@ export default function FirstWordWidgetPage() {
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
                                         <AudioFileUploader
-                                            currentFileName={config?.audio_key}
+                                            currentFileName={config?.audio.name}
                                             selectedFile={audioFile}
                                             onFileSelect={setAudioFile}
                                             className="text-white"
@@ -530,9 +536,9 @@ export default function FirstWordWidgetPage() {
                                 </div>
                                 <div className="">
                                     <AudioFileUploader
-                                        currentFileName={config?.audio_key}
+                                        currentFileName={config?.audio.name}
                                         selectedFile={audioFile}
-                                        onFileSelect={setAudioFile}
+                                        onFileSelect={handleOnFileSelect}
                                         className="text-white"
                                         inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
                                     />

@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { UploadedFile } from "./uploadedFile.service";
 
 export interface FirstWordConfig {
     id: string;
@@ -8,7 +9,7 @@ export interface FirstWordConfig {
     enabled: boolean;
     audio_key?: string | null;
     twitch_bot_id?: string | null;
-    audio_file_id?: string | null;
+    audio: UploadedFile
     widget: {
         id: string;
         overlay_key: string;
