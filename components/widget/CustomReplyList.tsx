@@ -136,17 +136,22 @@ export function CustomReplyList() {
 
             const finalId = resolvedTwitchUser ? resolvedTwitchUser.id : twitchChatterId.trim().toLowerCase();
 
-            const payload = {
-                twitch_chatter_id: finalId,
-                reply_message: replyMessage.trim() || null,
-                audio_key
-            };
+
 
             let result;
             if (editingId) {
+                const payload = {
+                    reply_message: replyMessage.trim() || null,
+                    audio_key
+                };
                 console.log("updateCustomReply", payload);
                 result = await updateCustomReply(editingId, payload);
             } else {
+                const payload = {
+                    twitch_chatter_id: finalId,
+                    reply_message: replyMessage.trim() || null,
+                    audio_key
+                };
                 console.log("createCustomReply", payload);
                 result = await createCustomReply(payload);
             }
