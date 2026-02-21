@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { UploadedFile } from "./uploadedFile.service";
 
 export interface FirstWordConfig {
     id: string;
@@ -8,10 +9,29 @@ export interface FirstWordConfig {
     enabled: boolean;
     audio_key?: string | null;
     twitch_bot_id?: string | null;
+    audio: UploadedFile
     widget: {
         id: string;
         overlay_key: string;
     }
+}
+
+export interface FirstWordCustomReply {
+    id: string;
+    first_word_id: string;
+    twitch_chatter_id: string;
+    twitch_chatter_username: string;
+    twitch_chatter_avatar_url: string;
+    reply_message: string | null;
+    audio_key: string | null;
+    audio: UploadedFile | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ListResponse<T> {
+    data: T[];
+    total: number;
 }
 
 export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
@@ -44,21 +64,58 @@ export const updateFirstWordConfig = async (data: Partial<FirstWordConfig>): Pro
     }
 };
 
-export const uploadFirstWordAudio = async (file: File): Promise<boolean> => {
-    const formData = new FormData();
-    formData.append("file", file);
-
+export const listCustomReplies = async (search?: string): Promise<ListResponse<FirstWordCustomReply> | null> => {
     try {
-        await apiClient.post("/api/v1/first-word/audio", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
+        const query = search ? `?search=${encodeURIComponent(search)}` : "";
+        const response = await apiClient.get<ListResponse<FirstWordCustomReply>>(`/api/v1/first-word/custom-replies${query}`);
+        return response.data;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const createCustomReply = async (data: { twitch_chatter_id: string; reply_message?: string | null; audio_key?: string | null }): Promise<FirstWordCustomReply | null> => {
+    try {
+        const response = await apiClient.post<FirstWordCustomReply>("/api/v1/first-word/custom-replies", data);
+        return response.data;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const updateCustomReply = async (id: string, data: { twitch_chatter_id?: string; reply_message?: string | null; audio_key?: string | null }): Promise<FirstWordCustomReply | null> => {
+    try {
+        const response = await apiClient.put<FirstWordCustomReply>(`/api/v1/first-word/custom-replies/${id}`, data);
+        return response.data;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const deleteCustomReply = async (id: string): Promise<boolean> => {
+    try {
+        await apiClient.delete(`/api/v1/first-word/custom-replies/${id}`);
         return true;
     } catch (error) {
         return false;
     }
 };
+
+// export const uploadFirstWordAudio = async (file: File): Promise<boolean> => {
+//     const formData = new FormData();
+//     formData.append("file", file);
+
+//     try {
+//         await apiClient.post("/api/v1/first-word/audio", formData, {
+//             headers: {
+//                 "Content-Type": "multipart/form-data",
+//             },
+//         });
+//         return true;
+//     } catch (error) {
+//         return false;
+//     }
+// };
 
 
 
