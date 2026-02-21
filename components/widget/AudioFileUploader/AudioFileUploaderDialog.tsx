@@ -149,7 +149,7 @@ export default function AudioFileUploaderDialog({
                         />
                     </div>
 
-                    <ScrollArea className="h-[200px] border rounded-md">
+                    <ScrollArea className="h-[400px] rounded-md ">
                         <div className="p-2 space-y-1">
                             {isLoadingLibrary ? (
                                 <div className="flex items-center justify-center py-8 text-muted-foreground">
@@ -170,7 +170,7 @@ export default function AudioFileUploaderDialog({
                                             <div className="p-2 bg-secondary rounded-md shrink-0">
                                                 <Music className="w-4 h-4 text-primary" />
                                             </div>
-                                            <div className="flex flex-col min-w-0">
+                                            <div className="flex flex-col min-w-0 max-w-[300px]">
                                                 <span className="text-sm font-medium truncate">{file.name}</span>
                                                 <span className="text-sm text-muted-foreground">
                                                     {(file.size / 1024 / 1024).toFixed(2)} MB • {new Date(file.created_at).toLocaleDateString('th-TH')}

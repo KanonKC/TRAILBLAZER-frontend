@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
+import { CustomReplyList } from "@/components/widget/CustomReplyList";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
@@ -23,11 +24,12 @@ import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { Copy, Save, ExternalLink, MessageSquare, Music, Play } from "lucide-react";
+import { AudioWaveform, ExternalLink, MessageSquare, Music, Play, Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 
 import MultiStepProgressBar from "@/components/MultiStepProgressBar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
@@ -41,18 +43,14 @@ import {
     updateFirstWordConfig,
     type FirstWordConfig
 } from "@/services/firstWord.service";
-import { deleteWidget } from "@/services/widget.service";
 import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { deleteWidget } from "@/services/widget.service";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
+import { FirstWordVariableMap } from "@/constants/firstWord";
 
 export default function FirstWordWidgetPage() {
     const { user, isLoading: isUserLoading } = useUser();
@@ -334,12 +332,13 @@ export default function FirstWordWidgetPage() {
             </div>
 
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-2xl">
-                <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
+                <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-4" : "grid-cols-1")}>
                     <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
                     {config && (
                         <>
                             <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
                             <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                            <TabsTrigger value="custom-replies" className="cursor-pointer">Custom Replies</TabsTrigger>
                         </>
                     )}
                 </TabsList>
@@ -398,13 +397,7 @@ export default function FirstWordWidgetPage() {
                                             value={replyMessage}
                                             onChange={handleReplyMessageChange}
                                             error={replyMessageError}
-                                            variables={[
-                                                {
-                                                    variable: "{{user_name}}",
-                                                    description: "ชื่อที่แสดงผลของผู้ทักทาย",
-                                                    example: "User123"
-                                                }
-                                            ]}
+                                            variables={FirstWordVariableMap}
                                         />
                                     </div>
                                 )
@@ -531,7 +524,7 @@ export default function FirstWordWidgetPage() {
                             {/* Audio Section */}
                             <div className="space-y-4 ">
                                 <div className="flex items-center gap-2 border-b pb-2">
-                                    <Music className="w-5 h-5 text-purple-500" />
+                                    <AudioWaveform className="w-5 h-5 text-purple-500" />
                                     <h3 className="text-lg font-semibold">เสียงและโอเวอร์เลย์</h3>
                                 </div>
                                 <div className="">
@@ -571,11 +564,26 @@ export default function FirstWordWidgetPage() {
                         </WidgetSettingsCardFooter>
                     </WidgetSettingsCard>
                 </TabsContent>
+
+                <TabsContent value="custom-replies">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2 justify-between">
+                                <span className="flex items-center gap-2">
+                                    <Users className="w-5 h-5 text-blue-500" />
+                                    ข้อความตอบกลับเฉพาะบุคคล
+                                </span>
+                            </CardTitle>
+                            <CardDescription>
+                                ตั้งค่าข้อความตอบกลับหรือเสียงเอฟเฟกต์เฉพาะรายบุคคล เมื่อพวกเขาเข้ามาทักทายในช่อง
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="px-6">
+                            <CustomReplyList />
+                        </CardContent>
+                    </Card>
+                </TabsContent>
             </Tabs>
-
-
-
-
 
             <AlertDialog open={showConfirmRefresh} onOpenChange={setShowConfirmRefresh}>
                 <AlertDialogContent>

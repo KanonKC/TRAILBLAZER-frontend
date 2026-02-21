@@ -16,6 +16,22 @@ export interface FirstWordConfig {
     }
 }
 
+export interface FirstWordCustomReply {
+    id: string;
+    first_word_id: string;
+    twitch_chatter_id: string;
+    reply_message: string | null;
+    audio_key: string | null;
+    audio: UploadedFile | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ListResponse<T> {
+    data: T[];
+    total: number;
+}
+
 export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
     try {
         const response = await apiClient.get<FirstWordConfig>("/api/v1/first-word");
@@ -43,6 +59,43 @@ export const updateFirstWordConfig = async (data: Partial<FirstWordConfig>): Pro
         return response.data;
     } catch (error) {
         return null;
+    }
+};
+
+export const listCustomReplies = async (search?: string): Promise<ListResponse<FirstWordCustomReply> | null> => {
+    try {
+        const query = search ? `?search=${encodeURIComponent(search)}` : "";
+        const response = await apiClient.get<ListResponse<FirstWordCustomReply>>(`/api/v1/first-word/custom-replies${query}`);
+        return response.data;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const createCustomReply = async (data: { twitch_chatter_id: string; reply_message?: string | null; audio_key?: string | null }): Promise<FirstWordCustomReply | null> => {
+    try {
+        const response = await apiClient.post<FirstWordCustomReply>("/api/v1/first-word/custom-replies", data);
+        return response.data;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const updateCustomReply = async (id: string, data: { twitch_chatter_id?: string; reply_message?: string | null; audio_key?: string | null }): Promise<FirstWordCustomReply | null> => {
+    try {
+        const response = await apiClient.put<FirstWordCustomReply>(`/api/v1/first-word/custom-replies/${id}`, data);
+        return response.data;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const deleteCustomReply = async (id: string): Promise<boolean> => {
+    try {
+        await apiClient.delete(`/api/v1/first-word/custom-replies/${id}`);
+        return true;
+    } catch (error) {
+        return false;
     }
 };
 
