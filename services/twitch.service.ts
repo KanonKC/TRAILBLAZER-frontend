@@ -28,3 +28,27 @@ export const getTwitchChannelRewards = async (): Promise<TwitchCustomReward[]> =
         return [];
     }
 }
+
+export interface TwitchUser {
+    id: string;
+    login: string;
+    display_name: string;
+    type: string;
+    broadcaster_type: string;
+    description: string;
+    profile_image_url: string;
+    offline_image_url: string;
+    view_count: number;
+    created_at: string;
+}
+
+export const getTwitchUser = async (username?: string): Promise<TwitchUser | null> => {
+    try {
+        const query = username ? `?username=${encodeURIComponent(username)}` : "";
+        const response = await apiClient.get<TwitchUser>(`/api/v1/twitch/user${query}`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch Twitch user", error);
+        return null;
+    }
+}

@@ -33,8 +33,10 @@ import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
 import { AudioWaveform, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { CompactAudioFileUploader } from "./AudioFileUploader/CompactAudioFileUploader";
+import { getTwitchUser } from "@/services/twitch.service";
 import { ReplyMessageTextarea } from "./ReplyMessageTextarea";
+import { CompactAudioFileUploader } from "./AudioFileUploader/CompactAudioFileUploader";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export function CustomReplyList() {
     const [replies, setReplies] = useState<FirstWordCustomReply[]>([]);
@@ -48,6 +50,9 @@ export function CustomReplyList() {
 
     // Form states
     const [twitchChatterId, setTwitchChatterId] = useState("");
+    const [resolvedTwitchUser, setResolvedTwitchUser] = useState<{ id: string, name: string, avatar: string } | null>(null);
+    const [isCheckingUser, setIsCheckingUser] = useState(false);
+    const [userCheckError, setUserCheckError] = useState("");
     const [replyMessage, setReplyMessage] = useState("");
     const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
 
@@ -79,6 +84,8 @@ export function CustomReplyList() {
     const handleOpenCreate = () => {
         setEditingId(null);
         setTwitchChatterId("");
+        setResolvedTwitchUser(null);
+        setUserCheckError("");
         setReplyMessage("");
         setAudioFile(null);
         setIsDialogOpen(true);
@@ -86,7 +93,9 @@ export function CustomReplyList() {
 
     const handleOpenEdit = (reply: FirstWordCustomReply) => {
         setEditingId(reply.id);
-        setTwitchChatterId(reply.twitch_chatter_id);
+        setTwitchChatterId(reply.twitch_chatter_username);
+        setResolvedTwitchUser(null);
+        setUserCheckError("");
         setReplyMessage(reply.reply_message || "");
         setAudioFile(reply.audio || null);
         setIsDialogOpen(true);
@@ -95,6 +104,11 @@ export function CustomReplyList() {
     const handleSave = async () => {
         if (!twitchChatterId.trim()) {
             toast.error("กรุณาระบุ Twitch ID");
+            return;
+        }
+
+        if (userCheckError) {
+            toast.error("ไม่สามารถบันทึกได้เนื่องจากไม่พบชื่อผู้ใช้งาน");
             return;
         }
 
@@ -120,8 +134,10 @@ export function CustomReplyList() {
                 }
             }
 
+            const finalId = resolvedTwitchUser ? resolvedTwitchUser.id : twitchChatterId.trim().toLowerCase();
+
             const payload = {
-                twitch_chatter_id: twitchChatterId.trim().toLowerCase(),
+                twitch_chatter_id: finalId,
                 reply_message: replyMessage.trim() || null,
                 audio_key
             };
@@ -170,6 +186,31 @@ export function CustomReplyList() {
         }
     };
 
+    const checkTwitchUser = async (username: string) => {
+        if (!username.trim()) {
+            setResolvedTwitchUser(null);
+            setUserCheckError("");
+            return;
+        }
+
+        setIsCheckingUser(true);
+        setUserCheckError("");
+        setResolvedTwitchUser(null);
+
+        try {
+            const user = await getTwitchUser(username);
+            if (user && user.id) {
+                setResolvedTwitchUser({ id: user.id, name: user.display_name, avatar: user.profile_image_url });
+            } else {
+                setUserCheckError("ไม่พบผู้ใช้งานนี้ใน Twitch");
+            }
+        } catch (e) {
+            setUserCheckError("ไม่พบผู้ใช้งานนี้ใน Twitch");
+        } finally {
+            setIsCheckingUser(false);
+        }
+    };
+
     return (
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -189,7 +230,7 @@ export function CustomReplyList() {
 
             <div className="rounded-md border border-white/10 bg-black/20">
                 <div className="grid grid-cols-12 gap-4 p-4 font-medium text-sm text-white/70 border-b border-white/10">
-                    <div className="col-span-3">Twitch ID</div>
+                    <div className="col-span-3">คนดูบน Twitch</div>
                     <div className="col-span-4">ข้อความตอบกลับ</div>
                     <div className="col-span-4">เสียง</div>
                     <div className="col-span-1 text-right"></div>
@@ -208,7 +249,13 @@ export function CustomReplyList() {
                         <div className="divide-y divide-white/5">
                             {replies.map((reply) => (
                                 <div key={reply.id} className="grid grid-cols-12 gap-4 p-4 items-center text-sm text-white hover:bg-white/5 transition-colors">
-                                    <div className="col-span-3 font-medium truncate">{reply.twitch_chatter_id}</div>
+                                    <div className="col-span-3 font-medium truncate flex items-center gap-2">
+                                        <Avatar size="sm">
+                                            <AvatarImage src={reply.twitch_chatter_avatar_url} />
+                                            <AvatarFallback>{reply.twitch_chatter_username.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        {reply.twitch_chatter_username}
+                                    </div>
                                     <div className="col-span-4 truncate text-white/70">
                                         {reply.reply_message || <span className="text-white/30 italic">ไม่มีข้อความ</span>}
                                     </div>
@@ -245,14 +292,28 @@ export function CustomReplyList() {
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="twitchId" className="text-white/80">Twitch ID</Label>
+                            <Label htmlFor="twitchId" className="text-white/80">Twitch Username</Label>
                             <Input
                                 id="twitchId"
                                 value={twitchChatterId}
-                                onChange={(e) => setTwitchChatterId(e.target.value)}
+                                onChange={(e) => {
+                                    setTwitchChatterId(e.target.value);
+                                    setUserCheckError("");
+                                    setResolvedTwitchUser(null);
+                                }}
+                                onBlur={(e) => checkTwitchUser(e.target.value)}
                                 placeholder="เช่น user123"
-                                className="bg-black/40 border-white/10"
+                                className={`bg-black/40 border-white/10 ${userCheckError ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                disabled={!!editingId}
                             />
+                            {isCheckingUser && <p className="text-white/50 text-xs">กำลังตรวจสอบ...</p>}
+                            {userCheckError && <p className="text-red-400 text-xs">{userCheckError}</p>}
+                            {resolvedTwitchUser && (
+                                <div className="flex items-center gap-2 mt-1 p-2 bg-white/5 rounded-md border border-white/10">
+                                    <img src={resolvedTwitchUser.avatar} alt={resolvedTwitchUser.name} className="w-6 h-6 rounded-full" />
+                                    <span className="text-sm text-white">{resolvedTwitchUser.name}</span>
+                                </div>
+                            )}
                         </div>
                         <div className="grid gap-2">
                             <ReplyMessageTextarea
@@ -276,7 +337,7 @@ export function CustomReplyList() {
                         <Button variant="ghost" onClick={() => setIsDialogOpen(false)} disabled={isSaving} className="text-white/70 hover:text-white">
                             ยกเลิก
                         </Button>
-                        <Button onClick={handleSave} disabled={isSaving || !twitchChatterId.trim()}>
+                        <Button onClick={handleSave} disabled={isSaving || !twitchChatterId.trim() || !!userCheckError || isCheckingUser}>
                             {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             บันทึก
                         </Button>

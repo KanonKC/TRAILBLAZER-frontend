@@ -20,6 +20,8 @@ export interface FirstWordCustomReply {
     id: string;
     first_word_id: string;
     twitch_chatter_id: string;
+    twitch_chatter_username: string;
+    twitch_chatter_avatar_url: string;
     reply_message: string | null;
     audio_key: string | null;
     audio: UploadedFile | null;
