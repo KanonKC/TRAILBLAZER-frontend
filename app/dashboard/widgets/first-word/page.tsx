@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AudioFileUploader } from "@/components/widget/AudioFileUploader";
+import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
