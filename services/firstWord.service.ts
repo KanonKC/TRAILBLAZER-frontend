@@ -9,7 +9,7 @@ export interface FirstWordConfig {
     enabled: boolean;
     audio_key?: string | null;
     twitch_bot_id?: string | null;
-    audio: UploadedFile
+    audio: UploadedFile | null;
     widget: {
         id: string;
         overlay_key: string;
