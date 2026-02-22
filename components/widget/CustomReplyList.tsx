@@ -332,7 +332,7 @@ export function CustomReplyList() {
                             <CompactAudioFileUploader
                                 currentFileName={audioFile?.name || null}
                                 selectedFile={audioFile}
-                                onFileSelect={setAudioFile}
+                                onFileSelect={(file) => setAudioFile(file)}
                                 disabled={isSaving}
                                 className="text-white"
                             />

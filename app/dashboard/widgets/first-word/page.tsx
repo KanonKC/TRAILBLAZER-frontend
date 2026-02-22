@@ -409,9 +409,9 @@ export default function FirstWordWidgetPage() {
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
                                         <AudioFileUploader
-                                            currentFileName={config?.audio.name}
+                                            currentFileName={config?.audio?.name}
                                             selectedFile={audioFile}
-                                            onFileSelect={setAudioFile}
+                                            onFileSelect={(file) => setAudioFile(file)}
                                             className="text-white"
                                             inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
                                             hideLabel
@@ -529,7 +529,7 @@ export default function FirstWordWidgetPage() {
                                 </div>
                                 <div className="">
                                     <AudioFileUploader
-                                        currentFileName={config?.audio.name}
+                                        currentFileName={config?.audio?.name}
                                         selectedFile={audioFile}
                                         onFileSelect={handleOnFileSelect}
                                         className="text-white"
