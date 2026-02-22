@@ -3,13 +3,18 @@ import { apiClient } from "@/lib/api-client";
 export interface DropImageConfig {
     id: string;
     enabled: boolean;
+    enabled_moderation: boolean;
+    display_duration: number;
+    twitch_reward_id: string | null;
+    twitch_bot_id: string | null;
+    invalid_message: string | null;
+    not_image_message: string | null;
+    contain_mature_message: string | null;
     widget: {
         id: string;
         overlay_key: string;
         enabled: boolean;
     };
-    twitch_reward_id: string | null;
-    display_duration: number;
 }
 
 export const getDropImageConfig = async (): Promise<DropImageConfig | null> => {
@@ -41,9 +46,19 @@ export const updateDropImageConfig = async (data: Partial<DropImageConfig>): Pro
     }
 };
 
+export const refreshDropImageKey = async (): Promise<DropImageConfig | null> => {
+    try {
+        const response = await apiClient.post<DropImageConfig>("/api/v1/drop-image/refresh-key");
+        return response.data;
+    } catch (error) {
+        console.error("Failed to refresh drop image key", error);
+        return null;
+    }
+};
+
 export const getDropImageEventUrl = (userId: string, key?: string) => {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = new URL(`${baseUrl}/api/v1/drop-image/sse/${userId}`);
+    const url = new URL(`${baseUrl}/api/v1/events/drop-image/${userId}`);
     if (key) {
         url.searchParams.append("key", key);
     }

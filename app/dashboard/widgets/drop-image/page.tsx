@@ -3,27 +3,26 @@
 import { Button } from "@/components/ui/button";
 import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
+import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
+import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
+import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { Image as ImageIcon, Gift, ExternalLink, Play, ChevronDown, MonitorPlay } from "lucide-react";
+import { Image as ImageIcon, Gift, ExternalLink, Play, MonitorPlay, ShieldCheck } from "lucide-react";
 import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
 import { useEffect, useState } from "react";
 import {
     enableDropImage,
     getDropImageConfig,
     updateDropImageConfig,
+    refreshDropImageKey,
     testDropImage,
     type DropImageConfig,
 } from "@/services/dropImage.service";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { updateWidgetEnabled, deleteWidget } from "@/services/widget.service";
+import { deleteWidget } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
@@ -35,6 +34,17 @@ import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function DropImageWidgetPage() {
     const { user, isLoading: isUserLoading } = useUser();
@@ -47,10 +57,20 @@ export default function DropImageWidgetPage() {
     const [activeTab, setActiveTab] = useState("overview");
     const [rewards, setRewards] = useState<TwitchCustomReward[]>([]);
     const [isRewardsLoading, setIsRewardsLoading] = useState(false);
+    const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
 
     // Form states
     const [twitchRewardId, setTwitchRewardId] = useState<string | null>(null);
     const [displayDuration, setDisplayDuration] = useState<number>(5);
+    const [enabledModeration, setEnabledModeration] = useState(true);
+    const [botProfile, setBotProfile] = useState<string>("");
+    const [invalidMessage, setInvalidMessage] = useState<string>("");
+    const [notImageMessage, setNotImageMessage] = useState<string>("");
+    const [containMatureMessage, setContainMatureMessage] = useState<string>("");
+
+    const overlayUrl = typeof window !== 'undefined' && user
+        ? `${window.location.origin}/overlays/drop-image/${user.id}${config?.widget && config.widget.overlay_key ? `?key=${config.widget.overlay_key}` : ''}`
+        : "";
 
     useEffect(() => {
         if (!user) return;
@@ -83,9 +103,15 @@ export default function DropImageWidgetPage() {
                     setIsEnabled(data.widget?.enabled ?? false);
                     setTwitchRewardId(data.twitch_reward_id);
                     setDisplayDuration(data.display_duration);
+                    setEnabledModeration(data.enabled_moderation ?? true);
+                    setBotProfile(data.twitch_bot_id || "default");
+                    setInvalidMessage(data.invalid_message || "");
+                    setNotImageMessage(data.not_image_message || "");
+                    setContainMatureMessage(data.contain_mature_message || "");
                     setActiveTab("settings");
                 } else {
                     setConfig(null);
+                    setBotProfile(user?.twitchId || "");
                 }
             } catch (error) {
                 console.error("Failed to fetch config", error);
@@ -107,6 +133,11 @@ export default function DropImageWidgetPage() {
                 setIsEnabled(data.widget?.enabled ?? false);
                 setTwitchRewardId(data.twitch_reward_id);
                 setDisplayDuration(data.display_duration);
+                setEnabledModeration(data.enabled_moderation ?? true);
+                setBotProfile(data.twitch_bot_id || "default");
+                setInvalidMessage(data.invalid_message || "");
+                setNotImageMessage(data.not_image_message || "");
+                setContainMatureMessage(data.contain_mature_message || "");
                 setActiveTab("quick-start");
             }
         } catch (error) {
@@ -126,6 +157,11 @@ export default function DropImageWidgetPage() {
                 setIsEnabled(false);
                 setTwitchRewardId(null);
                 setDisplayDuration(5);
+                setEnabledModeration(true);
+                setBotProfile("");
+                setInvalidMessage("");
+                setNotImageMessage("");
+                setContainMatureMessage("");
                 setActiveTab("overview");
             }
         } catch (error) {
@@ -136,20 +172,16 @@ export default function DropImageWidgetPage() {
     };
 
     const handleSwitchChange = async (checked: boolean) => {
-        if (!config || !config.widget) return;
         setIsEnabled(checked);
+        if (!config) return;
 
         try {
-            const success = await updateWidgetEnabled(config.widget.id, checked);
+            const updated = await updateDropImageConfig({
+                enabled: checked
+            });
 
-            if (success) {
-                setConfig(prev => prev ? {
-                    ...prev,
-                    widget: {
-                        ...prev.widget,
-                        is_enabled: checked
-                    }
-                } : null);
+            if (updated) {
+                setConfig(updated);
             } else {
                 setIsEnabled(!checked);
             }
@@ -165,7 +197,12 @@ export default function DropImageWidgetPage() {
         try {
             const updated = await updateDropImageConfig({
                 twitch_reward_id: twitchRewardId,
-                display_duration: displayDuration
+                display_duration: displayDuration,
+                enabled_moderation: enabledModeration,
+                twitch_bot_id: botProfile === "default" ? null : botProfile,
+                invalid_message: invalidMessage || null,
+                not_image_message: notImageMessage || null,
+                contain_mature_message: containMatureMessage || null,
             });
 
             if (updated) {
@@ -177,6 +214,21 @@ export default function DropImageWidgetPage() {
             setIsSaving(false);
         }
     }
+
+    const handleRefreshKey = async () => {
+        setIsSaving(true);
+        try {
+            const data = await refreshDropImageKey();
+            if (data) {
+                setConfig(data);
+            }
+        } catch (error) {
+            console.error("Failed to refresh key", error);
+        } finally {
+            setIsSaving(false);
+            setShowConfirmRefresh(false);
+        }
+    };
 
     const handleTest = async () => {
         if (!user || isTesting) return;
@@ -202,7 +254,7 @@ export default function DropImageWidgetPage() {
                     user_id: user.twitchId,
                     user_login: user.username,
                     user_name: user.displayName,
-                    user_input: "https://letsenhance.io/static/8f5e523ee6b2479e26628cdef152f862/8ba27/MainAfter.jpg",
+                    user_input: "https://cdn.discordapp.com/attachments/1107965905448751126/1475124534150435068/Flower_stock_photo.png?ex=699c5847&is=699b06c7&hm=d820d4ba268eb29c5c8f4b5414415a0cd3cc17cf99613419d439fa033db95df7&",
                     status: "unfulfilled",
                     reward: {
                         id: rewardId,
@@ -338,6 +390,24 @@ export default function DropImageWidgetPage() {
                             },
                             {
                                 step: 4,
+                                title: "นำ Overlay ไปใส่ใน OBS",
+                                description: (
+                                    <div className="space-y-3">
+                                        <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้รูปภาพแสดงผล</p>
+                                        <OverlayUrlInput
+                                            url={overlayUrl}
+                                            className="text-white"
+                                            inputClassName="bg-transparent border-white/20 text-white"
+                                            showRefresh={true}
+                                            onRefresh={() => setShowConfirmRefresh(true)}
+                                            hideLabel
+                                        />
+                                        <OBSSetupHelp />
+                                    </div>
+                                )
+                            },
+                            {
+                                step: 5,
                                 title: "บันทึกและทดสอบ",
                                 description: (
                                     <div className="space-y-3">
@@ -357,7 +427,7 @@ export default function DropImageWidgetPage() {
                                 )
                             },
                             {
-                                step: 5,
+                                step: 6,
                                 title: "การตั้งค่าเพิ่มเติม",
                                 description: (
                                     <div className="space-y-3">
@@ -400,6 +470,7 @@ export default function DropImageWidgetPage() {
                     >
                         <WidgetSettingsCardContent>
                             <div className="space-y-6">
+                                {/* Channel Reward */}
                                 <div className="space-y-2">
                                     <Label>เชื่อมต่อ Twitch Reward</Label>
                                     <ChannelRewardSelector
@@ -409,11 +480,12 @@ export default function DropImageWidgetPage() {
                                         isLoading={isRewardsLoading}
                                         placeholder="เลือก Reward..."
                                     />
-                                    <p className="text-xs text-muted-foreground mt-2">
+                                    <p className="text-sm text-muted-foreground mt-2">
                                         อย่าลืมตั้งค่าเปิด <span>Requires Viewer to Enter Text</span> เพื่อรับลิงก์รูป
                                     </p>
                                 </div>
 
+                                {/* Display Duration */}
                                 <div className="space-y-2">
                                     <Label>ระยะเวลาการแสดงผลรูปภาพ (วินาที)</Label>
                                     <Input
@@ -422,6 +494,76 @@ export default function DropImageWidgetPage() {
                                         max={300}
                                         value={displayDuration}
                                         onChange={(e) => setDisplayDuration(Number(e.target.value))}
+                                    />
+                                </div>
+
+                                {/* Content Moderation */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 border-b pb-2">
+                                        <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                                        <h3 className="text-lg font-semibold">Content Moderation</h3>
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                        <div className="space-y-0.5">
+                                            <Label>เปิดใช้งานการตรวจสอบเนื้อหา</Label>
+                                            <p className="text-sm text-muted-foreground">
+                                                ตรวจสอบรูปภาพที่ส่งมาว่ามีเนื้อหาไม่เหมาะสมหรือไม่ (NSFW / Gore)
+                                            </p>
+                                        </div>
+                                        <Switch
+                                            checked={enabledModeration}
+                                            onCheckedChange={setEnabledModeration}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Bot & Messages */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 border-b pb-2">
+                                        <ImageIcon className="w-5 h-5 text-emerald-500" />
+                                        <h3 className="text-lg font-semibold">ข้อความตอบกลับ</h3>
+                                    </div>
+                                    <BotProfileSelector
+                                        value={botProfile}
+                                        onValueChange={setBotProfile}
+                                    />
+                                    <div className="space-y-2">
+                                        <Label>ข้อความเมื่อ URL ไม่ถูกต้อง</Label>
+                                        <Textarea
+                                            value={invalidMessage}
+                                            onChange={(e) => setInvalidMessage(e.target.value)}
+                                            placeholder="เช่น ลิงก์ที่ส่งมาไม่ถูกต้อง กรุณาส่งใหม่"
+                                            rows={2}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>ข้อความเมื่อไม่ใช่รูปภาพ</Label>
+                                        <Textarea
+                                            value={notImageMessage}
+                                            onChange={(e) => setNotImageMessage(e.target.value)}
+                                            placeholder="เช่น ไฟล์ที่ส่งมาไม่ใช่รูปภาพ กรุณาส่ง URL ของรูปภาพ"
+                                            rows={2}
+                                        />
+                                    </div>
+                                    {enabledModeration && (
+                                        <div className="space-y-2">
+                                            <Label>ข้อความเมื่อเนื้อหาไม่เหมาะสม</Label>
+                                            <Textarea
+                                                value={containMatureMessage}
+                                                onChange={(e) => setContainMatureMessage(e.target.value)}
+                                                placeholder="เช่น รูปภาพมีเนื้อหาไม่เหมาะสม ไม่สามารถแสดงได้"
+                                                rows={2}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Overlay URL */}
+                                <div className="space-y-4">
+                                    <OverlayUrlInput
+                                        url={overlayUrl}
+                                        onRefresh={() => setShowConfirmRefresh(true)}
+                                        showRefresh={true}
                                     />
                                 </div>
                             </div>
@@ -449,6 +591,26 @@ export default function DropImageWidgetPage() {
                     </WidgetSettingsCard>
                 </TabsContent>
             </Tabs>
+
+            <AlertDialog open={showConfirmRefresh} onOpenChange={setShowConfirmRefresh}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>คุณต้องการรีเซ็ต Overlay Key หรือไม่?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            การรีเซ็ต Key จะทำให้ URL เดิมใช้งานไม่ได้ คุณจะต้องคัดลอก URL ใหม่ไปใส่ในโปรแกรมสตรีมของคุณ
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                        <AlertDialogAction
+                            variant="destructive"
+                            onClick={handleRefreshKey}
+                        >
+                            ยืนยันการรีเซ็ต
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }
