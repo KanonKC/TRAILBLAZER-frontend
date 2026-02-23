@@ -58,8 +58,8 @@ export default function AudioFileUploaderDialog({
                 type: "audio"
             });
             setLibraryFiles(response.data);
-            setTotalPages(response.totalPages);
-            setCurrentPage(response.page);
+            setTotalPages(Math.ceil(response.pagination.total / response.pagination.limit));
+            setCurrentPage(response.pagination.page);
         } catch (error) {
             console.error("Failed to fetch library files:", error);
         } finally {
@@ -108,6 +108,19 @@ export default function AudioFileUploaderDialog({
             setIsUploading(false);
             if (uploadInputRef.current) uploadInputRef.current.value = "";
         }
+    };
+
+    const getPageNumbers = () => {
+        if (totalPages <= 5) {
+            return Array.from({ length: totalPages }, (_, i) => i + 1);
+        }
+        if (currentPage <= 3) {
+            return [1, 2, 3, 4, 5];
+        }
+        if (currentPage >= totalPages - 2) {
+            return [totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+        }
+        return [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2];
     };
 
     return (
@@ -202,6 +215,18 @@ export default function AudioFileUploaderDialog({
                                 >
                                     <ChevronLeft className="w-4 h-4" />
                                 </Button>
+                                {getPageNumbers().map(pageNum => (
+                                    <Button
+                                        key={pageNum}
+                                        variant={pageNum === currentPage ? "default" : "outline"}
+                                        size="icon"
+                                        className="h-8 w-8"
+                                        onClick={() => handlePageChange(pageNum)}
+                                        disabled={isLoadingLibrary}
+                                    >
+                                        {pageNum}
+                                    </Button>
+                                ))}
                                 <Button
                                     variant="outline"
                                     size="icon"

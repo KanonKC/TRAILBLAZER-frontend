@@ -21,10 +21,11 @@ export interface GetUploadedFilesParams {
 
 export interface GetUploadedFilesResponse {
     data: UploadedFile[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
+    pagination: {
+        total: number;
+        page: number;
+        limit: number;
+    }
 }
 
 export const getUploadedFiles = async (params: GetUploadedFilesParams): Promise<GetUploadedFilesResponse> => {
