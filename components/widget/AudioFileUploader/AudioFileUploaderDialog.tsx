@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Music, Upload, Search, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
+import { Music, Upload, Search, ChevronLeft, ChevronRight, Loader2, AudioWaveform } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
@@ -168,7 +168,7 @@ export default function AudioFileUploaderDialog({
                                     >
                                         <div className="flex items-center gap-3 overflow-hidden">
                                             <div className="p-2 bg-secondary rounded-md shrink-0">
-                                                <Music className="w-4 h-4 text-primary" />
+                                                <AudioWaveform className="w-4 h-4 text-primary" />
                                             </div>
                                             <div className="flex flex-col min-w-0 max-w-[300px]">
                                                 <span className="text-sm font-medium truncate">{file.name}</span>

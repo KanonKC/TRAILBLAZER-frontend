@@ -24,7 +24,7 @@ import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { AudioWaveform, ExternalLink, MessageSquare, Music, Play, Users } from "lucide-react";
+import { AudioWaveform, ExternalLink, MessageSquare, Music, Play, RefreshCw, Users } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -41,6 +41,8 @@ import {
     refreshFirstWordOverlayKey,
     testFirstWordAudio,
     updateFirstWordConfig,
+    listChatters,
+    resetChatters,
     type FirstWordConfig
 } from "@/services/firstWord.service";
 import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
@@ -64,6 +66,9 @@ export default function FirstWordWidgetPage() {
     const [botProfile, setBotProfile] = useState<string>(user?.twitchId || "");
 
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
+    const [showConfirmReset, setShowConfirmReset] = useState(false);
+    const [chattersCount, setChattersCount] = useState<number>(0);
+    const [isResettingChatters, setIsResettingChatters] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
 
 
@@ -111,6 +116,40 @@ export default function FirstWordWidgetPage() {
         }
     };
 
+    const handleResetClick = async () => {
+        setIsResettingChatters(true);
+        try {
+            const data = await listChatters();
+            console.log(data);
+            setChattersCount(data?.pagination.total || 0);
+            setShowConfirmReset(true);
+        } catch (error) {
+            console.error("Failed to fetch chatters", error);
+            toast.error("ดึงข้อมูลรายชื่อทักทายไม่สำเร็จ");
+        } finally {
+            setIsResettingChatters(false);
+        }
+    };
+
+    const handleConfirmReset = async () => {
+        setIsResettingChatters(true);
+        try {
+            const success = await resetChatters();
+            if (success) {
+                toast.success("รีเซ็ตรายชื่อผู้ทักทายเรียบร้อยแล้ว");
+                setChattersCount(0);
+            } else {
+                toast.error("รีเซ็ตไม่สำเร็จ");
+            }
+        } catch (error) {
+            console.error("Failed to reset chatters", error);
+            toast.error("รีเซ็ตไม่สำเร็จ");
+        } finally {
+            setIsResettingChatters(false);
+            setShowConfirmReset(false);
+        }
+    };
+
     const [isTesting, setIsTesting] = useState(false);
 
     const overlayUrl = typeof window !== 'undefined' && user
@@ -153,7 +192,6 @@ export default function FirstWordWidgetPage() {
         setIsSaving(true);
         try {
             const data = await enableFirstWord(user.twitchId, user.id);
-            console.log('enable', data);
             if (data) {
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
@@ -544,10 +582,16 @@ export default function FirstWordWidgetPage() {
                             </div>
                         </WidgetSettingsCardContent>
                         <WidgetSettingsCardFooter>
-                            <DeleteWidgetButton
-                                onDelete={handleDelete}
-                                isLoading={isSaving}
-                            />
+                            <div className="flex gap-2">
+                                <DeleteWidgetButton
+                                    onDelete={handleDelete}
+                                    isLoading={isSaving}
+                                />
+                                <Button variant="destructive" onClick={handleResetClick} disabled={isResettingChatters}>
+                                    <RefreshCw className={cn("w-4 h-4 shrink-0", isResettingChatters && "animate-spin")} />
+                                    รีเซ็ตคนที่เข้ามาทักทาย
+                                </Button>
+                            </div>
                             <div className="flex gap-2">
                                 <Button variant="outline" onClick={handleTestAudio} disabled={isTesting && !config?.audio_key && !config?.reply_message}>
                                     {isTesting ? (
@@ -600,6 +644,27 @@ export default function FirstWordWidgetPage() {
                             onClick={handleRefreshKey}
                         >
                             ยืนยันการรีเซ็ต
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={showConfirmReset} onOpenChange={setShowConfirmReset}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>ยืนยันการรีเซ็ตรายชื่อคนทักทาย?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            คุณกำลังจะรีเซ็ตรายชื่อคนที่เคยพิมพ์ทักทายในช่องของคุณทั้งหมด {chattersCount} คน การกระทำนี้จะไม่สามารถย้อนกลับได้ คุณแน่ใจหรือไม่?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={isResettingChatters}>ยกเลิก</AlertDialogCancel>
+                        <AlertDialogAction
+                            variant="destructive"
+                            onClick={handleConfirmReset}
+                            disabled={isResettingChatters}
+                        >
+                            {isResettingChatters ? "กำลังรีเซ็ต..." : "ยืนยันการรีเซ็ต"}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

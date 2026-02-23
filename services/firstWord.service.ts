@@ -31,7 +31,11 @@ export interface FirstWordCustomReply {
 
 export interface ListResponse<T> {
     data: T[];
-    total: number;
+    pagination: {
+        limit: number;
+        page: number;
+        total: number;
+    }
 }
 
 export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
@@ -135,6 +139,24 @@ export const refreshFirstWordOverlayKey = async (): Promise<FirstWordConfig | nu
     }
 };
 
+export const listChatters = async (): Promise<ListResponse<any> | null> => {
+    try {
+        const response = await apiClient.get<ListResponse<any>>("/api/v1/first-word/chatters");
+        return response.data;
+    } catch (error) {
+        return null;
+    }
+};
+
+export const resetChatters = async (): Promise<boolean> => {
+    try {
+        await apiClient.post("/api/v1/first-word/chatters/reset");
+        return true;
+    } catch (error) {
+        return false;
+    }
+};
+
 export const getFirstWordEventUrl = (userId: string, key?: string): string => {
     // This returns a URL string for SSE, so we can't use apiClient directly for the connection itself 
     // without using a specialized SSE client that handles headers. 
@@ -147,3 +169,4 @@ export const getFirstWordEventUrl = (userId: string, key?: string): string => {
     }
     return url;
 };
+

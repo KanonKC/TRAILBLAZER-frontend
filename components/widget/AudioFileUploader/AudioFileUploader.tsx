@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { Music } from "lucide-react";
+import { AudioWaveform, Music } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -48,14 +48,14 @@ export function AudioFileUploader({
             )}>
                 <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
-                        <Music className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
+                        <AudioWaveform className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
                     </div>
                     <div className="flex flex-col min-w-0">
                         <span className={cn("text-sm font-medium truncate", className?.includes("text-white") ? "text-white" : "")}>
                             {currentFileName?.split('/').pop()}
                         </span>
                         <span className={cn("text-sm", className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")}>
-                            ไฟล์เสียงปัจจุบัน
+                            {currentFileName ? "ไฟล์เสียงปัจจุบัน" : "ยังไม่ได้เลือกไฟล์เสียง"}
                         </span>
                     </div>
                 </div>
@@ -68,7 +68,7 @@ export function AudioFileUploader({
                         className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
                     )}
                 >
-                    เปลี่ยนไฟล์ใหม่
+                    {currentFileName ? "เปลี่ยนไฟล์ใหม่" : "เลือกไฟล์เสียง"}
                 </Button>
 
                 <AudioFileUploaderDialog

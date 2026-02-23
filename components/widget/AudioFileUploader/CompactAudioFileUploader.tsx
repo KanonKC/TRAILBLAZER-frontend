@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { Music } from "lucide-react";
+import { AudioWaveform, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { UploadedFile } from "@/services/uploadedFile.service";
@@ -38,7 +38,7 @@ export function CompactAudioFileUploader({
                     className?.includes("text-white") && "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
                 )}
             >
-                <Music className="w-4 h-4 shrink-0" />
+                <AudioWaveform className="w-4 h-4 shrink-0" />
                 <span className="truncate">{displayName}</span>
             </Button>
 

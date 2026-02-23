@@ -12,6 +12,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Trash } from "lucide-react";
 import { useState } from "react";
 
 interface DeleteWidgetButtonProps {
@@ -29,6 +30,7 @@ export const DeleteWidgetButton = ({ onDelete, isLoading }: DeleteWidgetButtonPr
           variant="destructive"
           disabled={isLoading}
         >
+          <Trash className="w-4 h-4 shrink-0" />
           ลบวิดเจ็ต
         </Button>
       </AlertDialogTrigger>
