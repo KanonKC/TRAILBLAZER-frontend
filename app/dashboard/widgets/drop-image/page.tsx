@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
 import { Image as ImageIcon, Gift, ExternalLink, Play, MonitorPlay, ShieldCheck } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
 import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
 import { useEffect, useState } from "react";
 import {
@@ -357,7 +358,15 @@ export default function DropImageWidgetPage() {
                                 description: (
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">
-                                            เลือก Channel Points Reward บน Twitch ที่มีอยู่แล้วเพื่อใช้กับ Widget นี้ ทริค: ควรเปิดให้ <span className="font-bold text-white">ต้องการการป้อนข้อความของผู้รับชม</span> เพื่อรับ URL รูป
+                                            เลือก Channel Points Reward บน Twitch ที่มีอยู่แล้วเพื่อใช้กับ Widget นี้ หรือ <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="w-fit h-auto p-0 text-purple-400 hover:text-purple-300 hover:bg-transparent gap-1 self-end text-sm"
+                                                onClick={() => window.open("https://dashboard.twitch.tv/viewer-rewards/channel-points/rewards", "_blank")}
+                                            >
+                                                ไปที่ Twitch Dashboard
+                                                <ExternalLink className="w-3 h-3" />
+                                            </Button> เพื่อสร้างแต้มช่องอันใหม่
                                         </p>
                                         <div className="flex gap-3">
                                             <div className="w-full">
@@ -378,11 +387,20 @@ export default function DropImageWidgetPage() {
                                 title: "ตั้งค่าระยะเวลาการแสดงผล",
                                 description: (
                                     <div className="space-y-4">
-                                        <p className="text-sm text-muted-foreground">คุณสามารถตั้งให้ภาพอยู่บนจอนานกี่วินาทีก่อนที่จะหายไป</p>
-                                        <div className="border p-4 rounded-xl bg-muted/20">
-                                            <div className="flex flex-col gap-2">
-                                                <Label>ระยะเวลา (วินาที)</Label>
-                                                <Input type="number" value={displayDuration} onChange={(e) => setDisplayDuration(Number(e.target.value))} />
+                                        <p className="text-sm text-muted-foreground">ตั้งเวลาที่จะให้รูปภาพแสดงค้างไว้ที่หน้าจอ ก่อนที่รูปภาพจะหายไป</p>
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-3">
+                                                <Slider
+                                                    value={[displayDuration]}
+                                                    onValueChange={([v]) => setDisplayDuration(v)}
+                                                    min={1}
+                                                    max={20}
+                                                    step={1}
+                                                    className="flex-1 cursor-pointer"
+                                                />
+                                                <span className="text-sm tabular-nums w-16 text-right text-muted-foreground shrink-0">
+                                                    {displayDuration} วินาที
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -402,7 +420,7 @@ export default function DropImageWidgetPage() {
                                             onRefresh={() => setShowConfirmRefresh(true)}
                                             hideLabel
                                         />
-                                        <OBSSetupHelp />
+                                        <OBSSetupHelp type="image" />
                                     </div>
                                 )
                             },
@@ -488,12 +506,30 @@ export default function DropImageWidgetPage() {
                                 {/* Display Duration */}
                                 <div className="space-y-2">
                                     <Label>ระยะเวลาการแสดงผลรูปภาพ (วินาที)</Label>
-                                    <Input
-                                        type="number"
-                                        min={1}
-                                        max={300}
-                                        value={displayDuration}
-                                        onChange={(e) => setDisplayDuration(Number(e.target.value))}
+                                    <p className="text-sm text-muted-foreground mt-2">
+                                        คุณสามารถตั้งให้ภาพอยู่บนจอนานกี่วินาทีก่อนที่จะหายไป
+                                    </p>
+                                    <div className="flex items-center gap-3">
+                                        <Slider
+                                            value={[displayDuration]}
+                                            onValueChange={([v]) => setDisplayDuration(v)}
+                                            min={1}
+                                            max={20}
+                                            step={1}
+                                            className="flex-1 cursor-pointer"
+                                        />
+                                        <span className="text-sm tabular-nums w-16 text-right text-muted-foreground shrink-0">
+                                            {displayDuration} วินาที
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Overlay URL */}
+                                <div className="space-y-4">
+                                    <OverlayUrlInput
+                                        url={overlayUrl}
+                                        onRefresh={() => setShowConfirmRefresh(true)}
+                                        showRefresh={true}
                                     />
                                 </div>
 
@@ -504,10 +540,10 @@ export default function DropImageWidgetPage() {
                                         <h3 className="text-lg font-semibold">Content Moderation</h3>
                                     </div>
                                     <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                                        <div className="space-y-0.5">
-                                            <Label>เปิดใช้งานการตรวจสอบเนื้อหา</Label>
+                                        <div className="space-y-2 mr-2">
+                                            <Label>เปิดใช้งานการตรวจสอบเนื้อหาด้วย<a href="https://sightengine.com/" target="_blank" rel="noopener noreferrer" className="text-cyan-500 hover:underline">Sightengine</a></Label>
                                             <p className="text-sm text-muted-foreground">
-                                                ตรวจสอบรูปภาพที่ส่งมาว่ามีเนื้อหาไม่เหมาะสมหรือไม่ (NSFW / Gore)
+                                                หากเปิดใช้งาน จะทำการตรวจสอบรูปภาพที่ส่งมาว่ามีเนื้อหาไม่เหมาะสมหรือไม่ (NSFW / Gore) และป้องกันการแสดงรูปภาพเหล่านั้นขึ้นบนหน้าจอ
                                             </p>
                                         </div>
                                         <Switch
@@ -529,6 +565,9 @@ export default function DropImageWidgetPage() {
                                     />
                                     <div className="space-y-2">
                                         <Label>ข้อความเมื่อ URL ไม่ถูกต้อง</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            กำหนดข้อความที่จะส่งบนแชทของ Twitch เมื่อข้อความที่คนดูแลกแต้มมา ไม่ใช่ลิงก์ URL ที่ใช้งานได้
+                                        </p>
                                         <Textarea
                                             value={invalidMessage}
                                             onChange={(e) => setInvalidMessage(e.target.value)}
@@ -538,6 +577,9 @@ export default function DropImageWidgetPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <Label>ข้อความเมื่อไม่ใช่รูปภาพ</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            กำหนดข้อความที่จะส่งบนแชทของ Twitch เมื่อลิงก์ URL ที่คนดูแลกแต้มมา ไม่ใช่ลิงก์สำหรับรูปภาพ
+                                        </p>
                                         <Textarea
                                             value={notImageMessage}
                                             onChange={(e) => setNotImageMessage(e.target.value)}
@@ -545,27 +587,22 @@ export default function DropImageWidgetPage() {
                                             rows={2}
                                         />
                                     </div>
-                                    {enabledModeration && (
-                                        <div className="space-y-2">
-                                            <Label>ข้อความเมื่อเนื้อหาไม่เหมาะสม</Label>
-                                            <Textarea
-                                                value={containMatureMessage}
-                                                onChange={(e) => setContainMatureMessage(e.target.value)}
-                                                placeholder="เช่น รูปภาพมีเนื้อหาไม่เหมาะสม ไม่สามารถแสดงได้"
-                                                rows={2}
-                                            />
-                                        </div>
-                                    )}
+                                    <div className="space-y-2">
+                                        <Label>ข้อความเมื่อเนื้อหาไม่เหมาะสม</Label>
+                                        <p className="text-sm text-muted-foreground">
+                                            กำหนดข้อความที่จะส่งบนแชทของ Twitch เมื่อลิงก์ URL รูปภาพที่คนดูแลกแต้มมา มีเนื้อหาที่ไม่เหมาะสม
+                                        </p>
+                                        <Textarea
+                                            value={containMatureMessage}
+                                            onChange={(e) => setContainMatureMessage(e.target.value)}
+                                            placeholder="เช่น รูปภาพมีเนื้อหาไม่เหมาะสม ไม่สามารถแสดงได้"
+                                            rows={2}
+                                            disabled={!enabledModeration}
+                                        />
+                                    </div>
                                 </div>
 
-                                {/* Overlay URL */}
-                                <div className="space-y-4">
-                                    <OverlayUrlInput
-                                        url={overlayUrl}
-                                        onRefresh={() => setShowConfirmRefresh(true)}
-                                        showRefresh={true}
-                                    />
-                                </div>
+
                             </div>
                         </WidgetSettingsCardContent>
                         <WidgetSettingsCardFooter>
