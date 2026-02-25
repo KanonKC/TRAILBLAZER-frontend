@@ -1,16 +1,17 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Music, Upload, Search, ChevronLeft, ChevronRight, Loader2, AudioWaveform } from "lucide-react";
+import { Music, Upload, Search, ChevronLeft, ChevronRight, Loader2, AudioWaveform, Play, Square, Check } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getUploadedFiles, uploadFile, UploadedFile } from "@/services/uploadedFile.service";
+import { getUploadedFiles, getUploadedFile, uploadFile, UploadedFile } from "@/services/uploadedFile.service";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
+    DialogFooter,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +40,11 @@ export default function AudioFileUploaderDialog({
     onFileSelect
 }: AudioFileUploaderDialogProps) {
     const uploadInputRef = useRef<HTMLInputElement>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<UploadedFile | null>(null);
+    const [playingFileId, setPlayingFileId] = useState<string | null>(null);
+    const [isLoadingAudio, setIsLoadingAudio] = useState<string | null>(null);
 
     // Library state
     const [libraryFiles, setLibraryFiles] = useState<UploadedFile[]>([]);
@@ -83,9 +88,59 @@ export default function AudioFileUploaderDialog({
     };
 
     const handleSelectLibraryFile = (file: UploadedFile) => {
-        onFileSelect(file, file.key);
+        setSelectedFile(file);
+    };
+
+    const handleConfirmSelect = () => {
+        if (!selectedFile) return;
+        onFileSelect(selectedFile, selectedFile.key);
+        stopAudio();
         onOpenChange(false);
     };
+
+    const stopAudio = () => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+            audioRef.current = null;
+        }
+        setPlayingFileId(null);
+    };
+
+    const handlePlayAudio = async (e: React.MouseEvent, file: UploadedFile) => {
+        e.stopPropagation();
+
+        if (playingFileId === file.id) {
+            stopAudio();
+            return;
+        }
+
+        stopAudio();
+        setIsLoadingAudio(file.id);
+        try {
+            const fetched = await getUploadedFile(file.id);
+            if (!fetched.url) return;
+
+            const audio = new Audio(fetched.url);
+            audio.volume = 1;
+            audioRef.current = audio;
+            audio.onended = () => setPlayingFileId(null);
+
+            await audio.play();
+            setPlayingFileId(file.id);
+        } catch {
+            setPlayingFileId(null);
+        } finally {
+            setIsLoadingAudio(null);
+        }
+    };
+
+    useEffect(() => {
+        if (!isOpen) {
+            stopAudio();
+            setSelectedFile(null);
+        }
+    }, [isOpen]);
 
     const handleUploadFromDialog = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || !e.target.files[0]) return;
@@ -163,7 +218,7 @@ export default function AudioFileUploaderDialog({
                     </div>
 
                     <ScrollArea className="h-[400px] rounded-md ">
-                        <div className="p-2 space-y-1">
+                        <div className="py-2 pl-1 pr-2 space-y-1">
                             {isLoadingLibrary ? (
                                 <div className="flex items-center justify-center py-8 text-muted-foreground">
                                     <Loader2 className="w-6 h-6 animate-spin mr-2" />
@@ -175,14 +230,26 @@ export default function AudioFileUploaderDialog({
                                         key={file.id}
                                         className={cn(
                                             "flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-secondary/50 transition-colors",
-                                            currentFileName === file.name ? "bg-secondary" : ""
+                                            selectedFile?.id === file.id ? "bg-primary/10 ring-1 ring-primary" : currentFileName === file.name ? "bg-secondary" : ""
                                         )}
                                         onClick={() => handleSelectLibraryFile(file)}
                                     >
                                         <div className="flex items-center gap-3 overflow-hidden">
-                                            <div className="p-2 bg-secondary rounded-md shrink-0">
-                                                <AudioWaveform className="w-4 h-4 text-primary" />
-                                            </div>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="h-8 w-8 shrink-0"
+                                                disabled={isLoadingAudio === file.id}
+                                                onClick={(e) => handlePlayAudio(e, file)}
+                                            >
+                                                {isLoadingAudio === file.id ? (
+                                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                                ) : playingFileId === file.id ? (
+                                                    <Square className="w-3.5 h-3.5 text-red-500" />
+                                                ) : (
+                                                    <Play className="w-3.5 h-3.5 text-green-500" />
+                                                )}
+                                            </Button>
                                             <div className="flex flex-col min-w-0 max-w-[300px]">
                                                 <span className="text-sm font-medium truncate">{file.name}</span>
                                                 <span className="text-sm text-muted-foreground">
@@ -190,6 +257,7 @@ export default function AudioFileUploaderDialog({
                                                 </span>
                                             </div>
                                         </div>
+
                                     </div>
                                 ))
                             ) : (
@@ -200,46 +268,64 @@ export default function AudioFileUploaderDialog({
                         </div>
                     </ScrollArea>
 
-                    {totalPages > 1 && (
-                        <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">
-                                หน้า {currentPage} จาก {totalPages}
-                            </span>
-                            <div className="flex gap-1">
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1 || isLoadingLibrary}
-                                >
-                                    <ChevronLeft className="w-4 h-4" />
-                                </Button>
-                                {getPageNumbers().map(pageNum => (
-                                    <Button
-                                        key={pageNum}
-                                        variant={pageNum === currentPage ? "default" : "outline"}
-                                        size="icon"
-                                        className="h-8 w-8"
-                                        onClick={() => handlePageChange(pageNum)}
-                                        disabled={isLoadingLibrary}
-                                    >
-                                        {pageNum}
-                                    </Button>
-                                ))}
-                                <Button
-                                    variant="outline"
-                                    size="icon"
-                                    className="h-8 w-8"
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages || isLoadingLibrary}
-                                >
-                                    <ChevronRight className="w-4 h-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    )}
+
                 </div>
+
+                <DialogFooter>
+                    <div className="flex justify-between w-full">
+
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-muted-foreground">
+                                    หน้า {currentPage} จาก {totalPages}
+                                </span>
+                            </div>
+                        )}
+                        {totalPages > 1 && (
+                            <div className="flex items-center justify-between text-sm">
+                                <div className="flex gap-1">
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 mr-1"
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1 || isLoadingLibrary}
+                                    >
+                                        <ChevronLeft className="w-4 h-4" />
+                                    </Button>
+                                    {getPageNumbers().map(pageNum => (
+                                        <Button
+                                            key={pageNum}
+                                            variant={pageNum === currentPage ? "default" : "outline"}
+                                            size="icon"
+                                            className="h-8 w-8"
+                                            onClick={() => handlePageChange(pageNum)}
+                                            disabled={isLoadingLibrary}
+                                        >
+                                            {pageNum}
+                                        </Button>
+                                    ))}
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-8 w-8 ml-1"
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages || isLoadingLibrary}
+                                    >
+                                        <ChevronRight className="w-4 h-4" />
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                        <Button
+                            onClick={handleConfirmSelect}
+                            disabled={!selectedFile}
+                        >
+                            <Check className="w-4 h-4 mr-2" />
+                            เลือกไฟล์นี้
+                        </Button>
+                    </div>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );

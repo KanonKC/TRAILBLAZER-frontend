@@ -86,7 +86,7 @@ export function CompactAudioFileUploader({
                     )}
                 >
                     <AudioWaveform className="w-4 h-4 shrink-0" />
-                    <span className="truncate">{displayName}</span>
+                    <span className="truncate max-w-[150px]">{displayName}</span>
                 </Button>
 
                 {isUploadedFile && (

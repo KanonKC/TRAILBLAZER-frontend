@@ -98,7 +98,7 @@ export function AudioFileUploader({
                             <AudioWaveform className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className={cn("text-sm font-medium truncate", className?.includes("text-white") ? "text-white" : "")}>
+                            <span className={cn("text-sm font-medium truncate mr-4", className?.includes("text-white") ? "text-white" : "")}>
                                 {currentFileName?.split('/').pop() || "ยังไม่ได้เลือกไฟล์เสียง"}
                             </span>
                             <span className={cn("text-sm", className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")}>
