@@ -245,25 +245,37 @@ export default function DropImageWidgetPage() {
             const mockEvent = {
                 subscription: {
                     status: "enabled",
-                    type: "channel.channel_points_custom_reward_redemption.add"
+                    type: "channel.chat.message"
                 },
                 event: {
-                    id: "test-redemption-id-" + Date.now(),
                     broadcaster_user_id: user.twitchId,
                     broadcaster_user_login: user.username,
                     broadcaster_user_name: user.displayName,
-                    user_id: user.twitchId,
-                    user_login: user.username,
-                    user_name: user.displayName,
-                    user_input: "https://cdn.discordapp.com/attachments/1107965905448751126/1475124534150435068/Flower_stock_photo.png?ex=699c5847&is=699b06c7&hm=d820d4ba268eb29c5c8f4b5414415a0cd3cc17cf99613419d439fa033db95df7&",
-                    status: "unfulfilled",
-                    reward: {
-                        id: rewardId,
-                        title: `Test Drop Image Perk`,
-                        cost: 1,
-                        prompt: "Send an image url"
+                    chatter_user_id: user.twitchId,
+                    chatter_user_login: user.username,
+                    chatter_user_name: user.displayName,
+                    message_id: "test-message-id-" + Date.now(),
+                    message: {
+                        text: "https://hips.hearstapps.com/hmg-prod/images/summer-flowers-1648478322.jpg",
+                        fragments: [{
+                            type: "text",
+                            text: "https://hips.hearstapps.com/hmg-prod/images/summer-flowers-1648478322.jpg",
+                            cheermote: null,
+                            emote: null,
+                            mention: null
+                        }]
                     },
-                    redeemed_at: new Date().toISOString()
+                    color: "",
+                    badges: [],
+                    message_type: "text",
+                    cheer: null,
+                    reply: null,
+                    channel_points_custom_reward_id: rewardId,
+                    source_broadcaster_user_id: null,
+                    source_broadcaster_user_login: null,
+                    source_broadcaster_user_name: null,
+                    source_message_id: null,
+                    source_badges: null
                 }
             };
 
