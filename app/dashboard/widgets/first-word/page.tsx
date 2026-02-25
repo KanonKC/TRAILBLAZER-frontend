@@ -242,14 +242,14 @@ export default function FirstWordWidgetPage() {
                 audio_volume: audioVolume
             };
 
-            if (audioFile) {
-                if (audioFile instanceof File) {
-                    const uploaded = await uploadFile(audioFile);
-                    payload.audio_key = uploaded.id;
-                } else {
-                    payload.audio_key = audioFile.id;
-                }
-            }
+            // if (audioFile) {
+            //     if (audioFile instanceof File) {
+            //         const uploaded = await uploadFile(audioFile);
+            //         payload.audio_key = uploaded.id;
+            //     } else {
+            //         payload.audio_key = audioFile.id;
+            //     }
+            // }
 
             const updated = await updateFirstWordConfig(payload);
 

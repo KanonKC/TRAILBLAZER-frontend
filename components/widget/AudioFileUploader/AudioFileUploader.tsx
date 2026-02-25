@@ -118,7 +118,7 @@ export function AudioFileUploader({
                                     className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
                                 )}
                             >
-                                {isPlaying ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                                {isPlaying ? <Square className="h-3.5 w-3.5 text-red-500" /> : <Play className="h-3.5 w-3.5 text-green-500" />}
                             </Button>
                         )}
                         <Button
