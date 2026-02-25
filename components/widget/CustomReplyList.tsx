@@ -55,6 +55,7 @@ export function CustomReplyList() {
     const [userCheckError, setUserCheckError] = useState("");
     const [replyMessage, setReplyMessage] = useState("");
     const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
+    const [audioVolume, setAudioVolume] = useState<number>(100);
 
     // Delete states
     const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -88,6 +89,7 @@ export function CustomReplyList() {
         setUserCheckError("");
         setReplyMessage("");
         setAudioFile(null);
+        setAudioVolume(100);
         setIsDialogOpen(true);
     };
 
@@ -98,6 +100,7 @@ export function CustomReplyList() {
         setUserCheckError("");
         setReplyMessage(reply.reply_message || "");
         setAudioFile(reply.audio || null);
+        setAudioVolume(reply.audio_volume ?? 100);
         setIsDialogOpen(true);
     };
 
@@ -142,7 +145,8 @@ export function CustomReplyList() {
             if (editingId) {
                 const payload = {
                     reply_message: replyMessage.trim() || null,
-                    audio_key
+                    audio_key,
+                    audio_volume: audioVolume
                 };
                 console.log("updateCustomReply", payload);
                 result = await updateCustomReply(editingId, payload);
@@ -150,7 +154,8 @@ export function CustomReplyList() {
                 const payload = {
                     twitch_chatter_id: finalId,
                     reply_message: replyMessage.trim() || null,
-                    audio_key
+                    audio_key,
+                    audio_volume: audioVolume
                 };
                 console.log("createCustomReply", payload);
                 result = await createCustomReply(payload);
@@ -333,6 +338,8 @@ export function CustomReplyList() {
                                 currentFileName={audioFile?.name || null}
                                 selectedFile={audioFile}
                                 onFileSelect={(file) => setAudioFile(file)}
+                                audioVolume={audioVolume}
+                                onAudioVolumeChange={setAudioVolume}
                                 disabled={isSaving}
                                 className="text-white"
                             />

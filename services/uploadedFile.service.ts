@@ -47,3 +47,8 @@ export const uploadFile = async (file: File): Promise<UploadedFile> => {
 export const deleteUploadedFile = async (id: string): Promise<void> => {
     await apiClient.delete(`/api/v1/uploaded-files/${id}`);
 };
+
+export const getUploadedFile = async (id: string): Promise<UploadedFile> => {
+    const response = await apiClient.get<UploadedFile>(`/api/v1/uploaded-files/${id}`);
+    return response.data;
+};

@@ -8,6 +8,7 @@ export interface FirstWordConfig {
     reply_message: string | null;
     enabled: boolean;
     audio_key?: string | null;
+    audio_volume?: number;
     twitch_bot_id?: string | null;
     audio: UploadedFile | null;
     widget: {
@@ -24,6 +25,7 @@ export interface FirstWordCustomReply {
     twitch_chatter_avatar_url: string;
     reply_message: string | null;
     audio_key: string | null;
+    audio_volume: number;
     audio: UploadedFile | null;
     created_at: string;
     updated_at: string;
@@ -78,7 +80,7 @@ export const listCustomReplies = async (search?: string): Promise<ListResponse<F
     }
 };
 
-export const createCustomReply = async (data: { twitch_chatter_id: string; reply_message?: string | null; audio_key?: string | null }): Promise<FirstWordCustomReply | null> => {
+export const createCustomReply = async (data: { twitch_chatter_id: string; reply_message?: string | null; audio_key?: string | null; audio_volume?: number }): Promise<FirstWordCustomReply | null> => {
     try {
         const response = await apiClient.post<FirstWordCustomReply>("/api/v1/first-word/custom-replies", data);
         return response.data;
@@ -87,7 +89,7 @@ export const createCustomReply = async (data: { twitch_chatter_id: string; reply
     }
 };
 
-export const updateCustomReply = async (id: string, data: { twitch_chatter_id?: string; reply_message?: string | null; audio_key?: string | null }): Promise<FirstWordCustomReply | null> => {
+export const updateCustomReply = async (id: string, data: { twitch_chatter_id?: string; reply_message?: string | null; audio_key?: string | null; audio_volume?: number }): Promise<FirstWordCustomReply | null> => {
     try {
         const response = await apiClient.put<FirstWordCustomReply>(`/api/v1/first-word/custom-replies/${id}`, data);
         return response.data;

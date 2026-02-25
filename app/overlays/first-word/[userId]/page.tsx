@@ -41,6 +41,7 @@ export default function FirstWordOverlayPage() {
                 const data = JSON.parse(event.data)
                 console.log("Received audio event:", data)
                 if (data.url && audioRef.current) {
+                    audioRef.current.volume = (data.volume ?? 100) / 100
                     audioRef.current.src = data.url
                     audioRef.current.play().catch(e => console.error("Failed to play audio:", e))
                 }
