@@ -63,6 +63,7 @@ export default function FirstWordWidgetPage() {
     const [isEnabled, setIsEnabled] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
+    const [audioVolume, setAudioVolume] = useState<number>(100);
     const [botProfile, setBotProfile] = useState<string>(user?.twitchId || "");
 
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
@@ -106,6 +107,7 @@ export default function FirstWordWidgetPage() {
             const data = await refreshFirstWordOverlayKey();
             if (data) {
                 setConfig(data);
+                setAudioFile(data.audio);
                 // toast success
             }
         } catch (error) {
@@ -157,6 +159,10 @@ export default function FirstWordWidgetPage() {
 
         : "";
 
+    useEffect(() => {
+        setAudioFile(config?.audio || null);
+    }, [config]);
+
 
     const fetchConfig = useCallback(async () => {
         try {
@@ -165,6 +171,7 @@ export default function FirstWordWidgetPage() {
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
                 setIsEnabled(data.enabled ?? true);
+                setAudioVolume(data.audio_volume ?? 100);
                 setBotProfile(data.twitch_bot_id || "default");
                 setActiveTab("settings");
             } else {
@@ -231,23 +238,24 @@ export default function FirstWordWidgetPage() {
         try {
             const payload: Partial<FirstWordConfig> = {
                 reply_message: replyMessage,
-                twitch_bot_id: botProfile === "default" ? null : botProfile
+                twitch_bot_id: botProfile === "default" ? null : botProfile,
+                audio_volume: audioVolume
             };
 
-            if (audioFile) {
-                if (audioFile instanceof File) {
-                    const uploaded = await uploadFile(audioFile);
-                    payload.audio_key = uploaded.id;
-                } else {
-                    payload.audio_key = audioFile.id;
-                }
-            }
+            // if (audioFile) {
+            //     if (audioFile instanceof File) {
+            //         const uploaded = await uploadFile(audioFile);
+            //         payload.audio_key = uploaded.id;
+            //     } else {
+            //         payload.audio_key = audioFile.id;
+            //     }
+            // }
 
             const updated = await updateFirstWordConfig(payload);
 
             if (updated) {
                 setConfig(updated);
-                setAudioFile(null);
+                setAudioFile(updated.audio);
 
                 // Optionally show toast
                 toast.success("บันทึกสำเร็จ", {
@@ -450,6 +458,8 @@ export default function FirstWordWidgetPage() {
                                             currentFileName={config?.audio?.name}
                                             selectedFile={audioFile}
                                             onFileSelect={(file) => setAudioFile(file)}
+                                            audioVolume={audioVolume}
+                                            onAudioVolumeChange={setAudioVolume}
                                             className="text-white"
                                             inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
                                             hideLabel
@@ -570,6 +580,8 @@ export default function FirstWordWidgetPage() {
                                         currentFileName={config?.audio?.name}
                                         selectedFile={audioFile}
                                         onFileSelect={handleOnFileSelect}
+                                        audioVolume={audioVolume}
+                                        onAudioVolumeChange={setAudioVolume}
                                         className="text-white"
                                         inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
                                     />
