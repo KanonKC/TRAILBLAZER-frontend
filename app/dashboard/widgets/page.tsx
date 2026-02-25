@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageSquare, Video, Dices } from "lucide-react";
+import { MessageSquare, Video, Dices, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -34,6 +34,16 @@ const widgets = [
         color: "text-emerald-500",
         bgColor: "bg-emerald-500/10",
         borderColor: "border-emerald-500/20"
+    },
+    {
+        id: "drop-image",
+        title: "Drop Image",
+        description: "ให้ผู้ชมของคุณโชว์รูปภาพบนหน้าจอผ่านการแลก Channel Points",
+        icon: ImageIcon,
+        href: "/dashboard/widgets/drop-image",
+        color: "text-purple-500",
+        bgColor: "bg-purple-500/10",
+        borderColor: "border-purple-500/20"
     }
 ];
 
