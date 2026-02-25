@@ -89,49 +89,72 @@ export function AudioFileUploader({
             )}
 
             <div className={cn(
-                "flex items-center justify-between p-3 border rounded-lg",
+                "border rounded-lg overflow-hidden",
                 className?.includes("text-white") ? "border-white/20 bg-white/5" : "bg-card"
             )}>
-                <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
-                        <AudioWaveform className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
+                <div className="flex items-center justify-between p-3">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
+                            <AudioWaveform className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                            <span className={cn("text-sm font-medium truncate", className?.includes("text-white") ? "text-white" : "")}>
+                                {currentFileName?.split('/').pop() || "ยังไม่ได้เลือกไฟล์เสียง"}
+                            </span>
+                            <span className={cn("text-sm", className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")}>
+                                {currentFileName ? "ไฟล์เสียงปัจจุบัน" : "กดปุ่มเพื่อเลือกไฟล์"}
+                            </span>
+                        </div>
                     </div>
-                    <div className="flex flex-col min-w-0">
-                        <span className={cn("text-sm font-medium truncate", className?.includes("text-white") ? "text-white" : "")}>
-                            {currentFileName?.split('/').pop()}
-                        </span>
-                        <span className={cn("text-sm", className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")}>
-                            {currentFileName ? "ไฟล์เสียงปัจจุบัน" : "ยังไม่ได้เลือกไฟล์เสียง"}
-                        </span>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    {isUploadedFile && (
+                    <div className="flex items-center gap-2">
+                        {isUploadedFile && (
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={handlePlayStop}
+                                disabled={disabled || isLoading}
+                                className={cn(
+                                    "h-8 w-8 shrink-0",
+                                    className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
+                                )}
+                            >
+                                {isPlaying ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                            </Button>
+                        )}
                         <Button
                             variant="outline"
-                            size="icon"
-                            onClick={handlePlayStop}
-                            disabled={disabled || isLoading}
+                            size="sm"
+                            onClick={() => setIsDialogOpen(true)}
+                            disabled={disabled}
                             className={cn(
-                                "h-8 w-8 shrink-0",
                                 className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
                             )}
                         >
-                            {isPlaying ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                            {currentFileName ? "เปลี่ยนไฟล์ใหม่" : "เลือกไฟล์เสียง"}
                         </Button>
-                    )}
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsDialogOpen(true)}
-                        disabled={disabled}
-                        className={cn(
-                            className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
-                        )}
-                    >
-                        {currentFileName ? "เปลี่ยนไฟล์ใหม่" : "เลือกไฟล์เสียง"}
-                    </Button>
+                    </div>
                 </div>
+
+                {audioVolume !== undefined && onAudioVolumeChange && (
+                    <div className={cn(
+                        "flex items-center gap-3 px-3 pb-3 pt-3 border-t",
+                        className?.includes("text-white") ? "border-white/20" : ""
+                    )}>
+                        <Volume2 className={cn("w-4 h-4 shrink-0", className?.includes("text-white") ? "text-white" : "text-muted-foreground")} />
+                        <Slider
+                            value={[audioVolume]}
+                            onValueChange={([v]) => onAudioVolumeChange(v)}
+                            min={0}
+                            max={100}
+                            step={1}
+                            disabled={disabled}
+                            className="flex-1 cursor-pointer"
+                        />
+                        <span className={cn("text-sm tabular-nums w-10 text-right shrink-0", className?.includes("text-white") ? "text-white" : "text-muted-foreground")}>
+                            {audioVolume}%
+                        </span>
+                    </div>
+                )}
 
                 <AudioFileUploaderDialog
                     isOpen={isDialogOpen}
@@ -140,27 +163,6 @@ export function AudioFileUploader({
                     onFileSelect={onFileSelect}
                 />
             </div>
-
-            {audioVolume !== undefined && onAudioVolumeChange && (
-                <div className={cn(
-                    "flex items-center gap-3 p-3 border rounded-lg",
-                    className?.includes("text-white") ? "border-white/20 bg-white/5" : "bg-card"
-                )}>
-                    <Volume2 className={cn("w-4 h-4 shrink-0", className?.includes("text-white") ? "text-white" : "text-muted-foreground")} />
-                    <Slider
-                        value={[audioVolume]}
-                        onValueChange={([v]) => onAudioVolumeChange(v)}
-                        min={0}
-                        max={100}
-                        step={1}
-                        disabled={disabled}
-                        className="flex-1"
-                    />
-                    <span className={cn("text-sm tabular-nums w-10 text-right shrink-0", className?.includes("text-white") ? "text-white" : "text-muted-foreground")}>
-                        {audioVolume}%
-                    </span>
-                </div>
-            )}
         </div>
     );
 }
