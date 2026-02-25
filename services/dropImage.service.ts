@@ -66,5 +66,5 @@ export const getDropImageEventUrl = (userId: string, key?: string) => {
 };
 
 export const testDropImage = async (eventData: any): Promise<void> => {
-    await apiClient.post("/webhook/v1/twitch/event-sub/channel-redemption-add", eventData);
+    await apiClient.post("/webhook/v1/twitch/event-sub/channel-chat-message", eventData);
 };
