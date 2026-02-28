@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { Image as ImageIcon, Gift, ExternalLink, Play, MonitorPlay, ShieldCheck } from "lucide-react";
+import { Image as ImageIcon, Gift, ExternalLink, Play, ShieldCheck, Info } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
 import { useEffect, useState } from "react";
@@ -300,7 +300,7 @@ export default function DropImageWidgetPage() {
         <div className="container mx-auto py-10 flex flex-col items-center">
             <div className="w-full max-w-2xl mb-8">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
+                    <div className="p-2 rounded-lg bg-purple-500/10 text-purple-500">
                         <ImageIcon className="w-6 h-6" />
                     </div>
                     <h1 className="text-3xl font-bold">Drop Image</h1>
@@ -329,22 +329,22 @@ export default function DropImageWidgetPage() {
                         isLoading={isSaving}
                     >
                         <p className="text-gray-200 text-base leading-relaxed">
-                            วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณและส่ง URL ของรูปภาพ เพื่อให้มันไปตกลงบนหน้าจอสตรีมได้เลย
+                            วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณและส่ง URL ของรูปภาพ โดยมีระบบตรวจสอบความถูกต้องว่าเป็นไฟล์รูปภาพจริงและคัดกรองเนื้อหาที่ไม่เหมาะสม ก่อนปล่อยตกบนสตรีมและตอบกลับกรณีส่งผิด
                         </p>
                         <div className="grid gap-4 md:grid-cols-2">
-                            <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-500 mb-3">
-                                    <MonitorPlay className="w-5 h-5" />
-                                </div>
-                                <h3 className="font-semibold mb-1">Interactive Display</h3>
-                                <p className="text-sm text-muted-foreground">มีระบบฟิสิกส์ รองรับหลายๆ รูปพร้อมกัน รูปเก่าพอกลางทางก็จะหายไป</p>
-                            </div>
                             <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                 <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
                                     <Gift className="w-5 h-5" />
                                 </div>
                                 <h3 className="font-semibold mb-1">Channel Points</h3>
                                 <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch และรับ URL ของภาพจากผู้ใช้ได้อย่างสะดวก</p>
+                            </div>
+                            <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
+                                <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-500 mb-3">
+                                    <ShieldCheck className="w-5 h-5" />
+                                </div>
+                                <h3 className="font-semibold mb-1">Image Moderation</h3>
+                                <p className="text-sm text-muted-foreground">มีระบบ AI คอยคัดกรองรูปภาพก่อนแสดงผลเสมอ ป้องกันเนื้อหาที่ไม่เหมาะสมทั้งภาพโป๊เปลือยและความรุนแรง</p>
                             </div>
                         </div>
                     </WidgetOverviewCard>
@@ -458,6 +458,41 @@ export default function DropImageWidgetPage() {
                             },
                             {
                                 step: 6,
+                                title: "อธิบายให้คนดูเข้าใจเกี่ยวกับการวางลิงก์รูป",
+                                description: (
+                                    <div className="space-y-3">
+                                        <p className="text-sm text-white/70">เนื่องจากคำว่า &quot;ลิงก์รูปภาพ&quot; เป็นสิ่งที่เข้าใจยากสำหรับทั้งสตรีมเมอร์และคนดู ในขั้นตอนนี้จึงเป็นการอธิบายให้เข้าใจว่ามันคืออะไร เพื่อที่จะสามารถนำไปอธิบายต่อให้กับคนดูระหว่างสตรีมได้</p>
+                                        <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm flex gap-3">
+                                            <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="font-semibold mb-1">ลิงก์รูปภาพ (Image URL) คืออะไร?</p>
+                                                <div className="space-y-2 mt-2">
+                                                    <p className="text-blue-100/90 leading-relaxed text-sm">
+                                                        คือ <strong>ที่อยู่ของรูปภาพนั้นๆ บนอินเทอร์เน็ต</strong> สังเกตง่ายๆ คือ ลิงก์ที่ใช้ได้มักจะยาวๆ และ <span className="font-semibold text-emerald-400">ลงท้ายด้วยนามสกุลไฟล์รูปภาพ</span> เช่น .jpg, .png, หรือ .gif
+                                                    </p>
+                                                    
+                                                    <div className="mt-3 bg-black/10 p-3 rounded-md">
+                                                        <p className="font-semibold text-blue-100 mb-2 border-b border-blue-500/20 pb-1">🔍 วิธีที่ง่ายที่สุดในการบอกคนดูว่าจะเอาลิงก์ได้จากที่ไหน</p>
+                                                        <ul className="list-disc pl-5 space-y-2 text-blue-100/80 text-sm">
+                                                            <li>
+                                                                <span className="font-semibold text-indigo-300">จาก Discord:</span> เป็นวิธีที่เห็นคนดูหลายคนทำบ่อยที่สุดคืออัพรูปลง Discord (อาจจะสร้างห้องส่วนตัวขึ้นมาก็ได้) <br/>กดที่รูปให้ขยายใหญ่ {'>'} กดค้าง (มือถือ) หรือคลิกขวา (คอม) {'>'} เลือก <strong>&quot;คัดลอกลิงก์สื่อ (Copy Media Link)&quot;</strong>
+                                                            </li>   
+                                                            <li>
+                                                                <span className="font-semibold text-blue-200">บนคอมพิวเตอร์ (PC):</span> ค้นหารูป {'>'} คลิกขวาที่รูป {'>'} เลือก <strong>&quot;คัดลอกที่อยู่รูปภาพ (Copy image address)&quot;</strong>
+                                                            </li>
+                                                            <li>
+                                                                <span className="font-semibold text-blue-200">บนมือถือ:</span> กดค้างที่รูปภาพ {'>'} เลือก <strong>&quot;คัดลอกลิงก์ (Copy link)&quot;</strong>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )
+                            },
+                            {
+                                step: 7,
                                 title: "การตั้งค่าเพิ่มเติม",
                                 description: (
                                     <div className="space-y-3">
