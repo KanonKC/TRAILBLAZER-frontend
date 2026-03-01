@@ -1,19 +1,19 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Music, Upload, Search, ChevronLeft, ChevronRight, Loader2, AudioWaveform, Play, Square, Check } from "lucide-react";
-import { tbToast } from "@/utils/tbToast";
-import { z } from "zod";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getUploadedFiles, getUploadedFile, uploadFile, UploadedFile } from "@/services/uploadedFile.service";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
     Dialog,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogFooter,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { getUploadedFile, getUploadedFiles, UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { tbToast } from "@/utils/tbToast";
+import { Check, ChevronLeft, ChevronRight, Loader2, Play, Search, Square, Upload } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { z } from "zod";
 
 interface AudioFileUploaderDialogProps {
     isOpen: boolean;

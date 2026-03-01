@@ -1,5 +1,6 @@
 "use client"
 
+import { CustomReplyList } from "@/app/dashboard/widgets/first-word/_components/CustomReplyList";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
-import { CustomReplyList } from "@/app/dashboard/widgets/first-word/_components/CustomReplyList";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
@@ -38,11 +38,11 @@ import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/Widget
 import {
     enableFirstWord,
     getFirstWordConfig,
+    listChatters,
     refreshFirstWordOverlayKey,
+    resetChatters,
     testFirstWordAudio,
     updateFirstWordConfig,
-    listChatters,
-    resetChatters,
     type FirstWordConfig
 } from "@/services/firstWord.service";
 import { UploadedFile } from "@/services/uploadedFile.service";
@@ -53,8 +53,6 @@ import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { FirstWordVariableMap } from "@/constants/firstWord";
 import { tbToast } from "@/utils/tbToast";
-import { AxiosError } from "axios";
-import { TError } from "@/app/types/error";
 
 export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstWordConfig | null }) {
     const { user, isLoading: isUserLoading } = useUser();
