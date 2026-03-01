@@ -88,6 +88,7 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
         try {
             const success = await deleteWidget(config.widget.id);
             if (success) {
+                tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
                 setConfig(null);
                 setReplyMessage("");
                 setIsEnabled(false);
@@ -96,6 +97,7 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
             }
         } catch (error) {
             console.error("Failed to delete", error);
+            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -106,12 +108,13 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
         try {
             const data = await refreshFirstWordOverlayKey();
             if (data) {
+                tbToast.success({ title: "รีเซ็ตลิงก์ Overlay สำเร็จ" });
                 setConfig(data);
                 setAudioFile(data.audio);
-                // toast success
             }
         } catch (error) {
             console.error("Failed to refresh key", error);
+            tbToast.error({ title: "รีเซ็ตลิงก์ Overlay ไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
             setShowConfirmRefresh(false);
@@ -193,6 +196,7 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
         try {
             const data = await enableFirstWord(user.twitchId, user.id);
             if (data) {
+                tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
                 setIsEnabled(data.enabled ?? true);
@@ -200,6 +204,7 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
             }
         } catch (error) {
             console.error("Failed to enable", error);
+            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -313,17 +318,17 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
 
             await testFirstWordAudio(mockEvent);
 
-            // toast({
-            //     title: "Test Sent",
-            //     description: "Audio trigger event has been sent.",
-            // });
+            tbToast.success({
+                title: "ส่งคำสั่งทดสอบสำเร็จ",
+                description: "ส่งอีเวนต์ทดสอบเสียงเรียบร้อยแล้ว",
+            });
         } catch (error) {
             console.error("Test failed:", error);
-            // toast({
-            //     title: "Test Failed",
-            //     description: "Failed to send test event.",
-            //     variant: "destructive",
-            // });
+            tbToast.error({
+                title: "ไม่สามารถทดสอบได้",
+                description: "ล้มเหลวในการส่งอีเวนต์ทดสอบ",
+                error: (error as any).response?.data
+            });
         } finally {
             setIsTesting(false);
         }

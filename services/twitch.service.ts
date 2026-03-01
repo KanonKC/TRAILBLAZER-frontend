@@ -20,13 +20,8 @@ export interface TwitchCustomReward {
 }
 
 export const getTwitchChannelRewards = async (): Promise<TwitchCustomReward[]> => {
-    try {
-        const response = await apiClient.get<{ data: TwitchCustomReward[] }>("/api/v1/twitch/channel-rewards");
-        return response.data.data;
-    } catch (error) {
-        console.error("Failed to fetch Twitch rewards", error);
-        return [];
-    }
+    const response = await apiClient.get<{ data: TwitchCustomReward[] }>("/api/v1/twitch/channel-rewards");
+    return response.data.data;
 }
 
 export interface TwitchUser {
@@ -42,13 +37,8 @@ export interface TwitchUser {
     created_at: string;
 }
 
-export const getTwitchUser = async (username?: string): Promise<TwitchUser | null> => {
-    try {
-        const query = username ? `?username=${encodeURIComponent(username)}` : "";
-        const response = await apiClient.get<TwitchUser>(`/api/v1/twitch/user${query}`);
-        return response.data;
-    } catch (error) {
-        console.error("Failed to fetch Twitch user", error);
-        return null;
-    }
+export const getTwitchUser = async (username?: string): Promise<TwitchUser> => {
+    const query = username ? `?username=${encodeURIComponent(username)}` : "";
+    const response = await apiClient.get<TwitchUser>(`/api/v1/twitch/user${query}`);
+    return response.data;
 }

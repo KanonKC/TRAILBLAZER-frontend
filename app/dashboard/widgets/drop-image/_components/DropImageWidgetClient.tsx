@@ -24,6 +24,7 @@ import {
 } from "@/services/dropImage.service";
 import { deleteWidget } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
+import { tbToast } from "@/utils/tbToast";
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
@@ -44,6 +45,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 
 export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropImageConfig | null }) {
     const { user, isLoading: isUserLoading } = useUser();
@@ -98,6 +100,7 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
         try {
             const data = await enableDropImage(true);
             if (data) {
+                tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setIsEnabled(data.widget?.enabled ?? false);
                 setTwitchRewardId(data.twitch_reward_id);
@@ -111,6 +114,7 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
             }
         } catch (error) {
             console.error("Failed to enable", error);
+            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ" });
         } finally {
             setIsSaving(false);
         }
@@ -122,6 +126,7 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
         try {
             const success = await deleteWidget(config.widget.id);
             if (success) {
+                tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
                 setConfig(null);
                 setIsEnabled(false);
                 setTwitchRewardId(null);
@@ -135,6 +140,7 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
             }
         } catch (error) {
             console.error("Failed to delete", error);
+            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้" });
         } finally {
             setIsSaving(false);
         }
@@ -150,12 +156,14 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
             });
 
             if (updated) {
+                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
                 setConfig(updated);
             } else {
                 setIsEnabled(!checked);
             }
         } catch (error) {
             console.error("Failed to update status", error);
+            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
             setIsEnabled(!checked);
         }
     }
@@ -175,10 +183,12 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
             });
 
             if (updated) {
+                tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
                 setConfig(updated);
             }
-        } catch (error) {
-            console.error("Failed to update config", error);
+        } catch (error: any) {
+            console.error("Failed to update config aaa", error);
+            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้", error: error.response.data });
         } finally {
             setIsSaving(false);
         }
@@ -189,10 +199,12 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
         try {
             const data = await refreshDropImageKey();
             if (data) {
+                tbToast.success({ title: "รีเซ็ตคีย์สำเร็จ" });
                 setConfig(data);
             }
         } catch (error) {
             console.error("Failed to refresh key", error);
+            tbToast.error({ title: "ไม่สามารถรีเซ็ตคีย์ได้" });
         } finally {
             setIsSaving(false);
             setShowConfirmRefresh(false);
@@ -248,9 +260,11 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
             };
 
             await testDropImage(mockEvent);
+            tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ" });
 
         } catch (error) {
             console.error("Test failed:", error);
+            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ" });
         } finally {
             setIsTesting(false);
         }
@@ -583,9 +597,9 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
                                         <p className="text-sm text-muted-foreground">
                                             กำหนดข้อความที่จะส่งบนแชทของ Twitch เมื่อข้อความที่คนดูแลกแต้มมา ไม่ใช่ลิงก์ URL ที่ใช้งานได้
                                         </p>
-                                        <Textarea
+                                        <ReplyMessageTextarea
                                             value={invalidMessage}
-                                            onChange={(e) => setInvalidMessage(e.target.value)}
+                                            onChange={(e) => setInvalidMessage(e)}
                                             placeholder="เช่น ลิงก์ที่ส่งมาไม่ถูกต้อง กรุณาส่งใหม่"
                                             rows={2}
                                         />
@@ -595,9 +609,9 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
                                         <p className="text-sm text-muted-foreground">
                                             กำหนดข้อความที่จะส่งบนแชทของ Twitch เมื่อลิงก์ URL ที่คนดูแลกแต้มมา ไม่ใช่ลิงก์สำหรับรูปภาพ
                                         </p>
-                                        <Textarea
+                                        <ReplyMessageTextarea
                                             value={notImageMessage}
-                                            onChange={(e) => setNotImageMessage(e.target.value)}
+                                            onChange={(e) => setNotImageMessage(e)}
                                             placeholder="เช่น ไฟล์ที่ส่งมาไม่ใช่รูปภาพ กรุณาส่ง URL ของรูปภาพ"
                                             rows={2}
                                         />
@@ -607,9 +621,9 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
                                         <p className="text-sm text-muted-foreground">
                                             กำหนดข้อความที่จะส่งบนแชทของ Twitch เมื่อลิงก์ URL รูปภาพที่คนดูแลกแต้มมา มีเนื้อหาที่ไม่เหมาะสม
                                         </p>
-                                        <Textarea
+                                        <ReplyMessageTextarea
                                             value={containMatureMessage}
-                                            onChange={(e) => setContainMatureMessage(e.target.value)}
+                                            onChange={(e) => setContainMatureMessage(e)}
                                             placeholder="เช่น รูปภาพมีเนื้อหาไม่เหมาะสม ไม่สามารถแสดงได้"
                                             rows={2}
                                             disabled={!enabledModeration}
