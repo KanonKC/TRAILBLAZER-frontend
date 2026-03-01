@@ -50,24 +50,17 @@ export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
 };
 
 export const enableFirstWord = async (twitchId: string, ownerId: string): Promise<FirstWordConfig | null> => {
-    try {
-        const response = await apiClient.post<FirstWordConfig>("/api/v1/first-word", {
-            twitch_id: twitchId,
-            owner_id: ownerId,
-        });
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+    const response = await apiClient.post<FirstWordConfig>("/api/v1/first-word", {
+        twitch_id: twitchId,
+        owner_id: ownerId,
+    });
+    return response.data;
+    
 };
 
 export const updateFirstWordConfig = async (data: Partial<FirstWordConfig>): Promise<FirstWordConfig | null> => {
-    try {
-        const response = await apiClient.put<FirstWordConfig>("/api/v1/first-word", data);
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+    const response = await apiClient.put<FirstWordConfig>("/api/v1/first-word", data);
+    return response.data;
 };
 
 export const listCustomReplies = async (search?: string): Promise<ListResponse<FirstWordCustomReply> | null> => {

@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
-import { CustomReplyList } from "@/components/widget/CustomReplyList";
+import { CustomReplyList } from "@/app/dashboard/widgets/first-word/_components/CustomReplyList";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
@@ -47,12 +47,14 @@ import {
 } from "@/services/firstWord.service";
 import { UploadedFile } from "@/services/uploadedFile.service";
 import { deleteWidget } from "@/services/widget.service";
-import { toast } from "sonner";
 
 
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { FirstWordVariableMap } from "@/constants/firstWord";
+import { tbToast } from "@/utils/tbToast";
+import { AxiosError } from "axios";
+import { TError } from "@/app/types/error";
 
 export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstWordConfig | null }) {
     const { user, isLoading: isUserLoading } = useUser();
@@ -127,7 +129,7 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
             setShowConfirmReset(true);
         } catch (error) {
             console.error("Failed to fetch chatters", error);
-            toast.error("ดึงข้อมูลรายชื่อทักทายไม่สำเร็จ");
+            tbToast.error({ title: "ดึงข้อมูลรายชื่อทักทายไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsResettingChatters(false);
         }
@@ -138,14 +140,14 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
         try {
             const success = await resetChatters();
             if (success) {
-                toast.success("รีเซ็ตรายชื่อผู้ทักทายเรียบร้อยแล้ว");
+                tbToast.success({ title: "รีเซ็ตรายชื่อผู้ทักทายเรียบร้อยแล้ว" });
                 setChattersCount(0);
             } else {
-                toast.error("รีเซ็ตไม่สำเร็จ");
+                tbToast.error({ title: "รีเซ็ตไม่สำเร็จ" });
             }
         } catch (error) {
             console.error("Failed to reset chatters", error);
-            toast.error("รีเซ็ตไม่สำเร็จ");
+            tbToast.error({ title: "รีเซ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsResettingChatters(false);
             setShowConfirmReset(false);
@@ -243,22 +245,24 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
             //         payload.audio_key = audioFile.id;
             //     }
             // }
-
+            console.log("Start")
             const updated = await updateFirstWordConfig(payload);
-
+            console.log("Not count as error")
             if (updated) {
                 setConfig(updated);
                 setAudioFile(updated.audio);
 
                 // Optionally show toast
-                toast.success("บันทึกสำเร็จ", {
+                tbToast.success({
+                    title: "บันทึกสำเร็จ",
                     description: "การตั้งค่าของคุณถูกบันทึกเรียบร้อยแล้ว",
                 });
             }
         } catch (error) {
-            console.error("Failed to update", error);
-            toast.error("บันทึกไม่สำเร็จ", {
+            tbToast.error({
+                title: "บันทึกไม่สำเร็จ",
                 description: "เกิดข้อผิดพลาดในการบันทึกการตั้งค่า",
+                error: (error as any).response?.data
             });
         } finally {
             setIsSaving(false);

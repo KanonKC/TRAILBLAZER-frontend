@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
-import { MaxPerkSelector } from "@/components/widget/MaxPerkSelector";
+import { MaxPerkSelector } from "@/app/dashboard/widgets/random-dbd-perk/_components/MaxPerkSelector";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
