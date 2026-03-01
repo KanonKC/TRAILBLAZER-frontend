@@ -45,7 +45,7 @@ import {
     resetChatters,
     type FirstWordConfig
 } from "@/services/firstWord.service";
-import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { UploadedFile } from "@/services/uploadedFile.service";
 import { deleteWidget } from "@/services/widget.service";
 import { toast } from "sonner";
 
@@ -54,23 +54,23 @@ import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { FirstWordVariableMap } from "@/constants/firstWord";
 
-export function FirstWordWidgetClient() {
+export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstWordConfig | null }) {
     const { user, isLoading: isUserLoading } = useUser();
-    const [config, setConfig] = useState<FirstWordConfig | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [replyMessage, setReplyMessage] = useState("");
+    const [config, setConfig] = useState<FirstWordConfig | null>(initialConfig);
+    const [isLoading, setIsLoading] = useState(false);
+    const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
-    const [isEnabled, setIsEnabled] = useState(false);
+    const [isEnabled, setIsEnabled] = useState(initialConfig?.enabled ?? (initialConfig ? true : false));
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
-    const [audioVolume, setAudioVolume] = useState<number>(100);
-    const [botProfile, setBotProfile] = useState<string>(user?.twitchId || "");
+    const [audioVolume, setAudioVolume] = useState<number>(initialConfig?.audio_volume ?? 100);
+    const [botProfile, setBotProfile] = useState<string>(initialConfig?.twitch_bot_id || user?.twitchId || "");
 
     const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
     const [showConfirmReset, setShowConfirmReset] = useState(false);
     const [chattersCount, setChattersCount] = useState<number>(0);
     const [isResettingChatters, setIsResettingChatters] = useState(false);
-    const [activeTab, setActiveTab] = useState("overview");
+    const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
 
 
     // ... (rest of state)
@@ -184,15 +184,8 @@ export function FirstWordWidgetClient() {
         }
     }, []);
 
-    useEffect(() => {
-        if (isUserLoading) return;
-        if (!user) {
-            setIsLoading(false);
-            return;
-        }
-
-        fetchConfig();
-    }, [user, isUserLoading]);
+    // Initial load logic is now handled server-side.
+    // The component is initialized with initialConfig.
 
     const handleEnable = async () => {
         if (!user) return;
@@ -334,26 +327,7 @@ export function FirstWordWidgetClient() {
         }
     };
 
-    const handleSwitchChange = async (checked: boolean) => {
-        setIsEnabled(checked);
-        if (!config) return;
 
-        try {
-            const updated = await updateFirstWordConfig({
-                enabled: checked
-            });
-
-            if (updated) {
-                setConfig(updated);
-            } else {
-                // Revert if failed
-                setIsEnabled(!checked);
-            }
-        } catch (error) {
-            console.error("Failed to update status", error);
-            setIsEnabled(!checked);
-        }
-    }
 
     if (isUserLoading || isLoading) {
         return (
