@@ -471,8 +471,8 @@ export default function DropImageWidgetPage() {
                                                         คือ <strong>ที่อยู่ของรูปภาพนั้นๆ บนอินเทอร์เน็ต</strong> สังเกตง่ายๆ คือ ลิงก์ที่ใช้ได้มักจะยาวๆ และ <span className="font-semibold text-emerald-400">ลงท้ายด้วยนามสกุลไฟล์รูปภาพ</span> เช่น .jpg, .png, หรือ .gif
                                                     </p>
                                                     
-                                                    <div className="mt-3 bg-black/10 p-3 rounded-md">
-                                                        <p className="font-semibold text-blue-100 mb-2 border-b border-blue-500/20 pb-1">🔍 วิธีที่ง่ายที่สุดในการบอกคนดูว่าจะเอาลิงก์ได้จากที่ไหน</p>
+                                                    <div className="">
+                                                        <p className="font-semibold text-blue-100 mb-2 border-b border-blue-500/20 pb-1">       วิธีที่ง่ายที่สุดในการบอกคนดูว่าจะเอาลิงก์ได้จากที่ไหน</p>
                                                         <ul className="list-disc pl-5 space-y-2 text-blue-100/80 text-sm">
                                                             <li>
                                                                 <span className="font-semibold text-indigo-300">จาก Discord:</span> เป็นวิธีที่เห็นคนดูหลายคนทำบ่อยที่สุดคืออัพรูปลง Discord (อาจจะสร้างห้องส่วนตัวขึ้นมาก็ได้) <br/>กดที่รูปให้ขยายใหญ่ {'>'} กดค้าง (มือถือ) หรือคลิกขวา (คอม) {'>'} เลือก <strong>&quot;คัดลอกลิงก์สื่อ (Copy Media Link)&quot;</strong>
