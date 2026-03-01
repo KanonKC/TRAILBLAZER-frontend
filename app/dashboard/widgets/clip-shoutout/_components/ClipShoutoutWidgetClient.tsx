@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { ExternalLink, MessageSquare, Play, Video } from "lucide-react";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { tbToast } from "@/utils/tbToast";
 
 import {
     enableClipShoutout,
@@ -57,6 +58,7 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
         try {
             const success = await deleteWidget(config.widget.id);
             if (success) {
+                tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
                 setConfig(null);
                 setReplyMessage("");
                 setIsEnabled(false);
@@ -64,6 +66,7 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
             }
         } catch (error) {
             console.error("Failed to delete", error);
+            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้" });
         } finally {
             setIsSaving(false);
         }
@@ -74,10 +77,12 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
         try {
             const data = await refreshClipShoutoutOverlayKey();
             if (data) {
+                tbToast.success({ title: "รีเซ็ตคีย์สำเร็จ" });
                 setConfig(data);
             }
         } catch (error) {
             console.error("Failed to refresh key", error);
+            tbToast.error({ title: "ไม่สามารถรีเซ็ตคีย์ได้" });
         } finally {
             setIsSaving(false);
             setShowConfirmRefresh(false);
@@ -104,6 +109,7 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
         try {
             const data = await enableClipShoutout(user.twitchId, user.id);
             if (data) {
+                tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
                 setIsEnabled(data.enabled ?? true);
@@ -113,6 +119,7 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
             }
         } catch (error) {
             console.error("Failed to enable", error);
+            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ" });
         } finally {
             setIsSaving(false);
         }
@@ -149,10 +156,12 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
             });
 
             if (updated) {
+                tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
                 setConfig(updated);
             }
         } catch (error) {
             console.error("Failed to update", error);
+            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้" });
         } finally {
             setIsSaving(false);
         }
@@ -194,9 +203,11 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
             };
 
             await testClipShoutout(mockEvent);
+            tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ" });
 
         } catch (error) {
             console.error("Test failed:", error);
+            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ" });
         } finally {
             setIsTesting(false);
         }
@@ -212,12 +223,14 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
             });
 
             if (updated) {
+                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
                 setConfig(updated);
             } else {
                 setIsEnabled(!checked);
             }
         } catch (error) {
             console.error("Failed to update status", error);
+            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
             setIsEnabled(!checked);
         }
     }

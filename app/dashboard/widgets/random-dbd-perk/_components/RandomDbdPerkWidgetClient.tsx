@@ -30,7 +30,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { updateWidgetEnabled, deleteWidget } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
-import RandomFormatInfo from "@/components/widget/random-dbd-perk/RandomFormatInfo";
+import RandomFormatInfo from "@/app/dashboard/widgets/random-dbd-perk/_components/RandomFormatInfo";
+import { tbToast } from "@/utils/tbToast";
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
@@ -108,6 +109,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
         try {
             const data = await enableRandomDbdPerk(true);
             if (data) {
+                tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setIsEnabled(data.widget?.enabled ?? false);
                 setPerkClasses(data.classes || []);
@@ -115,6 +117,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
             }
         } catch (error) {
             console.error("Failed to enable", error);
+            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ" });
         } finally {
             setIsSaving(false);
         }
@@ -126,6 +129,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
         try {
             const success = await deleteWidget(config.widget.id);
             if (success) {
+                tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
                 setConfig(null);
                 setIsEnabled(false);
                 setPerkClasses([]);
@@ -133,6 +137,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
             }
         } catch (error) {
             console.error("Failed to delete", error);
+            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้" });
         } finally {
             setIsSaving(false);
         }
@@ -146,6 +151,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
             const success = await updateWidgetEnabled(config.widget.id, checked);
 
             if (success) {
+                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
                 setConfig(prev => prev ? {
                     ...prev,
                     widget: {
@@ -158,6 +164,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
             }
         } catch (error) {
             console.error("Failed to update status", error);
+            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
             setIsEnabled(!checked);
         }
     }
@@ -171,11 +178,13 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
             });
 
             if (updated) {
+                tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
                 setConfig(updated);
                 setPerkClasses(updated.classes);
             }
         } catch (error) {
             console.error("Failed to update classes", error);
+            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้" });
         } finally {
             setIsSaving(false);
         }
@@ -239,9 +248,11 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
             };
 
             await testRandomDbdPerk(mockEvent);
+            tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ" });
 
         } catch (error) {
             console.error("Test failed:", error);
+            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ" });
         } finally {
             setIsTesting(false);
         }

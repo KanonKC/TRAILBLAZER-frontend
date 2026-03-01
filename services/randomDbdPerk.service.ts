@@ -23,33 +23,21 @@ export interface RandomDbdPerkConfig {
     totalSurvivorPerks: number;
 }
 
-export const getRandomDbdPerkConfig = async (): Promise<RandomDbdPerkConfig | null> => {
-    try {
-        const response = await apiClient.get<RandomDbdPerkConfig>("/api/v1/random-dbd-perk");
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const getRandomDbdPerkConfig = async (): Promise<RandomDbdPerkConfig> => {
+    const response = await apiClient.get<RandomDbdPerkConfig>("/api/v1/random-dbd-perk");
+    return response.data;
 };
 
-export const enableRandomDbdPerk = async (enabled: boolean): Promise<RandomDbdPerkConfig | null> => {
-    try {
-        const response = await apiClient.post<RandomDbdPerkConfig>("/api/v1/random-dbd-perk", {
-            enabled,
-        });
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const enableRandomDbdPerk = async (enabled: boolean): Promise<RandomDbdPerkConfig> => {
+    const response = await apiClient.post<RandomDbdPerkConfig>("/api/v1/random-dbd-perk", {
+        enabled,
+    });
+    return response.data;
 };
 
-export const updateRandomDbdPerkConfig = async (data: Partial<RandomDbdPerkConfig> & { classes?: Partial<RandomDbdPerkClass>[] }): Promise<RandomDbdPerkConfig | null> => {
-    try {
-        const response = await apiClient.put<RandomDbdPerkConfig>("/api/v1/random-dbd-perk", data);
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const updateRandomDbdPerkConfig = async (data: Partial<RandomDbdPerkConfig> & { classes?: Partial<RandomDbdPerkClass>[] }): Promise<RandomDbdPerkConfig> => {
+    const response = await apiClient.put<RandomDbdPerkConfig>("/api/v1/random-dbd-perk", data);
+    return response.data;
 };
 
 
