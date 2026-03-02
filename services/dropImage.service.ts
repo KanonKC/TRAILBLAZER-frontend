@@ -17,43 +17,26 @@ export interface DropImageConfig {
     };
 }
 
-export const getDropImageConfig = async (): Promise<DropImageConfig | null> => {
-    try {
-        const response = await apiClient.get<DropImageConfig>("/api/v1/drop-image");
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const getDropImageConfig = async (): Promise<DropImageConfig> => {
+    const response = await apiClient.get<DropImageConfig>("/api/v1/drop-image");
+    return response.data;
 };
 
-export const enableDropImage = async (enabled: boolean): Promise<DropImageConfig | null> => {
-    try {
-        const response = await apiClient.post<DropImageConfig>("/api/v1/drop-image", {
-            enabled,
-        });
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const enableDropImage = async (enabled: boolean): Promise<DropImageConfig> => {
+    const response = await apiClient.post<DropImageConfig>("/api/v1/drop-image", {
+        enabled,
+    });
+    return response.data;
 };
 
-export const updateDropImageConfig = async (data: Partial<DropImageConfig>): Promise<DropImageConfig | null> => {
-    try {
-        const response = await apiClient.put<DropImageConfig>("/api/v1/drop-image", data);
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const updateDropImageConfig = async (data: Partial<DropImageConfig>): Promise<DropImageConfig> => {
+    const response = await apiClient.put<DropImageConfig>("/api/v1/drop-image", data);
+    return response.data;
 };
 
-export const refreshDropImageKey = async (): Promise<DropImageConfig | null> => {
-    try {
-        const response = await apiClient.post<DropImageConfig>("/api/v1/drop-image/refresh-key");
-        return response.data;
-    } catch (error) {
-        console.error("Failed to refresh drop image key", error);
-        return null;
-    }
+export const refreshDropImageKey = async (): Promise<DropImageConfig> => {
+    const response = await apiClient.post<DropImageConfig>("/api/v1/drop-image/refresh-key");
+    return response.data;
 };
 
 export const getDropImageEventUrl = (userId: string, key?: string) => {

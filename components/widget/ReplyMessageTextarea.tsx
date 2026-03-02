@@ -10,10 +10,13 @@ interface ReplyMessageTextareaProps {
     variant?: "default" | "overlay";
     error?: string | null;
     hideLabel?: boolean;
-    variables: VariableItem[];
+    variables?: VariableItem[];
+    placeholder?: string;
+    rows?: number;
+    disabled?: boolean;
 }
 
-export function ReplyMessageTextarea({ value, onChange, variant = "overlay", error, hideLabel, variables }: ReplyMessageTextareaProps) {
+export function ReplyMessageTextarea({ value, onChange, variant = "overlay", error, hideLabel, variables=[], placeholder, rows = 3, disabled=false }: ReplyMessageTextareaProps) {
     const isOverlay = variant === "overlay";
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -39,19 +42,12 @@ export function ReplyMessageTextarea({ value, onChange, variant = "overlay", err
 
     return (
         <div className="space-y-2">
-            {
-                !hideLabel && (<>
-                    <Label htmlFor="qs_reply_message" className={cn(isOverlay ? "text-white" : "text-foreground")}>ข้อความตอบกลับ</Label>
-                    <p className="text-sm text-muted-foreground">
-                        พิมพ์ข้อความตอบกลับที่จะแสดงบนหน้าจอเมื่อมีคนส่งข้อความมา
-                    </p>
-                </>)
-            }
             <div className="relative">
                 <Textarea
+                    disabled={disabled}
+                    placeholder={placeholder}
                     ref={textareaRef}
                     id="qs_reply_message"
-                    placeholder="ยินดีต้อนรับสู่สตรีมนะ {{user_name}}!"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     className={cn(
@@ -60,7 +56,7 @@ export function ReplyMessageTextarea({ value, onChange, variant = "overlay", err
                             ? "bg-transparent border-white/20 text-white placeholder:text-white/40 focus-visible:ring-offset-0 focus-visible:ring-white/20"
                             : "bg-background border-input text-foreground"
                     )}
-                    rows={3}
+                    rows={rows}
                 />
                 <div className="flex justify-between items-start absolute bottom-0 right-0 mr-2 mb-2">
                     {error ? (
@@ -73,7 +69,7 @@ export function ReplyMessageTextarea({ value, onChange, variant = "overlay", err
                     </span>
                 </div>
             </div>
-            <ReplyMessageHelp onInsertVariable={handleInsertVariable} variables={variables} />
+            { variables.length > 0 && <ReplyMessageHelp onInsertVariable={handleInsertVariable} variables={variables} />}
         </div>
     );
 }

@@ -1,19 +1,19 @@
-import React, { useRef, useState, useEffect } from "react";
-import { Music, Upload, Search, ChevronLeft, ChevronRight, Loader2, AudioWaveform, Play, Square, Check } from "lucide-react";
-import { toast } from "sonner";
-import { z } from "zod";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { getUploadedFiles, getUploadedFile, uploadFile, UploadedFile } from "@/services/uploadedFile.service";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
     Dialog,
     DialogContent,
+    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogFooter,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { getUploadedFile, getUploadedFiles, UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { tbToast } from "@/utils/tbToast";
+import { Check, ChevronLeft, ChevronRight, Loader2, Play, Search, Square, Upload } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { z } from "zod";
 
 interface AudioFileUploaderDialogProps {
     isOpen: boolean;
@@ -148,17 +148,17 @@ export default function AudioFileUploaderDialog({
 
         const result = fileSchema.safeParse(file);
         if (!result.success) {
-            toast.error(result.error.issues[0].message);
+            tbToast.error({ title: result.error.issues[0].message });
             return;
         }
 
         setIsUploading(true);
         try {
             await uploadFile(file);
-            toast.success("อัปโหลดไฟล์เสียงสำเร็จ");
+            tbToast.success({ title: "อัปโหลดไฟล์เสียงสำเร็จ" });
             await fetchLibraryFiles(1, searchQuery);
         } catch (err) {
-            toast.error("อัปโหลดไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+            tbToast.error({ title: "อัปโหลดไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง", error: (err as any).response?.data });
         } finally {
             setIsUploading(false);
             if (uploadInputRef.current) uploadInputRef.current.value = "";

@@ -4,7 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { RandomDbdPerkClass, PERKS_PER_PAGE } from "@/services/randomDbdPerk.service";
 import { type TwitchCustomReward } from "@/services/twitch.service";
-import { MaxPerkSelector } from "@/components/widget/MaxPerkSelector";
+import { MaxPerkSelector } from "@/app/dashboard/widgets/random-dbd-perk/_components/MaxPerkSelector";
 
 interface PerkConfigItemProps {
     item: RandomDbdPerkClass;

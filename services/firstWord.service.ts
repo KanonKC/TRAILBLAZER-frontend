@@ -40,71 +40,43 @@ export interface ListResponse<T> {
     }
 }
 
-export const getFirstWordConfig = async (): Promise<FirstWordConfig | null> => {
-    try {
-        const response = await apiClient.get<FirstWordConfig>("/api/v1/first-word");
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const getFirstWordConfig = async (): Promise<FirstWordConfig> => {
+    const response = await apiClient.get<FirstWordConfig>("/api/v1/first-word");
+    return response.data;
 };
 
-export const enableFirstWord = async (twitchId: string, ownerId: string): Promise<FirstWordConfig | null> => {
-    try {
-        const response = await apiClient.post<FirstWordConfig>("/api/v1/first-word", {
-            twitch_id: twitchId,
-            owner_id: ownerId,
-        });
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const enableFirstWord = async (twitchId: string, ownerId: string): Promise<FirstWordConfig> => {
+    const response = await apiClient.post<FirstWordConfig>("/api/v1/first-word", {
+        twitch_id: twitchId,
+        owner_id: ownerId,
+    });
+    return response.data;
 };
 
-export const updateFirstWordConfig = async (data: Partial<FirstWordConfig>): Promise<FirstWordConfig | null> => {
-    try {
-        const response = await apiClient.put<FirstWordConfig>("/api/v1/first-word", data);
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const updateFirstWordConfig = async (data: Partial<FirstWordConfig>): Promise<FirstWordConfig> => {
+    const response = await apiClient.put<FirstWordConfig>("/api/v1/first-word", data);
+    return response.data;
 };
 
-export const listCustomReplies = async (search?: string): Promise<ListResponse<FirstWordCustomReply> | null> => {
-    try {
-        const query = search ? `?search=${encodeURIComponent(search)}` : "";
-        const response = await apiClient.get<ListResponse<FirstWordCustomReply>>(`/api/v1/first-word/custom-replies${query}`);
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const listCustomReplies = async (search?: string): Promise<ListResponse<FirstWordCustomReply>> => {
+    const query = search ? `?search=${encodeURIComponent(search)}` : "";
+    const response = await apiClient.get<ListResponse<FirstWordCustomReply>>(`/api/v1/first-word/custom-replies${query}`);
+    return response.data;
 };
 
-export const createCustomReply = async (data: { twitch_chatter_id: string; reply_message?: string | null; audio_key?: string | null; audio_volume?: number }): Promise<FirstWordCustomReply | null> => {
-    try {
-        const response = await apiClient.post<FirstWordCustomReply>("/api/v1/first-word/custom-replies", data);
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const createCustomReply = async (data: { twitch_chatter_id: string; reply_message?: string | null; audio_key?: string | null; audio_volume?: number }): Promise<FirstWordCustomReply> => {
+    const response = await apiClient.post<FirstWordCustomReply>("/api/v1/first-word/custom-replies", data);
+    return response.data;
 };
 
-export const updateCustomReply = async (id: string, data: { twitch_chatter_id?: string; reply_message?: string | null; audio_key?: string | null; audio_volume?: number }): Promise<FirstWordCustomReply | null> => {
-    try {
-        const response = await apiClient.put<FirstWordCustomReply>(`/api/v1/first-word/custom-replies/${id}`, data);
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const updateCustomReply = async (id: string, data: { twitch_chatter_id?: string; reply_message?: string | null; audio_key?: string | null; audio_volume?: number }): Promise<FirstWordCustomReply> => {
+    const response = await apiClient.put<FirstWordCustomReply>(`/api/v1/first-word/custom-replies/${id}`, data);
+    return response.data;
 };
 
 export const deleteCustomReply = async (id: string): Promise<boolean> => {
-    try {
-        await apiClient.delete(`/api/v1/first-word/custom-replies/${id}`);
-        return true;
-    } catch (error) {
-        return false;
-    }
+    await apiClient.delete(`/api/v1/first-word/custom-replies/${id}`);
+    return true;
 };
 
 // export const uploadFirstWordAudio = async (file: File): Promise<boolean> => {
@@ -132,31 +104,19 @@ export const testFirstWordAudio = async (eventData: any): Promise<void> => {
     await apiClient.post("/webhook/v1/twitch/event-sub/channel-chat-message", eventData);
 };
 
-export const refreshFirstWordOverlayKey = async (): Promise<FirstWordConfig | null> => {
-    try {
-        const response = await apiClient.post<FirstWordConfig>("/api/v1/first-word/refresh-key");
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const refreshFirstWordOverlayKey = async (): Promise<FirstWordConfig> => {
+    const response = await apiClient.post<FirstWordConfig>("/api/v1/first-word/refresh-key");
+    return response.data;
 };
 
-export const listChatters = async (): Promise<ListResponse<any> | null> => {
-    try {
-        const response = await apiClient.get<ListResponse<any>>("/api/v1/first-word/chatters");
-        return response.data;
-    } catch (error) {
-        return null;
-    }
+export const listChatters = async (): Promise<ListResponse<any>> => {
+    const response = await apiClient.get<ListResponse<any>>("/api/v1/first-word/chatters");
+    return response.data;
 };
 
 export const resetChatters = async (): Promise<boolean> => {
-    try {
-        await apiClient.post("/api/v1/first-word/chatters/reset");
-        return true;
-    } catch (error) {
-        return false;
-    }
+    await apiClient.post("/api/v1/first-word/chatters/reset");
+    return true;
 };
 
 export const getFirstWordEventUrl = (userId: string, key?: string): string => {

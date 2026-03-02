@@ -32,11 +32,11 @@ import {
 import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
 import { AudioWaveform, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { tbToast } from "@/utils/tbToast";
 import { getTwitchUser } from "@/services/twitch.service";
-import { ReplyMessageTextarea } from "./ReplyMessageTextarea";
-import { CompactAudioFileUploader } from "./AudioFileUploader/CompactAudioFileUploader";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { ReplyMessageTextarea } from "../../../../../components/widget/ReplyMessageTextarea";
+import { CompactAudioFileUploader } from "../../../../../components/widget/AudioFileUploader/CompactAudioFileUploader";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../../components/ui/avatar";
 
 export function CustomReplyList() {
     const [replies, setReplies] = useState<FirstWordCustomReply[]>([]);
@@ -106,12 +106,12 @@ export function CustomReplyList() {
 
     const handleSave = async () => {
         if (!twitchChatterId.trim()) {
-            toast.error("กรุณาระบุ Twitch ID");
+            tbToast.error({ title: "กรุณาระบุ Twitch ID" });
             return;
         }
 
         if (userCheckError) {
-            toast.error("ไม่สามารถบันทึกได้เนื่องจากไม่พบชื่อผู้ใช้งาน");
+            tbToast.error({ title: "ไม่สามารถบันทึกได้เนื่องจากไม่พบชื่อผู้ใช้งาน" });
             return;
         }
 
@@ -162,15 +162,15 @@ export function CustomReplyList() {
             }
 
             if (result) {
-                toast.success(editingId ? "อัปเดตข้อมูลสำเร็จ" : "เพิ่มข้อมูลสำเร็จ");
+                tbToast.success({ title: editingId ? "อัปเดตข้อมูลสำเร็จ" : "เพิ่มข้อมูลสำเร็จ" });
                 setIsDialogOpen(false);
                 fetchReplies(searchTerm);
             } else {
-                toast.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+                tbToast.error({ title: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" });
             }
         } catch (error) {
             console.error(error);
-            toast.error("เกิดข้อผิดพลาด");
+            tbToast.error({ title: "เกิดข้อผิดพลาดในการบันทึกข้อมูล", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -182,14 +182,14 @@ export function CustomReplyList() {
         try {
             const success = await deleteCustomReply(deleteId);
             if (success) {
-                toast.success("ลบข้อมูลสำเร็จ");
+                tbToast.success({ title: "ลบข้อมูลสำเร็จ" });
                 fetchReplies(searchTerm);
             } else {
-                toast.error("ไม่สามารถลบข้อมูลได้");
+                tbToast.error({ title: "ไม่สามารถลบข้อมูลได้" });
             }
         } catch (error) {
             console.error(error);
-            toast.error("เกิดข้อผิดพลาดในการลบข้อมูล");
+            tbToast.error({ title: "เกิดข้อผิดพลาดในการลบข้อมูล", error: (error as any).response?.data });
         } finally {
             setIsDeleting(false);
             setDeleteId(null);

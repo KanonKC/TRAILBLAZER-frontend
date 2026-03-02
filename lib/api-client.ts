@@ -29,7 +29,7 @@ apiClient.interceptors.response.use(
                 return Promise.reject(refreshError);
             }
         }
-
+        console.log("error from axios", error)
         return Promise.reject(error);
     }
 );
