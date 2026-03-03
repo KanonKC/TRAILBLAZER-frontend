@@ -54,10 +54,11 @@ import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { FirstWordVariableMap } from "@/constants/firstWord";
 import { tbToast } from "@/utils/tbToast";
 
-export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstWordConfig | null }) {
+export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = false }: { initialConfig: FirstWordConfig | null; initialRequiresProPlan?: boolean }) {
     const { user, isLoading: isUserLoading } = useUser();
     const [config, setConfig] = useState<FirstWordConfig | null>(initialConfig);
     const [isLoading, setIsLoading] = useState(false);
+    const [requiresProPlan, setRequiresProPlan] = useState(initialRequiresProPlan);
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
     const [isEnabled, setIsEnabled] = useState(initialConfig?.enabled ?? (initialConfig ? true : false));
@@ -177,10 +178,15 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
                 setAudioVolume(data.audio_volume ?? 100);
                 setBotProfile(data.twitch_bot_id || "default");
                 setActiveTab("settings");
+                setRequiresProPlan(false);
             } else {
                 setConfig(null);
             }
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response?.status === 403) {
+                setRequiresProPlan(true);
+                setConfig(null);
+            }
             console.error("Failed to fetch config", error);
         } finally {
             setIsLoading(false);
@@ -373,7 +379,8 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
                 <TabsContent value="overview">
                     <WidgetOverviewCard
                         showLoginButton={!user}
-                        showEnableButton={!!user && !config}
+                        showEnableButton={!!user && !config && !requiresProPlan}
+                        showUpgradeButton={!!user && requiresProPlan}
                         onClickEnable={handleEnable}
                         isLoading={isSaving}
                     >
