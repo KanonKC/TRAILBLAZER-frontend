@@ -18,9 +18,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const userData = await getCurrentUser();
-            setUser(userData);
-            setIsLoading(false);
+            try {
+                const userData = await getCurrentUser();
+                setUser(userData);
+            } catch {
+                setUser(null);
+            } finally {
+                setIsLoading(false);
+            }
         };
 
         fetchUser();
