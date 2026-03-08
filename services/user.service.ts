@@ -6,10 +6,12 @@ export interface User {
     displayName: string;
     avatarUrl: string;
     twitchId: string;
+    tier: number;
 }
 
 export const getCurrentUser = async (): Promise<User> => {
     const response = await apiClient.get<User>("/api/v1/user/me");
+    console.log('user', response)
     return response.data;
 };
 

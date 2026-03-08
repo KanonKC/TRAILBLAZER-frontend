@@ -17,6 +17,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "./user-context";
 import { BrandLogo } from "@/components/brand-logo";
+import { Badge } from "./ui/badge";
 
 export default function Navbar() {
     const { user, isLoading, logout } = useUser();
@@ -49,31 +50,34 @@ export default function Navbar() {
                             <Skeleton className="h-8 w-8 rounded-full" />
                         </div>
                     ) : user ? (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                                    <Avatar className="h-8 w-8">
-                                        <AvatarImage src={user.avatarUrl} alt={user.username} />
-                                        <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
-                                    </Avatar>
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="end" forceMount>
-                                <DropdownMenuLabel className="font-normal">
-                                    <div className="flex flex-col space-y-1">
-                                        <p className="text-sm text-white font-medium leading-none">{user.displayName}</p>
-                                        <p className="text-xs leading-none text-muted-foreground">
-                                            {user.username}
-                                        </p>
-                                    </div>
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
-                                    <LogOut className="mr-2 h-4 w-4" />
-                                    <span>Log out</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-2">
+                            {user.tier > 0 && <Badge variant="outline">PRO</Badge>}
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                                        <Avatar className="h-8 w-8">
+                                            <AvatarImage src={user.avatarUrl} alt={user.username} />
+                                            <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="w-56" align="end" forceMount>
+                                    <DropdownMenuLabel className="font-normal">
+                                        <div className="flex flex-col space-y-1">
+                                            <p className="text-sm text-white font-medium leading-none">{user.displayName}</p>
+                                            <p className="text-xs leading-none text-muted-foreground">
+                                                {user.username}
+                                            </p>
+                                        </div>
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        <span>Log out</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     ) : (
                         <TwitchLoginButton />
                     )}

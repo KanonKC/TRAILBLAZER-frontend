@@ -1,8 +1,9 @@
 "use client";
 
-import { MessageSquare, Video, Dices, Image as ImageIcon } from "lucide-react";
+import { MessageSquare, Video, Dices, Image as ImageIcon, Lock } from "lucide-react";
 import Link from "next/link";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useUser } from "@/components/user-context";
 
 const widgets = [
     {
@@ -13,7 +14,8 @@ const widgets = [
         href: "/dashboard/widgets/first-word",
         color: "text-blue-500",
         bgColor: "bg-blue-500/10",
-        borderColor: "border-blue-500/20"
+        borderColor: "border-blue-500/20",
+        requiredTier: 0
     },
     {
         id: "clip-shoutout",
@@ -23,7 +25,8 @@ const widgets = [
         href: "/dashboard/widgets/clip-shoutout",
         color: "text-orange-500",
         bgColor: "bg-orange-500/10",
-        borderColor: "border-orange-500/20"
+        borderColor: "border-orange-500/20",
+        requiredTier: 1
     },
     {
         id: "random-dbd-perk",
@@ -33,7 +36,8 @@ const widgets = [
         href: "/dashboard/widgets/random-dbd-perk",
         color: "text-emerald-500",
         bgColor: "bg-emerald-500/10",
-        borderColor: "border-emerald-500/20"
+        borderColor: "border-emerald-500/20",
+        requiredTier: 0
     },
     {
         id: "drop-image",
@@ -43,11 +47,15 @@ const widgets = [
         href: "/dashboard/widgets/drop-image",
         color: "text-purple-500",
         bgColor: "bg-purple-500/10",
-        borderColor: "border-purple-500/20"
+        borderColor: "border-purple-500/20",
+        requiredTier: 1
     }
 ];
 
 export default function WidgetsPage() {
+    const { user } = useUser();
+    const currentTier = user?.tier || 0;
+
     return (
         <div className="container mx-auto py-8">
             <div className="flex flex-col gap-2 mb-8">
@@ -58,12 +66,19 @@ export default function WidgetsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {widgets.map((widget) => (
-                    <Link key={widget.id} href={widget.href}>
-                        <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md cursor-pointer group">
+                {widgets.map((widget) => {
+                    const isLocked = currentTier < widget.requiredTier;
+
+                    const CardComponent = (
+                        <Card className={`h-full transition-all ${isLocked ? 'opacity-70 grayscale-[0.5]' : 'hover:border-primary/50 hover:shadow-md cursor-pointer group'} relative overflow-hidden`}>
+                            {isLocked && (
+                                <div className="absolute top-2 right-2 p-1.5 rounded-full bg-background/80 backdrop-blur-sm shadow-sm border">
+                                    <Lock className="w-4 h-4 text-muted-foreground" />
+                                </div>
+                            )}
                             <CardHeader>
                                 <div className="flex items-center gap-4 mb-2">
-                                    <div className={`p-3 rounded-xl ${widget.bgColor} ${widget.color} group-hover:scale-110 transition-transform`}>
+                                    <div className={`p-3 rounded-xl ${widget.bgColor} ${widget.color} ${!isLocked && 'group-hover:scale-110'} transition-transform`}>
                                         <widget.icon className="w-6 h-6" />
                                     </div>
                                     <CardTitle className="text-xl transition-colors">
@@ -74,9 +89,26 @@ export default function WidgetsPage() {
                                     {widget.description}
                                 </CardDescription>
                             </CardHeader>
+                            {isLocked && (
+                                <CardContent className="mt-auto">
+                                    <div className="text-sm font-medium text-amber-500/90 bg-amber-500/10 px-3 py-1.5 rounded-md inline-block">
+                                        Requires Pro Tier
+                                    </div>
+                                </CardContent>
+                            )}
                         </Card>
-                    </Link>
-                ))}
+                    );
+
+                    if (isLocked) {
+                        return <div key={widget.id} className="cursor-not-allowed">{CardComponent}</div>;
+                    }
+
+                    return (
+                        <Link key={widget.id} href={widget.href}>
+                            {CardComponent}
+                        </Link>
+                    );
+                })}
             </div>
         </div>
     );
