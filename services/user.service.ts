@@ -11,7 +11,6 @@ export interface User {
 
 export const getCurrentUser = async (): Promise<User> => {
     const response = await apiClient.get<User>("/api/v1/user/me");
-    console.log('user', response)
     return response.data;
 };
 

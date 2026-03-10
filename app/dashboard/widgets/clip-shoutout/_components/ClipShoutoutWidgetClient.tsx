@@ -26,7 +26,7 @@ import {
     refreshClipShoutoutOverlayKey,
     type ClipShoutoutConfig
 } from "@/services/clipShoutout.service";
-import { deleteWidget } from "@/services/widget.service";
+import { deleteWidget, updateWidgetEnabled } from "@/services/widget.service";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
@@ -41,7 +41,7 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
     const [config, setConfig] = useState<ClipShoutoutConfig | null>(initialConfig);
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.enabled ?? (initialConfig ? true : false));
+    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
     const [botProfile, setBotProfile] = useState<string>(initialConfig?.twitch_bot_id || user?.twitchId || "");
 
@@ -124,6 +124,10 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
             setIsSaving(false);
         }
     }
+
+    useEffect(() => {
+        console.log("initialConfig", initialConfig)
+    }, [initialConfig])
 
     const replyMessageSchema = z.string().max(500, "ข้อความต้องไม่เกิน 500 ตัวอักษร");
 
@@ -214,17 +218,21 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
     };
 
     const handleSwitchChange = async (checked: boolean) => {
+        if (!config || !config.widget) return;
         setIsEnabled(checked);
-        if (!config) return;
 
         try {
-            const updated = await updateClipShoutoutConfig({
-                enabled: checked
-            });
+            const success = await updateWidgetEnabled(config.widget.id, checked);
 
-            if (updated) {
+            if (success) {
                 tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setConfig(updated);
+                setConfig(prev => prev ? {
+                    ...prev,
+                    widget: {
+                        ...prev.widget,
+                        is_enabled: checked
+                    }
+                } : null);
             } else {
                 setIsEnabled(!checked);
             }

@@ -1,7 +1,7 @@
 import { apiClient } from "@/lib/api-client";
 
 export const updateWidgetEnabled = async (id: string, enabled: boolean): Promise<boolean> => {
-    await apiClient.put(`/api/v1/widgets/${id}`, { enabled });
+    await apiClient.patch(`/api/v1/widgets/${id}/enable`, { enabled });
     return true;
 };
 

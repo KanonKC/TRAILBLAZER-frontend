@@ -46,7 +46,7 @@ import {
     type FirstWordConfig
 } from "@/services/firstWord.service";
 import { UploadedFile } from "@/services/uploadedFile.service";
-import { deleteWidget } from "@/services/widget.service";
+import { deleteWidget, updateWidgetEnabled } from "@/services/widget.service";
 
 
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
@@ -61,7 +61,7 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
     const [requiresProPlan, setRequiresProPlan] = useState(initialRequiresProPlan);
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.enabled ?? (initialConfig ? true : false));
+    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
     const [audioVolume, setAudioVolume] = useState<number>(initialConfig?.audio_volume ?? 100);
@@ -76,12 +76,42 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
 
     // ... (rest of state)
 
+    useEffect(() => {
+        console.log("initialConfig", initialConfig)
+    }, [initialConfig])
+
     const handleOnFileSelect = (file: File | UploadedFile | null, fileKey: string | null) => {
         if (!fileKey) return;
         updateFirstWordConfig({
             audio_key: fileKey
         }).then(fetchConfig);
     };
+
+    const handleSwitchChange = async (checked: boolean) => {
+        if (!config || !config.widget) return;
+        setIsEnabled(checked);
+
+        try {
+            const success = await updateWidgetEnabled(config.widget.id, checked);
+
+            if (success) {
+                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
+                setConfig(prev => prev ? {
+                    ...prev,
+                    widget: {
+                        ...prev.widget,
+                        is_enabled: checked
+                    }
+                } : null);
+            } else {
+                setIsEnabled(!checked);
+            }
+        } catch (error) {
+            console.error("Failed to update status", error);
+            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
+            setIsEnabled(!checked);
+        }
+    }
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
@@ -528,7 +558,10 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
                 </TabsContent>
 
                 <TabsContent value="settings">
-                    <WidgetSettingsCard>
+                    <WidgetSettingsCard
+                        handleSwitchChange={handleSwitchChange}
+                        isEnabled={isEnabled}
+                    >
                         <WidgetSettingsCardContent>
                             {/* Message Section */}
                             <div className="space-y-4">

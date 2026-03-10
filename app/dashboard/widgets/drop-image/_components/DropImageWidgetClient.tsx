@@ -22,7 +22,7 @@ import {
     testDropImage,
     type DropImageConfig,
 } from "@/services/dropImage.service";
-import { deleteWidget } from "@/services/widget.service";
+import { deleteWidget, updateWidgetEnabled } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
 import { tbToast } from "@/utils/tbToast";
 
@@ -147,17 +147,21 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
     };
 
     const handleSwitchChange = async (checked: boolean) => {
+        if (!config || !config.widget) return;
         setIsEnabled(checked);
-        if (!config) return;
 
         try {
-            const updated = await updateDropImageConfig({
-                enabled: checked
-            });
+            const success = await updateWidgetEnabled(config.widget.id, checked);
 
-            if (updated) {
+            if (success) {
                 tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setConfig(updated);
+                setConfig(prev => prev ? {
+                    ...prev,
+                    widget: {
+                        ...prev.widget,
+                        is_enabled: checked
+                    }
+                } : null);
             } else {
                 setIsEnabled(!checked);
             }
@@ -452,13 +456,13 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
                                                     <p className="text-blue-100/90 leading-relaxed text-sm">
                                                         คือ <strong>ที่อยู่ของรูปภาพนั้นๆ บนอินเทอร์เน็ต</strong> สังเกตง่ายๆ คือ ลิงก์ที่ใช้ได้มักจะยาวๆ และ <span className="font-semibold text-emerald-400">ลงท้ายด้วยนามสกุลไฟล์รูปภาพ</span> เช่น .jpg, .png, หรือ .gif
                                                     </p>
-                                                    
+
                                                     <div className="">
                                                         <p className="font-semibold text-blue-100 mb-2 border-b border-blue-500/20 pb-1">       วิธีที่ง่ายที่สุดในการบอกคนดูว่าจะเอาลิงก์ได้จากที่ไหน</p>
                                                         <ul className="list-disc pl-5 space-y-2 text-blue-100/80 text-sm">
                                                             <li>
-                                                                <span className="font-semibold text-indigo-300">จาก Discord:</span> เป็นวิธีที่เห็นคนดูหลายคนทำบ่อยที่สุดคืออัพรูปลง Discord (อาจจะสร้างห้องส่วนตัวขึ้นมาก็ได้) <br/>กดที่รูปให้ขยายใหญ่ {'>'} กดค้าง (มือถือ) หรือคลิกขวา (คอม) {'>'} เลือก <strong>&quot;คัดลอกลิงก์สื่อ (Copy Media Link)&quot;</strong>
-                                                            </li>   
+                                                                <span className="font-semibold text-indigo-300">จาก Discord:</span> เป็นวิธีที่เห็นคนดูหลายคนทำบ่อยที่สุดคืออัพรูปลง Discord (อาจจะสร้างห้องส่วนตัวขึ้นมาก็ได้) <br />กดที่รูปให้ขยายใหญ่ {'>'} กดค้าง (มือถือ) หรือคลิกขวา (คอม) {'>'} เลือก <strong>&quot;คัดลอกลิงก์สื่อ (Copy Media Link)&quot;</strong>
+                                                            </li>
                                                             <li>
                                                                 <span className="font-semibold text-blue-200">บนคอมพิวเตอร์ (PC):</span> ค้นหารูป {'>'} คลิกขวาที่รูป {'>'} เลือก <strong>&quot;คัดลอกที่อยู่รูปภาพ (Copy image address)&quot;</strong>
                                                             </li>

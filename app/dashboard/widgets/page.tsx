@@ -14,8 +14,7 @@ const widgets = [
         href: "/dashboard/widgets/first-word",
         color: "text-blue-500",
         bgColor: "bg-blue-500/10",
-        borderColor: "border-blue-500/20",
-        requiredTier: 0
+        borderColor: "border-blue-500/20"
     },
     {
         id: "clip-shoutout",
@@ -25,8 +24,7 @@ const widgets = [
         href: "/dashboard/widgets/clip-shoutout",
         color: "text-orange-500",
         bgColor: "bg-orange-500/10",
-        borderColor: "border-orange-500/20",
-        requiredTier: 1
+        borderColor: "border-orange-500/20"
     },
     {
         id: "random-dbd-perk",
@@ -36,8 +34,7 @@ const widgets = [
         href: "/dashboard/widgets/random-dbd-perk",
         color: "text-emerald-500",
         bgColor: "bg-emerald-500/10",
-        borderColor: "border-emerald-500/20",
-        requiredTier: 0
+        borderColor: "border-emerald-500/20"
     },
     {
         id: "drop-image",
@@ -47,8 +44,7 @@ const widgets = [
         href: "/dashboard/widgets/drop-image",
         color: "text-purple-500",
         bgColor: "bg-purple-500/10",
-        borderColor: "border-purple-500/20",
-        requiredTier: 1
+        borderColor: "border-purple-500/20"
     }
 ];
 
