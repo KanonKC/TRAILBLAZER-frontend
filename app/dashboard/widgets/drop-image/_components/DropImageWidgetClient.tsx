@@ -22,7 +22,7 @@ import {
     testDropImage,
     type DropImageConfig,
 } from "@/services/dropImage.service";
-import { deleteWidget, updateWidgetEnabled } from "@/services/widget.service";
+import { deleteWidget } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
 import { tbToast } from "@/utils/tbToast";
 
@@ -146,31 +146,16 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
         }
     };
 
-    const handleSwitchChange = async (checked: boolean) => {
-        if (!config || !config.widget) return;
+    const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
-
-        try {
-            const success = await updateWidgetEnabled(config.widget.id, checked);
-
-            if (success) {
-                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setConfig(prev => prev ? {
-                    ...prev,
-                    widget: {
-                        ...prev.widget,
-                        is_enabled: checked
-                    }
-                } : null);
-            } else {
-                setIsEnabled(!checked);
+        setConfig(prev => prev ? {
+            ...prev,
+            widget: {
+                ...prev.widget,
+                is_enabled: checked
             }
-        } catch (error) {
-            console.error("Failed to update status", error);
-            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
-            setIsEnabled(!checked);
-        }
-    }
+        } : null);
+    };
 
     const handleSave = async () => {
         if (!config) return;
@@ -516,8 +501,9 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
 
                 <TabsContent value="settings">
                     <WidgetSettingsCard
+                        widgetId={config?.widget?.id}
                         isEnabled={isEnabled}
-                        handleSwitchChange={handleSwitchChange}
+                        onStatusChange={handleStatusChange}
                     >
                         <WidgetSettingsCardContent>
                             <div className="space-y-6">

@@ -46,7 +46,7 @@ import {
     type FirstWordConfig
 } from "@/services/firstWord.service";
 import { UploadedFile } from "@/services/uploadedFile.service";
-import { deleteWidget, updateWidgetEnabled } from "@/services/widget.service";
+import { deleteWidget } from "@/services/widget.service";
 
 
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
@@ -87,31 +87,16 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
         }).then(fetchConfig);
     };
 
-    const handleSwitchChange = async (checked: boolean) => {
-        if (!config || !config.widget) return;
+    const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
-
-        try {
-            const success = await updateWidgetEnabled(config.widget.id, checked);
-
-            if (success) {
-                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setConfig(prev => prev ? {
-                    ...prev,
-                    widget: {
-                        ...prev.widget,
-                        is_enabled: checked
-                    }
-                } : null);
-            } else {
-                setIsEnabled(!checked);
+        setConfig(prev => prev ? {
+            ...prev,
+            widget: {
+                ...prev.widget,
+                is_enabled: checked
             }
-        } catch (error) {
-            console.error("Failed to update status", error);
-            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
-            setIsEnabled(!checked);
-        }
-    }
+        } : null);
+    };
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
@@ -559,8 +544,9 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
 
                 <TabsContent value="settings">
                     <WidgetSettingsCard
-                        handleSwitchChange={handleSwitchChange}
+                        widgetId={config?.widget?.id}
                         isEnabled={isEnabled}
+                        onStatusChange={handleStatusChange}
                     >
                         <WidgetSettingsCardContent>
                             {/* Message Section */}

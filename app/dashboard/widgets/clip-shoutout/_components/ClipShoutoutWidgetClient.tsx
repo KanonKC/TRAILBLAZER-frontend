@@ -26,7 +26,7 @@ import {
     refreshClipShoutoutOverlayKey,
     type ClipShoutoutConfig
 } from "@/services/clipShoutout.service";
-import { deleteWidget, updateWidgetEnabled } from "@/services/widget.service";
+import { deleteWidget } from "@/services/widget.service";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
@@ -217,31 +217,16 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
         }
     };
 
-    const handleSwitchChange = async (checked: boolean) => {
-        if (!config || !config.widget) return;
+    const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
-
-        try {
-            const success = await updateWidgetEnabled(config.widget.id, checked);
-
-            if (success) {
-                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setConfig(prev => prev ? {
-                    ...prev,
-                    widget: {
-                        ...prev.widget,
-                        is_enabled: checked
-                    }
-                } : null);
-            } else {
-                setIsEnabled(!checked);
+        setConfig(prev => prev ? {
+            ...prev,
+            widget: {
+                ...prev.widget,
+                is_enabled: checked
             }
-        } catch (error) {
-            console.error("Failed to update status", error);
-            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
-            setIsEnabled(!checked);
-        }
-    }
+        } : null);
+    };
 
     if (isUserLoading) {
         return (
@@ -433,8 +418,9 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
 
                 <TabsContent value="settings">
                     <WidgetSettingsCard
+                        widgetId={config?.widget?.id}
                         isEnabled={isEnabled}
-                        handleSwitchChange={handleSwitchChange}
+                        onStatusChange={handleStatusChange}
                     >
                         <WidgetSettingsCardContent>
                             {/* Message Section */}
