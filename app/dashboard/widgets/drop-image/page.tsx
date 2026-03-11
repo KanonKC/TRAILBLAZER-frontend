@@ -1,7 +1,6 @@
 import { fetchData } from "@/lib/data-access";
 import { DropImageConfig } from "@/services/dropImage.service";
 import { DropImageWidgetClient } from "./_components/DropImageWidgetClient";
-import { TierGuard } from "@/components/tier-guard";
 
 async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
     try {
@@ -16,8 +15,6 @@ async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
 export default async function DropImageWidgetPage() {
     const config = await getDropImageConfigServer();
     return (
-        <TierGuard requiredTier={1} featureName="Drop Image Widget">
-            <DropImageWidgetClient initialConfig={config} />
-        </TierGuard>
+        <DropImageWidgetClient initialConfig={config} />
     );
 }
