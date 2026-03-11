@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Switch } from '@/components/ui/switch'
 import { Info } from 'lucide-react'
 import React, { useState } from 'react'
-import { updateWidgetEnabled } from '@/services/widget.service'
+import { updateWidgetEnabled, getFirstEnabledWidget } from '@/services/widget.service'
 import { tbToast } from '@/utils/tbToast'
 import {
     AlertDialog,
@@ -26,6 +26,7 @@ interface WidgetSettingsCardProps {
 const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusChange }: WidgetSettingsCardProps) => {
     const [isUpdating, setIsUpdating] = useState(false)
     const [showLimitDialog, setShowLimitDialog] = useState(false)
+    const [enabledWidgetName, setEnabledWidgetName] = useState<string | null>(null)
     const router = useRouter()
 
     const handleSwitchChange = async (checked: boolean, forceUpdate = false) => {
@@ -49,6 +50,15 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
             console.error("Failed to update status", error)
 
             if (error.response?.status === 402) {
+                try {
+                    const firstWidget = await getFirstEnabledWidget()
+                    if (firstWidget && firstWidget.widget_type) {
+                        console.log(firstWidget)
+                        setEnabledWidgetName(firstWidget.widget_type.displayName)
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch first enabled widget", e)
+                }
                 setShowLimitDialog(true)
             } else {
                 tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" })
@@ -86,7 +96,7 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
                     <AlertDialogHeader>
                         <AlertDialogTitle>ไม่สามารถเปิดใช้งานวิดเจ็ตได้</AlertDialogTitle>
                         <AlertDialogDescription>
-                            เนื่องจากคุณเป็นผู้ใช้งาน Free Tier คุณสามารถเปิดใช้งานวิดเจ็ตได้เพียง 1 อันเท่านั้น หากคุณเปิดใช้งานวิดเจ็ตนี้ วิดเจ็ตอื่นๆ ที่เคยเปิดใช้งานไว้จะถูกปิดทั้งหมด
+                            เนื่องจากคุณเป็นผู้ใช้งาน Free Tier คุณสามารถเปิดใช้งานวิดเจ็ตได้เพียง 1 อันเท่านั้น หากคุณเปิดใช้งานวิดเจ็ตนี้ {enabledWidgetName ? `วิดเจ็ต "${enabledWidgetName}" ที่เคยเปิดใช้งานไว้จะถูกปิด` : 'วิดเจ็ตอื่นๆ ที่เคยเปิดใช้งานไว้จะถูกปิดทั้งหมด'}
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className="flex-col sm:flex-row gap-2">
@@ -100,7 +110,7 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
                         <AlertDialogAction
                             onClick={() => handleSwitchChange(true, true)}
                         >
-                            ปิดอันอื่นและเปิดอันนี้
+                            เปิดใช้งานวิดเจ็ดนี้แทน
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

@@ -1,5 +1,28 @@
 import { apiClient } from "@/lib/api-client";
 
+export interface WidgetType {
+    id: number;
+    slug: string;
+    displayName: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Widget {
+    id: string;
+    twitch_id: string;
+    enabled: boolean;
+    overlay_key: string | null;
+    owner_id: string;
+    widget_type_slug: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ExtendedWidget extends Widget {
+    widget_type: WidgetType | null;
+}
+
 export const updateWidgetEnabled = async (id: string, enabled: boolean, options?: { forceUpdate?: boolean }): Promise<boolean> => {
     await apiClient.patch(`/api/v1/widgets/${id}/enable`, { enabled }, {
         params: {
@@ -17,4 +40,9 @@ export const refreshWidgetKey = async (id: string): Promise<{ overlay_key: strin
 export const deleteWidget = async (id: string): Promise<boolean> => {
     await apiClient.delete(`/api/v1/widgets/${id}`);
     return true;
+};
+
+export const getFirstEnabledWidget = async (): Promise<ExtendedWidget | null> => {
+    const response = await apiClient.get<ExtendedWidget>('/api/v1/widgets/first-enabled');
+    return response.data;
 };
