@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { ExtendedWidget, listWidgets, updateWidgetEnabled, getFirstEnabledWidget } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 import { WidgetCard } from "./WidgetCard";
-import { WidgetQuotaDialog } from "./WidgetQuotaDialog";
+import { WidgetQuotaDialog } from "@/components/widget/WidgetQuotaDialog";
 
 const staticWidgets = [
     {

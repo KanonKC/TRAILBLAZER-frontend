@@ -4,17 +4,7 @@ import { Info } from 'lucide-react'
 import React, { useState } from 'react'
 import { updateWidgetEnabled, getFirstEnabledWidget } from '@/services/widget.service'
 import { tbToast } from '@/utils/tbToast'
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { useRouter } from 'next/navigation'
+import { WidgetQuotaDialog } from '@/components/widget/WidgetQuotaDialog'
 
 interface WidgetSettingsCardProps {
     children: React.ReactNode
@@ -27,7 +17,6 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
     const [isUpdating, setIsUpdating] = useState(false)
     const [showLimitDialog, setShowLimitDialog] = useState(false)
     const [enabledWidgetName, setEnabledWidgetName] = useState<string | null>(null)
-    const router = useRouter()
 
     const handleSwitchChange = async (checked: boolean, forceUpdate = false) => {
         if (!widgetId) return
@@ -91,30 +80,12 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
             </CardHeader>
             {children}
 
-            <AlertDialog open={showLimitDialog} onOpenChange={setShowLimitDialog}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>ไม่สามารถเปิดใช้งานวิดเจ็ตได้</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            เนื่องจากคุณเป็นผู้ใช้งาน Free Tier คุณสามารถเปิดใช้งานวิดเจ็ตได้เพียง 1 อันเท่านั้น หากคุณเปิดใช้งานวิดเจ็ตนี้ {enabledWidgetName ? `วิดเจ็ต "${enabledWidgetName}" ที่เคยเปิดใช้งานไว้จะถูกปิด` : 'วิดเจ็ตอื่นๆ ที่เคยเปิดใช้งานไว้จะถูกปิดทั้งหมด'}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter className="flex-col sm:flex-row gap-2">
-                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => router.push('/pricing')}
-                            className="bg-blue-600 hover:bg-blue-700"
-                        >
-                            อัปเกรดเป็น Pro Plan
-                        </AlertDialogAction>
-                        <AlertDialogAction
-                            onClick={() => handleSwitchChange(true, true)}
-                        >
-                            เปิดใช้งานวิดเจ็ดนี้แทน
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <WidgetQuotaDialog
+                open={showLimitDialog}
+                onOpenChange={setShowLimitDialog}
+                enabledWidgetName={enabledWidgetName}
+                onConfirmToggle={() => handleSwitchChange(true, true)}
+            />
         </Card>
     )
 }

@@ -31,18 +31,21 @@ export const WidgetQuotaDialog = ({
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>ไม่สามารถเปิดใช้งานวิดเจ็ตได้</AlertDialogTitle>
-                    <AlertDialogDescription>
-                        เนื่องจากคุณเป็นผู้ใช้งาน Free Tier คุณสามารถเปิดใช้งานวิดเจ็ตได้เพียง 1 อันเท่านั้น หากคุณเปิดใช้งานวิดเจ็ตนี้ {enabledWidgetName ? `วิดเจ็ต "${enabledWidgetName}" ที่เคยเปิดใช้งานไว้จะถูกปิด` : 'วิดเจ็ตอื่นๆ ที่เคยเปิดใช้งานไว้จะถูกปิดทั้งหมด'}
+                    <AlertDialogTitle>คุณสามารถเปิดวิดเจ็ตได้เพียง 1 อันเท่านั้น</AlertDialogTitle>
+                    <AlertDialogDescription className="space-y-2">
+                        <div>เนื่องจากคุณเป็นผู้ใช้งาน Free Tier คุณสามารถเปิดใช้งานวิดเจ็ตได้เพียง 1 อันเท่านั้น หากคุณเปิดใช้งานวิดเจ็ตนี้ {enabledWidgetName ? `วิดเจ็ตที่เคยเปิดใช้งานไว้จะถูกปิด` : 'วิดเจ็ตอื่นๆ ที่เคยเปิดใช้งานไว้จะถูกปิดทั้งหมด'}</div>
+                        <div>คุณสามารถเปลี่ยนเป็น Pro Plan เพื่อเปิดใช้งานวิดเจ็ตได้อย่างไม่จำกัด</div>
+                        <div className="font-bold">วิดเจ็ตที่กำลังเปิดใช้งาน <span className="text-yellow-600">{enabledWidgetName}</span></div>
+
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="flex-col sm:flex-row gap-2">
                     <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                     <AlertDialogAction
                         onClick={() => router.push('/pricing')}
-                        className="bg-blue-600 hover:bg-blue-700"
+                        className="text-md bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
                     >
-                        อัปเกรดเป็น Pro Plan
+                        อัปเกรดเป็น Pro
                     </AlertDialogAction>
                     <AlertDialogAction
                         onClick={onConfirmToggle}
