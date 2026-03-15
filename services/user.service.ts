@@ -17,3 +17,9 @@ export const getCurrentUser = async (): Promise<User> => {
 export const logoutUser = async (): Promise<void> => {
     await apiClient.post("/api/v1/logout", {});
 };
+
+export const getUserTier = async ({ forceTwitch = false }: { forceTwitch?: boolean }): Promise<number> => {
+    const response = await apiClient.get<number>(`/api/v1/user/tier`, { params: { force: forceTwitch } });
+    return response.data;
+};
+

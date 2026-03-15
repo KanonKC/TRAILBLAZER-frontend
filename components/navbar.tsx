@@ -12,21 +12,33 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
-import { LogOut } from "lucide-react";
+import { LogOut, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "./user-context";
 import { BrandLogo } from "@/components/brand-logo";
 import { Badge } from "./ui/badge";
+import { useEffect, useState } from "react";
+import { getUserTier } from "@/services/user.service";
 
 export default function Navbar() {
     const { user, isLoading, logout } = useUser();
     const pathname = usePathname();
+    const [tier, setTier] = useState<number>(0);
 
     // Hide navbar on overlay pages
     if (pathname?.startsWith("/overlays")) {
         return null;
     }
+
+    useEffect(() => {
+        setTier(user?.tier || 0);
+    }, [user]);
+
+    const handleReloadSubscription = async () => {
+        const tier = await getUserTier({ forceTwitch: true });
+        setTier(tier);
+    };
 
     // Twitch OAuth URL
 
@@ -51,7 +63,7 @@ export default function Navbar() {
                         </div>
                     ) : user ? (
                         <div className="flex items-center gap-2">
-                            {user.tier > 0 && <Badge variant="outline">PRO</Badge>}
+                            {tier > 0 ? <Badge variant="outline" className="trailblazer-gradient-text font-bold">PRO</Badge> : <Badge variant="outline">FREE</Badge>}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -70,6 +82,13 @@ export default function Navbar() {
                                             </p>
                                         </div>
                                     </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <span onClick={handleReloadSubscription} className="cursor-pointer hover:bg-primary">
+                                            <RefreshCw className="mr-2 h-4 w-4" />
+                                            อัปเดตข้อมูลการสมัครสมาชิก
+                                        </span>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
                                         <LogOut className="mr-2 h-4 w-4" />

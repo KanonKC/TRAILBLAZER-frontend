@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 import { UserProvider } from "@/components/user-context";
 import Navbar from "@/components/navbar";
 import { Toaster } from "@/components/ui/sonner";
+import { Footer } from "@/components/landing/footer";
 
 // ... existing imports
 
@@ -32,12 +33,15 @@ export default function RootLayout({
   return (
     <html lang="th" className={`${anuphan.variable} ${kanit.variable} dark`}>
       <body
-        className={`font-sans antialiased`}
+        className={`font-sans antialiased min-h-screen flex flex-col`}
       >
         <UserProvider>
           <Navbar />
-          {children}
+          <main className="flex-1">
+            {children}
+          </main>
           <Toaster />
+          <Footer />
         </UserProvider>
       </body>
     </html>
