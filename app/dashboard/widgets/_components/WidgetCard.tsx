@@ -1,10 +1,11 @@
 "use client";
 
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, Play, Settings } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { ExtendedWidget } from "@/services/widget.service";
+import { Button } from "@/components/ui/button";
 
 interface WidgetCardProps {
     slug: string;
@@ -59,9 +60,25 @@ export const WidgetCard = ({
                     {description}
                 </CardDescription>
             </CardHeader>
-            <CardContent className="mt-auto">
+            <CardContent className="mt-auto flex justify-end">
                 <Link href={href} className="text-sm font-medium text-primary hover:underline">
-                    Configure Widget →
+                    <Button
+                        variant={!apiWidget ? "default" : "outline"}
+                    >
+                        {
+                            apiWidget ? (
+                                <>
+                                    <Settings />
+                                    ตั้งค่าวิดเจ็ต
+                                </>
+                            ) : (
+                                <>
+                                    <Play />
+                                    เปิดใช้งานวิดเจ็ต
+                                </>
+                            )
+                        }
+                    </Button>
                 </Link>
             </CardContent>
         </Card>

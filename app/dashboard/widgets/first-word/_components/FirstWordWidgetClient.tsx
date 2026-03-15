@@ -189,7 +189,7 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
             if (data) {
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
-                setIsEnabled(data.enabled ?? true);
+                setIsEnabled(data.widget?.enabled ?? false);
                 setAudioVolume(data.audio_volume ?? 100);
                 setBotProfile(data.twitch_bot_id || "default");
                 setActiveTab("settings");
@@ -220,7 +220,7 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
-                setIsEnabled(data.enabled ?? true);
+                setIsEnabled(data.widget?.enabled ?? false);
                 setActiveTab("quick-start");
             }
         } catch (error) {

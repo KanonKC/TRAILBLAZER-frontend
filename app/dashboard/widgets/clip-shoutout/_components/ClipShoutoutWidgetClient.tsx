@@ -112,8 +112,8 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
-                setIsEnabled(data.enabled ?? true);
-                setEnabledClip(data.enabled_clip ?? true);
+                setIsEnabled(data.widget?.enabled ?? false);
+                setEnabledClip(data.enabled_clip ?? false);
                 setEnabledHighlightOnly(data.enabled_highlight_only ?? false);
                 setActiveTab("quick-start");
             }
