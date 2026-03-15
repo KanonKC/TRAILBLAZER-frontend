@@ -46,3 +46,8 @@ export const getFirstEnabledWidget = async (): Promise<ExtendedWidget | null> =>
     const response = await apiClient.get<ExtendedWidget>('/api/v1/widgets/first-enabled');
     return response.data;
 };
+
+export const listWidgets = async (params?: { page?: number, limit?: number, enabled?: boolean }): Promise<{ data: ExtendedWidget[], pagination: { page: number, limit: number, total: number } }> => {
+    const response = await apiClient.get<{ data: ExtendedWidget[], pagination: { page: number, limit: number, total: number } }>('/api/v1/widgets', { params });
+    return response.data;
+};
