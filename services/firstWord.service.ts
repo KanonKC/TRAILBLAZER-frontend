@@ -14,6 +14,7 @@ export interface FirstWordConfig {
     widget: {
         id: string;
         overlay_key: string;
+        enabled: boolean;
     }
 }
 

@@ -61,7 +61,7 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
     const [requiresProPlan, setRequiresProPlan] = useState(initialRequiresProPlan);
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.enabled ?? (initialConfig ? true : false));
+    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
     const [audioVolume, setAudioVolume] = useState<number>(initialConfig?.audio_volume ?? 100);
@@ -76,11 +76,26 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
 
     // ... (rest of state)
 
+    useEffect(() => {
+        console.log("initialConfig", initialConfig)
+    }, [initialConfig])
+
     const handleOnFileSelect = (file: File | UploadedFile | null, fileKey: string | null) => {
         if (!fileKey) return;
         updateFirstWordConfig({
             audio_key: fileKey
         }).then(fetchConfig);
+    };
+
+    const handleStatusChange = (checked: boolean) => {
+        setIsEnabled(checked);
+        setConfig(prev => prev ? {
+            ...prev,
+            widget: {
+                ...prev.widget,
+                is_enabled: checked
+            }
+        } : null);
     };
 
     const handleDelete = async () => {
@@ -174,7 +189,7 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
             if (data) {
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
-                setIsEnabled(data.enabled ?? true);
+                setIsEnabled(data.widget?.enabled ?? false);
                 setAudioVolume(data.audio_volume ?? 100);
                 setBotProfile(data.twitch_bot_id || "default");
                 setActiveTab("settings");
@@ -205,7 +220,7 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
-                setIsEnabled(data.enabled ?? true);
+                setIsEnabled(data.widget?.enabled ?? false);
                 setActiveTab("quick-start");
             }
         } catch (error) {
@@ -528,7 +543,11 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
                 </TabsContent>
 
                 <TabsContent value="settings">
-                    <WidgetSettingsCard>
+                    <WidgetSettingsCard
+                        widgetId={config?.widget?.id}
+                        isEnabled={isEnabled}
+                        onStatusChange={handleStatusChange}
+                    >
                         <WidgetSettingsCardContent>
                             {/* Message Section */}
                             <div className="space-y-4">

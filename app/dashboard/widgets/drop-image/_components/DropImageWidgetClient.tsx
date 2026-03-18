@@ -146,27 +146,16 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
         }
     };
 
-    const handleSwitchChange = async (checked: boolean) => {
+    const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
-        if (!config) return;
-
-        try {
-            const updated = await updateDropImageConfig({
-                enabled: checked
-            });
-
-            if (updated) {
-                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setConfig(updated);
-            } else {
-                setIsEnabled(!checked);
+        setConfig(prev => prev ? {
+            ...prev,
+            widget: {
+                ...prev.widget,
+                is_enabled: checked
             }
-        } catch (error) {
-            console.error("Failed to update status", error);
-            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
-            setIsEnabled(!checked);
-        }
-    }
+        } : null);
+    };
 
     const handleSave = async () => {
         if (!config) return;
@@ -288,7 +277,7 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
                     <h1 className="text-3xl font-bold">Drop Image</h1>
                 </div>
                 <p className="text-muted-foreground text-lg">
-                    ให้ผู้ชมของคุณโชว์รูปภาพบนหน้าจอผ่านการแลก Channel Points พร้อมระบบฟิสิกส์หล่นตุบๆ ลงมา
+                    ให้ผู้ชมของคุณโชว์รูปภาพบนหน้าจอผ่านการแลกแต้มช่อง พร้อมระบบฟิสิกส์หล่นตุบๆ ลงมา
                 </p>
             </div>
 
@@ -452,13 +441,13 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
                                                     <p className="text-blue-100/90 leading-relaxed text-sm">
                                                         คือ <strong>ที่อยู่ของรูปภาพนั้นๆ บนอินเทอร์เน็ต</strong> สังเกตง่ายๆ คือ ลิงก์ที่ใช้ได้มักจะยาวๆ และ <span className="font-semibold text-emerald-400">ลงท้ายด้วยนามสกุลไฟล์รูปภาพ</span> เช่น .jpg, .png, หรือ .gif
                                                     </p>
-                                                    
+
                                                     <div className="">
                                                         <p className="font-semibold text-blue-100 mb-2 border-b border-blue-500/20 pb-1">       วิธีที่ง่ายที่สุดในการบอกคนดูว่าจะเอาลิงก์ได้จากที่ไหน</p>
                                                         <ul className="list-disc pl-5 space-y-2 text-blue-100/80 text-sm">
                                                             <li>
-                                                                <span className="font-semibold text-indigo-300">จาก Discord:</span> เป็นวิธีที่เห็นคนดูหลายคนทำบ่อยที่สุดคืออัพรูปลง Discord (อาจจะสร้างห้องส่วนตัวขึ้นมาก็ได้) <br/>กดที่รูปให้ขยายใหญ่ {'>'} กดค้าง (มือถือ) หรือคลิกขวา (คอม) {'>'} เลือก <strong>&quot;คัดลอกลิงก์สื่อ (Copy Media Link)&quot;</strong>
-                                                            </li>   
+                                                                <span className="font-semibold text-indigo-300">จาก Discord:</span> เป็นวิธีที่เห็นคนดูหลายคนทำบ่อยที่สุดคืออัพรูปลง Discord (อาจจะสร้างห้องส่วนตัวขึ้นมาก็ได้) <br />กดที่รูปให้ขยายใหญ่ {'>'} กดค้าง (มือถือ) หรือคลิกขวา (คอม) {'>'} เลือก <strong>&quot;คัดลอกลิงก์สื่อ (Copy Media Link)&quot;</strong>
+                                                            </li>
                                                             <li>
                                                                 <span className="font-semibold text-blue-200">บนคอมพิวเตอร์ (PC):</span> ค้นหารูป {'>'} คลิกขวาที่รูป {'>'} เลือก <strong>&quot;คัดลอกที่อยู่รูปภาพ (Copy image address)&quot;</strong>
                                                             </li>
@@ -512,8 +501,9 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
 
                 <TabsContent value="settings">
                     <WidgetSettingsCard
+                        widgetId={config?.widget?.id}
                         isEnabled={isEnabled}
-                        handleSwitchChange={handleSwitchChange}
+                        onStatusChange={handleStatusChange}
                     >
                         <WidgetSettingsCardContent>
                             <div className="space-y-6">

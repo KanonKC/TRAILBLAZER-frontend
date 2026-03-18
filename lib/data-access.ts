@@ -12,7 +12,6 @@ export async function fetchData<T>(url: string): Promise<T | null> {
         cache: "no-store",
     });
 
-    console.log("res", res)
     
     if (!res.ok) return null;
     

@@ -12,6 +12,7 @@ export interface ClipShoutoutConfig {
     widget: {
         id: string;
         overlay_key: string;
+        enabled: boolean;
     }
 }
 

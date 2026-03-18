@@ -41,7 +41,7 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
     const [config, setConfig] = useState<ClipShoutoutConfig | null>(initialConfig);
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.enabled ?? (initialConfig ? true : false));
+    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
     const [botProfile, setBotProfile] = useState<string>(initialConfig?.twitch_bot_id || user?.twitchId || "");
 
@@ -112,8 +112,8 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
-                setIsEnabled(data.enabled ?? true);
-                setEnabledClip(data.enabled_clip ?? true);
+                setIsEnabled(data.widget?.enabled ?? false);
+                setEnabledClip(data.enabled_clip ?? false);
                 setEnabledHighlightOnly(data.enabled_highlight_only ?? false);
                 setActiveTab("quick-start");
             }
@@ -124,6 +124,10 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
             setIsSaving(false);
         }
     }
+
+    useEffect(() => {
+        console.log("initialConfig", initialConfig)
+    }, [initialConfig])
 
     const replyMessageSchema = z.string().max(500, "ข้อความต้องไม่เกิน 500 ตัวอักษร");
 
@@ -213,27 +217,16 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
         }
     };
 
-    const handleSwitchChange = async (checked: boolean) => {
+    const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
-        if (!config) return;
-
-        try {
-            const updated = await updateClipShoutoutConfig({
-                enabled: checked
-            });
-
-            if (updated) {
-                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setConfig(updated);
-            } else {
-                setIsEnabled(!checked);
+        setConfig(prev => prev ? {
+            ...prev,
+            widget: {
+                ...prev.widget,
+                is_enabled: checked
             }
-        } catch (error) {
-            console.error("Failed to update status", error);
-            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
-            setIsEnabled(!checked);
-        }
-    }
+        } : null);
+    };
 
     if (isUserLoading) {
         return (
@@ -425,8 +418,9 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
 
                 <TabsContent value="settings">
                     <WidgetSettingsCard
+                        widgetId={config?.widget?.id}
                         isEnabled={isEnabled}
-                        handleSwitchChange={handleSwitchChange}
+                        onStatusChange={handleStatusChange}
                     >
                         <WidgetSettingsCardContent>
                             {/* Message Section */}

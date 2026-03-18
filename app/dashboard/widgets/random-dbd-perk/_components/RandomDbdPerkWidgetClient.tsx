@@ -28,7 +28,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { updateWidgetEnabled, deleteWidget } from "@/services/widget.service";
+import { deleteWidget } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
 import RandomFormatInfo from "@/app/dashboard/widgets/random-dbd-perk/_components/RandomFormatInfo";
 import { tbToast } from "@/utils/tbToast";
@@ -143,31 +143,16 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
         }
     };
 
-    const handleSwitchChange = async (checked: boolean) => {
-        if (!config || !config.widget) return;
+    const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
-
-        try {
-            const success = await updateWidgetEnabled(config.widget.id, checked);
-
-            if (success) {
-                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setConfig(prev => prev ? {
-                    ...prev,
-                    widget: {
-                        ...prev.widget,
-                        is_enabled: checked
-                    }
-                } : null);
-            } else {
-                setIsEnabled(!checked);
+        setConfig(prev => prev ? {
+            ...prev,
+            widget: {
+                ...prev.widget,
+                is_enabled: checked
             }
-        } catch (error) {
-            console.error("Failed to update status", error);
-            tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
-            setIsEnabled(!checked);
-        }
-    }
+        } : null);
+    };
 
     const handleSave = async () => {
         if (!config) return;
@@ -276,7 +261,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
                     <h1 className="text-3xl font-bold">Random DBD Perk</h1>
                 </div>
                 <p className="text-muted-foreground text-lg">
-                    สุ่ม Perk Dead by Daylight สำหรับ Survivor และ Killer ผ่านการแลก Channel Points หรือคำสั่งแชท
+                    สุ่ม Perk Dead by Daylight สำหรับ Survivor และ Killer ผ่านการแลกแต้มช่อง หรือคำสั่งแชท
                 </p>
             </div>
 
@@ -512,8 +497,9 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
 
                 <TabsContent value="settings">
                     <WidgetSettingsCard
+                        widgetId={config?.widget?.id}
                         isEnabled={isEnabled}
-                        handleSwitchChange={handleSwitchChange}
+                        onStatusChange={handleStatusChange}
                     >
                         <WidgetSettingsCardContent>
                             <RandomFormatInfo />
