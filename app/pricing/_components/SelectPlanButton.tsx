@@ -42,6 +42,8 @@ const SelectPlanButton = ({ status }: SelectPlanButtonProps) => {
             </>
         )
     }
+
+    return null
 }
 
 export default SelectPlanButton

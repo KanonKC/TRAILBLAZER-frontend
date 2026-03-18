@@ -23,9 +23,6 @@ const PricingClient = () => {
         <div className="container mx-auto py-20 px-4 max-w-2xl">
             <div className="text-center mb-12 space-y-4">
                 <h1 className="text-4xl font-bold tracking-tight">เลือกแผนที่เหมาะกับคุณ</h1>
-                {/* <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                    ยกระดับสตรีมของคุณให้ดูมีสีสันมากยิ่งขึ้น ด้วยวิดเจ็ตต่างๆที่เรามีให้เลือกใช้งานมากมาย
-                </p> */}
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">

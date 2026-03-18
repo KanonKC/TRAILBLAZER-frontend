@@ -10,9 +10,6 @@ export function Footer() {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                     {/* Logo & brand */}
                     <div className="flex items-center gap-3">
-                        {/* <div className="p-2 rounded-lg trailblazer-gradient">
-                            <Flame className="w-5 h-5 text-white" />
-                        </div> */}
                         <span className="text-lg font-semibold">TRAILBLAZER</span>
                     </div>
 

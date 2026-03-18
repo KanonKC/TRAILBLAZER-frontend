@@ -25,7 +25,7 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
         setIsUpdating(true)
 
         try {
-            console.log("updateWidgetEnabled", widgetId, checked, { forceUpdate })
+
             const success = await updateWidgetEnabled(widgetId, checked, { forceUpdate })
 
             if (success) {
@@ -35,14 +35,14 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
                 onStatusChange?.(!checked)
                 tbToast.error({ title: "อัปเดตสถานะไม่สำเร็จ" })
             }
-        } catch (error: any) {
+        } catch (error: any) { // TODO: Replace any with proper error type
             console.error("Failed to update status", error)
 
             if (error.response?.status === 402) {
                 try {
                     const firstWidget = await getFirstEnabledWidget()
                     if (firstWidget && firstWidget.widget_type) {
-                        console.log(firstWidget)
+
                         setEnabledWidgetName(firstWidget.widget_type.displayName)
                     }
                 } catch (e) {

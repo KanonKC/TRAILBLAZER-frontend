@@ -50,7 +50,7 @@ export const WidgetQuotaDialog = ({
                     <AlertDialogAction
                         onClick={onConfirmToggle}
                     >
-                        เปิดใช้งานวิดเจ็ดนี้แทน
+                        เปิดใช้งานวิดเจ็ตนี้แทน
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

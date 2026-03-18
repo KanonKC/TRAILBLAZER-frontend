@@ -26,14 +26,9 @@ export default function Navbar() {
     const pathname = usePathname();
     const [tier, setTier] = useState<number>(0);
 
-    // Hide navbar on overlay pages
-    if (pathname?.startsWith("/overlays")) {
-        return null;
-    }
-
     useEffect(() => {
+        if (!user) return;
         getUserTier({ forceTwitch: false }).then((tier) => {
-            console.log("tier", tier);
             setTier(tier.tier);
         });
     }, [user]);
@@ -43,9 +38,10 @@ export default function Navbar() {
         setTier(tier.tier);
     };
 
-    useEffect(() => {
-        console.log(tier);
-    }, [tier]);
+    // Hide navbar on overlay pages
+    if (pathname?.startsWith("/overlays")) {
+        return null;
+    }
 
     // Twitch OAuth URL
 
