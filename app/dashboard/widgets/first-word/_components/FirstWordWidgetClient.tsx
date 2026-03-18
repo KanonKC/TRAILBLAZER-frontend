@@ -54,13 +54,14 @@ import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { FirstWordVariableMap } from "@/constants/firstWord";
 import { tbToast } from "@/utils/tbToast";
 
-export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstWordConfig | null }) {
+export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = false }: { initialConfig: FirstWordConfig | null; initialRequiresProPlan?: boolean }) {
     const { user, isLoading: isUserLoading } = useUser();
     const [config, setConfig] = useState<FirstWordConfig | null>(initialConfig);
     const [isLoading, setIsLoading] = useState(false);
+    const [requiresProPlan, setRequiresProPlan] = useState(initialRequiresProPlan);
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.enabled ?? (initialConfig ? true : false));
+    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
     const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(null);
     const [audioVolume, setAudioVolume] = useState<number>(initialConfig?.audio_volume ?? 100);
@@ -75,11 +76,26 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
 
     // ... (rest of state)
 
+    useEffect(() => {
+        console.log("initialConfig", initialConfig)
+    }, [initialConfig])
+
     const handleOnFileSelect = (file: File | UploadedFile | null, fileKey: string | null) => {
         if (!fileKey) return;
         updateFirstWordConfig({
             audio_key: fileKey
         }).then(fetchConfig);
+    };
+
+    const handleStatusChange = (checked: boolean) => {
+        setIsEnabled(checked);
+        setConfig(prev => prev ? {
+            ...prev,
+            widget: {
+                ...prev.widget,
+                is_enabled: checked
+            }
+        } : null);
     };
 
     const handleDelete = async () => {
@@ -173,14 +189,19 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
             if (data) {
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
-                setIsEnabled(data.enabled ?? true);
+                setIsEnabled(data.widget?.enabled ?? false);
                 setAudioVolume(data.audio_volume ?? 100);
                 setBotProfile(data.twitch_bot_id || "default");
                 setActiveTab("settings");
+                setRequiresProPlan(false);
             } else {
                 setConfig(null);
             }
-        } catch (error) {
+        } catch (error: any) {
+            if (error.response?.status === 403) {
+                setRequiresProPlan(true);
+                setConfig(null);
+            }
             console.error("Failed to fetch config", error);
         } finally {
             setIsLoading(false);
@@ -199,7 +220,7 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
-                setIsEnabled(data.enabled ?? true);
+                setIsEnabled(data.widget?.enabled ?? false);
                 setActiveTab("quick-start");
             }
         } catch (error) {
@@ -373,7 +394,8 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
                 <TabsContent value="overview">
                     <WidgetOverviewCard
                         showLoginButton={!user}
-                        showEnableButton={!!user && !config}
+                        showEnableButton={!!user && !config && !requiresProPlan}
+                        showUpgradeButton={!!user && requiresProPlan}
                         onClickEnable={handleEnable}
                         isLoading={isSaving}
                     >
@@ -521,7 +543,11 @@ export function FirstWordWidgetClient({ initialConfig }: { initialConfig: FirstW
                 </TabsContent>
 
                 <TabsContent value="settings">
-                    <WidgetSettingsCard>
+                    <WidgetSettingsCard
+                        widgetId={config?.widget?.id}
+                        isEnabled={isEnabled}
+                        onStatusChange={handleStatusChange}
+                    >
                         <WidgetSettingsCardContent>
                             {/* Message Section */}
                             <div className="space-y-4">

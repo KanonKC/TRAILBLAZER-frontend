@@ -14,5 +14,7 @@ async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
 
 export default async function DropImageWidgetPage() {
     const config = await getDropImageConfigServer();
-    return <DropImageWidgetClient initialConfig={config} />;
+    return (
+        <DropImageWidgetClient initialConfig={config} />
+    );
 }

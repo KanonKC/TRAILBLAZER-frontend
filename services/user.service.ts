@@ -6,6 +6,11 @@ export interface User {
     displayName: string;
     avatarUrl: string;
     twitchId: string;
+    tier: number;
+}
+
+export interface GetUserTierResponse {
+    tier: number;
 }
 
 export const getCurrentUser = async (): Promise<User> => {
@@ -16,3 +21,9 @@ export const getCurrentUser = async (): Promise<User> => {
 export const logoutUser = async (): Promise<void> => {
     await apiClient.post("/api/v1/logout", {});
 };
+
+export const getUserTier = async ({ forceTwitch = false }: { forceTwitch?: boolean }): Promise<GetUserTierResponse> => {
+    const response = await apiClient.get<GetUserTierResponse>(`/api/v1/user/tier`, { params: { force: forceTwitch } });
+    return response.data;
+};
+

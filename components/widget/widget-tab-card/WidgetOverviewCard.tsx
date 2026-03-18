@@ -1,18 +1,21 @@
 import { TwitchLoginButton } from '@/components/button/TwitchLoginButton'
+import UpgradeToProPlanDialog from '@/components/dialog/UpgradeToProPlanDialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Info } from 'lucide-react'
-import React from 'react'
+import { Crown, Info } from 'lucide-react'
+import React, { useState } from 'react'
 
 interface WidgetOverviewCardProps {
     children?: React.ReactNode
     showLoginButton?: boolean
     showEnableButton?: boolean
+    showUpgradeButton?: boolean
     onClickEnable?: () => void
     isLoading?: boolean
 }
 
-const WidgetOverviewCard = ({ children, showLoginButton, showEnableButton, onClickEnable, isLoading }: WidgetOverviewCardProps) => {
+const WidgetOverviewCard = ({ children, showLoginButton, showEnableButton, showUpgradeButton, onClickEnable, isLoading }: WidgetOverviewCardProps) => {
+    const [openUpgradeDialog, setOpenUpgradeDialog] = useState(false);
     return (
         <Card>
             <CardHeader>
@@ -36,7 +39,17 @@ const WidgetOverviewCard = ({ children, showLoginButton, showEnableButton, onCli
                         {isLoading ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน Widget"}
                     </Button>
                 )}
+                {showUpgradeButton && (
+                    <Button
+                        onClick={() => setOpenUpgradeDialog(true)}
+                        className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold"
+                    >
+                        <Crown className="w-4 h-4 mr-2" />
+                        อัปเกรดเป็น Pro
+                    </Button>
+                )}
             </CardFooter>
+            <UpgradeToProPlanDialog open={openUpgradeDialog} onOpenChange={setOpenUpgradeDialog} />
         </Card>
     )
 }

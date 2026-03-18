@@ -1,7 +1,34 @@
 import { apiClient } from "@/lib/api-client";
 
-export const updateWidgetEnabled = async (id: string, enabled: boolean): Promise<boolean> => {
-    await apiClient.put(`/api/v1/widgets/${id}`, { enabled });
+export interface WidgetType {
+    id: number;
+    slug: string;
+    displayName: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Widget {
+    id: string;
+    twitch_id: string;
+    enabled: boolean;
+    overlay_key: string | null;
+    owner_id: string;
+    widget_type_slug: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface ExtendedWidget extends Widget {
+    widget_type: WidgetType | null;
+}
+
+export const updateWidgetEnabled = async (id: string, enabled: boolean, options?: { forceUpdate?: boolean }): Promise<boolean> => {
+    await apiClient.patch(`/api/v1/widgets/${id}/enable`, { enabled }, {
+        params: {
+            force_update: options?.forceUpdate
+        }
+    });
     return true;
 };
 
@@ -13,4 +40,14 @@ export const refreshWidgetKey = async (id: string): Promise<{ overlay_key: strin
 export const deleteWidget = async (id: string): Promise<boolean> => {
     await apiClient.delete(`/api/v1/widgets/${id}`);
     return true;
+};
+
+export const getFirstEnabledWidget = async (): Promise<ExtendedWidget | null> => {
+    const response = await apiClient.get<ExtendedWidget>('/api/v1/widgets/first-enabled');
+    return response.data;
+};
+
+export const listWidgets = async (params?: { page?: number, limit?: number, enabled?: boolean }): Promise<{ data: ExtendedWidget[], pagination: { page: number, limit: number, total: number } }> => {
+    const response = await apiClient.get<{ data: ExtendedWidget[], pagination: { page: number, limit: number, total: number } }>('/api/v1/widgets', { params });
+    return response.data;
 };
