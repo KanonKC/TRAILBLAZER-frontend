@@ -49,11 +49,14 @@ export default function Navbar() {
                     <BrandLogo />
                 </Link>
 
-                {/* <div className="flex items-center gap-6">
-                    <Link href="/dashboard/widgets" className="text-sm font-medium transition-colors hover:text-primary">
+                <div className="flex w-full items-center gap-12 ml-12">
+                    <Link href="/dashboard/widgets" className="text-base font-medium transition-colors hover:text-primary">
                         Widgets
                     </Link>
-                </div> */}
+                    <Link href="/pricing" className="text-base font-medium transition-colors hover:text-primary">
+                        Pricing
+                    </Link>
+                </div>
 
                 <div className="flex items-center gap-4">
                     {isLoading ? (

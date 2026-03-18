@@ -33,7 +33,7 @@ const SelectPlanButton = ({ status }: SelectPlanButtonProps) => {
                     onClick={() => setShowTwitchDialog(true)}
                     className="w-full text-md h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
                 >
-                    อัปเกรดเป็น Pro บน Twitch
+                    อัปเกรด
                 </Button>
                 <PricingTwitchDialog
                     open={showTwitchDialog}

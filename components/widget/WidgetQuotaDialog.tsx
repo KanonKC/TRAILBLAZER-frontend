@@ -32,10 +32,10 @@ export const WidgetQuotaDialog = ({
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>คุณสามารถเปิดวิดเจ็ตได้เพียง 1 อันเท่านั้น</AlertDialogTitle>
-                    <AlertDialogDescription className="space-y-2">
+                    <AlertDialogDescription className="space-y-2 text-base">
                         <div>เนื่องจากคุณเป็นผู้ใช้งาน Free Tier คุณสามารถเปิดใช้งานวิดเจ็ตได้เพียง 1 อันเท่านั้น หากคุณเปิดใช้งานวิดเจ็ตนี้ {enabledWidgetName ? `วิดเจ็ตที่เคยเปิดใช้งานไว้จะถูกปิด` : 'วิดเจ็ตอื่นๆ ที่เคยเปิดใช้งานไว้จะถูกปิดทั้งหมด'}</div>
-                        <div>คุณสามารถเปลี่ยนเป็น Pro Plan เพื่อเปิดใช้งานวิดเจ็ตได้อย่างไม่จำกัด</div>
                         <div className="font-bold">วิดเจ็ตที่กำลังเปิดใช้งาน <span className="text-yellow-600">{enabledWidgetName}</span></div>
+                        <div>หากคุณต้องการเปิดใช้งานวิดเจ็ตอื่นๆ คุณสามารถอัปเกรดเป็น Pro เพื่อเปิดใช้งานวิดเจ็ตได้อย่างไม่จำกัด</div>
 
                     </AlertDialogDescription>
                 </AlertDialogHeader>

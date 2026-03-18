@@ -18,17 +18,14 @@ export function Footer() {
 
                     {/* Links */}
                     <nav className="flex items-center gap-6 text-sm text-muted-foreground">
-                        <a href="#" className="hover:text-foreground transition-colors">
-                            เอกสาร
+                        <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" className="hover:text-foreground transition-colors">
+                            Discord
                         </a>
-                        <a href="#" className="hover:text-foreground transition-colors">
-                            API อ้างอิง
-                        </a>
-                        <a href="#" className="hover:text-foreground transition-colors">
-                            ช่วยเหลือ
-                        </a>
-                        <a href="#" className="hover:text-foreground transition-colors">
+                        <a href="https://github.com/kanonkc" target="_blank" className="hover:text-foreground transition-colors">
                             GitHub
+                        </a>
+                        <a href="https://twitch.tv/kanonkc" target="_blank" className="hover:text-foreground transition-colors">
+                            Twitch
                         </a>
                     </nav>
 

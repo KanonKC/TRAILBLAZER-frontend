@@ -13,6 +13,7 @@ import {
 import { ExternalLink } from "lucide-react";
 import { Twitch } from "@/components/icons/twitch"
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface PricingTwitchDialogProps {
     open: boolean;
@@ -33,6 +34,18 @@ export const PricingTwitchDialog = ({
                         <p className="text-base">
                             การอัปเกรดเป็น <span className="text-amber-600 font-bold">Pro Plan</span> จะใช้วิธีการผ่านการกด Subscribe บน Twitch ของเจ้าของแอปพลิเคชัน
                         </p>
+                        <p className="text-base">
+                            หลังจากกด Subscribe แล้ว หากด้านข้างโปรไฟล์ของคุณยังเป็น FREE อยู่ ให้กดปุ่ม <span className="text-white">"อัปเดตข้อมูลการสมัครสมาชิก"</span>
+                        </p>
+                        <div className="rounded-lg overflow-hidden border shadow-sm">
+                            <Image
+                                src="/update-subscription-data.png"
+                                alt="Update subscription data instruction"
+                                width={500}
+                                height={300}
+                                className="w-full h-auto"
+                            />
+                        </div>
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter className="flex-col sm:flex-row gap-2">
@@ -48,7 +61,7 @@ export const PricingTwitchDialog = ({
                             className="flex items-center justify-center gap-2"
                         >
                             <Twitch className="w-4 h-4 fill-current" />
-                            ไปหน้าสมัครบน Twitch
+                            ไปหน้าสมัครสมาชิกบน Twitch
                             <ExternalLink className="w-3 h-3" />
                         </a>
                     </Button>
