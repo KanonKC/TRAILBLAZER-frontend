@@ -31,7 +31,7 @@ const staticWidgets = [
     {
         slug: "random-dbd-perk",
         title: "Random DBD Perk",
-        description: "สุ่ม Perk Dead by Daylight สำหรับ Survivor และ Killer ผ่านการแลก Channel Points หรือคำสั่งแชท",
+        description: "สุ่ม Perk Dead by Daylight สำหรับ Survivor และ Killer ผ่านการแลกแต้มช่อง หรือคำสั่งแชท",
         icon: Dices,
         href: "/dashboard/widgets/random-dbd-perk",
         color: "text-emerald-500",
@@ -41,7 +41,7 @@ const staticWidgets = [
     {
         slug: "drop-image",
         title: "Drop Image",
-        description: "ให้ผู้ชมของคุณโชว์รูปภาพบนหน้าจอผ่านการแลก Channel Points",
+        description: "ให้ผู้ชมของคุณโชว์รูปภาพบนหน้าจอผ่านการแลกแต้มช่อง",
         icon: ImageIcon,
         href: "/dashboard/widgets/drop-image",
         color: "text-purple-500",

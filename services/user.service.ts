@@ -9,6 +9,10 @@ export interface User {
     tier: number;
 }
 
+export interface GetUserTierResponse {
+    tier: number;
+}
+
 export const getCurrentUser = async (): Promise<User> => {
     const response = await apiClient.get<User>("/api/v1/user/me");
     return response.data;
@@ -18,8 +22,8 @@ export const logoutUser = async (): Promise<void> => {
     await apiClient.post("/api/v1/logout", {});
 };
 
-export const getUserTier = async ({ forceTwitch = false }: { forceTwitch?: boolean }): Promise<number> => {
-    const response = await apiClient.get<number>(`/api/v1/user/tier`, { params: { force: forceTwitch } });
+export const getUserTier = async ({ forceTwitch = false }: { forceTwitch?: boolean }): Promise<GetUserTierResponse> => {
+    const response = await apiClient.get<GetUserTierResponse>(`/api/v1/user/tier`, { params: { force: forceTwitch } });
     return response.data;
 };
 

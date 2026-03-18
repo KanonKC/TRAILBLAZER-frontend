@@ -261,7 +261,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
                     <h1 className="text-3xl font-bold">Random DBD Perk</h1>
                 </div>
                 <p className="text-muted-foreground text-lg">
-                    สุ่ม Perk Dead by Daylight สำหรับ Survivor และ Killer ผ่านการแลก Channel Points หรือคำสั่งแชท
+                    สุ่ม Perk Dead by Daylight สำหรับ Survivor และ Killer ผ่านการแลกแต้มช่อง หรือคำสั่งแชท
                 </p>
             </div>
 

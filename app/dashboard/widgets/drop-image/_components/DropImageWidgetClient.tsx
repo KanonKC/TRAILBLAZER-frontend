@@ -277,7 +277,7 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
                     <h1 className="text-3xl font-bold">Drop Image</h1>
                 </div>
                 <p className="text-muted-foreground text-lg">
-                    ให้ผู้ชมของคุณโชว์รูปภาพบนหน้าจอผ่านการแลก Channel Points พร้อมระบบฟิสิกส์หล่นตุบๆ ลงมา
+                    ให้ผู้ชมของคุณโชว์รูปภาพบนหน้าจอผ่านการแลกแต้มช่อง พร้อมระบบฟิสิกส์หล่นตุบๆ ลงมา
                 </p>
             </div>
 

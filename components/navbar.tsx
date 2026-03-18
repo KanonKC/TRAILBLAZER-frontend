@@ -32,13 +32,20 @@ export default function Navbar() {
     }
 
     useEffect(() => {
-        setTier(user?.tier || 0);
+        getUserTier({ forceTwitch: false }).then((tier) => {
+            console.log("tier", tier);
+            setTier(tier.tier);
+        });
     }, [user]);
 
     const handleReloadSubscription = async () => {
         const tier = await getUserTier({ forceTwitch: true });
-        setTier(tier);
+        setTier(tier.tier);
     };
+
+    useEffect(() => {
+        console.log(tier);
+    }, [tier]);
 
     // Twitch OAuth URL
 
