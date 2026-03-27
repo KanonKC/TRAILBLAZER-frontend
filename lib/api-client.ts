@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-
+// Now we use relative URLs because we have Next.js rewrites in next.config.ts
+// This makes our app "Same-Origin" even if the backend is on a different port.
 export const apiClient = axios.create({
-    baseURL: BASE_URL,
+    baseURL: "", // Use empty so we can provide full relative paths (/api/v1/...) 
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
@@ -19,8 +19,9 @@ apiClient.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
+                // Now we call our own proxy route for refresh
                 await axios.post(
-                    `${BASE_URL}/api/v1/refresh-token`,
+                    "/api/v1/refresh-token",
                     {},
                     { withCredentials: true }
                 );
