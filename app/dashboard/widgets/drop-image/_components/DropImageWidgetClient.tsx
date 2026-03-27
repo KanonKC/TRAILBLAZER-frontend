@@ -77,7 +77,7 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
         const fetchRewards = async () => {
             setIsRewardsLoading(true);
             try {
-                const data = await getTwitchChannelRewards();
+                const data = await getTwitchChannelRewards({ userInputRequired: true });
                 setRewards(data);
             } catch (error) {
                 console.error("Failed to fetch rewards", error);

@@ -19,8 +19,16 @@ export interface TwitchCustomReward {
     is_enabled: boolean;
 }
 
-export const getTwitchChannelRewards = async (): Promise<TwitchCustomReward[]> => {
-    const response = await apiClient.get<{ data: TwitchCustomReward[] }>("/api/v1/twitch/channel-rewards");
+export interface ListChannelRewardsOptions {
+    userInputRequired?: boolean;
+}
+
+export const getTwitchChannelRewards = async (options?: ListChannelRewardsOptions): Promise<TwitchCustomReward[]> => {
+    const response = await apiClient.get<{ data: TwitchCustomReward[] }>(`/api/v1/twitch/channel-rewards`, {
+        params: {
+            user_input_required: options?.userInputRequired
+        }
+    });
     return response.data.data;
 }
 

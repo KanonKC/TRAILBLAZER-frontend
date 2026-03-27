@@ -90,7 +90,7 @@ export function RandomDbdPerkWidgetClient({ initialConfig }: { initialConfig: Ra
         const fetchRewards = async () => {
             setIsRewardsLoading(true);
             try {
-                const data = await getTwitchChannelRewards();
+                const data = await getTwitchChannelRewards({ userInputRequired: false });
                 setRewards(data);
             } catch (error) {
                 console.error("Failed to fetch rewards", error);
