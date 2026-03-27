@@ -2,7 +2,8 @@ import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { RandomDbdPerkClass, PERKS_PER_PAGE } from "@/services/randomDbdPerk.service";
+import { RandomDbdPerkClass } from "@/features/random-dbd-perk/types";
+import { PERKS_PER_PAGE } from "@/features/random-dbd-perk/hooks/useRandomDbdPerk";
 import { type TwitchCustomReward } from "@/services/twitch.service";
 import { MaxPerkSelector } from "@/app/dashboard/widgets/random-dbd-perk/_components/MaxPerkSelector";
 

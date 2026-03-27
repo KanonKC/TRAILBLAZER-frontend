@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
-import { getRandomDbdPerkEventUrl } from "@/services/randomDbdPerk.service";
+import { getRandomDbdPerkEventUrl } from "@/features/random-dbd-perk/api/randomDbdPerk.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, WifiOff } from "lucide-react";
 import { cn } from "@/lib/utils";
