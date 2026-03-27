@@ -25,10 +25,10 @@ import { FirstWordVariableMap } from "@/constants/firstWord";
 import {
     createCustomReply,
     deleteCustomReply,
-    FirstWordCustomReply,
-    listCustomReplies,
-    updateCustomReply
-} from "@/services/firstWord.service";
+    updateCustomReply,
+    listCustomReplies
+} from "@/features/first-word/api/firstWord.api";
+import { FirstWordCustomReply } from "@/features/first-word/types";
 import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
 import { AudioWaveform, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";

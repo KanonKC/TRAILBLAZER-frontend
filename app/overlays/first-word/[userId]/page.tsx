@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback } from "react"
 import { useParams, useSearchParams } from "next/navigation"
-import { getFirstWordEventUrl } from "@/services/firstWord.service";
+import { getFirstWordEventUrl } from "@/features/first-word/api/firstWord.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 

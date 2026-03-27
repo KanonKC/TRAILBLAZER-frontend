@@ -1,5 +1,5 @@
-import { FirstWordConfig } from "@/services/firstWord.service";
-import { FirstWordWidgetClient } from "./_components/FirstWordWidgetClient";
+import { FirstWordWidget } from "@/features/first-word/components/FirstWordWidget";
+import { FirstWordConfig } from "@/features/first-word/types";
 import { cookies } from "next/headers";
 
 interface FirstWordServerResult {
@@ -35,5 +35,5 @@ async function getFirstWordConfigServer(): Promise<FirstWordServerResult> {
 
 export default async function FirstWordWidgetPage() {
     const { config, requiresProPlan } = await getFirstWordConfigServer();
-    return <FirstWordWidgetClient initialConfig={config} initialRequiresProPlan={requiresProPlan} />;
+    return <FirstWordWidget initialConfig={config} initialRequiresProPlan={requiresProPlan} />;
 }
