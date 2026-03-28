@@ -20,8 +20,6 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
     const [isTesting, setIsTesting] = useState(false);
     const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
     const [perkClasses, setPerkClasses] = useState<RandomDbdPerkClass[]>(initialConfig?.classes || []);
-    const [rewards, setRewards] = useState<TwitchCustomReward[]>([]);
-    const [isRewardsLoading, setIsRewardsLoading] = useState(false);
     const [survivorUnit, setSurvivorUnit] = useState<"perk" | "page">("perk");
     const [killerUnit, setKillerUnit] = useState<"perk" | "page">("perk");
     const [wizardType, setWizardType] = useState<"survivor" | "killer">("survivor");
@@ -33,22 +31,6 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
         const savedKillerUnit = localStorage.getItem("random-dbd-perk-unit-preference-killer");
         if (savedKillerUnit === "perk" || savedKillerUnit === "page") setKillerUnit(savedKillerUnit);
     }, []);
-
-    useEffect(() => {
-        if (!user) return;
-        const fetchRewards = async () => {
-            setIsRewardsLoading(true);
-            try {
-                const data = await getTwitchChannelRewards({ userInputRequired: false });
-                setRewards(data);
-            } catch (error) {
-                console.error("Failed to fetch rewards", error);
-            } finally {
-                setIsRewardsLoading(false);
-            }
-        };
-        fetchRewards();
-    }, [user]);
 
     const handleEnable = async () => {
         if (!user) return;
@@ -162,8 +144,6 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
         isUserLoading,
         activeTab,
         perkClasses,
-        rewards,
-        isRewardsLoading,
         survivorUnit,
         killerUnit,
         wizardType,

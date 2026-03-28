@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
+import { SmartAudioFileUploader } from "@/components/widget/SmartAudioFileUploader";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
-import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
+import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
@@ -142,12 +142,13 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
                                 description: (
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
-                                        <AudioFileUploader
+                                        <SmartAudioFileUploader
+                                            slug="first-word"
                                             currentFileName={controller.config?.audio?.name}
                                             selectedFile={controller.audioFile}
-                                            onFileSelect={(file) => controller.setAudioFile(file)}
                                             audioVolume={controller.audioVolume}
                                             onAudioVolumeChange={controller.setAudioVolume}
+                                            onSuccess={controller.setConfig}
                                             className="text-white"
                                             inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
                                             hideLabel
@@ -162,12 +163,10 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
                                         <p className="text-sm text-white/70 italic">* คุณสามารถข้ามขั้นตอนนี้ได้ หากไม่ต้องการใช้เสียง</p>
-                                        <OverlayUrlInput
+                                        <SmartOverlayUrlInput
                                             url={controller.overlayUrl}
-                                            className="text-white"
-                                            inputClassName="bg-transparent border-white/20 text-white"
-                                            showRefresh={true}
-                                            onRefresh={() => controller.setShowConfirmRefresh(true)}
+                                            slug="first-word"
+                                            onSuccess={controller.setConfig}
                                             hideLabel
                                         />
                                         <OBSSetupHelp />
@@ -264,20 +263,21 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
                                     <h3 className="text-lg font-semibold">เสียงและโอเวอร์เลย์</h3>
                                 </div>
                                 <div className="">
-                                    <AudioFileUploader
+                                    <SmartAudioFileUploader
+                                        slug="first-word"
                                         currentFileName={controller.config?.audio?.name}
                                         selectedFile={controller.audioFile}
-                                        onFileSelect={controller.handleOnFileSelect}
+                                        onSuccess={controller.setConfig}
                                         audioVolume={controller.audioVolume}
                                         onAudioVolumeChange={controller.setAudioVolume}
                                         className="text-white"
                                         inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
                                     />
                                 </div>
-                                <OverlayUrlInput
+                                <SmartOverlayUrlInput
                                     url={controller.overlayUrl}
-                                    onRefresh={() => controller.setShowConfirmRefresh(true)}
-                                    showRefresh={true}
+                                    slug="first-word"
+                                    onSuccess={controller.setConfig}
                                 />
                             </div>
                         </WidgetSettingsCardContent>
@@ -329,25 +329,6 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
                 </TabsContent>
             </Tabs>
 
-            <AlertDialog open={controller.showConfirmRefresh} onOpenChange={controller.setShowConfirmRefresh}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>คุณต้องการรีเซ็ต Overlay Key หรือไม่?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            การรีเซ็ต Key จะทำให้ URL เดิมใช้งานไม่ได้ คุณจะต้องคัดลอก URL ใหม่ไปใส่ในโปรแกรมสตรีมของคุณ
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction
-                            variant="destructive"
-                            onClick={controller.handleRefreshKey}
-                        >
-                            ยืนยันการรีเซ็ต
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
 
             <AlertDialog open={controller.showConfirmReset} onOpenChange={controller.setShowConfirmReset}>
                 <AlertDialogContent>

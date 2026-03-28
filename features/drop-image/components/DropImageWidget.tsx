@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
-import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
+import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Image as ImageIcon, Gift, ExternalLink, Play, ShieldCheck, Info } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
-import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
+import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
@@ -45,9 +45,6 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
         isTesting,
         isUserLoading,
         activeTab,
-        rewards,
-        isRewardsLoading,
-        showConfirmRefresh,
         twitchRewardId,
         displayDuration,
         enabledModeration,
@@ -64,11 +61,10 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
         setNotImageMessage,
         setContainMatureMessage,
         setActiveTab,
-        setShowConfirmRefresh,
+        setConfig,
         handleEnable,
         handleDelete,
         handleSave,
-        handleRefreshKey,
         handleTest,
         handleStatusChange
     } = useDropImage(initialConfig);
@@ -144,7 +140,7 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                                 description: (
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
-                                        <ChannelRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} rewards={rewards} isLoading={isRewardsLoading} placeholder="เลือก Reward..." />
+                                        <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                     </div>
                                 )
                             },
@@ -167,7 +163,12 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                                 description: (
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
-                                        <OverlayUrlInput url={overlayUrl} onRefresh={() => setShowConfirmRefresh(true)} showRefresh={true} hideLabel />
+                                        <SmartOverlayUrlInput 
+                                            url={overlayUrl} 
+                                            slug="drop-image" 
+                                            onSuccess={setConfig} 
+                                            hideLabel 
+                                        />
                                         <OBSSetupHelp type="image" />
                                     </div>
                                 )
@@ -203,7 +204,7 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <Label>เชื่อมต่อ Twitch Reward</Label>
-                                    <ChannelRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} rewards={rewards} isLoading={isRewardsLoading} placeholder="เลือก Reward..." />
+                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                 </div>
 
                                 <div className="space-y-2">
@@ -214,7 +215,11 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                                     </div>
                                 </div>
 
-                                <OverlayUrlInput url={overlayUrl} onRefresh={() => setShowConfirmRefresh(true)} showRefresh={true} />
+                                <SmartOverlayUrlInput 
+                                    url={overlayUrl} 
+                                    slug="drop-image" 
+                                    onSuccess={setConfig} 
+                                />
 
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
@@ -244,18 +249,6 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                 </TabsContent>
             </Tabs>
 
-            <AlertDialog open={showConfirmRefresh} onOpenChange={setShowConfirmRefresh}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>ยืนยันการรีเซ็ต Key</AlertDialogTitle>
-                        <AlertDialogDescription>การรีเซ็ต Key จะทำให้ URL เดิมใช้งานไม่ได้</AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction variant="destructive" onClick={handleRefreshKey}>ยืนยัน</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div>
     );
 }

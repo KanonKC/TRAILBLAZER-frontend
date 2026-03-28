@@ -37,7 +37,6 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
     const [chattersCount, setChattersCount] = useState<number>(0);
     
     // UI Feedback State
-    const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
     const [showConfirmReset, setShowConfirmReset] = useState(false);
 
     const replyMessageSchema = z.string().max(500, "ข้อความต้องไม่เกิน 500 ตัวอักษร");
@@ -199,24 +198,6 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
         }
     };
 
-    const handleRefreshKey = async () => {
-        setIsSaving(true);
-        try {
-            const data = await api.refreshFirstWordOverlayKey();
-            if (data) {
-                tbToast.success({ title: "รีเซ็ตลิงก์ Overlay สำเร็จ" });
-                setConfig(data);
-                setAudioFile(data.audio);
-            }
-        } catch (error) {
-            console.error("Failed to refresh key", error);
-            tbToast.error({ title: "รีเซ็ตลิงก์ Overlay ไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-            setShowConfirmRefresh(false);
-        }
-    };
-
     const handleResetClick = async () => {
         setIsResettingChatters(true);
         try {
@@ -271,12 +252,6 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
         } : null);
     };
 
-    const handleOnFileSelect = (file: File | UploadedFile | null, fileKey: string | null) => {
-        if (!fileKey) return;
-        api.updateFirstWordConfig({
-            audio_key: fileKey
-        }).then(fetchConfig);
-    };
 
     return {
         // State
@@ -296,9 +271,9 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
         isTesting,
         isResettingChatters,
         chattersCount,
-        showConfirmRefresh,
         showConfirmReset,
         overlayUrl,
+        setConfig,
         
         // Actions
         setActiveTab,
@@ -306,17 +281,14 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
         setAudioFile,
         setAudioVolume,
         setBotProfile,
-        setShowConfirmRefresh,
         setShowConfirmReset,
         handleEnable,
         handleSave,
         handleTestAudio,
         handleDelete,
-        handleRefreshKey,
         handleResetClick,
         handleConfirmReset,
         handleReplyMessageChange,
-        handleStatusChange,
-        handleOnFileSelect
+        handleStatusChange
     };
 };

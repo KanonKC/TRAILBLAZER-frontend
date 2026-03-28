@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
-import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
+import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -47,19 +47,17 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
         botProfile,
         enabledClip,
         enabledHighlightOnly,
-        showConfirmRefresh,
         activeTab,
         overlayUrl,
         setBotProfile,
         setEnabledClip,
         setEnabledHighlightOnly,
-        setShowConfirmRefresh,
         setActiveTab,
+        setConfig,
         handleEnable,
         handleSave,
         handleTest,
         handleDelete,
-        handleRefreshKey,
         handleReplyMessageChange,
         handleStatusChange
     } = useClipShoutout(initialConfig);
@@ -163,12 +161,10 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
                                 description: (
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล</p>
-                                        <OverlayUrlInput
+                                        <SmartOverlayUrlInput
                                             url={overlayUrl}
-                                            className="text-white"
-                                            inputClassName="bg-transparent border-white/20 text-white"
-                                            showRefresh={true}
-                                            onRefresh={() => setShowConfirmRefresh(true)}
+                                            slug="clip-shoutout"
+                                            onSuccess={setConfig}
                                             hideLabel
                                         />
                                         <OBSSetupHelp />
@@ -258,7 +254,11 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
                                 )}
 
                                 {enabledClip && (
-                                    <OverlayUrlInput url={overlayUrl} onRefresh={() => setShowConfirmRefresh(true)} showRefresh={true} />
+                                    <SmartOverlayUrlInput 
+                                        url={overlayUrl} 
+                                        slug="clip-shoutout"
+                                        onSuccess={setConfig}
+                                    />
                                 )}
                             </div>
                         </WidgetSettingsCardContent>
@@ -275,18 +275,6 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
                 </TabsContent>
             </Tabs>
 
-            <AlertDialog open={showConfirmRefresh} onOpenChange={setShowConfirmRefresh}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>คุณต้องการรีเซ็ต Overlay Key หรือไม่?</AlertDialogTitle>
-                        <AlertDialogDescription>การรีเซ็ต Key จะทำให้ URL เดิมใช้งานไม่ได้</AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction variant="destructive" onClick={handleRefreshKey}>ยืนยันการรีเซ็ต</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </div>
     );
 }

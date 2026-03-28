@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 import { Dices, Gift, Play, ChevronDown, ExternalLink } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
+import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -40,8 +40,6 @@ export function RandomDbdPerkWidget({ initialConfig }: { initialConfig: RandomDb
         isUserLoading,
         activeTab,
         perkClasses,
-        rewards,
-        isRewardsLoading,
         survivorUnit,
         killerUnit,
         wizardType,
@@ -134,14 +132,13 @@ export function RandomDbdPerkWidget({ initialConfig }: { initialConfig: RandomDb
                                 description: (
                                     <div className="space-y-3">
                                         <p className="text-sm text-white/70">ช่องเชื่อมต่อแต้มช่อง</p>
-                                        <ChannelRewardSelector
+                                        <TwitchRewardSelector
                                             value={perkClasses.find(c => c.type === wizardType)?.twitch_reward_id || null}
                                             onValueChange={(val) => {
                                                 const index = perkClasses.findIndex(c => c.type === wizardType);
                                                 if (index !== -1) updatePerkClass(index, 'twitch_reward_id', val);
                                             }}
-                                            rewards={rewards}
-                                            isLoading={isRewardsLoading}
+                                            userInputRequired={false}
                                             placeholder="เลือก Reward..."
                                         />
                                     </div>
@@ -212,8 +209,6 @@ export function RandomDbdPerkWidget({ initialConfig }: { initialConfig: RandomDb
                                     key={item.id}
                                     item={item}
                                     index={index}
-                                    rewards={rewards}
-                                    isLoading={isRewardsLoading}
                                     updatePerkClass={updatePerkClass}
                                     totalPerks={item.type === 'killer' ? (config?.totalKillerPerks || 0) : (config?.totalSurvivorPerks || 0)}
                                     unit={item.type === 'survivor' ? survivorUnit : killerUnit}

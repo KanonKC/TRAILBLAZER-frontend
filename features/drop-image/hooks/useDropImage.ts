@@ -8,8 +8,8 @@ import {
     testDropImage 
 } from "../api/dropImage.api";
 import { deleteWidget } from "@/services/widget.service";
-import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
 import { DropImageConfig } from "../types";
+import { useTwitchRewards } from "@/hooks/use-twitch-rewards";
 
 export const useDropImage = (initialConfig: DropImageConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
@@ -18,9 +18,6 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
     const [isSaving, setIsSaving] = useState(false);
     const [isTesting, setIsTesting] = useState(false);
     const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
-    const [rewards, setRewards] = useState<TwitchCustomReward[]>([]);
-    const [isRewardsLoading, setIsRewardsLoading] = useState(false);
-    const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
 
     // Form states
     const [twitchRewardId, setTwitchRewardId] = useState<string | null>(initialConfig?.twitch_reward_id || null);
@@ -34,22 +31,6 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
     const overlayUrl = typeof window !== 'undefined' && user
         ? `${window.location.origin}/overlays/drop-image/${user.id}${config?.widget && config.widget.overlay_key ? `?key=${config.widget.overlay_key}` : ''}`
         : "";
-
-    useEffect(() => {
-        if (!user) return;
-        const fetchRewards = async () => {
-            setIsRewardsLoading(true);
-            try {
-                const data = await getTwitchChannelRewards({ userInputRequired: true });
-                setRewards(data);
-            } catch (error) {
-                console.error("Failed to fetch rewards", error);
-            } finally {
-                setIsRewardsLoading(false);
-            }
-        };
-        fetchRewards();
-    }, [user]);
 
     useEffect(() => {
         if (!initialConfig && user?.twitchId) {
@@ -135,23 +116,6 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
         }
     };
 
-    const handleRefreshKey = async () => {
-        setIsSaving(true);
-        try {
-            const data = await refreshDropImageKey();
-            if (data) {
-                tbToast.success({ title: "รีเซ็ตคีย์สำเร็จ" });
-                setConfig(data);
-            }
-        } catch (error) {
-            console.error("Failed to refresh key", error);
-            tbToast.error({ title: "ไม่สามารถรีเซ็ตคีย์ได้" });
-        } finally {
-            setIsSaving(false);
-            setShowConfirmRefresh(false);
-        }
-    };
-
     const handleTest = async () => {
         if (!user || isTesting) return;
 
@@ -219,9 +183,6 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
         isTesting,
         isUserLoading,
         activeTab,
-        rewards,
-        isRewardsLoading,
-        showConfirmRefresh,
         twitchRewardId,
         displayDuration,
         enabledModeration,
@@ -238,11 +199,10 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
         setNotImageMessage,
         setContainMatureMessage,
         setActiveTab,
-        setShowConfirmRefresh,
+        setConfig,
         handleEnable,
         handleDelete,
         handleSave,
-        handleRefreshKey,
         handleTest,
         handleStatusChange
     };

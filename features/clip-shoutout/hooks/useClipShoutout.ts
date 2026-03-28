@@ -22,7 +22,6 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
     const [botProfile, setBotProfile] = useState<string>(initialConfig?.twitch_bot_id || user?.twitchId || "");
     const [enabledClip, setEnabledClip] = useState(initialConfig?.enabled_clip ?? true);
     const [enabledHighlightOnly, setEnabledHighlightOnly] = useState(initialConfig?.enabled_highlight_only ?? false);
-    const [showConfirmRefresh, setShowConfirmRefresh] = useState(false);
     const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
 
     const replyMessageSchema = z.string().max(500, "ข้อความต้องไม่เกิน 500 ตัวอักษร");
@@ -148,23 +147,6 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
         }
     };
 
-    const handleRefreshKey = async () => {
-        setIsSaving(true);
-        try {
-            const data = await refreshClipShoutoutOverlayKey();
-            if (data) {
-                tbToast.success({ title: "รีเซ็ตคีย์สำเร็จ" });
-                setConfig(data);
-            }
-        } catch (error) {
-            console.error("Failed to refresh key", error);
-            tbToast.error({ title: "ไม่สามารถรีเซ็ตคีย์ได้" });
-        } finally {
-            setIsSaving(false);
-            setShowConfirmRefresh(false);
-        }
-    };
-
     const handleReplyMessageChange = (value: string) => {
         setReplyMessage(value);
         const result = replyMessageSchema.safeParse(value);
@@ -190,22 +172,20 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
         isSaving,
         isTesting,
         isUserLoading,
+        activeTab,
         botProfile,
         enabledClip,
         enabledHighlightOnly,
-        showConfirmRefresh,
-        activeTab,
         overlayUrl,
+        setConfig,
         setBotProfile,
         setEnabledClip,
         setEnabledHighlightOnly,
-        setShowConfirmRefresh,
         setActiveTab,
         handleEnable,
         handleSave,
         handleTest,
         handleDelete,
-        handleRefreshKey,
         handleReplyMessageChange,
         handleStatusChange
     };
