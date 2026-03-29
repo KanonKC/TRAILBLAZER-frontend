@@ -34,9 +34,9 @@ import { AudioWaveform, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-rea
 import { useEffect, useState } from "react";
 import { tbToast } from "@/utils/tbToast";
 import { getTwitchUser } from "@/services/twitch.service";
-import { ReplyMessageTextarea } from "../../../../../components/widget/ReplyMessageTextarea";
-import { CompactAudioFileUploader } from "../../../../../components/widget/AudioFileUploader/CompactAudioFileUploader";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../../../components/ui/avatar";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CompactAudioFileUploader } from "@/components/widget/AudioFileUploader/CompactAudioFileUploader";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function CustomReplyList() {
     const [replies, setReplies] = useState<FirstWordCustomReply[]>([]);

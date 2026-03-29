@@ -1,6 +1,6 @@
 "use client"
 
-import { CustomReplyList } from "@/app/dashboard/widgets/first-word/_components/CustomReplyList";
+import { CustomReplyList } from "./CustomReplyList";
 import {
     AlertDialog,
     AlertDialogAction,

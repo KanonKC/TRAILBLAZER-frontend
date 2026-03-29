@@ -4,7 +4,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { RandomDbdPerkClass } from "@/features/random-dbd-perk/types";
 import { PERKS_PER_PAGE } from "@/features/random-dbd-perk/hooks/useRandomDbdPerk";
-import { MaxPerkSelector } from "@/app/dashboard/widgets/random-dbd-perk/_components/MaxPerkSelector";
+import { MaxPerkSelector } from "./MaxPerkSelector";
 
 interface PerkConfigItemProps {
     item: RandomDbdPerkClass;

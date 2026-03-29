@@ -2,10 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
-import { MaxPerkSelector } from "@/app/dashboard/widgets/random-dbd-perk/_components/MaxPerkSelector";
+import { MaxPerkSelector } from "./MaxPerkSelector";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PerkConfigItem } from "@/app/dashboard/widgets/random-dbd-perk/_components/PerkConfigItem";
+import { PerkConfigItem } from "./PerkConfigItem";
 import { cn } from "@/lib/utils";
 import { Dices, Gift, Play, ChevronDown } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -26,7 +26,7 @@ import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/Widge
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
-import RandomFormatInfo from "@/app/dashboard/widgets/random-dbd-perk/_components/RandomFormatInfo";
+import RandomFormatInfo from "./RandomFormatInfo";
 
 import { useRandomDbdPerk, PERKS_PER_PAGE } from "../hooks/useRandomDbdPerk";
 import { RandomDbdPerkConfig } from "../types";
