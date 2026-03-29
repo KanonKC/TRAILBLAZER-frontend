@@ -35,6 +35,7 @@ import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 
 import { useDropImage } from "../hooks/useDropImage";
 import { DropImageConfig } from "../types";
+import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 
 export function DropImageWidget({ initialConfig }: { initialConfig: DropImageConfig | null }) {
     const {
@@ -132,7 +133,7 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                             {
                                 step: 1,
                                 title: "เปิดใช้งาน Widget",
-                                description: <WidgetStatusControl isEnabled={isEnabled} isSaving={isSaving} onEnable={handleEnable} />
+                                description: <WidgetEnabledBadge/>
                             },
                             {
                                 step: 2,

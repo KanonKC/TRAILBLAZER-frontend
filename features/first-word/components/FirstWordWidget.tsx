@@ -36,6 +36,7 @@ import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { FirstWordVariableMap } from "@/constants/firstWord";
 import { FirstWordConfig } from "../types";
 import { useFirstWord } from "../hooks/useFirstWord";
+import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 
 export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false }: { initialConfig: FirstWordConfig | null; initialRequiresProPlan?: boolean }) {
     
@@ -113,11 +114,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
                                 step: 1,
                                 title: "เปิดใช้งาน Widget",
                                 description: (
-                                    <WidgetStatusControl
-                                        isEnabled={controller.isEnabled}
-                                        isSaving={controller.isSaving}
-                                        onEnable={controller.handleEnable}
-                                    />
+                                    <WidgetEnabledBadge/>
                                 )
                             },
                             {

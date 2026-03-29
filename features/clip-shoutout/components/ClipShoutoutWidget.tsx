@@ -33,6 +33,7 @@ import {
 
 import { useClipShoutout } from "../hooks/useClipShoutout";
 import { ClipShoutoutConfig } from "../types";
+import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 
 export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShoutoutConfig | null }) {
     const {
@@ -137,7 +138,7 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
                             {
                                 step: 1,
                                 title: "เปิดใช้งาน Widget",
-                                description: <WidgetStatusControl isEnabled={isEnabled} isSaving={isSaving} onEnable={handleEnable} />
+                                description: <WidgetEnabledBadge/>
                             },
                             {
                                 step: 2,

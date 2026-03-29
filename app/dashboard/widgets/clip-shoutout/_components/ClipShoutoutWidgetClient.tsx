@@ -14,7 +14,8 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUser } from "@/components/user-context";
 import { cn } from "@/lib/utils";
-import { ExternalLink, MessageSquare, Play, Video } from "lucide-react";
+import { Check, ExternalLink, MessageSquare, Play, Video } from "lucide-react";
+import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { tbToast } from "@/utils/tbToast";
@@ -35,6 +36,8 @@ import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/Widget
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import WidgetStepperItem from "@/components/widget/WidgetStepper/WidgetStepperItem/WidgetStepperItem";
+import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 
 export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: ClipShoutoutConfig | null }) {
     const { user, isLoading: isUserLoading } = useUser();
@@ -228,6 +231,111 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
         } : null);
     };
 
+    const quickStartSteps = [
+        {
+            step: 1,
+            title: "เปิดใช้งาน Widget",
+            description: (
+                <div className="flex items-center gap-2 text-green-400 bg-green-500/10 px-3 py-2 rounded-md border border-green-500/20 w-fit">
+                    <Check className="w-4 h-4" />
+                    <span className="text-sm font-medium">เปิดใช้งานแล้ว</span>
+                </div>
+            )
+        },
+        {
+            step: 2,
+            title: "ตั้งค่าข้อความ",
+            description: (
+                <div className="space-y-3">
+                    <p className="text-sm text-white/70">ข้อความที่จะส่งในแชทเมื่อมีการ Raid เข้ามา</p>
+                    <ReplyMessageTextarea
+                        hideLabel
+                        value={replyMessage}
+                        onChange={handleReplyMessageChange}
+                        error={replyMessageError}
+                        variables={[
+                            {
+                                variable: "{{user_name}}",
+                                description: "ชื่อที่แสดงผลของผู้ทักทาย",
+                                example: "User123"
+                            },
+                            {
+                                variable: "{{viewer_count}}",
+                                description: "จำนวนผู้ชมที่มาพร้อม Raid",
+                                example: "150"
+                            },
+                            {
+                                variable: "{{channel_link}}",
+                                description: "ลิงก์ไปยังช่องของผู้ Raid",
+                                example: "https://twitch.tv/user123"
+                            }
+                        ]}
+                    />
+                </div>
+            )
+        },
+        {
+            step: 3,
+            title: "นำ Overlay ไปใส่ใน OBS",
+            description: (
+                <div className="space-y-3">
+                    <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล</p>
+                    <OverlayUrlInput
+                        url={overlayUrl}
+                        className="text-white"
+                        inputClassName="bg-transparent border-white/20 text-white"
+                        showRefresh={true}
+                        onRefresh={() => setShowConfirmRefresh(true)}
+                        hideLabel
+                    />
+                    <OBSSetupHelp />
+                </div>
+            )
+        },
+        {
+            step: 4,
+            title: "บันทึกและทดสอบ",
+            description: (
+                <div className="space-y-3">
+                    <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+                    <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                        <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                        <li>ต้องมี Clip ของช่องที่ Raid เข้ามาแสดงขึ้นมาบนหน้าจอของคุณ</li>
+                    </ol>
+                    <WidgetTestControl
+                        isSaving={isSaving}
+                        isTesting={isTesting}
+                        onSave={handleSave}
+                        onTest={handleTest}
+                        canTest={true}
+                    />
+                </div>
+            )
+        },
+        {
+            step: 5,
+            title: "การตั้งค่าเพิ่มเติม",
+            description: (
+                <div className="space-y-3">
+                    <p className="text-sm text-white/70">
+                        คุณสามารถเลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ใน Settings
+                    </p>
+                    <div className="flex justify-start">
+                        <Button
+                            variant="secondary"
+                            onClick={() => setActiveTab("settings")}
+                            className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
+                        >
+                            ไปที่การตั้งค่า (Settings)
+                            <ExternalLink className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            )
+        }
+    ];
+
     if (isUserLoading) {
         return (
             <div className="container mx-auto py-10">
@@ -293,126 +401,9 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
 
                 <TabsContent value="quick-start">
                     <WidgetQuickStartCard>
-                        {[
-                            {
-                                step: 1,
-                                title: "เปิดใช้งาน Widget",
-                                description: (
-                                    <WidgetStatusControl
-                                        isEnabled={isEnabled}
-                                        isSaving={isSaving}
-                                        onEnable={handleEnable}
-                                    />
-                                )
-                            },
-                            {
-                                step: 2,
-                                title: "ตั้งค่าข้อความ",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">ข้อความที่จะส่งในแชทเมื่อมีการ Raid เข้ามา</p>
-                                        <ReplyMessageTextarea
-                                            hideLabel
-                                            value={replyMessage}
-                                            onChange={handleReplyMessageChange}
-                                            error={replyMessageError}
-                                            variables={[
-                                                {
-                                                    variable: "{{user_name}}",
-                                                    description: "ชื่อที่แสดงผลของผู้ทักทาย",
-                                                    example: "User123"
-                                                },
-                                                {
-                                                    variable: "{{viewer_count}}",
-                                                    description: "จำนวนผู้ชมที่มาพร้อม Raid",
-                                                    example: "150"
-                                                },
-                                                {
-                                                    variable: "{{channel_link}}",
-                                                    description: "ลิงก์ไปยังช่องของผู้ Raid",
-                                                    example: "https://twitch.tv/user123"
-                                                }
-                                            ]}
-                                        />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 3,
-                                title: "นำ Overlay ไปใส่ใน OBS",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล</p>
-                                        <OverlayUrlInput
-                                            url={overlayUrl}
-                                            className="text-white"
-                                            inputClassName="bg-transparent border-white/20 text-white"
-                                            showRefresh={true}
-                                            onRefresh={() => setShowConfirmRefresh(true)}
-                                            hideLabel
-                                        />
-                                        <OBSSetupHelp />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 4,
-                                title: "บันทึกและทดสอบ",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
-
-                                        <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
-                                            <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
-                                            <li>ต้องมี Clip ของช่องที่ Raid เข้ามาแสดงขึ้นมาบนหน้าจอของคุณ</li>
-                                        </ol>
-                                        <WidgetTestControl
-                                            isSaving={isSaving}
-                                            isTesting={isTesting}
-                                            onSave={handleSave}
-                                            onTest={handleTest}
-                                            canTest={true}
-                                        />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 5,
-                                title: "การตั้งค่าเพิ่มเติม",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">
-                                            คุณสามารถเลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ใน Settings
-                                        </p>
-                                        <div className="flex justify-start">
-                                            <Button
-                                                variant="secondary"
-                                                onClick={() => setActiveTab("settings")}
-                                                className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
-                                            >
-                                                ไปที่การตั้งค่า (Settings)
-                                                <ExternalLink className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )
-                            }
-                        ].map((item, index, array) => (
-                            <div key={item.step} className="flex gap-4 relative pb-10 last:pb-0">
-                                <div className="flex flex-col items-center">
-                                    <div className="flex-none flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm z-10 bg-transparent ring-4 ring-transparent">
-                                        {item.step}
-                                    </div>
-                                    {index !== array.length - 1 && (
-                                        <div className="w-[2px] bg-white/10 absolute top-8 bottom-0 left-4 -ml-[1px]" />
-                                    )}
-                                </div>
-                                <div className="space-y-1 pt-1 flex-1 min-w-0">
-                                    <h3 className="font-semibold leading-none mb-2 text-white">{item.title}</h3>
-                                    <div className="text-sm">{item.description}</div>
-                                </div>
-                            </div>
-                        ))}
+                        <WidgetStepper>
+                            <WidgetStepperItems items={quickStartSteps}/>
+                        </WidgetStepper>
                     </WidgetQuickStartCard>
                 </TabsContent>
 

@@ -29,6 +29,7 @@ import RandomFormatInfo from "@/app/dashboard/widgets/random-dbd-perk/_component
 
 import { useRandomDbdPerk, PERKS_PER_PAGE } from "../hooks/useRandomDbdPerk";
 import { RandomDbdPerkConfig } from "../types";
+import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 
 export function RandomDbdPerkWidget({ initialConfig }: { initialConfig: RandomDbdPerkConfig | null }) {
     const {
@@ -114,7 +115,7 @@ export function RandomDbdPerkWidget({ initialConfig }: { initialConfig: RandomDb
                             {
                                 step: 1,
                                 title: "เปิดใช้งาน Widget",
-                                description: <WidgetStatusControl isEnabled={isEnabled} isSaving={isSaving} onEnable={handleEnable} />
+                                description: <WidgetEnabledBadge/>
                             },
                             {
                                 step: 2,

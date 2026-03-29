@@ -25,6 +25,8 @@ import {
 import { deleteWidget } from "@/services/widget.service";
 import { getTwitchChannelRewards, type TwitchCustomReward } from "@/services/twitch.service";
 import { tbToast } from "@/utils/tbToast";
+import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
+import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
@@ -34,7 +36,6 @@ import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/Widget
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -46,6 +47,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 
 export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropImageConfig | null }) {
     const { user, isLoading: isUserLoading } = useUser();
@@ -259,6 +261,161 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
         }
     };
 
+    const quickStartSteps = [
+        {
+            step: 1,
+            title: "เปิดใช้งาน Widget",
+            description: (
+                <WidgetEnabledBadge/>
+            )
+        },
+        {
+            step: 2,
+            title: `เลือกแต้มช่องที่ต้องการใช้งาน`,
+            description: (
+                <div className="space-y-3">
+                    <p className="text-sm text-white/70">
+                        เลือก Channel Points Reward บน Twitch ที่มีอยู่แล้วเพื่อใช้กับ Widget นี้ หรือ <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-fit h-auto p-0 text-purple-400 hover:text-purple-300 hover:bg-transparent gap-1 self-end text-sm"
+                            onClick={() => window.open("https://dashboard.twitch.tv/viewer-rewards/channel-points/rewards", "_blank")}
+                        >
+                            ไปที่ Twitch Dashboard
+                            <ExternalLink className="w-3 h-3" />
+                        </Button> เพื่อสร้างแต้มช่องอันใหม่
+                    </p>
+                    <div className="flex gap-3">
+                        <div className="w-full">
+                            <ChannelRewardSelector
+                                value={twitchRewardId}
+                                onValueChange={setTwitchRewardId}
+                                rewards={rewards}
+                                isLoading={isRewardsLoading}
+                                placeholder="เลือก Reward เพื่อใช้สำหรับการโชว์รูป..."
+                            />
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+        {
+            step: 3,
+            title: "ตั้งค่าระยะเวลาการแสดงผล",
+            description: (
+                <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">ตั้งเวลาที่จะให้รูปภาพแสดงค้างไว้ที่หน้าจอ ก่อนที่รูปภาพจะหายไป</p>
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                            <Slider
+                                value={[displayDuration]}
+                                onValueChange={([v]) => setDisplayDuration(v)}
+                                min={1}
+                                max={20}
+                                step={1}
+                                className="flex-1 cursor-pointer"
+                            />
+                            <span className="text-sm tabular-nums w-16 text-right text-muted-foreground shrink-0">
+                                {displayDuration} วินาที
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+        {
+            step: 4,
+            title: "นำ Overlay ไปใส่ใน OBS",
+            description: (
+                <div className="space-y-3">
+                    <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้รูปภาพแสดงผล</p>
+                    <OverlayUrlInput
+                        url={overlayUrl}
+                        className="text-white"
+                        inputClassName="bg-transparent border-white/20 text-white"
+                        showRefresh={true}
+                        onRefresh={() => setShowConfirmRefresh(true)}
+                        hideLabel
+                    />
+                    <OBSSetupHelp type="image" />
+                </div>
+            )
+        },
+        {
+            step: 5,
+            title: "บันทึกและทดสอบ",
+            description: (
+                <div className="space-y-3">
+                    <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+
+                    <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                        <li>ต้องมีรูปหล่นลงมาใน OBS ของคุณเมื่อกดทดสอบ</li>
+                    </ol>
+                    <WidgetTestControl
+                        isSaving={isSaving}
+                        isTesting={isTesting}
+                        onSave={handleSave}
+                        onTest={handleTest}
+                        canTest={!!twitchRewardId}
+                    />
+                </div>
+            )
+        },
+        {
+            step: 6,
+            title: "อธิบายให้คนดูเข้าใจเกี่ยวกับการวางลิงก์รูป",
+            description: (
+                <div className="space-y-3">
+                    <p className="text-sm text-white/70">เนื่องจากคำว่า &quot;ลิงก์รูปภาพ&quot; เป็นสิ่งที่เข้าใจยากสำหรับทั้งสตรีมเมอร์และคนดู ในขั้นตอนนี้จึงเป็นการอธิบายให้เข้าใจว่ามันคืออะไร เพื่อที่จะสามารถนำไปอธิบายต่อให้กับคนดูระหว่างสตรีมได้</p>
+                    <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm flex gap-3">
+                        <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <p className="font-semibold mb-1">ลิงก์รูปภาพ (Image URL) คืออะไร?</p>
+                            <div className="space-y-2 mt-2">
+                                <p className="text-blue-100/90 leading-relaxed text-sm">
+                                    คือ <strong>ที่อยู่ของรูปภาพนั้นๆ บนอินเทอร์เน็ต</strong> สังเกตง่ายๆ คือ ลิงก์ที่ใช้ได้มักจะยาวๆ และ <span className="font-semibold text-emerald-400">ลงท้ายด้วยนามสกุลไฟล์รูปภาพ</span> เช่น .jpg, .png, หรือ .gif
+                                </p>
+
+                                <div className="">
+                                    <p className="font-semibold text-blue-100 mb-2 border-b border-blue-500/20 pb-1">       วิธีที่ง่ายที่สุดในการบอกคนดูว่าจะเอาลิงก์ได้จากที่ไหน</p>
+                                    <ul className="list-disc pl-5 space-y-2 text-blue-100/80 text-sm">
+                                        <li>
+                                            <span className="font-semibold text-indigo-300">จาก Discord:</span> เป็นวิธีที่เห็นคนดูหลายคนทำบ่อยที่สุดคืออัพรูปลง Discord (อาจจะสร้างห้องส่วนตัวขึ้นมาก็ได้) <br />กดที่รูปให้ขยายใหญ่ {'>'} กดค้าง (มือถือ) หรือคลิกขวา (คอม) {'>'} เลือก <strong>&quot;คัดลอกลิงก์สื่อ (Copy Media Link)&quot;</strong>
+                                        </li>
+                                        <li>
+                                            <span className="font-semibold text-blue-200">บนคอมพิวเตอร์ (PC):</span> ค้นหารูป {'>'} คลิกขวาที่รูป {'>'} เลือก <strong>&quot;คัดลอกที่อยู่รูปภาพ (Copy image address)&quot;</strong>
+                                        </li>
+                                        <li>
+                                            <span className="font-semibold text-blue-200">บนมือถือ:</span> กดค้างที่รูปภาพ {'>'} เลือก <strong>&quot;คัดลอกลิงก์ (Copy link)&quot;</strong>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        },
+        {
+            step: 7,
+            title: "การตั้งค่าเพิ่มเติม",
+            description: (
+                <div className="space-y-3">
+                    <div className="flex justify-start">
+                        <Button
+                            variant="secondary"
+                            onClick={() => setActiveTab("settings")}
+                            className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
+                        >
+                            ไปที่การตั้งค่า (Settings)
+                            <ExternalLink className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            )
+        }
+    ];
+
     if (isUserLoading) {
         return (
             <div className="container mx-auto py-10">
@@ -323,179 +480,9 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
 
                 <TabsContent value="quick-start">
                     <WidgetQuickStartCard>
-                        {[
-                            {
-                                step: 1,
-                                title: "เปิดใช้งาน Widget",
-                                description: (
-                                    <WidgetStatusControl
-                                        isEnabled={isEnabled}
-                                        isSaving={isSaving}
-                                        onEnable={handleEnable}
-                                    />
-                                )
-                            },
-                            {
-                                step: 2,
-                                title: `เลือกแต้มช่องที่ต้องการใช้งาน`,
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">
-                                            เลือก Channel Points Reward บน Twitch ที่มีอยู่แล้วเพื่อใช้กับ Widget นี้ หรือ <Button
-                                                variant="ghost"
-                                                size="sm"
-                                                className="w-fit h-auto p-0 text-purple-400 hover:text-purple-300 hover:bg-transparent gap-1 self-end text-sm"
-                                                onClick={() => window.open("https://dashboard.twitch.tv/viewer-rewards/channel-points/rewards", "_blank")}
-                                            >
-                                                ไปที่ Twitch Dashboard
-                                                <ExternalLink className="w-3 h-3" />
-                                            </Button> เพื่อสร้างแต้มช่องอันใหม่
-                                        </p>
-                                        <div className="flex gap-3">
-                                            <div className="w-full">
-                                                <ChannelRewardSelector
-                                                    value={twitchRewardId}
-                                                    onValueChange={setTwitchRewardId}
-                                                    rewards={rewards}
-                                                    isLoading={isRewardsLoading}
-                                                    placeholder="เลือก Reward เพื่อใช้สำหรับการโชว์รูป..."
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 3,
-                                title: "ตั้งค่าระยะเวลาการแสดงผล",
-                                description: (
-                                    <div className="space-y-4">
-                                        <p className="text-sm text-muted-foreground">ตั้งเวลาที่จะให้รูปภาพแสดงค้างไว้ที่หน้าจอ ก่อนที่รูปภาพจะหายไป</p>
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-3">
-                                                <Slider
-                                                    value={[displayDuration]}
-                                                    onValueChange={([v]) => setDisplayDuration(v)}
-                                                    min={1}
-                                                    max={20}
-                                                    step={1}
-                                                    className="flex-1 cursor-pointer"
-                                                />
-                                                <span className="text-sm tabular-nums w-16 text-right text-muted-foreground shrink-0">
-                                                    {displayDuration} วินาที
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 4,
-                                title: "นำ Overlay ไปใส่ใน OBS",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้รูปภาพแสดงผล</p>
-                                        <OverlayUrlInput
-                                            url={overlayUrl}
-                                            className="text-white"
-                                            inputClassName="bg-transparent border-white/20 text-white"
-                                            showRefresh={true}
-                                            onRefresh={() => setShowConfirmRefresh(true)}
-                                            hideLabel
-                                        />
-                                        <OBSSetupHelp type="image" />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 5,
-                                title: "บันทึกและทดสอบ",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
-
-                                        <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
-                                            <li>ต้องมีรูปหล่นลงมาใน OBS ของคุณเมื่อกดทดสอบ</li>
-                                        </ol>
-                                        <WidgetTestControl
-                                            isSaving={isSaving}
-                                            isTesting={isTesting}
-                                            onSave={handleSave}
-                                            onTest={handleTest}
-                                            canTest={!!twitchRewardId}
-                                        />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 6,
-                                title: "อธิบายให้คนดูเข้าใจเกี่ยวกับการวางลิงก์รูป",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">เนื่องจากคำว่า &quot;ลิงก์รูปภาพ&quot; เป็นสิ่งที่เข้าใจยากสำหรับทั้งสตรีมเมอร์และคนดู ในขั้นตอนนี้จึงเป็นการอธิบายให้เข้าใจว่ามันคืออะไร เพื่อที่จะสามารถนำไปอธิบายต่อให้กับคนดูระหว่างสตรีมได้</p>
-                                        <div className="p-4 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-200 text-sm flex gap-3">
-                                            <Info className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                                            <div>
-                                                <p className="font-semibold mb-1">ลิงก์รูปภาพ (Image URL) คืออะไร?</p>
-                                                <div className="space-y-2 mt-2">
-                                                    <p className="text-blue-100/90 leading-relaxed text-sm">
-                                                        คือ <strong>ที่อยู่ของรูปภาพนั้นๆ บนอินเทอร์เน็ต</strong> สังเกตง่ายๆ คือ ลิงก์ที่ใช้ได้มักจะยาวๆ และ <span className="font-semibold text-emerald-400">ลงท้ายด้วยนามสกุลไฟล์รูปภาพ</span> เช่น .jpg, .png, หรือ .gif
-                                                    </p>
-
-                                                    <div className="">
-                                                        <p className="font-semibold text-blue-100 mb-2 border-b border-blue-500/20 pb-1">       วิธีที่ง่ายที่สุดในการบอกคนดูว่าจะเอาลิงก์ได้จากที่ไหน</p>
-                                                        <ul className="list-disc pl-5 space-y-2 text-blue-100/80 text-sm">
-                                                            <li>
-                                                                <span className="font-semibold text-indigo-300">จาก Discord:</span> เป็นวิธีที่เห็นคนดูหลายคนทำบ่อยที่สุดคืออัพรูปลง Discord (อาจจะสร้างห้องส่วนตัวขึ้นมาก็ได้) <br />กดที่รูปให้ขยายใหญ่ {'>'} กดค้าง (มือถือ) หรือคลิกขวา (คอม) {'>'} เลือก <strong>&quot;คัดลอกลิงก์สื่อ (Copy Media Link)&quot;</strong>
-                                                            </li>
-                                                            <li>
-                                                                <span className="font-semibold text-blue-200">บนคอมพิวเตอร์ (PC):</span> ค้นหารูป {'>'} คลิกขวาที่รูป {'>'} เลือก <strong>&quot;คัดลอกที่อยู่รูปภาพ (Copy image address)&quot;</strong>
-                                                            </li>
-                                                            <li>
-                                                                <span className="font-semibold text-blue-200">บนมือถือ:</span> กดค้างที่รูปภาพ {'>'} เลือก <strong>&quot;คัดลอกลิงก์ (Copy link)&quot;</strong>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 7,
-                                title: "การตั้งค่าเพิ่มเติม",
-                                description: (
-                                    <div className="space-y-3">
-                                        <div className="flex justify-start">
-                                            <Button
-                                                variant="secondary"
-                                                onClick={() => setActiveTab("settings")}
-                                                className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
-                                            >
-                                                ไปที่การตั้งค่า (Settings)
-                                                <ExternalLink className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )
-                            }
-                        ].map((item, index, array) => (
-                            <div key={item.step} className="flex gap-4 relative pb-10 last:pb-0">
-                                <div className="flex flex-col items-center">
-                                    <div className="flex-none flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm z-10 bg-transparent ring-4 ring-transparent">
-                                        {item.step}
-                                    </div>
-                                    {index !== array.length - 1 && (
-                                        <div className="w-[2px] bg-white/10 absolute top-8 bottom-0 left-4 -ml-[1px]" />
-                                    )}
-                                </div>
-                                <div className="space-y-1 pt-1 flex-1 min-w-0">
-                                    <h3 className="font-semibold leading-none mb-2 text-white">{item.title}</h3>
-                                    <div className="text-sm">{item.description}</div>
-                                </div>
-                            </div>
-                        ))}
+                        <WidgetStepper>
+                            <WidgetStepperItems items={quickStartSteps} />
+                        </WidgetStepper>
                     </WidgetQuickStartCard>
                 </TabsContent>
 
