@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
-import { getClipShoutoutEventUrl } from "@/services/clipShoutout.service";
+import { getClipShoutoutEventUrl } from "@/features/clip-shoutout/api/clipShoutout.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 

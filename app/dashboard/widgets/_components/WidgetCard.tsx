@@ -3,9 +3,9 @@
 import { LucideIcon, Play, Settings } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import { ExtendedWidget } from "@/services/widget.service";
 import { Button } from "@/components/ui/button";
+import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
 
 interface WidgetCardProps {
     slug: string;
@@ -16,12 +16,10 @@ interface WidgetCardProps {
     color: string;
     bgColor: string;
     apiWidget?: ExtendedWidget;
-    isUpdating: boolean;
-    onToggle: (checked: boolean) => void;
+    onSuccess?: () => void;
 }
 
 export const WidgetCard = ({
-    slug,
     title,
     description,
     icon: Icon,
@@ -29,8 +27,7 @@ export const WidgetCard = ({
     color,
     bgColor,
     apiWidget,
-    isUpdating,
-    onToggle
+    onSuccess
 }: WidgetCardProps) => {
     const isEnabled = apiWidget?.enabled || false;
 
@@ -48,10 +45,10 @@ export const WidgetCard = ({
                     </div>
                     {apiWidget && (
                         <div onClick={(e) => e.preventDefault()}>
-                            <Switch
-                                checked={isEnabled}
-                                onCheckedChange={onToggle}
-                                disabled={isUpdating}
+                            <WidgetStatusSwitch
+                                widgetId={apiWidget.id}
+                                isEnabled={isEnabled}
+                                onSuccess={onSuccess}
                             />
                         </div>
                     )}
