@@ -1,6 +1,5 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { ReplyMessageHelp, VariableItem } from "./ReplyMessageHelp";
 import { cn } from "@/lib/utils";
 
@@ -9,14 +8,15 @@ interface ReplyMessageTextareaProps {
     onChange: (value: string) => void;
     variant?: "default" | "overlay";
     error?: string | null;
-    hideLabel?: boolean;
     variables?: VariableItem[];
     placeholder?: string;
     rows?: number;
     disabled?: boolean;
+    defaultOpenHelp?: boolean;
+    name?: string;
 }
 
-export function ReplyMessageTextarea({ value, onChange, variant = "overlay", error, hideLabel, variables=[], placeholder, rows = 3, disabled=false }: ReplyMessageTextareaProps) {
+export function ReplyMessageTextarea({ value, onChange, variant = "overlay", error, variables=[], placeholder, rows = 3, disabled=false, defaultOpenHelp = false, name }: ReplyMessageTextareaProps) {
     const isOverlay = variant === "overlay";
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -69,7 +69,7 @@ export function ReplyMessageTextarea({ value, onChange, variant = "overlay", err
                     </span>
                 </div>
             </div>
-            { variables.length > 0 && <ReplyMessageHelp onInsertVariable={handleInsertVariable} variables={variables} />}
+            { variables.length > 0 && <ReplyMessageHelp onInsertVariable={handleInsertVariable} variables={variables} defaultOpen={defaultOpenHelp} />}
         </div>
     );
 }

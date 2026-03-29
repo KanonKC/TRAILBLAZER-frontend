@@ -18,13 +18,13 @@ import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
-import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { AudioWaveform, ExternalLink, MessageSquare, Music, Play, RefreshCw, Users } from "lucide-react";
-import MultiStepProgressBar from "@/components/MultiStepProgressBar";
+import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
+import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
@@ -109,115 +109,113 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
 
                 <TabsContent value="quick-start">
                     <WidgetQuickStartCard>
-                        {[
-                            {
-                                step: 1,
-                                title: "เปิดใช้งาน Widget",
-                                description: (
-                                    <WidgetEnabledBadge/>
-                                )
-                            },
-                            {
-                                step: 2,
-                                title: "ใส่ข้อความ",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
-                                        <ReplyMessageTextarea
-                                            hideLabel
-                                            value={controller.replyMessage}
-                                            onChange={controller.handleReplyMessageChange}
-                                            error={controller.replyMessageError}
-                                            variables={FirstWordVariableMap}
-                                        />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 3,
-                                title: "ใส่เสียง",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
-                                        <SmartAudioFileUploader
-                                            slug="first-word"
-                                            currentFileName={controller.config?.audio?.name}
-                                            selectedFile={controller.audioFile}
-                                            audioVolume={controller.audioVolume}
-                                            onAudioVolumeChange={controller.setAudioVolume}
-                                            onSuccess={controller.setConfig}
-                                            className="text-white"
-                                            inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
-                                            hideLabel
-                                        />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 4,
-                                title: "นำ Overlay สำหรับเสียงไปใส่บน OBS",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
-                                        <p className="text-sm text-white/70 italic">* คุณสามารถข้ามขั้นตอนนี้ได้ หากไม่ต้องการใช้เสียง</p>
-                                        <SmartOverlayUrlInput
-                                            url={controller.overlayUrl}
-                                            slug="first-word"
-                                            onSuccess={controller.setConfig}
-                                            hideLabel
-                                        />
-                                        <OBSSetupHelp />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 5,
-                                title: "บันทึกและทดสอบ",
-                                description: (
-                                    <>
-                                        <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
-                                        <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
-                                            <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
-                                            <li>ต้องมีเสียงเล่นออกมาจากโปรแกรม OBS</li>
-                                        </ol>
-                                        <WidgetTestControl
-                                            isSaving={controller.isSaving}
-                                            isTesting={controller.isTesting}
-                                            onSave={controller.handleSave}
-                                            onTest={controller.handleTestAudio}
-                                            canTest={!!(controller.config?.audio_key || controller.config?.reply_message)}
-                                        />
-                                    </>
-                                )
-                            },
-                            {
-                                step: 6,
-                                title: "การตั้งค่าเพิ่มเติม",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">
-                                            Quick Start เป็นเพียงการตั้งค่าเบื้องต้นเท่านั้น คุณสามารถปรับแต่งการตั้งค่าอื่นๆ เพิ่มเติมได้ที่เมนู Settings
-                                        </p>
-                                        <div className="flex justify-start">
-                                            <Button
-                                                variant="secondary"
-                                                onClick={() => controller.setActiveTab("settings")}
-                                                className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
-                                            >
-                                                ไปที่การตั้งค่า (Settings)
-                                                <ExternalLink className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )
-                            }
-                        ].map((item, index, array) => (
-                            <MultiStepProgressBar
-                                key={item.step}
-                                data={item}
-                                drawConnector={index !== array.length - 1}
+                        <WidgetStepper>
+                            <WidgetStepperItems
+                                items={[
+                                    {
+                                        step: 1,
+                                        title: "เปิดใช้งาน Widget",
+                                        description: (
+                                            <WidgetEnabledBadge />
+                                        )
+                                    },
+                                    {
+                                        step: 2,
+                                        title: "ใส่ข้อความ",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
+                                                <ReplyMessageTextarea
+                                                    defaultOpenHelp
+                                                    value={controller.replyMessage}
+                                                    onChange={controller.handleReplyMessageChange}
+                                                    error={controller.replyMessageError}
+                                                    variables={FirstWordVariableMap}
+                                                />
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 3,
+                                        title: "ใส่เสียง",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">เล่นเสียงนี้เมื่อมีคนดูเข้ามาพิมพ์ทักทายคุณ การอัปโหลดเสียงในขั้นตอนนี้จะยังไม่ทำให้สตรีมของคุณมีเสียงในทันที</p>
+                                                <SmartAudioFileUploader
+                                                    slug="first-word"
+                                                    currentFileName={controller.config?.audio?.name}
+                                                    selectedFile={controller.audioFile}
+                                                    audioVolume={controller.audioVolume}
+                                                    onAudioVolumeChange={controller.setAudioVolume}
+                                                    onSuccess={controller.setConfig}
+                                                    className="text-white"
+                                                    inputClassName="bg-transparent border-white/20 text-white file:text-white file:bg-white/10 file:border-0 file:mr-4 file:px-4 file:py-2 file:rounded-md file:text-sm file:font-semibold hover:file:bg-white/20"
+                                                    hideLabel
+                                                />
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 4,
+                                        title: "นำ Overlay สำหรับเสียงไปใส่บน OBS",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">เพื่อให้การสตรีมของคุณมีเสียงออกมาได้ คุณจำเป็นต้องนำลิงก์ Overlay URL ด้านล่างไปใส่บนโปรแกรม OBS ก่อน</p>
+                                                <p className="text-sm text-white/70 italic">* คุณสามารถข้ามขั้นตอนนี้ได้ หากไม่ต้องการใช้เสียง</p>
+                                                <SmartOverlayUrlInput
+                                                    url={controller.overlayUrl}
+                                                    slug="first-word"
+                                                    onSuccess={controller.setConfig}
+                                                    hideLabel
+                                                />
+                                                <OBSSetupHelp defaultOpen />
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 5,
+                                        title: "บันทึกและทดสอบ",
+                                        description: (
+                                            <>
+                                                <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+                                                <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                                                    <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                                                    <li>ต้องมีเสียงเล่นออกมาจากโปรแกรม OBS</li>
+                                                </ol>
+                                                <WidgetTestControl
+                                                    isSaving={controller.isSaving}
+                                                    isTesting={controller.isTesting}
+                                                    onSave={controller.handleSave}
+                                                    onTest={controller.handleTestAudio}
+                                                    canTest={!!(controller.config?.audio_key || controller.config?.reply_message)}
+                                                />
+                                            </>
+                                        )
+                                    },
+                                    {
+                                        step: 6,
+                                        title: "การตั้งค่าเพิ่มเติม",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">
+                                                    Quick Start เป็นเพียงการตั้งค่าเบื้องต้นเท่านั้น คุณสามารถปรับแต่งการตั้งค่าอื่นๆ เพิ่มเติมได้ที่เมนู Settings
+                                                </p>
+                                                <div className="flex justify-start">
+                                                    <Button
+                                                        variant="secondary"
+                                                        onClick={() => controller.setActiveTab("settings")}
+                                                        className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2"
+                                                    >
+                                                        ไปที่การตั้งค่า (Settings)
+                                                        <ExternalLink className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                ]}
                             />
-                        ))}
+                        </WidgetStepper>
                     </WidgetQuickStartCard>
                 </TabsContent>
 

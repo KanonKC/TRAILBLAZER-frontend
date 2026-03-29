@@ -1,23 +1,26 @@
+"use client"
+
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
-} from "@/components/ui/accordion"
-import { HelpCircle } from "lucide-react"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/accordion";
+import { cn } from "@/lib/utils";
+import { HelpCircle } from "lucide-react";
 
 interface OBSSetupHelpProps {
     className?: string;
     variant?: "default" | "overlay";
     type?: "audio" | "image" | "text"
+    defaultOpen?: boolean;
 }
 
-export function OBSSetupHelp({ className, variant = "overlay", type = "audio" }: OBSSetupHelpProps) {
+export function OBSSetupHelp({ className, variant = "overlay", type = "audio", defaultOpen = false }: OBSSetupHelpProps) {
     const isOverlay = variant === "overlay";
 
     return (
-        <Accordion type="single" collapsible className={cn("w-full border rounded-lg mt-3", isOverlay ? "bg-white/5 border-white/10" : "bg-card border-border", className)}>
+        <Accordion type="single" collapsible defaultValue={!!defaultOpen ? "obs-setup" : undefined} className={cn("w-full border rounded-lg mt-3", isOverlay ? "bg-white/5 border-white/10" : "bg-card border-border", className)}>
             <AccordionItem value="obs-setup" className="border-none">
                 <AccordionTrigger className={cn(
                     "px-4 py-3 hover:no-underline rounded-t-lg transition-colors cursor-pointer",
@@ -38,7 +41,7 @@ export function OBSSetupHelp({ className, variant = "overlay", type = "audio" }:
                             type === "audio" && (
                                 <>
                                     <li>กดติ๊กถูกที่ตัวเลือก Control audio via OBS {">"} กด OK</li>
-                                    <li>เลื่อนหาแทร็กเสียงของ Browser ที่เราตั้งค่าไปก่อนหน้า {">"} กดปุ่ม 3 จุด {">"} เลือก Advanced Audio Properties (อยู่ข้างล่างสุด)</li>
+                                    <li>ไปที่แถบ Audio Mixer (แถบที่มีหลอดเสียง) จากนั้นสังเกตด้านล่าจะมีรูปเฟือง ให้กดที่รูปเฟืองนั้น</li>
                                     <li>เลื่อนหาแทร็กเสียงของ Browser ที่เราตั้งค่าไปก่อนหน้า {">"} หัวข้อ Audio Monitoring เลือกเป็นแบบ Monitor and Output (ตัวเลือกที่ 3)</li>
                                 </>
                             )

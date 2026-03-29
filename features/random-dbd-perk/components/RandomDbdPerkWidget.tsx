@@ -1,14 +1,13 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { MaxPerkSelector } from "@/app/dashboard/widgets/random-dbd-perk/_components/MaxPerkSelector";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PerkConfigItem } from "@/app/dashboard/widgets/random-dbd-perk/_components/PerkConfigItem";
 import { cn } from "@/lib/utils";
-import { Dices, Gift, Play, ChevronDown, ExternalLink } from "lucide-react";
+import { Dices, Gift, Play, ChevronDown } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
@@ -18,6 +17,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
+import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
@@ -111,93 +112,86 @@ export function RandomDbdPerkWidget({ initialConfig }: { initialConfig: RandomDb
 
                 <TabsContent value="quick-start">
                     <WidgetQuickStartCard>
-                        {[
-                            {
-                                step: 1,
-                                title: "เปิดใช้งาน Widget",
-                                description: <WidgetEnabledBadge/>
-                            },
-                            {
-                                step: 2,
-                                title: "เลือกประเภท Perk",
-                                description: (
-                                    <RadioGroup value={wizardType} onValueChange={(val) => setWizardType(val as "survivor" | "killer")} className="flex gap-4">
-                                        <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "survivor" ? "bg-blue-500/10 border-blue-500/50" : "bg-transparent border-white/10")}><RadioGroupItem value="survivor" id="r-survivor" /><Label htmlFor="r-survivor" className="flex-1 text-blue-400">Survivor</Label></div>
-                                        <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "killer" ? "bg-red-500/10 border-red-500/50" : "bg-transparent border-white/10")}><RadioGroupItem value="killer" id="r-killer" /><Label htmlFor="r-killer" className="flex-1 text-red-400">Killer</Label></div>
-                                    </RadioGroup>
-                                )
-                            },
-                            {
-                                step: 3,
-                                title: "เลือกแต้มช่อง",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">ช่องเชื่อมต่อแต้มช่อง</p>
-                                        <TwitchRewardSelector
-                                            value={perkClasses.find(c => c.type === wizardType)?.twitch_reward_id || null}
-                                            onValueChange={(val) => {
-                                                const index = perkClasses.findIndex(c => c.type === wizardType);
-                                                if (index !== -1) updatePerkClass(index, 'twitch_reward_id', val);
-                                            }}
-                                            userInputRequired={false}
-                                            placeholder="เลือก Reward..."
-                                        />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 4,
-                                title: "กำหนดจำนวน Perk",
-                                description: (
-                                    <div className="border p-4 rounded-xl bg-muted/20">
-                                        {(() => {
-                                            const currentLimitClass = perkClasses.find(c => c.type === wizardType);
-                                            const totalPerks = wizardType === 'killer' ? (config?.totalKillerPerks || 0) : (config?.totalSurvivorPerks || 0);
-                                            const unit = wizardType === 'survivor' ? survivorUnit : killerUnit;
-                                            const maxValue = unit === 'perk' ? totalPerks : Math.ceil(totalPerks / PERKS_PER_PAGE);
-                                            const effectiveMaxSize = Math.min(currentLimitClass?.maximum_random_size || 0, totalPerks);
-                                            const currentValue = unit === 'perk' ? effectiveMaxSize : Math.ceil(effectiveMaxSize / PERKS_PER_PAGE);
-
-                                            return (
-                                                <MaxPerkSelector
-                                                    maxValue={maxValue}
-                                                    currentValue={currentValue}
-                                                    unit={unit}
-                                                    onUnitChange={wizardType === 'survivor' ? (v) => { setSurvivorUnit(v); localStorage.setItem("random-dbd-perk-unit-preference-survivor", v); } : (v) => { setKillerUnit(v); localStorage.setItem("random-dbd-perk-unit-preference-killer", v); }}
-                                                    onCountChange={(val) => {
-                                                        let newValue = unit === 'page' ? val * PERKS_PER_PAGE : val;
-                                                        if (newValue > totalPerks) newValue = totalPerks;
+                        <WidgetStepper>
+                            <WidgetStepperItems
+                                items={[
+                                    {
+                                        step: 1,
+                                        title: "เปิดใช้งาน Widget",
+                                        description: <WidgetEnabledBadge />
+                                    },
+                                    {
+                                        step: 2,
+                                        title: "เลือกประเภท Perk",
+                                        description: (
+                                            <RadioGroup value={wizardType} onValueChange={(val) => setWizardType(val as "survivor" | "killer")} className="flex gap-4">
+                                                <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "survivor" ? "bg-blue-500/10 border-blue-500/50" : "bg-transparent border-white/10")}><RadioGroupItem value="survivor" id="r-survivor" /><Label htmlFor="r-survivor" className="flex-1 text-blue-400">Survivor</Label></div>
+                                                <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "killer" ? "bg-red-500/10 border-red-500/50" : "bg-transparent border-white/10")}><RadioGroupItem value="killer" id="r-killer" /><Label htmlFor="r-killer" className="flex-1 text-red-400">Killer</Label></div>
+                                            </RadioGroup>
+                                        )
+                                    },
+                                    {
+                                        step: 3,
+                                        title: "เลือกแต้มช่อง",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">ช่องเชื่อมต่อแต้มช่อง</p>
+                                                <TwitchRewardSelector
+                                                    value={perkClasses.find(c => c.type === wizardType)?.twitch_reward_id || null}
+                                                    onValueChange={(val) => {
                                                         const index = perkClasses.findIndex(c => c.type === wizardType);
-                                                        if (index !== -1) updatePerkClass(index, 'maximum_random_size', newValue);
+                                                        if (index !== -1) updatePerkClass(index, 'twitch_reward_id', val);
                                                     }}
+                                                    userInputRequired={false}
+                                                    placeholder="เลือก Reward..."
                                                 />
-                                            );
-                                        })()}
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 5,
-                                title: "บันทึกและทดสอบ",
-                                description: (
-                                    <div className="space-y-3">
-                                        <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={() => handleTest(wizardType)} canTest={!!perkClasses.find(c => c.type === wizardType)?.twitch_reward_id} />
-                                        <RandomFormatInfo />
-                                    </div>
-                                )
-                            }
-                        ].map((item, index, array) => (
-                            <div key={item.step} className="flex gap-4 relative pb-10 last:pb-0">
-                                <div className="flex flex-col items-center">
-                                    <div className="flex-none flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm z-10">{item.step}</div>
-                                    {index !== array.length - 1 && <div className="w-[2px] bg-white/10 absolute top-8 bottom-0 left-4" />}
-                                </div>
-                                <div className="space-y-1 pt-1 flex-1 min-w-0">
-                                    <h3 className="font-semibold mb-2 text-white">{item.title}</h3>
-                                    <div className="text-sm">{item.description}</div>
-                                </div>
-                            </div>
-                        ))}
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 4,
+                                        title: "กำหนดจำนวน Perk",
+                                        description: (
+                                            <div className="border p-4 rounded-xl bg-muted/20">
+                                                {(() => {
+                                                    const currentLimitClass = perkClasses.find(c => c.type === wizardType);
+                                                    const totalPerks = wizardType === 'killer' ? (config?.totalKillerPerks || 0) : (config?.totalSurvivorPerks || 0);
+                                                    const unit = wizardType === 'survivor' ? survivorUnit : killerUnit;
+                                                    const maxValue = unit === 'perk' ? totalPerks : Math.ceil(totalPerks / PERKS_PER_PAGE);
+                                                    const effectiveMaxSize = Math.min(currentLimitClass?.maximum_random_size || 0, totalPerks);
+                                                    const currentValue = unit === 'perk' ? effectiveMaxSize : Math.ceil(effectiveMaxSize / PERKS_PER_PAGE);
+
+                                                    return (
+                                                        <MaxPerkSelector
+                                                            maxValue={maxValue}
+                                                            currentValue={currentValue}
+                                                            unit={unit}
+                                                            onUnitChange={wizardType === 'survivor' ? (v) => { setSurvivorUnit(v); localStorage.setItem("random-dbd-perk-unit-preference-survivor", v); } : (v) => { setKillerUnit(v); localStorage.setItem("random-dbd-perk-unit-preference-killer", v); }}
+                                                            onCountChange={(val) => {
+                                                                let newValue = unit === 'page' ? val * PERKS_PER_PAGE : val;
+                                                                if (newValue > totalPerks) newValue = totalPerks;
+                                                                const index = perkClasses.findIndex(c => c.type === wizardType);
+                                                                if (index !== -1) updatePerkClass(index, 'maximum_random_size', newValue);
+                                                            }}
+                                                        />
+                                                    );
+                                                })()}
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 5,
+                                        title: "บันทึกและทดสอบ",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={() => handleTest(wizardType)} canTest={!!perkClasses.find(c => c.type === wizardType)?.twitch_reward_id} />
+                                                <RandomFormatInfo />
+                                            </div>
+                                        )
+                                    }
+                                ]}
+                            />
+                        </WidgetStepper>
                     </WidgetQuickStartCard>
                 </TabsContent>
 

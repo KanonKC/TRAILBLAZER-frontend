@@ -1,7 +1,6 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
@@ -10,9 +9,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Image as ImageIcon, Gift, ExternalLink, Play, ShieldCheck, Info } from "lucide-react";
+import { Image as ImageIcon, Gift, Play, ShieldCheck } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
+import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
+import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
@@ -21,16 +22,6 @@ import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/Widget
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { Label } from "@/components/ui/label";
-import { 
-    AlertDialog, 
-    AlertDialogAction, 
-    AlertDialogCancel, 
-    AlertDialogContent, 
-    AlertDialogDescription, 
-    AlertDialogFooter, 
-    AlertDialogHeader, 
-    AlertDialogTitle 
-} from "@/components/ui/alert-dialog";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 
 import { useDropImage } from "../hooks/useDropImage";
@@ -129,73 +120,66 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
 
                 <TabsContent value="quick-start">
                     <WidgetQuickStartCard>
-                        {[
-                            {
-                                step: 1,
-                                title: "เปิดใช้งาน Widget",
-                                description: <WidgetEnabledBadge/>
-                            },
-                            {
-                                step: 2,
-                                title: `เลือกแต้มช่องที่ต้องการใช้งาน`,
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
-                                        <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 3,
-                                title: "ตั้งค่าระยะเวลาการแสดงผล",
-                                description: (
-                                    <div className="space-y-4">
-                                        <p className="text-sm text-muted-foreground">ตั้งเวลาให้รูปภาพแสดงค้างไว้กี่วินาที</p>
-                                        <div className="flex items-center gap-3">
-                                            <Slider value={[displayDuration]} onValueChange={([v]) => setDisplayDuration(v)} min={1} max={20} className="flex-1" />
-                                            <span className="text-sm tabular-nums w-16 text-right text-muted-foreground">{displayDuration} วินาที</span>
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 4,
-                                title: "นำ Overlay ไปใส่ใน OBS",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
-                                        <SmartOverlayUrlInput 
-                                            url={overlayUrl} 
-                                            slug="drop-image" 
-                                            onSuccess={setConfig} 
-                                            hideLabel 
-                                        />
-                                        <OBSSetupHelp type="image" />
-                                    </div>
-                                )
-                            },
-                            {
-                                step: 5,
-                                title: "บันทึกและทดสอบ",
-                                description: (
-                                    <div className="space-y-3">
-                                        <p className="text-sm text-white/70">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
-                                        <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId} />
-                                    </div>
-                                )
-                            }
-                        ].map((item, index, array) => (
-                            <div key={item.step} className="flex gap-4 relative pb-10 last:pb-0">
-                                <div className="flex flex-col items-center">
-                                    <div className="flex-none flex items-center justify-center w-8 h-8 rounded-full bg-white/10 text-white font-bold text-sm z-10">{item.step}</div>
-                                    {index !== array.length - 1 && <div className="w-[2px] bg-white/10 absolute top-8 bottom-0 left-4" />}
-                                </div>
-                                <div className="space-y-1 pt-1 flex-1 min-w-0">
-                                    <h3 className="font-semibold mb-2 text-white">{item.title}</h3>
-                                    <div className="text-sm">{item.description}</div>
-                                </div>
-                            </div>
-                        ))}
+                        <WidgetStepper>
+                            <WidgetStepperItems
+                                items={[
+                                    {
+                                        step: 1,
+                                        title: "เปิดใช้งาน Widget",
+                                        description: <WidgetEnabledBadge />
+                                    },
+                                    {
+                                        step: 2,
+                                        title: `เลือกแต้มช่องที่ต้องการใช้งาน`,
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
+                                                <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 3,
+                                        title: "ตั้งค่าระยะเวลาการแสดงผล",
+                                        description: (
+                                            <div className="space-y-4">
+                                                <p className="text-sm text-muted-foreground">ตั้งเวลาให้รูปภาพแสดงค้างไว้กี่วินาที</p>
+                                                <div className="flex items-center gap-3">
+                                                    <Slider value={[displayDuration]} onValueChange={([v]) => setDisplayDuration(v)} min={1} max={20} className="flex-1" />
+                                                    <span className="text-sm tabular-nums w-16 text-right text-muted-foreground">{displayDuration} วินาที</span>
+                                                </div>
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 4,
+                                        title: "นำ Overlay ไปใส่ใน OBS",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
+                                                <SmartOverlayUrlInput
+                                                    url={overlayUrl}
+                                                    slug="drop-image"
+                                                    onSuccess={setConfig}
+                                                    hideLabel
+                                                />
+                                                <OBSSetupHelp type="image" defaultOpen />
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 5,
+                                        title: "บันทึกและทดสอบ",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
+                                                <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId} />
+                                            </div>
+                                        )
+                                    }
+                                ]}
+                            />
+                        </WidgetStepper>
                     </WidgetQuickStartCard>
                 </TabsContent>
 

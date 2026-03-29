@@ -337,7 +337,7 @@ export function DropImageWidgetClient({ initialConfig }: { initialConfig: DropIm
                         onRefresh={() => setShowConfirmRefresh(true)}
                         hideLabel
                     />
-                    <OBSSetupHelp type="image" />
+                    <OBSSetupHelp type="image" defaultOpen />
                 </div>
             )
         },

@@ -249,10 +249,10 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
                 <div className="space-y-3">
                     <p className="text-sm text-white/70">ข้อความที่จะส่งในแชทเมื่อมีการ Raid เข้ามา</p>
                     <ReplyMessageTextarea
-                        hideLabel
                         value={replyMessage}
                         onChange={handleReplyMessageChange}
                         error={replyMessageError}
+                        defaultOpenHelp={true}
                         variables={[
                             {
                                 variable: "{{user_name}}",
@@ -288,7 +288,7 @@ export function ClipShoutoutWidgetClient({ initialConfig }: { initialConfig: Cli
                         onRefresh={() => setShowConfirmRefresh(true)}
                         hideLabel
                     />
-                    <OBSSetupHelp />
+                    <OBSSetupHelp defaultOpen />
                 </div>
             )
         },

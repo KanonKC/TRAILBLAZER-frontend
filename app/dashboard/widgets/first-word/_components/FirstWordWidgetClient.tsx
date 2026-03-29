@@ -15,7 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
-import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { OverlayUrlInput } from "@/components/widget/OverlayUrlInput";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 import { WidgetStatusControl } from "@/components/widget/WidgetStatusControl";
@@ -55,6 +54,7 @@ import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { FirstWordVariableMap } from "@/constants/firstWord";
 import { tbToast } from "@/utils/tbToast";
 import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 
 export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = false }: { initialConfig: FirstWordConfig | null; initialRequiresProPlan?: boolean }) {
     const { user, isLoading: isUserLoading } = useUser();
@@ -374,11 +374,12 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
                 <div className="space-y-3">
                     <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
                     <ReplyMessageTextarea
-                        hideLabel
                         value={replyMessage}
                         onChange={handleReplyMessageChange}
                         error={replyMessageError}
+                        defaultOpenHelp={true}
                         variables={FirstWordVariableMap}
+                        name="Quick Start (TRUE)"
                     />
                 </div>
             )
@@ -417,8 +418,7 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
                         onRefresh={() => setShowConfirmRefresh(true)}
                         hideLabel
                     />
-
-                    <OBSSetupHelp />
+                    <OBSSetupHelp defaultOpen />
                 </div>
             )
         },
@@ -481,7 +481,7 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
                     <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
                         <MessageSquare className="w-6 h-6" />
                     </div>
-                    <h1 className="text-3xl font-bold">Greeting Message</h1>
+                    <h1 className="text-3xl font-bold text-red-500 underline">First Word (ANTIGRAVITY DEBUG)</h1>
                 </div>
                 <p className="text-muted-foreground text-lg">
                     ต้อนรับผู้ชมใหม่โดยอัตโนมัติด้วยข้อความทักทายและเสียงเอฟเฟกต์ที่คุณกำหนดเอง
@@ -569,6 +569,8 @@ export function FirstWordWidgetClient({ initialConfig, initialRequiresProPlan = 
                                             example: "User123"
                                         }
                                     ]}
+                                    name="Settings (EXPLICIT FALSE)"
+                                    defaultOpenHelp={false}
                                 />
                             </div>
 

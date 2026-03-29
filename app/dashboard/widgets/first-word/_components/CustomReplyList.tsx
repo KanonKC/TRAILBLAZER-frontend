@@ -330,6 +330,7 @@ export function CustomReplyList() {
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e)}
                                 variables={FirstWordVariableMap}
+                                name="Custom Reply Dialog"
                             />
                         </div>
                         <div className="grid gap-2">
