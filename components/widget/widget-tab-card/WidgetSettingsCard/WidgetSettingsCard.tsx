@@ -1,10 +1,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Switch } from '@/components/ui/switch'
 import { Info } from 'lucide-react'
-import React, { useState } from 'react'
-import { updateWidgetEnabled, getFirstEnabledWidget } from '@/services/widget.service'
-import { tbToast } from '@/utils/tbToast'
-import { WidgetQuotaDialog } from '@/components/widget/WidgetQuotaDialog'
+import React from 'react'
+import { WidgetStatusSwitch } from '@/components/widget/WidgetStatusSwitch'
 
 interface WidgetSettingsCardProps {
     children: React.ReactNode
@@ -14,50 +11,6 @@ interface WidgetSettingsCardProps {
 }
 
 const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusChange }: WidgetSettingsCardProps) => {
-    const [isUpdating, setIsUpdating] = useState(false)
-    const [showLimitDialog, setShowLimitDialog] = useState(false)
-    const [enabledWidgetName, setEnabledWidgetName] = useState<string | null>(null)
-
-    const handleSwitchChange = async (checked: boolean, forceUpdate = false) => {
-        if (!widgetId) return
-
-        onStatusChange?.(checked)
-        setIsUpdating(true)
-
-        try {
-
-            const success = await updateWidgetEnabled(widgetId, checked, { forceUpdate })
-
-            if (success) {
-                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" })
-                setShowLimitDialog(false)
-            } else {
-                onStatusChange?.(!checked)
-                tbToast.error({ title: "อัปเดตสถานะไม่สำเร็จ" })
-            }
-        } catch (error: any) { // TODO: Replace any with proper error type
-            console.error("Failed to update status", error)
-
-            if (error.response?.status === 402) {
-                try {
-                    const firstWidget = await getFirstEnabledWidget()
-                    if (firstWidget && firstWidget.widget_type) {
-
-                        setEnabledWidgetName(firstWidget.widget_type.displayName)
-                    }
-                } catch (e) {
-                    console.error("Failed to fetch first enabled widget", e)
-                }
-                setShowLimitDialog(true)
-            } else {
-                tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" })
-            }
-            onStatusChange?.(!checked)
-        } finally {
-            setIsUpdating(false)
-        }
-    }
-
     return (
         <Card>
             <CardHeader>
@@ -67,10 +20,10 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
                         Settings
                     </span>
                     {widgetId && (
-                        <Switch
-                            checked={isEnabled}
-                            onCheckedChange={handleSwitchChange}
-                            disabled={isUpdating}
+                        <WidgetStatusSwitch
+                            widgetId={widgetId}
+                            isEnabled={isEnabled}
+                            onStatusChange={onStatusChange}
                         />
                     )}
                 </CardTitle>
@@ -79,13 +32,6 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, onStatusCha
                 </CardDescription>
             </CardHeader>
             {children}
-
-            <WidgetQuotaDialog
-                open={showLimitDialog}
-                onOpenChange={setShowLimitDialog}
-                enabledWidgetName={enabledWidgetName}
-                onConfirmToggle={() => handleSwitchChange(true, true)}
-            />
         </Card>
     )
 }

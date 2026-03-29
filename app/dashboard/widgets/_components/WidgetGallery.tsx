@@ -2,10 +2,9 @@
 
 import { MessageSquare, Video, Dices, Image as ImageIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ExtendedWidget, listWidgets, updateWidgetEnabled, getFirstEnabledWidget } from "@/services/widget.service";
+import { ExtendedWidget, listWidgets } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 import { WidgetCard } from "./WidgetCard";
-import { WidgetQuotaDialog } from "@/components/widget/WidgetQuotaDialog";
 
 const staticWidgets = [
     {
@@ -57,10 +56,6 @@ interface WidgetGalleryProps {
 export const WidgetGallery = ({ initialData }: WidgetGalleryProps) => {
     const [apiWidgets, setApiWidgets] = useState<ExtendedWidget[]>(initialData?.data || []);
     const [isLoading, setIsLoading] = useState(false);
-    const [isUpdating, setIsUpdating] = useState<string | null>(null);
-    const [showLimitDialog, setShowLimitDialog] = useState(false);
-    const [enabledWidgetName, setEnabledWidgetName] = useState<string | null>(null);
-    const [pendingWidgetId, setPendingWidgetId] = useState<string | null>(null);
 
     const fetchWidgets = async () => {
         try {
@@ -71,41 +66,6 @@ export const WidgetGallery = ({ initialData }: WidgetGalleryProps) => {
             tbToast.error({ title: "ไม่สามารถดึงข้อมูลวิดเจ็ตได้" });
         } finally {
             setIsLoading(false);
-        }
-    };
-
-    const handleSwitchChange = async (widgetId: string, checked: boolean, forceUpdate = false) => {
-        setIsUpdating(widgetId);
-
-        try {
-            const success = await updateWidgetEnabled(widgetId, checked, { forceUpdate });
-
-            if (success) {
-                tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
-                setShowLimitDialog(false);
-                fetchWidgets(); // Refresh statuses
-            } else {
-                tbToast.error({ title: "อัปเดตสถานะไม่สำเร็จ" });
-            }
-        } catch (error: any) {
-            console.error("Failed to update status", error);
-
-            if (error.response?.status === 402) {
-                try {
-                    const firstWidget = await getFirstEnabledWidget();
-                    if (firstWidget && firstWidget.widget_type) {
-                        setEnabledWidgetName(firstWidget.widget_type.displayName);
-                    }
-                } catch (e) {
-                    console.error("Failed to fetch first enabled widget", e);
-                }
-                setPendingWidgetId(widgetId);
-                setShowLimitDialog(true);
-            } else {
-                tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" });
-            }
-        } finally {
-            setIsUpdating(null);
         }
     };
 
@@ -120,28 +80,18 @@ export const WidgetGallery = ({ initialData }: WidgetGalleryProps) => {
     }
 
     return (
-        <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {staticWidgets.map((widget) => {
-                    const apiWidget = apiWidgets.find(w => w.widget_type_slug === widget.slug);
-                    return (
-                        <WidgetCard
-                            key={widget.slug}
-                            {...widget}
-                            apiWidget={apiWidget}
-                            isUpdating={isUpdating === apiWidget?.id}
-                            onToggle={(checked) => apiWidget && handleSwitchChange(apiWidget.id, checked)}
-                        />
-                    );
-                })}
-            </div>
-
-            <WidgetQuotaDialog
-                open={showLimitDialog}
-                onOpenChange={setShowLimitDialog}
-                enabledWidgetName={enabledWidgetName}
-                onConfirmToggle={() => pendingWidgetId && handleSwitchChange(pendingWidgetId, true, true)}
-            />
-        </>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {staticWidgets.map((widget) => {
+                const apiWidget = apiWidgets.find(w => w.widget_type_slug === widget.slug);
+                return (
+                    <WidgetCard
+                        key={widget.slug}
+                        {...widget}
+                        apiWidget={apiWidget}
+                        onSuccess={fetchWidgets}
+                    />
+                );
+            })}
+        </div>
     );
 };

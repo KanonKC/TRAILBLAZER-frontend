@@ -1,23 +1,21 @@
-import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
+import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { RandomDbdPerkClass, PERKS_PER_PAGE } from "@/services/randomDbdPerk.service";
-import { type TwitchCustomReward } from "@/services/twitch.service";
+import { RandomDbdPerkClass } from "@/features/random-dbd-perk/types";
+import { PERKS_PER_PAGE } from "@/features/random-dbd-perk/hooks/useRandomDbdPerk";
 import { MaxPerkSelector } from "@/app/dashboard/widgets/random-dbd-perk/_components/MaxPerkSelector";
 
 interface PerkConfigItemProps {
     item: RandomDbdPerkClass;
     index: number;
-    rewards: TwitchCustomReward[];
-    isLoading?: boolean;
     totalPerks: number;
     updatePerkClass: (index: number, key: keyof RandomDbdPerkClass, value: string | null | boolean | number) => void;
     unit: "perk" | "page";
     onUnitChange: (unit: "perk" | "page") => void;
 }
 
-export function PerkConfigItem({ item, index, rewards, isLoading, totalPerks, updatePerkClass, unit, onUnitChange }: PerkConfigItemProps) {
+export function PerkConfigItem({ item, index, totalPerks, updatePerkClass, unit, onUnitChange }: PerkConfigItemProps) {
     const handleValueChange = (val: string | null) => {
         updatePerkClass(index, 'twitch_reward_id', val);
     };
@@ -64,11 +62,10 @@ export function PerkConfigItem({ item, index, rewards, isLoading, totalPerks, up
             <div className={cn("grid gap-4 md:grid-cols-2 transition-opacity", !item.enabled && "opacity-50 pointer-events-none")}>
                 <div className="space-y-2">
                     <Label>Twitch Reward</Label>
-                    <ChannelRewardSelector
+                    <TwitchRewardSelector
                         value={item.twitch_reward_id || null}
                         onValueChange={handleValueChange}
-                        rewards={rewards}
-                        isLoading={isLoading}
+                        userInputRequired={false}
                     />
                 </div>
                 <MaxPerkSelector
