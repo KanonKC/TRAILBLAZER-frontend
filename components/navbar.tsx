@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
-import { LogOut, RefreshCw } from "lucide-react";
+import { Link2, LogOut, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "./user-context";
@@ -94,6 +94,14 @@ export default function Navbar() {
                                             <RefreshCw className="mr-2 h-4 w-4" />
                                             อัปเดตข้อมูลการสมัครสมาชิก
                                         </span>
+                                    </DropdownMenuItem>
+                                    {/* TODO: Remove this when we have a proper account binding page */}
+                                    <DropdownMenuSeparator className="hidden" />
+                                    <DropdownMenuItem asChild className="hidden">
+                                        <Link href="/dashboard/account-binding" className="cursor-pointer">
+                                            <Link2 className="mr-2 h-4 w-4" />
+                                            เชื่อมต่อบัญชี
+                                        </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
