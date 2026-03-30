@@ -3,6 +3,7 @@ export interface ClipShoutoutConfig {
     twitch_id: string;
     owner_id: string;
     reply_message: string | null;
+    delay_ms: number;
     enabled: boolean;
     twitch_bot_id?: string | null;
     enabled_clip?: boolean;

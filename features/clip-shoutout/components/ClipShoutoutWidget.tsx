@@ -11,7 +11,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { ExternalLink, MessageSquare, Play, Video } from "lucide-react";
+import { Clock, Cog, ExternalLink, MessageSquare, Play, Video } from "lucide-react";
+import { MSDelaySlider } from "@/components/widget/MSDelaySlider";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
@@ -41,6 +42,8 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
         enabledHighlightOnly,
         activeTab,
         overlayUrl,
+        delayMs,
+        setDelayMs,
         setBotProfile,
         setEnabledClip,
         setEnabledHighlightOnly,
@@ -204,6 +207,22 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
                         <WidgetSettingsCardContent>
                             <div className="space-y-4">
                                 <div className="flex items-center gap-2 border-b pb-2">
+                                    <Clock className="w-5 h-5 text-purple-500" />
+                                    <h3 className="text-lg font-semibold">ดีเลย์ (Delay)</h3>
+                                </div>
+                                <div className="bg-card space-y-2">
+                                    <div className="flex items-center justify-between gap-4">
+                                        <div className="space-y-0.5">
+                                            <Label>เวลาดีเลย์ก่อนการ Shoutout</Label>
+                                            <p className="text-sm text-muted-foreground">กำหนดเวลาหน่วงหลังจากมีคนเข้าร่วม Raid เข้ามาก่อนจะส่งข้อความและเล่นคลิป</p>
+                                        </div>
+                                    </div>
+                                    <MSDelaySlider value={delayMs} onChange={setDelayMs} />
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-2 border-b pb-2">
                                     <MessageSquare className="w-5 h-5 text-blue-500" />
                                     <h3 className="text-lg font-semibold">ข้อความ Shoutout</h3>
                                 </div>
@@ -226,9 +245,9 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
 
                                 {enabledClip && (
                                     <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                                        <div className="space-y-0.5">
+                                        <div className="space-y-0.5 mr-4">
                                             <Label>เล่นเฉพาะ Highlight</Label>
-                                            <p className="text-sm text-muted-foreground">หากเปิด จะเล่นเฉพาะคลิปที่ถูกตั้งเป็น Highlight เท่านั้น</p>
+                                            <p className="text-sm text-muted-foreground">หากเปิดใช้งาน จะสุ่มเลือกเฉพาะคลิปที่ถูกตั้งเป็นไฮไลท์ขึ้นมาก่อน หากช่องนั้นไม่มีคลิปที่เป็นไฮไลท์ จะสุ่มเลือกคลิปทั่วไปแทน</p>
                                         </div>
                                         <Switch checked={enabledHighlightOnly} onCheckedChange={setEnabledHighlightOnly} />
                                     </div>

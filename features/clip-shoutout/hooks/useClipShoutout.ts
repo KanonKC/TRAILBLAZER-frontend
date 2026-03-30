@@ -15,6 +15,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
     const [config, setConfig] = useState<ClipShoutoutConfig | null>(initialConfig);
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
+    const [delayMs, setDelayMs] = useState(initialConfig?.delay_ms || 0);
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
     const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
@@ -45,6 +46,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);
                 setReplyMessage(data.reply_message || "");
+                setDelayMs(data.delay_ms || 0);
                 setIsEnabled(data.widget?.enabled ?? false);
                 setEnabledClip(data.enabled_clip ?? false);
                 setEnabledHighlightOnly(data.enabled_highlight_only ?? false);
@@ -71,6 +73,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
         try {
             const updated = await updateClipShoutoutConfig({
                 reply_message: replyMessage,
+                delay_ms: delayMs,
                 twitch_bot_id: botProfile === "default" ? null : botProfile,
                 enabled_clip: enabledClip,
                 enabled_highlight_only: enabledHighlightOnly
@@ -167,6 +170,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
         user,
         config,
         replyMessage,
+        delayMs,
         replyMessageError,
         isEnabled,
         isSaving,
@@ -180,6 +184,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
         setConfig,
         setBotProfile,
         setEnabledClip,
+        setDelayMs,
         setEnabledHighlightOnly,
         setActiveTab,
         handleEnable,
