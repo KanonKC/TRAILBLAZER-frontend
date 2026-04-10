@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/accordion"
 import { Info, MousePointerClick } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useEffect } from "react";
 
 export interface VariableItem {
     variable: string;
@@ -17,9 +18,10 @@ interface ReplyMessageHelpProps {
     className?: string;
     onInsertVariable?: (variable: string) => void;
     variables: VariableItem[];
+    defaultOpen?: boolean;
 }
 
-export function ReplyMessageHelp({ className, onInsertVariable, variables }: ReplyMessageHelpProps) {
+export function ReplyMessageHelp({ className, onInsertVariable, variables, defaultOpen = false }: ReplyMessageHelpProps) {
 
     const handleVariableClick = (variable: string) => {
         if (onInsertVariable) {
@@ -27,8 +29,12 @@ export function ReplyMessageHelp({ className, onInsertVariable, variables }: Rep
         }
     };
 
+    useEffect(() => {
+        console.log("DO", defaultOpen)
+    }, [defaultOpen])
+
     return (
-        <Accordion type="single" collapsible className={cn("w-full border rounded-lg bg-white/5 border-white/10", className)}>
+        <Accordion type="single" collapsible defaultValue={defaultOpen ? "variables" : undefined} className={cn("w-full border rounded-lg bg-white/5 border-white/10", className)}>
             <AccordionItem value="variables" className="border-none">
                 <AccordionTrigger className="px-4 py-3 hover:no-underline rounded-t-lg transition-colors cursor-pointer text-white/90 hover:bg-white/10 data-[state=open]:bg-white/10">
                     <div className="flex items-center gap-2 text-sm font-medium">

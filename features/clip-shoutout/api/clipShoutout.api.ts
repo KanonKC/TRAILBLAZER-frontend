@@ -1,20 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-
-export interface ClipShoutoutConfig {
-    id: string;
-    twitch_id: string;
-    owner_id: string;
-    reply_message: string | null;
-    enabled: boolean;
-    twitch_bot_id?: string | null;
-    enabled_clip?: boolean;
-    enabled_highlight_only?: boolean;
-    widget: {
-        id: string;
-        overlay_key: string;
-        enabled: boolean;
-    }
-}
+import { ClipShoutoutConfig } from "../types";
 
 export const getClipShoutoutConfig = async (): Promise<ClipShoutoutConfig> => {
     const response = await apiClient.get<ClipShoutoutConfig>("/api/v1/clip-shoutout");
@@ -33,8 +18,6 @@ export const updateClipShoutoutConfig = async (data: Partial<ClipShoutoutConfig>
     const response = await apiClient.put<ClipShoutoutConfig>("/api/v1/clip-shoutout", data);
     return response.data;
 };
-
-
 
 export const testClipShoutout = async (eventData: any): Promise<void> => {
     await apiClient.post("/webhook/v1/twitch/event-sub/channel-chat-notification", eventData);

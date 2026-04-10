@@ -1,6 +1,6 @@
 import { fetchData } from "@/lib/data-access";
-import { ClipShoutoutConfig } from "@/services/clipShoutout.service";
-import { ClipShoutoutWidgetClient } from "./_components/ClipShoutoutWidgetClient";
+import { ClipShoutoutConfig } from "@/features/clip-shoutout/types";
+import { ClipShoutoutWidget } from "@/features/clip-shoutout/components/ClipShoutoutWidget";
 
 async function getClipShoutoutConfigServer(): Promise<ClipShoutoutConfig | null> {
     try {
@@ -14,5 +14,5 @@ async function getClipShoutoutConfigServer(): Promise<ClipShoutoutConfig | null>
 
 export default async function ClipShoutoutWidgetPage() {
     const config = await getClipShoutoutConfigServer();
-    return <ClipShoutoutWidgetClient initialConfig={config} />;
+    return <ClipShoutoutWidget initialConfig={config} />;
 }

@@ -1,27 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-
-export const PERKS_PER_PAGE = 15;
-
-export interface RandomDbdPerkClass {
-    id: string;
-    type: "survivor" | "killer";
-    enabled: boolean;
-    twitch_reward_id: string | null;
-    maximum_random_size: number;
-}
-
-export interface RandomDbdPerkConfig {
-    id: string;
-    enabled: boolean;
-    widget: {
-        id: string;
-        overlay_key: string;
-        enabled: boolean;
-    };
-    classes: RandomDbdPerkClass[];
-    totalKillerPerks: number;
-    totalSurvivorPerks: number;
-}
+import { RandomDbdPerkConfig, RandomDbdPerkClass } from "../types";
 
 export const getRandomDbdPerkConfig = async (): Promise<RandomDbdPerkConfig> => {
     const response = await apiClient.get<RandomDbdPerkConfig>("/api/v1/random-dbd-perk");
@@ -40,7 +18,9 @@ export const updateRandomDbdPerkConfig = async (data: Partial<RandomDbdPerkConfi
     return response.data;
 };
 
-
+export const testRandomDbdPerk = async (eventData: any): Promise<void> => {
+    await apiClient.post("/webhook/v1/twitch/event-sub/channel-redemption-add", eventData);
+};
 
 export const getRandomDbdPerkEventUrl = (userId: string, key?: string) => {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -50,9 +30,3 @@ export const getRandomDbdPerkEventUrl = (userId: string, key?: string) => {
     }
     return url.toString();
 };
-
-export const testRandomDbdPerk = async (eventData: any): Promise<void> => {
-    await apiClient.post("/webhook/v1/twitch/event-sub/channel-redemption-add", eventData);
-};
-
-

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
-import { getDropImageEventUrl } from "@/services/dropImage.service";
+import { getDropImageEventUrl } from "@/features/drop-image/api/dropImage.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 

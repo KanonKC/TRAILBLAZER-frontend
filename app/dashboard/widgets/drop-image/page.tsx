@@ -1,6 +1,6 @@
 import { fetchData } from "@/lib/data-access";
-import { DropImageConfig } from "@/services/dropImage.service";
-import { DropImageWidgetClient } from "./_components/DropImageWidgetClient";
+import { DropImageConfig } from "@/features/drop-image/types";
+import { DropImageWidget } from "@/features/drop-image/components/DropImageWidget";
 
 async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
     try {
@@ -14,7 +14,5 @@ async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
 
 export default async function DropImageWidgetPage() {
     const config = await getDropImageConfigServer();
-    return (
-        <DropImageWidgetClient initialConfig={config} />
-    );
+    return <DropImageWidget initialConfig={config} />;
 }

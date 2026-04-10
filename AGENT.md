@@ -14,39 +14,44 @@ Welcome to the `blaze-frontend` project! This file serves as the core instructio
   - `@aws-sdk/client-s3` for AWS operations
 
 ## 🏗️ Architecture & Structure
-This project follows a standard Next.js App Router structure with dedicated directories for components and API integration services.
+This project follows a **Feature-Based Modular Architecture**. All business logic and domain-specific code is grouped into the `features/` directory to ensure high maintainability and stable authentication.
 
 ### Project Directory Layout
 ```text
 .agent/             # AI Agent rules & workflows
-app/                # Next.js App Router pages and layouts
-├── dashboard/      # Main dashboard interface
-├── overlays/       # Streaming overlay pages (e.g., clip-shoutout)
-├── workflows/      # Node-based workflow editor pages
-├── globals.css     # Global Tailwind styles
-├── layout.tsx      # Root layout
-└── page.tsx        # Homepage
-components/         # Reusable React components (shadcn ui + custom)
+app/                # Next.js App Router (Routing only)
+├── dashboard/      # Main dashboard route segments
+└── overlays/       # Streaming overlay route segments
+features/           # Modular Domain Logic 🟢
+└── [feature-name]/
+    ├── components/ # Local UI pieces
+    ├── hooks/      # THE CONTROLLER (Business Logic & State)
+    ├── api/        # THE REPOSITORY (Pure API calls)
+    └── types.ts    # Domain-specific Typescript interfaces
+components/         # Shared UI Design System (Shadcn + Custom)
 constants/          # Static configuration and constants
-lib/                # Utility functions and shared libraries (e.g., api-client)
-public/             # Static assets
-services/           # Frontend API wrappers communicating with blaze-backend
+lib/                # Core infrastructure (api-client.ts)
+services/           # Shared/Legacy API wrappers
 ```
 
-- **App Router (`app/`)**: Follows Next.js conventions. Contains route segments, pages, layout files, and specialized routes like dashboard workflows and stream overlays.
-- **Components (`components/`)**: Houses UI building blocks. Priority should be given to existing `shadcn` components.
-- **Services (`services/`)**: Centralized HTTP client logic (Axios wrappers) to interact with the external backend API.
+- **Features (`features/`)**: This is the heart of the application logic. Each feature (like `first-word`) is self-contained. 
+- **Controller-View Pattern**: Logic must live in a custom hook (`/hooks/`), leaving the component (`/components/`) purely focused on rendering UI.
+- **Proxy Layer (`/lib/api-client`)**: All client-side requests use **Relative URLs** (e.g., `/api/v1/user`). The Next.js server proxies these to the backend via `next.config.ts` rewrites to ensure cookie stability and bypass CORS.
 
 ## 📜 Coding Conventions & Rules
 
 ### 1. UI & Styling (Strict Requirements)
-- **Component Preference**: **Always try to use UI components from `shadcn` first** before building custom ones or importing third-party libraries.
-- **Font Sizes**: Consider the smallest acceptable font-size to be `text-sm`. **Do not use `text-xs`**.
-- **Input Colors**: **Do not use the primary CI color (`#FF8C00`) in any input component**. Use other suitable colors (e.g., default border/ring colors) instead.
+- **Component Preference**: **Always try to use UI components from `shadcn` first** before building custom ones.
+- **Font Sizes**: Smallest acceptable font-size is `text-sm`. **Do not use `text-xs`**.
+- **Input Colors**: **Do not use the primary CI color (`#FF8C00`) in any input component**. Use other suitable colors instead.
 
-### 2. State & Data Fetching
-- Use centralized services in `/services` for all backend data interactions to maintain a consistent API contract.
-- Leverage the configured `api-client.ts` in `/lib` for standard request configuration (e.g., interceptors, base URLs).
+### 2. State & Business Logic
+- **"Hook as Controller"**: **NEVER put complex state or API logic directly in the View component.** Always extract it into a custom hook within the feature's `hooks/` directory.
+- **Data Fetching**: Use a hybrid approach. Fetch initial data via SSR in `page.tsx` and pass it to the component. Use the feature hook for interactivity and updates on the client.
+
+### 3. API Communication
+- Use the central `apiClient` in `lib/api-client.ts`.
+- **Absolute URLs are forbidden** for client-side API calls. Use relative paths that target the proxy.
 
 ### 3. Code Quality & Formatting
 - Ensure strict TypeScript typing.

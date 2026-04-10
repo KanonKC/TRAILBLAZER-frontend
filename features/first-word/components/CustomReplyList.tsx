@@ -25,18 +25,18 @@ import { FirstWordVariableMap } from "@/constants/firstWord";
 import {
     createCustomReply,
     deleteCustomReply,
-    FirstWordCustomReply,
-    listCustomReplies,
-    updateCustomReply
-} from "@/services/firstWord.service";
+    updateCustomReply,
+    listCustomReplies
+} from "@/features/first-word/api/firstWord.api";
+import { FirstWordCustomReply } from "@/features/first-word/types";
 import { UploadedFile, uploadFile } from "@/services/uploadedFile.service";
 import { AudioWaveform, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { tbToast } from "@/utils/tbToast";
 import { getTwitchUser } from "@/services/twitch.service";
-import { ReplyMessageTextarea } from "../../../../../components/widget/ReplyMessageTextarea";
-import { CompactAudioFileUploader } from "../../../../../components/widget/AudioFileUploader/CompactAudioFileUploader";
-import { Avatar, AvatarFallback, AvatarImage } from "../../../../../components/ui/avatar";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CompactAudioFileUploader } from "@/components/widget/AudioFileUploader/CompactAudioFileUploader";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function CustomReplyList() {
     const [replies, setReplies] = useState<FirstWordCustomReply[]>([]);
@@ -330,6 +330,7 @@ export function CustomReplyList() {
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e)}
                                 variables={FirstWordVariableMap}
+                                name="Custom Reply Dialog"
                             />
                         </div>
                         <div className="grid gap-2">
