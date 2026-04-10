@@ -65,11 +65,29 @@ We no longer call `http://localhost:8080` directly from the browser. Instead, we
 
 When creating a new widget or feature, follow these steps in order:
 
-1.  **Define Types**: Create `features/[name]/types.ts`.
-2.  **Create API**: Implement pure functions in `features/[name]/api/[name].api.ts`.
-3.  **Implement Controller**: Write the logic in `features/[name]/hooks/use[Name].ts`.
+1.  **Define Types**: Create `features/[name]/types.ts`. All interfaces and Zod schemas should reside here.
+2.  **Create API**: Implement pure functions in `features/[name]/api/[name].api.ts`. Use the `apiClient` from `@/lib/api-client`.
+3.  **Implement Controller**: Write the state and effect logic in `features/[name]/hooks/use[Name].ts`.
+    *   **Rule**: The hook should handle all `useState`, `useEffect`, and API calls.
+    *   **Rule**: Use `tbToast` for all success/error feedback.
 4.  **Build View**: Create the UI in `features/[name]/components/[Name]Widget.tsx`.
+    *   **Rule**: The component should be "dumb" and receive its state/actions from the hook.
 5.  **Assemble**: Add the new component to the corresponding `app/` route.
+
+---
+
+## 🛡️ 6. Best Practices
+
+### **Zod Validation**
+Use Zod for all form and input validation within the hooks. This ensures data integrity before sending it to the Repository layer.
+
+### **Consistent Feedback (`tbToast`)**
+Never use raw `alert()` or `console.error` for user feedback. Use [tbToast](file:///d:/Documents/Blaze/blaze-frontend/utils/tbToast.ts) to maintain a premium look and feel.
+
+### **Smallest Font Size**
+Always adhere to the `text-sm` minimum font size rule. Avoid using `text-xs` for readable text.
+
+---
 
 ---
 
