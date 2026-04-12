@@ -32,3 +32,8 @@ export const deleteExportVideoHistory = async (historyId: number): Promise<boole
     await apiClient.delete(`/api/v1/export-video/history/${historyId}`);
     return true;
 };
+
+export const testExportVideo = async (): Promise<boolean> => {
+    await apiClient.post("/api/v1/export-video/test");
+    return true;
+};

@@ -34,7 +34,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
     const [historyTotal, setHistoryTotal] = useState(0);
 
     // Form State
-    const [privacyStatus, setPrivacyStatus] = useState(initialConfig?.privacy_status || "PRIVATE");
+    const [privacyStatus, setPrivacyStatus] = useState(initialConfig?.privacy_status || "UNLISTED");
     const [tags, setTags] = useState<string[]>(initialConfig?.tags || []);
     const [tagsInput, setTagsInput] = useState("");
     const [description, setDescription] = useState(initialConfig?.description || "");
@@ -42,6 +42,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
     // Operation State
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isTesting, setIsTesting] = useState(false);
 
     // Handlers
     const fetchHistory = useCallback(async (page = 1, limit = 10) => {
@@ -165,6 +166,27 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
     const handleRemoveTag = (tag: string) => {
         setTags(prev => prev.filter(t => t !== tag));
     };
+ 
+    const handleTestExport = async () => {
+        setIsTesting(true);
+        try {
+            await api.testExportVideo();
+            tbToast.success({ 
+                title: "ส่งคำขอทดสอบสำเร็จ", 
+                description: "โปรดรอสักครู่ ระบบกำลังเริ่มส่งออกวิดีโอล่าสุดของคุณไปยัง YouTube" 
+            });
+            // Refresh history after a short delay
+            setTimeout(() => fetchHistory(1), 3000);
+        } catch (error) {
+            console.error("Failed to test export", error);
+            tbToast.error({ 
+                title: "ส่งคำขอทดสอบไม่สำเร็จ", 
+                description: (error as any).response?.data?.message || "ไม่พบวิดีโอล่าสุดบน Twitch สำหรับการส่งออก" 
+            });
+        } finally {
+            setIsTesting(false);
+        }
+    };
 
     const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
@@ -189,6 +211,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
         description,
         isLoading,
         isSaving,
+        isTesting,
 
         // Actions
         setActiveTab,
@@ -202,6 +225,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
         handleDeleteHistory,
         handleAddTag,
         handleRemoveTag,
+        handleTestExport,
         handleStatusChange,
         setHistoryPage,
         setHistoryLimit,

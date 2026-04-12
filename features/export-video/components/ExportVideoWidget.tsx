@@ -22,7 +22,8 @@ import {
     Plus,
     X,
     LayoutDashboard,
-    ExternalLink
+    ExternalLink,
+    Play
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -57,7 +58,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                     <div className="p-2 rounded-lg bg-red-500/10 text-red-500">
                         <YouTube className="w-6 h-6" />
                     </div>
-                    <h1 className="text-3xl font-bold">Auto Export to YouTube</h1>
+                    <h1 className="text-3xl font-bold">Auto Export Video to YouTube</h1>
                 </div>
                 <p className="text-muted-foreground text-lg">
                     ส่งออกวิดีโอ (VOD) จาก Twitch ไปยัง YouTube โดยอัตโนมัติเมื่อคุณสตรีมจบ
@@ -85,7 +86,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                         isLoading={controller.isSaving}
                     >
                         <p className="text-gray-200 text-base leading-relaxed">
-                            ไม่ต้องเสียเวลาโหลด VOD แล้วอัปโหลดใหม่เองอีกต่อไป! วิดเจ็ตนี้จะทำการส่งออก (Export) วิดีโอสตรีมล่าสุดของคุณไปยัง YouTube โดยอัตโนมัติทันทีที่คุณจบการสตรีม (Stream Offline) ช่วยให้คอนเทนต์ของคุณกระจายไปยังหลายแพลตฟอร์มได้ทันท่วงทีโดยไม่มีขั้นตอนยุ่งยาก
+                            อยากเก็บวิดีโอสตรีมย้อนหลังทุกอันของคุณไว้ดูนานๆ หรือเอาไปลง YouTube แต่ขี้เกียจโหลดแล้วอัปโหลดใหม่เองทุกครั้งใช่ไหม? วิดเจ็ตนี้จะทำการส่งออก วิดีโอสตรีมล่าสุดของคุณไปยัง YouTube โดยอัตโนมัติทันทีที่คุณจบการสตรีม
                         </p>
                         <div className="grid gap-4 md:grid-cols-2">
                             <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
@@ -93,14 +94,14 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                     <Zap className="w-5 h-5" />
                                 </div>
                                 <h3 className="font-semibold mb-1">Auto Export</h3>
-                                <p className="text-sm text-muted-foreground">ทำงานอัตโนมัติเมื่อสถานะสตรีมเปลี่ยนเป็น Offline</p>
+                                <p className="text-sm text-muted-foreground">ทำงานอัตโนมัติเมื่อคุณลงสตรีม</p>
                             </div>
                             <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                 <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
                                     <Shield className="w-5 h-5" />
                                 </div>
                                 <h3 className="font-semibold mb-1">Privacy Control</h3>
-                                <p className="text-sm text-muted-foreground">เลือกสถานะวิดีโอ (Private/Public) ได้ตามต้องการ</p>
+                                <p className="text-sm text-muted-foreground">เลือกสถานะวิดีโอ (Private/Unlisted/Public) ได้ตามต้องการ</p>
                             </div>
                         </div>
                     </WidgetOverviewCard>
@@ -153,6 +154,28 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                             <div className="space-y-3">
                                                 <p className="text-sm text-white/70">กดบันทึกเพื่อให้ระบบเริ่มทำงานโดยอัตโนมัติในการสตรีมครั้งถัดไป</p>
                                                 <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 5,
+                                        title: "ทดลองใช้งาน",
+                                        description: (
+                                            <div className="space-y-3">
+                                                <p className="text-sm text-white/70">คุณสามารถกดปุ่มด้านล่างเพื่อส่งออกวิดีโอล่าสุดของคุณไปยัง YouTube ได้ทันที</p>
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={controller.handleTestExport}
+                                                    disabled={controller.isTesting}
+                                                    className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+                                                >
+                                                    {controller.isTesting ? "กำลังทดสอบ..." : (
+                                                        <>
+                                                            <Play className="mr-2 h-4 w-4" />
+                                                            Test Export Video
+                                                        </>
+                                                    )}
+                                                </Button>
                                             </div>
                                         )
                                     }
@@ -238,7 +261,23 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                         </WidgetSettingsCardContent>
                         <WidgetSettingsCardFooter>
                             <DeleteWidgetButton onDelete={controller.handleDelete} isLoading={controller.isSaving} />
-                            <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="outline"
+                                    onClick={controller.handleTestExport}
+                                    disabled={controller.isTesting}
+                                >
+                                    {controller.isTesting ? (
+                                        <>กำลังทดสอบ...</>
+                                    ) : (
+                                        <>
+                                            <Play className="mr-2 h-4 w-4" />
+                                            Test Export Video
+                                        </>
+                                    )}
+                                </Button>
+                                <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
+                            </div>
                         </WidgetSettingsCardFooter>
                     </WidgetSettingsCard>
                 </TabsContent>
