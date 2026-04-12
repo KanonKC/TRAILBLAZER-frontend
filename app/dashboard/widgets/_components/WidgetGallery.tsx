@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageSquare, Video, Dices, Image as ImageIcon } from "lucide-react";
+import { MessageSquare, Video, Dices, Image as ImageIcon, Youtube } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ExtendedWidget, listWidgets } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
@@ -46,6 +46,16 @@ const staticWidgets = [
         color: "text-purple-500",
         bgColor: "bg-purple-500/10",
         borderColor: "border-purple-500/20"
+    },
+    {
+        slug: "export-video",
+        title: "Auto Export to YouTube",
+        description: "ส่งออกวิดีโอ (VOD) จาก Twitch ไปยัง YouTube โดยอัตโนมัติเมื่อคุณสตรีมจบ",
+        icon: Youtube,
+        href: "/dashboard/widgets/export-video",
+        color: "text-red-500",
+        bgColor: "bg-red-500/10",
+        borderColor: "border-red-500/20"
     }
 ];
 
