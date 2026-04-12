@@ -149,14 +149,16 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
     };
 
     const handleAddTag = () => {
-        const trimmed = tagsInput.trim();
-        if (trimmed && !tags.includes(trimmed)) {
-            if (tags.length >= 30) {
-                tbToast.error({ title: "จำกัดแท็กสูงสุด 30 รายการ" });
-                return;
+        for (const tag of tagsInput.split(",")) {
+            const trimmed = tag.trim();
+            if (trimmed && !tags.includes(trimmed)) {
+                if (tags.length >= 30) {
+                    tbToast.error({ title: "จำกัดแท็กสูงสุด 30 รายการ" });
+                    return;
+                }
+                setTags(prev => [...prev, trimmed]);
+                setTagsInput("");
             }
-            setTags(prev => [...prev, trimmed]);
-            setTagsInput("");
         }
     };
 

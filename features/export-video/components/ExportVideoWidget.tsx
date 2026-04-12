@@ -7,22 +7,22 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { YouTubePrivacySelect } from "./YouTubePrivacySelect";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { 
-    Clock, 
-    Video, 
-    Youtube, 
-    Settings, 
-    Zap, 
-    Shield, 
-    Tags, 
-    FileText, 
-    Plus, 
+import {
+    Clock,
+    Video,
+    Settings,
+    Zap,
+    Shield,
+    Tags,
+    FileText,
+    Plus,
     X,
-    LayoutDashboard
+    LayoutDashboard,
+    ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -36,6 +36,8 @@ import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
+import { YouTube } from "@/components/icons/youtube";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 
 export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = false }: { initialConfig: any | null; initialRequiresProPlan?: boolean }) {
     const controller = useExportVideo(initialConfig, initialRequiresProPlan);
@@ -53,7 +55,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
             <div className="w-full max-w-2xl mb-8">
                 <div className="flex items-center gap-3 mb-2">
                     <div className="p-2 rounded-lg bg-red-500/10 text-red-500">
-                        <Youtube className="w-6 h-6" />
+                        <YouTube className="w-6 h-6" />
                     </div>
                     <h1 className="text-3xl font-bold">Auto Export to YouTube</h1>
                 </div>
@@ -119,11 +121,11 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         title: "เชื่อมต่อบัญชี YouTube",
                                         description: (
                                             <div className="space-y-2">
-                                                <p className="text-sm text-white/70">ตรวจสอบให้แน่ใจว่าคุณได้เชื่อมต่อบัญชี YouTube ในหน้า Account Binding แล้ว เพื่อให้ระบบสามารถส่งออกวิดีโอได้</p>
-                                                <Button size="sm" variant="outline" className="gap-2" asChild>
-                                                    <a href="/dashboard/account-binding">
-                                                        <LayoutDashboard className="w-4 h-4" />
-                                                        ไปที่หน้าเชื่อมต่อบัญชี
+                                                <p className="text-sm text-white/70">ตรวจสอบให้แน่ใจว่าคุณได้เชื่อมต่อบัญชี YouTube บน Twitch แล้ว สามารถเช็คได้โดยกดปุ่มด้านล่างแล้วเลื่อนหาช่องที่เป็น YouTube ได้เลย</p>
+                                                <Button size="sm" variant="twitch" className="gap-2" asChild>
+                                                    <a href="https://www.twitch.tv/settings/connections" target="_blank">
+                                                        ไปที่หน้าเชื่อมต่อบัญชี Twitch
+                                                        <ExternalLink className="w-4 h-4" />
                                                     </a>
                                                 </Button>
                                             </div>
@@ -131,22 +133,15 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                     },
                                     {
                                         step: 3,
-                                        title: "ตั้งค่าการส่งออก",
+                                        title: "ตั้งค่าความเป็นส่วนตัว",
                                         description: (
                                             <div className="space-y-4">
-                                                <p className="text-sm text-white/70">กำหนดสถานะความเป็นส่วนตัว แท็ก และคำอธิบายวิดีโอที่จะแสดงบน YouTube</p>
+                                                <p className="text-sm text-white/70">กำหนดสถานะความเป็นส่วนตัวของวิดีโอที่จะถูกส่งออกไปยัง YouTube หากยังไม่แน่ใจ แนะนำให้เลือกเป็นแบบ Unlisted จะทำให้วิดีโอไม่โผล่ในช่อง YouTube ให้คนอื่นเห็น แต่ยังสามารถเข้าดูผ่านลิงก์ได้</p>
                                                 <div className="space-y-2">
-                                                    <Label>Privacy Status</Label>
-                                                    <Select value={controller.privacyStatus} onValueChange={controller.setPrivacyStatus}>
-                                                        <SelectTrigger className="bg-white/5 border-white/10">
-                                                            <SelectValue placeholder="เลือกสถานะ" />
-                                                        </SelectTrigger>
-                                                        <SelectContent>
-                                                            <SelectItem value="PRIVATE">Private (ส่วนตัว)</SelectItem>
-                                                            <SelectItem value="PUBLIC">Public (สาธารณะ)</SelectItem>
-                                                            <SelectItem value="UNLISTED">Unlisted (ไม่แสดงในรายการ)</SelectItem>
-                                                        </SelectContent>
-                                                    </Select>
+                                                    <YouTubePrivacySelect
+                                                        value={controller.privacyStatus}
+                                                        onValueChange={controller.setPrivacyStatus}
+                                                    />
                                                 </div>
                                             </div>
                                         )
@@ -177,22 +172,16 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                             <div className="space-y-6">
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 border-b border-white/10 pb-2">
-                                        <Shield className="w-5 h-5 text-blue-500" />
+                                        <YouTube className="w-5 h-5 text-red-500" />
                                         <h3 className="text-lg font-semibold">YouTube Settings</h3>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>ความเป็นส่วนตัว (Privacy Status)</Label>
-                                        <Select value={controller.privacyStatus} onValueChange={controller.setPrivacyStatus}>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="เลือกสถานะ" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="PRIVATE">Private</SelectItem>
-                                                <SelectItem value="PUBLIC">Public</SelectItem>
-                                                <SelectItem value="UNLISTED">Unlisted</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <p className="text-xs text-muted-foreground">กำหนดสถานะเริ่มต้นของวิดีโอที่ถูกส่งออกไปยัง YouTube</p>
+                                        <Label>ความเป็นส่วนตัว</Label>
+                                        <p className="text-sm text-muted-foreground">กำหนดสถานะเริ่มต้นของวิดีโอที่ถูกส่งออกไปยัง YouTube</p>
+                                        <YouTubePrivacySelect
+                                            value={controller.privacyStatus}
+                                            onValueChange={controller.setPrivacyStatus}
+                                        />
                                     </div>
                                 </div>
 
@@ -202,10 +191,27 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         <h3 className="text-lg font-semibold">Tags & Metadata</h3>
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>แท็ก (Tags)</Label>
+                                        <Label>คำอธิบายวิดีโอ</Label>
+                                        <p className="text-sm text-muted-foreground">คำอธิบายที่คงที่สำหรับทุกวิดีโอที่คุณส่งออก</p>
+                                        <div className="relative">
+                                            <Textarea
+                                                placeholder="ใส่คำอธิบายที่จะใช้สำหรับวิดีโอที่ส่งออก..."
+                                                rows={5}
+                                                value={controller.description}
+                                                onChange={(e) => controller.setDescription(e.target.value)}
+                                            />
+                                            <div className="flex justify-between items-center absolute bottom-0 right-0 mr-4 mb-2">
+                                                <span className={cn("text-xs", controller.description.length > 5000 ? "text-red-500" : "text-muted-foreground")}>
+                                                    {controller.description.length}/5000
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>แท็ก</Label>
                                         <div className="flex gap-2">
-                                            <Input 
-                                                placeholder="เพิ่มแท็ก..." 
+                                            <Input
+                                                placeholder="เพิ่มแท็ก..."
                                                 value={controller.tagsInput}
                                                 onChange={(e) => controller.setTagsInput(e.target.value)}
                                                 onKeyDown={(e) => e.key === 'Enter' && controller.handleAddTag()}
@@ -216,31 +222,17 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         </div>
                                         <div className="flex flex-wrap gap-2 mt-2">
                                             {controller.tags.map(tag => (
-                                                <Badge key={tag} variant="secondary" className="gap-1 pr-1">
-                                                    {tag}
-                                                    <X className="w-3 h-3 cursor-pointer hover:text-red-500" onClick={() => controller.handleRemoveTag(tag)} />
+                                                <Badge key={tag} variant="secondary" className="gap-1">
+                                                    <span className="text-sm">{tag}</span>
+                                                    <span><X className="w-3 h-3 cursor-pointer hover:text-red-500" onClick={() => controller.handleRemoveTag(tag)} /></span>
                                                 </Badge>
                                             ))}
                                             {controller.tags.length === 0 && (
-                                                <span className="text-xs text-muted-foreground italic">ยังไม่มีแท็ก</span>
+                                                <span className="text-sm text-muted-foreground italic">ยังไม่มีแท็ก</span>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label>คำอธิบายวิดีโอ (Default Description)</Label>
-                                        <Textarea 
-                                            placeholder="ใส่คำอธิบายที่จะใช้สำหรับวิดีโอที่ส่งออก..." 
-                                            rows={5}
-                                            value={controller.description}
-                                            onChange={(e) => controller.setDescription(e.target.value)}
-                                        />
-                                        <div className="flex justify-between items-center px-1">
-                                            <p className="text-xs text-muted-foreground">คำอธิบายที่คงที่สำหรับทุกวิดีโอที่คุณส่งออก</p>
-                                            <span className={cn("text-xs", controller.description.length > 5000 ? "text-red-500" : "text-muted-foreground")}>
-                                                {controller.description.length}/5000
-                                            </span>
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
                         </WidgetSettingsCardContent>
@@ -256,14 +248,14 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Clock className="w-5 h-5 text-red-500" />
-                                ประวัติการส่งออก (Export History)
+                                Export History
                             </CardTitle>
                             <CardDescription>
                                 รายการวิดีโอที่ถูกส่งออกไปยัง YouTube ล่าสุดของคุณ
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="px-6">
-                            <ExportVideoHistoryList 
+                            <ExportVideoHistoryList
                                 history={controller.history}
                                 isLoading={controller.isLoadingHistory}
                                 pagination={{
@@ -271,7 +263,6 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                     limit: controller.historyLimit,
                                     total: controller.historyTotal
                                 }}
-                                onDelete={controller.handleDeleteHistory}
                                 onFetch={controller.fetchHistory}
                             />
                         </CardContent>

@@ -1,6 +1,6 @@
 "use client";
 
-import { LucideIcon, Play, Settings } from "lucide-react";
+import { Play, Settings } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ExtendedWidget } from "@/services/widget.service";
@@ -11,7 +11,7 @@ interface WidgetCardProps {
     slug: string;
     title: string;
     description: string;
-    icon: LucideIcon;
+    icon: React.ComponentType<{ className?: string }>;
     href: string;
     color: string;
     bgColor: string;
