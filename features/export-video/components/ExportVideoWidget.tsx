@@ -218,6 +218,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         <p className="text-sm text-muted-foreground">คำอธิบายที่คงที่สำหรับทุกวิดีโอที่คุณส่งออก</p>
                                         <div className="relative">
                                             <Textarea
+                                                maxLength={5000}
                                                 placeholder="ใส่คำอธิบายที่จะใช้สำหรับวิดีโอที่ส่งออก..."
                                                 rows={5}
                                                 value={controller.description}
