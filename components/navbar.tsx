@@ -96,8 +96,8 @@ export default function Navbar() {
                                         </span>
                                     </DropdownMenuItem>
                                     {/* TODO: Remove this when we have a proper account binding page */}
-                                    {/* <DropdownMenuSeparator className="hidden" />
-                                    <DropdownMenuItem asChild className="hidden">
+                                    {/* <DropdownMenuSeparator/>
+                                    <DropdownMenuItem asChild>
                                         <Link href="/dashboard/account-binding" className="cursor-pointer">
                                             <Link2 className="mr-2 h-4 w-4" />
                                             เชื่อมต่อบัญชี

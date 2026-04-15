@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ExtendedWidget, listWidgets } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 import { WidgetCard } from "./WidgetCard";
+import { YouTube } from "@/components/icons/youtube";
 
 const staticWidgets = [
     {
@@ -46,6 +47,16 @@ const staticWidgets = [
         color: "text-purple-500",
         bgColor: "bg-purple-500/10",
         borderColor: "border-purple-500/20"
+    },
+    {
+        slug: "export-video",
+        title: "Auto Export to YouTube",
+        description: "ส่งออกวิดีโอ (VOD) จาก Twitch ไปยัง YouTube โดยอัตโนมัติเมื่อคุณสตรีมจบ",
+        icon: YouTube,
+        href: "/dashboard/widgets/export-video",
+        color: "text-red-500",
+        bgColor: "bg-red-500/10",
+        borderColor: "border-red-500/20"
     }
 ];
 

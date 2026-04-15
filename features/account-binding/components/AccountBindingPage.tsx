@@ -245,7 +245,7 @@ function PlatformCard({
                                     <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={onUnbind}
-                                        className="bg-red-600 hover:bg-red-700 text-white"
+                                        className="bg-red-600 hover:bg-red-700"
                                     >
                                         ยืนยันยกเลิกการเชื่อมต่อ
                                     </AlertDialogAction>
