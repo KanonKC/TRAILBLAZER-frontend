@@ -40,7 +40,7 @@ export function Hero() {
 
                 {/* Main heading */}
                 <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-                    <BrandLogo />
+                    <BrandLogo hideLogo />
                 </h1>
 
                 {/* Subtitle */}

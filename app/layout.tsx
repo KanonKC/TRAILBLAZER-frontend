@@ -14,7 +14,7 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
-  title: "TRAILBLAZER - แพลตฟอร์มเชื่อมต่อ Twitch",
+  title: "TRAILBLAZER",
   description: "เชื่อมต่อและยกระดับประสบการณ์ Twitch ของคุณด้วยเครื่องมือและการเชื่อมต่อที่ทรงพลัง",
 };
 
