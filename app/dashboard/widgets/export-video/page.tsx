@@ -1,6 +1,6 @@
-import { fetchData } from "@/lib/data-access";
 import { ExportVideoWidget } from "@/features/export-video/components/ExportVideoWidget";
 import { ExportVideoConfig } from "@/features/export-video/types";
+import { fetchData } from "@/lib/data-access";
 
 async function getExportVideoConfigServer(): Promise<ExportVideoConfig | null> {
     try {
