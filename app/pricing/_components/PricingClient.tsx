@@ -2,15 +2,17 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUser } from "@/components/user-context";
-import { Check } from "lucide-react";
+import { Check, Info } from "lucide-react";
 import SelectPlanButton from "./SelectPlanButton";
+import { PricingTwitchDialog } from "./PricingTwitchDialog";
+import { useState } from "react";
 
 const PricingClient = () => {
 
     const { user } = useUser()
 
     const calculateButtonStatus = (tierRequired: number) => {
-        const tier = user?.tier || 0
+        const tier = (user?.tier || 0) > 0 ? 1 : 0
         if (tier === tierRequired) {
             return "current"
         } else if (tier < tierRequired) {
@@ -18,6 +20,8 @@ const PricingClient = () => {
         }
         return "lower"
     }
+
+    const [showTwitchDialog, setShowTwitchDialog] = useState(false)
 
     return (
         <div className="container mx-auto py-20 px-4 max-w-2xl">
@@ -42,6 +46,10 @@ const PricingClient = () => {
                                 <span className="bg-primary/20 text-primary p-1 rounded-full"><Check className="h-4 w-4" /></span>
                                 <span>สามารถใช้งานได้ 1 Widget</span>
                             </li>
+                            <li className="flex items-center gap-3">
+                                <span className="bg-primary/20 text-primary p-1 rounded-full"><Check className="h-4 w-4" /></span>
+                                <span>พื้นที่เก็บข้อมูล 5 MB</span>
+                            </li>
                         </ul>
                     </CardContent>
                     <CardFooter className="pt-6">
@@ -57,10 +65,16 @@ const PricingClient = () => {
                         </span>
                     </div> */}
                     <CardHeader className="text-center pb-8 border-b">
-                        <CardTitle className="text-2xl font-bold mb-2 text-amber-500">Pro</CardTitle>
+                        <CardTitle className="text-2xl font-bold mb-2 text-amber-500 flex items-center gap-2 justify-center">
+                            Pro
+                            <Info
+                                onClick={() => setShowTwitchDialog(true)}
+                                className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-amber-500"
+                            />
+                        </CardTitle>
                         <CardDescription>ปลดล็อกทุกความสามารถ</CardDescription>
                         <div className="mt-4 flex items-baseline justify-center gap-1">
-                            <span className="text-4xl font-bold">69</span>
+                            <span className="text-4xl font-bold text-primary">69</span>
                             <span className="text-muted-foreground">บาท / เดือน</span>
                         </div>
                     </CardHeader>
@@ -68,7 +82,11 @@ const PricingClient = () => {
                         <ul className="space-y-4">
                             <li className="flex items-center gap-3">
                                 <span className="bg-amber-500/20 text-amber-500 p-1 rounded-full"><Check className="h-4 w-4" /></span>
-                                <span className="font-semibold">ใช้งาน Widget ได้อย่างไร้ขีดจำกัด</span>
+                                <span className="font-semibold">ใช้งาน Widget ได้อย่าง<span className="text-primary">ไร้ขีดจำกัด</span></span>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <span className="bg-amber-500/20 text-amber-500 p-1 rounded-full"><Check className="h-4 w-4" /></span>
+                                <span className="font-semibold">พื้นที่เก็บข้อมูล <span className="text-primary">50 MB</span></span>
                             </li>
                         </ul>
                     </CardContent>
@@ -77,6 +95,11 @@ const PricingClient = () => {
                     </CardFooter>
                 </Card>
             </div>
+
+            <PricingTwitchDialog
+                open={showTwitchDialog}
+                onOpenChange={setShowTwitchDialog}
+            />
         </div>
     )
 }
