@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
-import { Link2, LogOut, RefreshCw } from "lucide-react";
+import { File, Link2, LogOut, RefreshCw, Upload } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "./user-context";
@@ -88,6 +88,13 @@ export default function Navbar() {
                                             </p>
                                         </div>
                                     </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/my/uploaded-files" className="cursor-pointer hover:bg-primary">
+                                            <Upload className="mr-2 h-4 w-4" />
+                                            จัดการไฟล์อัปโหลดของคุณ
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem asChild>
                                         <span onClick={handleReloadSubscription} className="cursor-pointer hover:bg-primary">

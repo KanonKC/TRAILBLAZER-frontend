@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 import { getUploadedFile, getUploadedFiles, getUploadedFilesTotalSize, UploadedFile, uploadFile } from "@/services/uploadedFile.service";
 import { calculateFileSizeWithUnit } from "@/utils/file";
 import { tbToast } from "@/utils/tbToast";
-import { Check, ChevronLeft, ChevronRight, Loader2, Play, Search, Square, Upload } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, ExternalLink, Loader2, Play, Search, Square, Upload } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
@@ -203,8 +203,11 @@ export default function AudioFileUploaderDialog({
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <div className="flex items-center justify-between">
-                        <DialogTitle>เลือกไฟล์เสียง</DialogTitle>
+                    <div className="flex items-center justify-between items-stretch">
+                        <div className="flex items-start justify-between w-full">
+                            <DialogTitle>เลือกไฟล์เสียง</DialogTitle>
+
+                        </div>
                         <Input
                             ref={uploadInputRef}
                             type="file"
@@ -245,20 +248,29 @@ export default function AudioFileUploaderDialog({
 
                     </div>
 
-                    <div className="mt-2 flex items-center gap-2 self-end w-fit">
-                        <div className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">
-                            {calculateFileSizeWithUnit(totalSizeKb)} / {calculateFileSizeWithUnit(maxStorageKb)}
-                        </div>
-                        <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
-                            <div
-                                className={cn(
-                                    "h-full transition-all duration-500 ease-out",
-                                    (totalSizeKb / maxStorageKb) > 0.9 ? "bg-red-500" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-yellow-500" : "bg-green-500"
-                                )}
-                                style={{ width: `${Math.min((totalSizeKb / maxStorageKb) * 100, 100)}%` }}
-                            />
+                    <div className="mt-2 flex items-center justify-between">
+                        <div className="flex items-center gap-2 self-end w-fit">
+                            <div className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">
+                                {calculateFileSizeWithUnit(totalSizeKb)} / {calculateFileSizeWithUnit(maxStorageKb)}
+                            </div>
+                            <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
+                                <div
+                                    className={cn(
+                                        "h-full transition-all duration-500 ease-out",
+                                        (totalSizeKb / maxStorageKb) > 0.9 ? "bg-red-500" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-yellow-500" : "bg-green-500"
+                                    )}
+                                    style={{ width: `${Math.min((totalSizeKb / maxStorageKb) * 100, 100)}%` }}
+                                />
+                            </div>
+
                         </div>
 
+                        <a href="/my/uploaded-files" target="_blank" rel="noopener noreferrer">
+                            <div className="flex items-center gap-1 text-muted-foreground text-xs self-end mr-2 hover:underline cursor-pointer">
+                                <span>จัดการไฟล์อัปโหลด</span>
+                                <ExternalLink className="w-3 h-3" />
+                            </div>
+                        </a>
                     </div>
 
                     <ScrollArea className="h-[400px] rounded-md ">
