@@ -112,7 +112,7 @@ export default function Navbar() {
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
-                                        <Link href="/dashboard/account-binding" className="cursor-pointer">
+                                        <Link href="/my/account-binding" className="cursor-pointer">
                                             <Link2 className="mr-2 h-4 w-4" />
                                             เชื่อมต่อบัญชี
                                         </Link>

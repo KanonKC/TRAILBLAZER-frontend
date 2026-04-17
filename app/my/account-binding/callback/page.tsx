@@ -24,7 +24,7 @@ function CallbackHandler() {
             if (!code) {
                 setStatus("error");
                 tbToast.error({ title: "ไม่พบ OAuth code" });
-                setTimeout(() => router.replace("/dashboard/account-binding"), 2000);
+                setTimeout(() => router.replace("/my/account-binding"), 2000);
                 return;
             }
 
@@ -36,14 +36,14 @@ function CallbackHandler() {
             if (!platform) {
                 setStatus("error");
                 tbToast.error({ title: "ไม่พบข้อมูลแพลตฟอร์ม" });
-                setTimeout(() => router.replace("/dashboard/account-binding"), 2000);
+                setTimeout(() => router.replace("/my/account-binding"), 2000);
                 return;
             }
 
             if (savedState && state !== savedState) {
                 setStatus("error");
                 tbToast.error({ title: "State ไม่ถูกต้อง กรุณาลองใหม่" });
-                setTimeout(() => router.replace("/dashboard/account-binding"), 2000);
+                setTimeout(() => router.replace("/my/account-binding"), 2000);
                 return;
             }
 
@@ -60,7 +60,7 @@ function CallbackHandler() {
                 sessionStorage.removeItem("oauth_state");
                 sessionStorage.removeItem("oauth_platform");
                 sessionStorage.removeItem("oauth_code_verifier");
-                setTimeout(() => router.replace("/dashboard/account-binding"), 1500);
+                setTimeout(() => router.replace("/my/account-binding"), 1500);
             }
         };
 
