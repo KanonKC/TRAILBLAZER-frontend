@@ -48,6 +48,11 @@ export const deleteUploadedFile = async (id: string): Promise<void> => {
     await apiClient.delete(`/api/v1/uploaded-files/${id}`);
 };
 
+export const updateUploadedFile = async (id: string, data: { name: string }): Promise<UploadedFile> => {
+    const response = await apiClient.put<UploadedFile>(`/api/v1/uploaded-files/${id}`, data);
+    return response.data;
+};
+
 export const getUploadedFile = async (id: string): Promise<UploadedFile> => {
     const response = await apiClient.get<UploadedFile>(`/api/v1/uploaded-files/${id}`);
     return response.data;
