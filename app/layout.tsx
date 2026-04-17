@@ -22,6 +22,7 @@ import { UserProvider } from "@/components/user-context";
 import Navbar from "@/components/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/landing/footer";
+import { FloatingSupport } from "@/components/floating-support";
 
 // ... existing imports
 
@@ -42,6 +43,7 @@ export default function RootLayout({
           </main>
           <Toaster />
           <Footer />
+          {/* <FloatingSupport /> */}
         </UserProvider>
       </body>
     </html>

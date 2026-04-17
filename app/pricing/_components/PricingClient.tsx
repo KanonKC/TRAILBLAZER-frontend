@@ -64,7 +64,7 @@ const PricingClient = () => {
                             ยอดนิยม
                         </span>
                     </div> */}
-                    <CardHeader className="text-center pb-8 border-b">
+                    <CardHeader className="text-center pb-8 border-b  bg-primary">
                         <CardTitle className="text-2xl font-bold mb-2 text-amber-500 flex items-center gap-2 justify-center">
                             Pro
                             <Info
@@ -100,6 +100,15 @@ const PricingClient = () => {
                 open={showTwitchDialog}
                 onOpenChange={setShowTwitchDialog}
             />
+
+            <div className="mt-12 text-center">
+                <p className="text-muted-foreground">
+                    สงสัยเกี่ยวกับแผนการใช้งาน?{" "}
+                    <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">
+                        ติดต่อเราใน Discord
+                    </a>
+                </p>
+            </div>
         </div>
     )
 }

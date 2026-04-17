@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
-import { File, Link2, LogOut, RefreshCw, Upload } from "lucide-react";
+import { File, Link2, LogOut, MessageSquare, RefreshCw, Upload } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "./user-context";
@@ -59,6 +59,9 @@ export default function Navbar() {
                     <Link href="/pricing" className="text-base font-medium transition-colors hover:text-primary">
                         Pricing
                     </Link>
+                    <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="text-base font-medium transition-colors hover:text-primary flex items-center gap-2">
+                        Community
+                    </a>
                 </div>
 
                 <div className="flex items-center gap-4">
@@ -110,6 +113,12 @@ export default function Navbar() {
                                             เชื่อมต่อบัญชี
                                         </Link>
                                     </DropdownMenuItem> */}
+                                    <DropdownMenuItem asChild>
+                                        <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:bg-primary flex items-center">
+                                            <MessageSquare className="mr-2 h-4 w-4" />
+                                            ช่วยเหลือและสนับสนุน (Discord)
+                                        </a>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
                                         <LogOut className="mr-2 h-4 w-4" />
