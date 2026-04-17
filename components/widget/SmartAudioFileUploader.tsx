@@ -42,10 +42,10 @@ export function SmartAudioFileUploader({
 
         setIsUpdating(true);
         try {
-            const response = await apiClient.patch(`/api/v1/${slug}`, {
+            const response = await apiClient.put(`/api/v1/${slug}`, {
                 audio_key: fileKey
             });
-            
+
             if (onSuccess) {
                 onSuccess(response.data);
             }
