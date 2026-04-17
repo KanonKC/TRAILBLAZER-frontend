@@ -124,10 +124,10 @@ export function StreamerShowcase() {
         <section className="py-20 bg-background relative overflow-hidden">
             <div className="container mx-auto px-4 mb-12 text-center relative z-10">
                 <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                    ไว้วางใจโดย <span className="trailblazer-gradient-text">สตรีมเมอร์</span> ชั้นนำ
+                    ไว้วางใจโดย <span className="trailblazer-gradient-text">สตรีมเมอร์</span> เหล่านี้
                 </h2>
                 <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-                    เข้าร่วมกับสตรีมเมอร์ที่กำลังใช้งาน TRAILBLAZER เพื่อยกระดับประสบการณ์การสตรีมของพวกเขา
+                    ทำความรู้จักกับเหล่าสตรีมเมอร์ที่เลือกใช้ TRAILBLAZER เพื่อช่วยจัดการระบบสตรีมเบื้องหลังให้เป็นเรื่องง่ายและสะดวกสบาย
                 </p>
             </div>
 

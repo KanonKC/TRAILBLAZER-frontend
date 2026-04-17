@@ -41,14 +41,15 @@ const PLATFORMS: PlatformConfig[] = [
         bgGradient: "from-[#9146FF]/20 to-[#6441A5]/10",
         canUnbind: false,
     },
-    {
-        key: "youtube",
-        name: "YouTube",
-        icon: YouTube,
-        color: "#FF0000",
-        bgGradient: "from-[#FF0000]/20 to-[#CC0000]/10",
-        canUnbind: true,
-    },
+    // TODO: Return YouTube binding when we have a proper YouTube integration
+    // {
+    //     key: "youtube",
+    //     name: "YouTube",
+    //     icon: YouTube,
+    //     color: "#FF0000",
+    //     bgGradient: "from-[#FF0000]/20 to-[#CC0000]/10",
+    //     canUnbind: true,
+    // },
     {
         key: "discord",
         name: "Discord",
@@ -103,7 +104,7 @@ export function AccountBindingPage({ initialAccounts }: AccountBindingPageProps)
                     <h1 className="text-2xl font-bold">เชื่อมต่อบัญชี</h1>
                 </div>
                 <p className="text-muted-foreground text-sm">
-                    จัดการบัญชีแพลตฟอร์มที่เชื่อมต่อกับ Trailblazer
+                    จัดการบัญชีแพลตฟอร์มที่เชื่อมต่อกับ TRAILBLAZER
                 </p>
             </div>
 

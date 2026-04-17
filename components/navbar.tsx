@@ -20,11 +20,13 @@ import { BrandLogo } from "@/components/brand-logo";
 import { Badge } from "./ui/badge";
 import { useEffect, useState } from "react";
 import { getUserTier } from "@/services/user.service";
+import { PricingTwitchDialog } from "@/app/pricing/_components/PricingTwitchDialog";
 
 export default function Navbar() {
     const { user, isLoading, logout } = useUser();
     const pathname = usePathname();
     const [tier, setTier] = useState<number>(0);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -47,6 +49,10 @@ export default function Navbar() {
 
     return (
         <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <PricingTwitchDialog
+                open={open}
+                onOpenChange={setOpen}
+            />
             <div className="flex h-16 items-center px-4 container mx-auto justify-between">
                 <Link href="/" className="flex items-center font-bold text-xl tracking-tight">
                     <BrandLogo />
@@ -72,6 +78,9 @@ export default function Navbar() {
                         </div>
                     ) : user ? (
                         <div className="flex items-center gap-2">
+                            {tier === 0 && <div>
+                                <Button onClick={() => setOpen(true)} className="trailblazer-gradient text-white font-bold">อัปเกรดเป็น PRO</Button>
+                            </div>}
                             {tier > 0 ? <Badge variant="outline" className="trailblazer-gradient-text font-bold">PRO</Badge> : <Badge variant="outline">FREE</Badge>}
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -98,26 +107,18 @@ export default function Navbar() {
                                             จัดการไฟล์อัปโหลดของคุณ
                                         </Link>
                                     </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/dashboard/account-binding" className="cursor-pointer">
+                                            <Link2 className="mr-2 h-4 w-4" />
+                                            เชื่อมต่อบัญชี
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem asChild>
                                         <span onClick={handleReloadSubscription} className="cursor-pointer hover:bg-primary">
                                             <RefreshCw className="mr-2 h-4 w-4" />
                                             อัปเดตข้อมูลการสมัครสมาชิก
                                         </span>
-                                    </DropdownMenuItem>
-                                    {/* TODO: Remove this when we have a proper account binding page */}
-                                    {/* <DropdownMenuSeparator/>
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/dashboard/account-binding" className="cursor-pointer">
-                                            <Link2 className="mr-2 h-4 w-4" />
-                                            เชื่อมต่อบัญชี
-                                        </Link>
-                                    </DropdownMenuItem> */}
-                                    <DropdownMenuItem asChild>
-                                        <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="cursor-pointer hover:bg-primary flex items-center">
-                                            <MessageSquare className="mr-2 h-4 w-4" />
-                                            ช่วยเหลือและสนับสนุน (Discord)
-                                        </a>
                                     </DropdownMenuItem>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
