@@ -21,6 +21,7 @@ import { Badge } from "./ui/badge";
 import { useEffect, useState } from "react";
 import { getUserTier } from "@/services/user.service";
 import { PricingTwitchDialog } from "@/app/pricing/_components/PricingTwitchDialog";
+import { Discord } from "./icons/discord";
 
 export default function Navbar() {
     const { user, isLoading, logout } = useUser();
@@ -65,8 +66,11 @@ export default function Navbar() {
                     <Link href="/pricing" className="text-base font-medium transition-colors hover:text-primary">
                         Pricing
                     </Link>
-                    <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="text-base font-medium transition-colors hover:text-primary flex items-center gap-2">
-                        Community
+                    <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="text-base font-medium transition-colors flex items-center gap-2 hover:bg-[#5865F2] p-2 rounded-md">
+                        <Discord className="text-white w-5 h-5" />
+                        <span>
+                            Join Discord
+                        </span>
                     </a>
                 </div>
 
