@@ -58,7 +58,7 @@ export function BotProfileSelector({ value, onValueChange, hideLabel }: BotProfi
                 <SelectTrigger className="w-full">
                     <SelectValue placeholder="เลือกโปรไฟล์บอท" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent position="popper">
                     {
                         options.map((option) => (
                             option.value && <SelectItem key={option.value} value={option.value}>
