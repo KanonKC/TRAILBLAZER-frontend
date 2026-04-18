@@ -23,7 +23,8 @@ import {
     X,
     LayoutDashboard,
     ExternalLink,
-    Play
+    Play,
+    Info
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,9 +40,14 @@ import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/Widge
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
 import { YouTube } from "@/components/icons/youtube";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { useUser } from "@/components/user-context";
+import TrailblazerAccordian from "@/components/TrailblazerAccordian/TrailblazerAccordian";
+import TrailblazerAccordianTrigger from "@/components/TrailblazerAccordian/TrailblazerAccordianTrigger";
+import TrailblazerAccordianContent from "@/components/TrailblazerAccordian/TrailblazerAccordianContent";
 
 export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = false }: { initialConfig: any | null; initialRequiresProPlan?: boolean }) {
     const controller = useExportVideo(initialConfig, initialRequiresProPlan);
+    const { user } = useUser()
 
     if (controller.isUserLoading || controller.isLoading) {
         return (
@@ -119,6 +125,38 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                     },
                                     {
                                         step: 2,
+                                        title: "เปิดใช้งาน เก็บการถ่ายทอดสดในอดีต บน Twitch",
+                                        description: (
+                                            <div className="space-y-2">
+                                                <p className="text-sm text-white/70">ปรับให้ช่องบน Twitch ของคุณ เก็บวิดีโอย้อนหลังตอนสตรีมได้</p>
+                                                <Button size="sm" variant="twitch" className="gap-2" asChild>
+                                                    <a href={`https://dashboard.twitch.tv/u/${user?.username}/settings/stream`} target="_blank">
+                                                        ไปที่หน้าตั้งค่าการสตรีม
+                                                        <ExternalLink className="w-4 h-4" />
+                                                    </a>
+                                                </Button>
+
+                                                <TrailblazerAccordian defaultOpen>
+                                                    <TrailblazerAccordianTrigger>
+                                                        <div className="flex items-center gap-2">
+                                                            <Info className="w-4 h-4" />
+                                                            วิธีการเปิด เก็บการถ่ายทอดสดในอดีต
+                                                        </div>
+                                                    </TrailblazerAccordianTrigger>
+                                                    <TrailblazerAccordianContent>
+                                                        <ol className="list-decimal pl-5 space-y-1">
+                                                            <li>กดปุ่ม "ไปที่หน้าตั้งค่าการสตรีม" ข้างบน</li>
+                                                            <li>เลื่อนหาหัวข้อ "การตั้งค่าวิดีโอย้อนหลังและการย้อนสตรีม"</li>
+                                                            <li>กดเปิด "เก็บการถ่ายทอดสดในอดีต"</li>
+                                                        </ol>
+                                                    </TrailblazerAccordianContent>
+                                                </TrailblazerAccordian>
+
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 3,
                                         title: "เชื่อมต่อบัญชี YouTube",
                                         description: (
                                             <div className="space-y-2">
@@ -133,7 +171,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         )
                                     },
                                     {
-                                        step: 3,
+                                        step: 4,
                                         title: "ตั้งค่าความเป็นส่วนตัว",
                                         description: (
                                             <div className="space-y-4">
@@ -148,7 +186,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         )
                                     },
                                     {
-                                        step: 4,
+                                        step: 5,
                                         title: "บันทึกการตั้งค่า",
                                         description: (
                                             <div className="space-y-3">
@@ -158,7 +196,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         )
                                     },
                                     {
-                                        step: 5,
+                                        step: 6,
                                         title: "ทดลองใช้งาน",
                                         description: (
                                             <div className="space-y-3">

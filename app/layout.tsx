@@ -14,7 +14,7 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
-  title: "TRAILBLAZER - แพลตฟอร์มเชื่อมต่อ Twitch",
+  title: "TRAILBLAZER",
   description: "เชื่อมต่อและยกระดับประสบการณ์ Twitch ของคุณด้วยเครื่องมือและการเชื่อมต่อที่ทรงพลัง",
 };
 
@@ -22,6 +22,7 @@ import { UserProvider } from "@/components/user-context";
 import Navbar from "@/components/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/landing/footer";
+import { FloatingSupport } from "@/components/floating-support";
 
 // ... existing imports
 
@@ -42,6 +43,7 @@ export default function RootLayout({
           </main>
           <Toaster />
           <Footer />
+          {/* <FloatingSupport /> */}
         </UserProvider>
       </body>
     </html>

@@ -61,13 +61,15 @@ export function Hero() {
                             เริ่มต้นใช้งาน
                         </Button>
                     </Link>
-                    {/* <Button
-                        size="lg"
-                        variant="outline"
-                        className="glass border-primary/30 hover:bg-primary/10 px-8 py-6 text-lg"
-                    >
-                        เรียนรู้เพิ่มเติม
-                    </Button> */}
+                    <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer">
+                        <Button
+                            size="lg"
+                            variant="outline"
+                            className="glass border-primary/30 hover:bg-primary/10 px-8 py-6 text-lg"
+                        >
+                            เข้าร่วม Discord
+                        </Button>
+                    </a>
                 </div>
             </div>
 

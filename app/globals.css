@@ -179,6 +179,14 @@
   animation: gradient-shift 8s ease infinite;
 }
 
+.bg-discord {
+  background-color: #5865F2;
+}
+
+.text-discord {
+  color: #5865F2;
+}
+
 .trailblazer-gradient {
   background: linear-gradient(135deg, #F97316 0%, #F59E0B 50%, #EAB308 100%);
 }
@@ -194,4 +202,24 @@
   background: oklch(0.2 0 0 / 50%);
   backdrop-filter: blur(12px);
   border: 1px solid oklch(1 0 0 / 10%);
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
 }

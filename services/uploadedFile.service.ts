@@ -5,7 +5,7 @@ export interface UploadedFile {
     url: string;
     name: string;
     type: string;
-    size: number;
+    size_kb: number;
     owner_id: string;
     key: string;
     created_at: string;
@@ -48,7 +48,17 @@ export const deleteUploadedFile = async (id: string): Promise<void> => {
     await apiClient.delete(`/api/v1/uploaded-files/${id}`);
 };
 
+export const updateUploadedFile = async (id: string, data: { name: string }): Promise<UploadedFile> => {
+    const response = await apiClient.put<UploadedFile>(`/api/v1/uploaded-files/${id}`, data);
+    return response.data;
+};
+
 export const getUploadedFile = async (id: string): Promise<UploadedFile> => {
     const response = await apiClient.get<UploadedFile>(`/api/v1/uploaded-files/${id}`);
+    return response.data;
+};
+
+export const getUploadedFilesTotalSize = async (): Promise<{ total_size_kb: number; max_storage_kb: number }> => {
+    const response = await apiClient.get<{ total_size_kb: number; max_storage_kb: number }>("/api/v1/uploaded-files/total-size");
     return response.data;
 };

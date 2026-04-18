@@ -9,9 +9,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { getUploadedFile, getUploadedFiles, UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { getUploadedFile, getUploadedFiles, getUploadedFilesTotalSize, UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { calculateFileSizeWithUnit } from "@/utils/file";
 import { tbToast } from "@/utils/tbToast";
-import { Check, ChevronLeft, ChevronRight, Loader2, Play, Search, Square, Upload } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, ExternalLink, Loader2, Play, Search, Square, Upload } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
@@ -52,6 +53,18 @@ export default function AudioFileUploaderDialog({
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [searchQuery, setSearchQuery] = useState("");
+    const [totalSizeKb, setTotalSizeKb] = useState(0);
+    const [maxStorageKb, setMaxStorageKb] = useState(10 * 1024); // Default to 10MB until fetched
+
+    const fetchTotalSize = async () => {
+        try {
+            const result = await getUploadedFilesTotalSize();
+            setTotalSizeKb(result.total_size_kb);
+            setMaxStorageKb(result.max_storage_kb);
+        } catch (error) {
+            console.error("Failed to fetch total size:", error);
+        }
+    };
 
     const fetchLibraryFiles = async (page = 1, search = "") => {
         setIsLoadingLibrary(true);
@@ -74,6 +87,7 @@ export default function AudioFileUploaderDialog({
 
     useEffect(() => {
         if (isOpen) {
+            fetchTotalSize();
             const timer = setTimeout(() => {
                 fetchLibraryFiles(1, searchQuery);
             }, 500);
@@ -152,10 +166,17 @@ export default function AudioFileUploaderDialog({
             return;
         }
 
+        const fileSizeKb = file.size / 1024
+        if (totalSizeKb + Math.round(fileSizeKb) > maxStorageKb) {
+            tbToast.error({ title: `ไม่สามารถอัปโหลดได้ เนื่องจากพื้นที่การใช้งานเต็ม (พื้นที่ที่ต้องใช้สำหรับไฟล์เสียงนี้ ${calculateFileSizeWithUnit(Math.round(fileSizeKb))})` });
+            return;
+        }
+
         setIsUploading(true);
         try {
             await uploadFile(file);
             tbToast.success({ title: "อัปโหลดไฟล์เสียงสำเร็จ" });
+            fetchTotalSize();
             await fetchLibraryFiles(1, searchQuery);
         } catch (err) {
             tbToast.error({ title: "อัปโหลดไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง", error: (err as any).response?.data });
@@ -182,8 +203,11 @@ export default function AudioFileUploaderDialog({
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <div className="flex items-center justify-between">
-                        <DialogTitle>เลือกไฟล์เสียง</DialogTitle>
+                    <div className="flex items-center justify-between items-stretch">
+                        <div className="flex items-start justify-between w-full">
+                            <DialogTitle>เลือกไฟล์เสียง</DialogTitle>
+
+                        </div>
                         <Input
                             ref={uploadInputRef}
                             type="file"
@@ -191,30 +215,62 @@ export default function AudioFileUploaderDialog({
                             className="hidden"
                             onChange={handleUploadFromDialog}
                         />
-                        <Button
-                            size="sm"
-                            onClick={() => uploadInputRef.current?.click()}
-                            disabled={isUploading}
-                        >
-                            {isUploading ? (
-                                <><Loader2 className="w-4 h-4 animate-spin mr-2" />กำลังอัปโหลด...</>
-                            ) : (
-                                <><Upload className="w-4 h-4 mr-2" />อัปโหลดไฟล์เสียง</>
-                            )}
-                        </Button>
                     </div>
                 </DialogHeader>
 
                 {/* Library section */}
-                <div className="space-y-3">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                        <Input
-                            placeholder="ค้นหาไฟล์เสียง..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-9"
-                        />
+                <div className="flex flex-col">
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <div className="relative w-full">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                                <Input
+                                    placeholder="ค้นหาไฟล์เสียง..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="pl-9"
+                                />
+                            </div>
+
+                            <Button
+                                size="sm"
+                                onClick={() => uploadInputRef.current?.click()}
+                                disabled={isUploading}
+                            >
+                                {isUploading ? (
+                                    <><Loader2 className="w-4 h-4 animate-spin mr-2" />กำลังอัปโหลด...</>
+                                ) : (
+                                    <><Upload className="w-4 h-4 mr-2" />อัปโหลดไฟล์เสียง</>
+                                )}
+                            </Button>
+                        </div>
+
+
+                    </div>
+
+                    <div className="mt-2 flex items-center justify-between">
+                        <div className="flex items-center gap-2 self-end w-fit">
+                            <div className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">
+                                {calculateFileSizeWithUnit(totalSizeKb)} / {calculateFileSizeWithUnit(maxStorageKb)}
+                            </div>
+                            <div className="h-1.5 w-24 bg-secondary rounded-full overflow-hidden">
+                                <div
+                                    className={cn(
+                                        "h-full transition-all duration-500 ease-out",
+                                        (totalSizeKb / maxStorageKb) > 0.9 ? "bg-red-500" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-yellow-500" : "bg-green-500"
+                                    )}
+                                    style={{ width: `${Math.min((totalSizeKb / maxStorageKb) * 100, 100)}%` }}
+                                />
+                            </div>
+
+                        </div>
+
+                        <a href="/my/uploaded-files" target="_blank" rel="noopener noreferrer">
+                            <div className="flex items-center gap-1 text-muted-foreground text-xs self-end mr-2 hover:underline cursor-pointer">
+                                <span>จัดการไฟล์อัปโหลด</span>
+                                <ExternalLink className="w-3 h-3" />
+                            </div>
+                        </a>
                     </div>
 
                     <ScrollArea className="h-[400px] rounded-md ">
@@ -253,7 +309,7 @@ export default function AudioFileUploaderDialog({
                                             <div className="flex flex-col min-w-0 max-w-[300px]">
                                                 <span className="text-sm font-medium truncate">{file.name}</span>
                                                 <span className="text-sm text-muted-foreground">
-                                                    {(file.size / 1024 / 1024).toFixed(2)} MB • {new Date(file.created_at).toLocaleDateString('th-TH')}
+                                                    {calculateFileSizeWithUnit(file.size_kb)} • {new Date(file.created_at).toLocaleDateString('th-TH')}
                                                 </span>
                                             </div>
                                         </div>
