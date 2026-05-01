@@ -27,6 +27,7 @@ function generateCodeVerifier(): string {
 
 const YOUTUBE_CLIENT_ID = process.env.NEXT_PUBLIC_YOUTUBE_CLIENT_ID || "";
 const DISCORD_CLIENT_ID = process.env.NEXT_PUBLIC_DISCORD_CLIENT_ID || "";
+const SPOTIFY_CLIENT_ID = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "";
 const CALLBACK_URL = process.env.NEXT_PUBLIC_ACCOUNT_BINDING_CALLBACK_URL || "";
 
 export const useAccountBinding = (initialAccounts: LinkedAccount[] | null) => {
@@ -82,6 +83,18 @@ export const useAccountBinding = (initialAccounts: LinkedAccount[] | null) => {
                 state: state,
             });
             window.location.href = `https://discord.com/api/oauth2/authorize?${params.toString()}`;
+        }
+
+        if (platform === "spotify") {
+            const params = new URLSearchParams({
+                client_id: SPOTIFY_CLIENT_ID,
+                redirect_uri: CALLBACK_URL,
+                response_type: "code",
+                scope: "user-read-private user-read-email",
+                state: state,
+                show_dialog: "true",
+            });
+            window.location.href = `https://accounts.spotify.com/authorize?${params.toString()}`;
         }
     };
 

@@ -5,6 +5,7 @@ import { LinkedAccount } from "../types";
 import { Twitch } from "@/components/icons/twitch";
 import { YouTube } from "@/components/icons/youtube";
 import { Discord } from "@/components/icons/discord";
+import { Spotify } from "@/components/icons/spotify";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -56,6 +57,14 @@ const PLATFORMS: PlatformConfig[] = [
         icon: Discord,
         color: "#5865F2",
         bgGradient: "from-[#5865F2]/20 to-[#4752C4]/10",
+        canUnbind: true,
+    },
+    {
+        key: "spotify",
+        name: "Spotify",
+        icon: Spotify,
+        color: "#1DB954",
+        bgGradient: "from-[#1DB954]/20 to-[#191414]/10",
         canUnbind: true,
     },
 ];

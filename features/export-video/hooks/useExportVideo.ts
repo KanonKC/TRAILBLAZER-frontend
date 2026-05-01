@@ -71,7 +71,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
                 setConfig(data);
                 setIsEnabled(data.widget?.enabled ?? false);
                 setPrivacyStatus(data.privacy_status);
-                setTags(data.tags);
+                setTags(data.tags || []);
                 setDescription(data.description || "");
                 setActiveTab("quick-start");
             }
@@ -107,6 +107,8 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
             });
             if (updated) {
                 setConfig(updated);
+                setTags(updated.tags || []);
+                setDescription(updated.description || "");
                 tbToast.success({ title: "บันทึกสำเร็จ" });
             }
         } catch (error) {
