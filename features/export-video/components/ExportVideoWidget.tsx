@@ -282,10 +282,6 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                         <WidgetSettingsCardContent>
                             <div className="space-y-6">
                                 <div className="space-y-4">
-                                    {/* <div className="flex items-center gap-2 border-b border-white/10 pb-2">
-                                        <Puzzle className="w-5 h-5 text-green-500" />
-                                        <h3 className="text-lg font-semibold">Extension Sync Status</h3>
-                                    </div> */}
                                     <Label>สถานะการเชื่อมต่อกับ Twitch</Label>
                                     {controller.user?.hasTwitchGqlToken ? (
                                         <Alert className="border-green-500/50 bg-green-500/10 backdrop-blur-md">
