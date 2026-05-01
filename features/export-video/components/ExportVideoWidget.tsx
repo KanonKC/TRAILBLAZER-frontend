@@ -1,6 +1,7 @@
 "use client"
 
 import { useExportVideo } from "../hooks/useExportVideo";
+import Image from "next/image";
 import { ExportVideoHistoryList } from "./ExportVideoHistoryList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -24,9 +25,14 @@ import {
     LayoutDashboard,
     ExternalLink,
     Play,
-    Info
+    Info,
+    Puzzle,
+    AlertTriangle,
+    CheckCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+import ExtensionImage from "@/public/extension.png"
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
@@ -44,6 +50,7 @@ import { useUser } from "@/components/user-context";
 import TrailblazerAccordian from "@/components/TrailblazerAccordian/TrailblazerAccordian";
 import TrailblazerAccordianTrigger from "@/components/TrailblazerAccordian/TrailblazerAccordianTrigger";
 import TrailblazerAccordianContent from "@/components/TrailblazerAccordian/TrailblazerAccordianContent";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = false }: { initialConfig: any | null; initialRequiresProPlan?: boolean }) {
     const controller = useExportVideo(initialConfig, initialRequiresProPlan);
@@ -115,6 +122,12 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
 
                 <TabsContent value="quick-start">
                     <WidgetQuickStartCard>
+                        <div className="flex items-start gap-2 p-3 rounded-md bg-blue-500/10 text-white mb-4">
+                            <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <p className="text-sm">
+                                โปรดตั้งต่าวิดเจ็ตนี้โดยใช้บราวเซอร์ Google Chrome
+                            </p>
+                        </div>
                         <WidgetStepper>
                             <WidgetStepperItems
                                 items={[
@@ -172,6 +185,43 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                     },
                                     {
                                         step: 4,
+                                        title: "ติดตั้ง Extension เพื่อ Sync Twitch Token",
+                                        description: (
+                                            <div className="space-y-4">
+                                                <p className="text-sm text-white/70">เนื่องจากการนำสตรีมย้อนหลังจาก Twitch ไปยัง YouTube จำเป็นต้องใช้โทเค่นจาก Twitch ของผู้ใช้งาน TRAILBLAZER จึงทำ Extension ออกมาเพื่อให้คุณสามารถเชื่อมกับโทเค่นบน Twitch ได้อย่างง่ายดาย</p>
+
+                                                <a href="https://chromewebstore.google.com/detail/trailblazer-%E2%80%93-twitch-toke/gpabiodlfkjndeomiilbigjaokomldgl?authuser=0&hl=en" target="_blank">
+                                                    <Button>
+                                                        <Puzzle className="w-4 h-4" />
+                                                        ติดตั้ง Extension
+                                                    </Button>
+                                                </a>
+
+                                                <TrailblazerAccordian defaultOpen>
+                                                    <TrailblazerAccordianTrigger>
+                                                        <div className="flex items-center gap-2">
+                                                            <Info className="w-4 h-4" />
+                                                            วิธีการใช้งาน Extension
+                                                        </div>
+                                                    </TrailblazerAccordianTrigger>
+                                                    <TrailblazerAccordianContent>
+                                                        <ol className="list-decimal pl-5 space-y-1">
+                                                            <li>เปิด Google Chrome และติดตั้ง Extension</li>
+                                                            <li>
+                                                                หลังจากติดตั้งแล้ว Extension จะอยู่ทางบนขวาของ Google Chrome กดเปิดเข้าไป จะได้หน้าตาเหมือนในรูป
+                                                                <div className="my-4 flex justify-center"><Image className="rounded-md border border-yellow-700 p-2" src={ExtensionImage} alt="Extension Image" width={400} height={400} /></div>
+                                                            </li>
+                                                            <li>Login ผ่านแพล็ตฟอร์มของทั้งสอง เมื่อเชื่อมต่อแล้วปุ่มจะเป็นสีเขียว และขึ้นว่า "เชื่อมต่อแล้ว"</li>
+                                                            <li>เมื่อเชื่อมต่อทั้ง 2 แพล็ตฟอร์มแล้วให้กดปุ่ม "ซิงค์ตอนนี้" หากมีข้อความสีเขียวขึ้นมา จะถือว่าการซิงค์เสร็จสมบูรณ์</li>
+                                                        </ol>
+                                                    </TrailblazerAccordianContent>
+                                                </TrailblazerAccordian>
+
+                                            </div>
+                                        )
+                                    },
+                                    {
+                                        step: 5,
                                         title: "ตั้งค่าความเป็นส่วนตัว",
                                         description: (
                                             <div className="space-y-4">
@@ -186,7 +236,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         )
                                     },
                                     {
-                                        step: 5,
+                                        step: 6,
                                         title: "บันทึกการตั้งค่า",
                                         description: (
                                             <div className="space-y-3">
@@ -196,7 +246,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         )
                                     },
                                     {
-                                        step: 6,
+                                        step: 7,
                                         title: "ทดลองใช้งาน",
                                         description: (
                                             <div className="space-y-3">
@@ -231,6 +281,39 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                     >
                         <WidgetSettingsCardContent>
                             <div className="space-y-6">
+                                <div className="space-y-4">
+                                    {/* <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                                        <Puzzle className="w-5 h-5 text-green-500" />
+                                        <h3 className="text-lg font-semibold">Extension Sync Status</h3>
+                                    </div> */}
+                                    <Label>สถานะการเชื่อมต่อกับ Twitch</Label>
+                                    {controller.user?.hasTwitchGqlToken ? (
+                                        <Alert className="border-green-500/50 bg-green-500/10 backdrop-blur-md">
+                                            <CheckCircle className="h-4 w-4 text-green-500" />
+                                            <AlertTitle className="text-green-500 font-bold">ซิงค์ข้อมูลกับ Twitch สำเร็จ</AlertTitle>
+                                            <AlertDescription className="text-white/80">
+                                                ระบบได้รับ Twitch Token ของคุณแล้ว คุณสามารถใช้งานวิดเจ็ตนี้ได้ตามปกติ
+                                            </AlertDescription>
+                                        </Alert>
+                                    ) : (
+                                        <Alert className="border-red-500/50 bg-red-500/10 backdrop-blur-md">
+                                            <AlertTriangle className="h-4 w-4 text-red-500" />
+                                            <AlertTitle className="text-red-500 font-bold">ยังไม่ได้ซิงค์ข้อมูล</AlertTitle>
+                                            <AlertDescription className="text-white/80 flex flex-col gap-3">
+                                                <span>กรุณาซิงค์ Twitch Token ผ่าน Chrome Extension เพื่อให้วิดเจ็ตสามารถส่งออกวิดีโอไปยัง YouTube ได้</span>
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    className="w-fit"
+                                                    onClick={() => controller.setActiveTab("quick-start")}
+                                                >
+                                                    ไปที่หน้าติดตั้ง Extension
+                                                </Button>
+                                            </AlertDescription>
+                                        </Alert>
+                                    )}
+                                </div>
+
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 border-b border-white/10 pb-2">
                                         <YouTube className="w-5 h-5 text-red-500" />
@@ -283,13 +366,13 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                             </Button>
                                         </div>
                                         <div className="flex flex-wrap gap-2 mt-2">
-                                            {controller.tags.map(tag => (
+                                            {controller.tags?.map(tag => (
                                                 <Badge key={tag} variant="secondary" className="gap-1">
                                                     <span className="text-sm">{tag}</span>
                                                     <span><X className="w-3 h-3 cursor-pointer hover:text-red-500" onClick={() => controller.handleRemoveTag(tag)} /></span>
                                                 </Badge>
                                             ))}
-                                            {controller.tags.length === 0 && (
+                                            {(!controller.tags || controller.tags.length === 0) && (
                                                 <span className="text-sm text-muted-foreground italic">ยังไม่มีแท็ก</span>
                                             )}
                                         </div>

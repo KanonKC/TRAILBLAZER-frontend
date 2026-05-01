@@ -7,6 +7,7 @@ export interface User {
     avatarUrl: string;
     twitchId: string;
     tier: number;
+    hasTwitchGqlToken?: boolean;
 }
 
 export interface GetUserTierResponse {
