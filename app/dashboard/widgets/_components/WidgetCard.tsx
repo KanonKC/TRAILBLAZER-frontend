@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Settings } from "lucide-react";
+import { Play, Settings, Zap } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ExtendedWidget } from "@/services/widget.service";
@@ -56,6 +56,14 @@ export const WidgetCard = ({
                 <CardDescription className="text-base">
                     {description}
                 </CardDescription>
+                {apiWidget?.widget_type?.cost !== undefined && (
+                    <div className="flex items-center gap-1 mt-1">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-sm font-medium text-amber-600">
+                            <Zap className="h-3 w-3" />
+                            {apiWidget.widget_type.cost} พอยท์
+                        </span>
+                    </div>
+                )}
             </CardHeader>
             <CardContent className="mt-auto flex justify-end">
                 <Link href={href} className="text-sm font-medium text-primary hover:underline">

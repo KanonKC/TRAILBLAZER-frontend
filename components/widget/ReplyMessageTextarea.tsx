@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ReplyMessageHelp, VariableItem } from "./ReplyMessageHelp";
 import { cn } from "@/lib/utils";
