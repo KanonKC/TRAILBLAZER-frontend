@@ -1,3 +1,5 @@
+import { ExtendedWidget } from "@/services/widget.service";
+
 export interface DropImageConfig {
     id: string;
     enabled: boolean;
@@ -8,9 +10,5 @@ export interface DropImageConfig {
     invalid_message: string | null;
     not_image_message: string | null;
     contain_mature_message: string | null;
-    widget: {
-        id: string;
-        overlay_key: string;
-        enabled: boolean;
-    };
+    widget: ExtendedWidget;
 }
