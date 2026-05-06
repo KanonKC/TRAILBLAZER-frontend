@@ -162,7 +162,9 @@ export default function Navbar() {
                             </div>
                         </div>
                     ) : (
-                        <TwitchLoginButton className="h-8 px-3 text-sm sm:h-10 sm:px-4 sm:text-base" />
+                        pathname !== "/login" && (
+                            <TwitchLoginButton className="h-8 px-3 text-sm sm:h-10 sm:px-4 sm:text-base" />
+                        )
                     )}
 
                     {/* Mobile Menu */}
