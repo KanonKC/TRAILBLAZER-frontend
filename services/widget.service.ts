@@ -4,6 +4,7 @@ export interface WidgetType {
     id: number;
     slug: string;
     displayName: string;
+    cost: number;
     createdAt: string;
     updatedAt: string;
 }
@@ -23,12 +24,8 @@ export interface ExtendedWidget extends Widget {
     widget_type: WidgetType | null;
 }
 
-export const updateWidgetEnabled = async (id: string, enabled: boolean, options?: { forceUpdate?: boolean }): Promise<boolean> => {
-    await apiClient.patch(`/api/v1/widgets/${id}/enable`, { enabled }, {
-        params: {
-            force_update: options?.forceUpdate
-        }
-    });
+export const updateWidgetEnabled = async (id: string, enabled: boolean): Promise<boolean> => {
+    await apiClient.patch(`/api/v1/widgets/${id}/enable`, { enabled });
     return true;
 };
 
@@ -49,5 +46,16 @@ export const getFirstEnabledWidget = async (): Promise<ExtendedWidget | null> =>
 
 export const listWidgets = async (params?: { page?: number, limit?: number, enabled?: boolean }): Promise<{ data: ExtendedWidget[], pagination: { page: number, limit: number, total: number } }> => {
     const response = await apiClient.get<{ data: ExtendedWidget[], pagination: { page: number, limit: number, total: number } }>('/api/v1/widgets', { params });
+    return response.data;
+};
+
+export interface WidgetQuota {
+    total_quota: number;
+    used_quota: number;
+    remaining_quota: number;
+}
+
+export const getWidgetQuota = async (): Promise<WidgetQuota> => {
+    const response = await apiClient.get<WidgetQuota>('/api/v1/widgets/quota');
     return response.data;
 };

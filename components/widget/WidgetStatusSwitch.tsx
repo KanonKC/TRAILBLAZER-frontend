@@ -27,19 +27,13 @@ export const WidgetStatusSwitch = ({
         isUpdating,
         showLimitDialog,
         setShowLimitDialog,
-        enabledWidgetName,
-        pendingWidgetId,
-        handleStatusChange
+        enabledWidgets,
+        handleStatusChange,
+        handleDisableWidget,
     } = useWidgetStatus(onSuccess);
 
     const onToggle = (checked: boolean) => {
         handleStatusChange(widgetId, checked, { onStatusChange });
-    };
-
-    const onConfirmToggle = () => {
-        if (pendingWidgetId) {
-            handleStatusChange(pendingWidgetId, true, { forceUpdate: true, onStatusChange });
-        }
     };
 
     return (
@@ -52,8 +46,8 @@ export const WidgetStatusSwitch = ({
             <WidgetQuotaDialog
                 open={showLimitDialog}
                 onOpenChange={setShowLimitDialog}
-                enabledWidgetName={enabledWidgetName}
-                onConfirmToggle={onConfirmToggle}
+                enabledWidgets={enabledWidgets}
+                onDisableWidget={handleDisableWidget}
             />
         </>
     );

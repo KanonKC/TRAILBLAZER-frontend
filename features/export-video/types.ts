@@ -1,13 +1,12 @@
+import { ExtendedWidget } from "@/services/widget.service";
+
 export interface ExportVideoConfig {
     id: string;
     enabled: boolean;
     privacy_status: string; // "PRIVATE" | "PUBLIC" | "UNLISTED"
     tags: string[];
     description: string | null;
-    widget: {
-        id: string;
-        enabled: boolean;
-    };
+    widget: ExtendedWidget;
 }
 
 export interface ExportVideoHistory {

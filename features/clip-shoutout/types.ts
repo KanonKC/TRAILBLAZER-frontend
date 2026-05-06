@@ -1,3 +1,5 @@
+import { ExtendedWidget } from "@/services/widget.service";
+
 export interface ClipShoutoutConfig {
     id: string;
     twitch_id: string;
@@ -8,9 +10,5 @@ export interface ClipShoutoutConfig {
     twitch_bot_id?: string | null;
     enabled_clip?: boolean;
     enabled_highlight_only?: boolean;
-    widget: {
-        id: string;
-        overlay_key: string;
-        enabled: boolean;
-    }
+    widget: ExtendedWidget;
 }

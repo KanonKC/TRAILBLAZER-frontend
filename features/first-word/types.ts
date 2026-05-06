@@ -1,3 +1,4 @@
+import { ExtendedWidget } from "@/services/widget.service";
 import { UploadedFile } from "@/services/uploadedFile.service";
 
 export interface FirstWordConfig {
@@ -10,11 +11,7 @@ export interface FirstWordConfig {
     audio_volume?: number;
     twitch_bot_id?: string | null;
     audio: UploadedFile | null;
-    widget: {
-        id: string;
-        overlay_key: string;
-        enabled: boolean;
-    }
+    widget: ExtendedWidget;
 }
 
 export interface FirstWordCustomReply {

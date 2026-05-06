@@ -1,3 +1,5 @@
+import { ExtendedWidget } from "@/services/widget.service";
+
 export interface RandomDbdPerkClass {
     id: string;
     type: "survivor" | "killer";
@@ -9,11 +11,7 @@ export interface RandomDbdPerkClass {
 export interface RandomDbdPerkConfig {
     id: string;
     enabled: boolean;
-    widget: {
-        id: string;
-        overlay_key: string;
-        enabled: boolean;
-    };
+    widget: ExtendedWidget;
     classes: RandomDbdPerkClass[];
     totalKillerPerks: number;
     totalSurvivorPerks: number;
