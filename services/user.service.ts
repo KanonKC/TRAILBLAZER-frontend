@@ -29,3 +29,18 @@ export const getUserTier = async ({ forceTwitch = false }: { forceTwitch?: boole
     return response.data;
 };
 
+
+export interface ReferralStatus {
+    count: number;
+    code: string;
+    milestones: {
+        count: number;
+        reward: string;
+        reached: boolean;
+    }[];
+}
+
+export const getReferralStatus = async (): Promise<ReferralStatus> => {
+    const response = await apiClient.get<ReferralStatus>("/api/v1/user/referral-status");
+    return response.data;
+};

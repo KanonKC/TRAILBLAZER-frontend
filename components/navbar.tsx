@@ -22,12 +22,15 @@ import { useEffect, useState } from "react";
 import { getUserTier } from "@/services/user.service";
 import { PricingTwitchDialog } from "@/app/pricing/_components/PricingTwitchDialog";
 import { Discord } from "./icons/discord";
+import { ReferralDialog } from "./referral-dialog";
+import { Gift } from "lucide-react";
 
 export default function Navbar() {
     const { user, isLoading, logout } = useUser();
     const pathname = usePathname();
     const [tier, setTier] = useState<number>(0);
     const [open, setOpen] = useState(false);
+    const [referralOpen, setReferralOpen] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -53,6 +56,10 @@ export default function Navbar() {
             <PricingTwitchDialog
                 open={open}
                 onOpenChange={setOpen}
+            />
+            <ReferralDialog
+                open={referralOpen}
+                onOpenChange={setReferralOpen}
             />
             <div className="flex h-16 items-center px-4 container mx-auto justify-between">
                 <div className="flex items-center">
@@ -85,6 +92,14 @@ export default function Navbar() {
                         </div>
                     ) : user ? (
                         <div className="flex items-center gap-2 sm:gap-4">
+                            <Button
+                                variant="outline"
+                                onClick={() => setReferralOpen(true)}
+                                className="hidden sm:flex items-center gap-2 h-8 px-2 sm:h-10 sm:px-4"
+                            >
+                                <Gift className="w-4 h-4 text-primary" />
+                                <span className="hidden lg:inline">Invite Friends</span>
+                            </Button>
                             {tier === 0 && (
                                 <Button 
                                     onClick={() => setOpen(true)} 
@@ -160,6 +175,11 @@ export default function Navbar() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel>Menu</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => setReferralOpen(true)}>
+                                    <Gift className="mr-2 h-4 w-4" />
+                                    Invite Friends
+                                </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
                                     <Link href="/dashboard/widgets" className="w-full">
