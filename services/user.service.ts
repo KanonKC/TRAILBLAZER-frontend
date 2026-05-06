@@ -7,6 +7,7 @@ export interface User {
     avatarUrl: string;
     twitchId: string;
     tier: number;
+    extraWidgetQuota: number;
     hasTwitchGqlToken?: boolean;
 }
 
