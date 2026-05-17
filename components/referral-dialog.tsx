@@ -37,6 +37,10 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
             const data = await getReferralStatus();
             setStatus(data);
         } catch (error) {
+            tbToast.error({
+                title: "เกิดข้อผิดพลาด",
+                description: "ไม่สามารถดึงข้อมูลการแนะนำเพื่อนได้",
+            });
             console.error("Failed to fetch referral status", error);
         } finally {
             setIsLoading(false);
@@ -106,14 +110,14 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
                                 >
                                     <div className="flex flex-col">
                                         <span className="text-sm font-bold text-white">แนะนำเพื่อนคนที่ {milestone.count}</span>
-                                        <span className="text-xs text-muted-foreground">{translateReward(milestone.reward)}</span>
+                                        <span className="text-sm text-muted-foreground">{translateReward(milestone.reward)}</span>
                                     </div>
                                     {milestone.reached ? (
-                                        <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30 text-[10px] sm:text-xs">
+                                        <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30 text-sm">
                                             สำเร็จแล้ว
                                         </Badge>
                                     ) : (
-                                        <span className="text-xs font-medium text-muted-foreground">รอดำเนินการ</span>
+                                        <span className="text-sm font-medium text-muted-foreground">รอดำเนินการ</span>
                                     )}
                                 </div>
                             ))}

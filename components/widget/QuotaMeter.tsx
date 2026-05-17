@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getWidgetQuota, WidgetQuota } from "@/services/widget.service";
 import { Zap } from "lucide-react";
 import { Progress } from "../ui/progress";
+import { tbToast } from "@/utils/tbToast";
 
 interface QuotaMeterProps {
     /** Pass a refresh key (e.g. a counter) to re-fetch quota after enable/disable actions */
@@ -16,7 +17,13 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
     useEffect(() => {
         getWidgetQuota()
             .then(setQuota)
-            .catch((e) => console.error("Failed to fetch quota", e));
+            .catch((e) => {
+                tbToast.error({
+                    title: "เกิดข้อผิดพลาด",
+                    description: "ไม่สามารถดึงข้อมูลโควต้าได้",
+                });
+                console.error("Failed to fetch quota", e);
+            });
     }, [refreshKey]);
 
     if (!quota) return null;

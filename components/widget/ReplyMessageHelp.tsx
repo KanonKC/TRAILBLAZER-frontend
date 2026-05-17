@@ -63,7 +63,7 @@ export function ReplyMessageHelp({ className, onInsertVariable, variables, defau
                                         <span className="text-sm text-white/80">
                                             {item.description}
                                         </span>
-                                        <span className="text-xs text-white/40">
+                                        <span className="text-sm text-white/40">
                                             ตัวอย่าง: <span className="italic">&quot;{item.example}&quot;</span>
                                         </span>
                                     </div>
