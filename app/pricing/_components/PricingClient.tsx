@@ -44,7 +44,7 @@ const PricingClient = () => {
                         <ul className="space-y-4">
                             <li className="flex items-center gap-3">
                                 <span className="bg-primary/20 text-primary p-1 rounded-full"><Check className="h-4 w-4" /></span>
-                                <span>สามารถใช้งานได้ 1 Widget</span>
+                                <span>โควต้า <strong>1 พอยท์</strong></span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <span className="bg-primary/20 text-primary p-1 rounded-full"><Check className="h-4 w-4" /></span>
@@ -82,7 +82,7 @@ const PricingClient = () => {
                         <ul className="space-y-4">
                             <li className="flex items-center gap-3">
                                 <span className="bg-amber-500/20 text-amber-500 p-1 rounded-full"><Check className="h-4 w-4" /></span>
-                                <span className="font-semibold">ใช้งาน Widget ได้อย่าง<span className="text-primary">ไร้ขีดจำกัด</span></span>
+                                <span className="font-semibold">โควต้า <span className="text-primary">10 พอยท์</span></span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <span className="bg-amber-500/20 text-amber-500 p-1 rounded-full"><Check className="h-4 w-4" /></span>

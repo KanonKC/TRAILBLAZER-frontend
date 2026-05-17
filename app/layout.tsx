@@ -23,6 +23,7 @@ import Navbar from "@/components/navbar";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/landing/footer";
 import { FloatingSupport } from "@/components/floating-support";
+import { ReferralTracker } from "@/components/referral-tracker";
 
 // ... existing imports
 
@@ -37,6 +38,7 @@ export default function RootLayout({
         className={`font-sans antialiased min-h-screen flex flex-col`}
       >
         <UserProvider>
+          <ReferralTracker />
           <Navbar />
           <main className="flex-1">
             {children}

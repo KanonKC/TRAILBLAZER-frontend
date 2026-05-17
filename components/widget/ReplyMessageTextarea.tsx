@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ReplyMessageHelp, VariableItem } from "./ReplyMessageHelp";
 import { cn } from "@/lib/utils";
@@ -64,7 +64,7 @@ export function ReplyMessageTextarea({ value, onChange, variant = "overlay", err
                     ) : (
                         <div></div>
                     )}
-                    <span className={cn("text-xs", isOverlay ? "text-white/50" : "text-muted-foreground", value.length > 500 ? "text-red-500" : "")}>
+                    <span className={cn("text-sm", isOverlay ? "text-white/50" : "text-muted-foreground", value.length > 500 ? "text-red-500" : "")}>
                         {value.length}/500
                     </span>
                 </div>

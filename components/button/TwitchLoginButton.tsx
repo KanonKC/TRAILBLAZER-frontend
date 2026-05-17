@@ -14,7 +14,17 @@ export function TwitchLoginButton({ className, children, ...props }: TwitchLogin
   const LOGIN_URL = process.env.NEXT_PUBLIC_TWITCH_LOGIN_URL
 
   const handleClick = () => {
-    const state = crypto.randomBytes(32).toString("hex")
+    const getCookie = (name: string) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(";").shift();
+      return null;
+    };
+
+    const ref = getCookie("blaze_ref");
+    const nonce = crypto.randomBytes(16).toString("hex");
+    const state = ref ? `${nonce}:${ref}` : nonce;
+
     if (LOGIN_URL) {
       window.location.href = LOGIN_URL + "&state=" + state
     } else {
