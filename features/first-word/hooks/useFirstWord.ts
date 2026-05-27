@@ -114,7 +114,8 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
             const payload: Partial<FirstWordConfig> = {
                 reply_message: replyMessage,
                 twitch_bot_id: botProfile === "default" ? null : botProfile,
-                audio_volume: audioVolume
+                audio_volume: audioVolume,
+                audio_key: audioFile && 'key' in audioFile ? audioFile.key : null
             };
 
             const updated = await api.updateFirstWordConfig(payload);
