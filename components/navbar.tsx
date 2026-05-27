@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
-import { File, Link2, LogOut, MessageSquare, RefreshCw, Upload, Menu } from "lucide-react";
+import { File, Link2, LogOut, MessageSquare, RefreshCw, Upload, Menu, Flame } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "./user-context";
@@ -95,15 +95,15 @@ export default function Navbar() {
                             <Button
                                 variant="outline"
                                 onClick={() => setReferralOpen(true)}
-                                className="hidden sm:flex items-center gap-2 h-8 px-2 sm:h-10 sm:px-4"
+                                className="hidden md:flex items-center gap-2 h-8 px-2 sm:h-10 sm:px-4"
                             >
                                 <Gift className="w-4 h-4 text-primary" />
-                                <span className="hidden lg:inline">Invite Friends</span>
+                                <span className="hidden sm:inline">ชวนเพื่อน</span>
                             </Button>
                             {tier === 0 && (
                                 <Button 
                                     onClick={() => setOpen(true)} 
-                                    className="trailblazer-gradient text-white font-bold text-sm h-8 px-2 sm:h-10 sm:px-4"
+                                    className="hidden md:flex trailblazer-gradient text-white font-bold text-sm h-8 px-2 sm:h-10 sm:px-4"
                                 >
                                     <span className="hidden min-[400px]:inline">อัปเกรดเป็น</span> PRO
                                 </Button>
@@ -133,6 +133,23 @@ export default function Navbar() {
                                             </div>
                                         </DropdownMenuLabel>
                                         <DropdownMenuSeparator />
+                                        {tier === 0 && (
+                                            <DropdownMenuItem 
+                                                onClick={() => setOpen(true)}
+                                                className="md:hidden cursor-pointer trailblazer-gradient text-white font-bold focus:text-white mb-1"
+                                            >
+                                                <Flame className="mr-2 h-4 w-4" />
+                                                อัปเกรดเป็น PRO
+                                            </DropdownMenuItem>
+                                        )}
+                                        <DropdownMenuItem 
+                                            onClick={() => setReferralOpen(true)}
+                                            className="md:hidden cursor-pointer"
+                                        >
+                                            <Gift className="mr-2 h-4 w-4 text-primary" />
+                                            ชวนเพื่อน
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator className="md:hidden" />
                                         <DropdownMenuItem asChild>
                                             <Link href="/my/uploaded-files" className="cursor-pointer">
                                                 <Upload className="mr-2 h-4 w-4" />
@@ -175,30 +192,40 @@ export default function Navbar() {
                                     <Menu className="h-5 w-5" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-56">
-                                <DropdownMenuLabel>Menu</DropdownMenuLabel>
+                            <DropdownMenuContent align="end" className="w-56 glass">
+                                <DropdownMenuLabel>เมนู</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => setReferralOpen(true)}>
                                     <Gift className="mr-2 h-4 w-4" />
-                                    Invite Friends
+                                    ชวนเพื่อน
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
-                                    <Link href="/dashboard/widgets" className="w-full">
-                                        Widgets
+                                    <Link href="/dashboard/widgets" className="flex items-center gap-2 w-full">
+                                        <MessageSquare className="w-4 h-4" />
+                                        วิดเจ็ต
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
-                                    <Link href="/pricing" className="w-full">
-                                        Pricing
+                                    <Link href="/pricing" className="flex items-center gap-2 w-full">
+                                        <Badge variant="outline" className="px-1 h-4 flex items-center">฿</Badge>
+                                        แพ็กเกจ
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>
                                     <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 w-full">
                                         <Discord className="w-4 h-4" />
-                                        Join Discord
+                                        เข้าร่วม Discord
                                     </a>
                                 </DropdownMenuItem>
+                                {!user && pathname !== "/login" && (
+                                    <>
+                                        <DropdownMenuSeparator />
+                                        <div className="p-2">
+                                            <TwitchLoginButton className="w-full h-10 text-sm" />
+                                        </div>
+                                    </>
+                                )}
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>

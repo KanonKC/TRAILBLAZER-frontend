@@ -12,8 +12,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Gift, Copy, Check, Users } from "lucide-react";
 import { getReferralStatus, ReferralStatus } from "@/services/user.service";
-import { Badge } from "@/components/ui/badge";
 import { tbToast } from "@/utils/tbToast";
+import { Progress } from "@/components/ui/progress";
 
 interface ReferralDialogProps {
     open: boolean;
@@ -60,6 +60,8 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
         return reward;
     };
 
+    const progressValue = status ? Math.min((status.count / 3) * 100, 100) : 0;
+
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
@@ -97,26 +99,37 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
                             <span className="text-sm font-bold text-primary">แนะนำเพื่อนสำเร็จ {status?.count || 0} คน</span>
                         </div>
 
-                        <div className="grid gap-3">
-                            {status?.milestones.map((milestone) => (
-                                <div
-                                    key={milestone.count}
-                                    className={`flex items-center justify-between p-3 rounded-lg border ${milestone.reached ? "bg-primary/10 border-primary/20" : "bg-muted/50 border-muted"
-                                        }`}
-                                >
-                                    <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-white">แนะนำเพื่อนคนที่ {milestone.count}</span>
-                                        <span className="text-xs text-muted-foreground">{translateReward(milestone.reward)}</span>
-                                    </div>
-                                    {milestone.reached ? (
-                                        <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30 text-[10px] sm:text-xs">
-                                            สำเร็จแล้ว
-                                        </Badge>
-                                    ) : (
-                                        <span className="text-xs font-medium text-muted-foreground">รอดำเนินการ</span>
-                                    )}
+                        <div className="space-y-10 pt-4 px-2 pb-6">
+                            <div className="relative">
+                                <Progress value={progressValue} className="h-2 bg-muted/30" />
+                                <div className="absolute top-1/2 left-0 w-full flex justify-between -translate-y-1/2">
+                                    {[0, 1, 2, 3].map((num) => {
+                                        const isReached = (status?.count ?? 0) >= num;
+                                        const milestone = num > 0 ? status?.milestones[num - 1] : null;
+
+                                        return (
+                                            <div key={num} className="relative flex flex-col items-center">
+                                                <div
+                                                    className={`w-4 h-4 rounded-full border-2 z-10 transition-all duration-300 ${isReached
+                                                        ? "bg-primary border-primary shadow-[0_0_10px_rgba(255,140,0,0.5)]"
+                                                        : "bg-background border-muted"
+                                                        }`}
+                                                />
+                                                <div className="absolute top-6 flex flex-col items-center text-center min-w-[80px]">
+                                                    <span className={`text-[11px] font-bold transition-colors ${isReached ? "text-primary" : "text-muted-foreground"}`}>
+                                                        {num === 0 ? "เริ่ม" : `${num} คน`}
+                                                    </span>
+                                                    {milestone && (
+                                                        <span className="text-[10px] text-muted-foreground mt-0.5 leading-tight whitespace-nowrap">
+                                                            {translateReward(milestone.reward)}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     </div>
 
@@ -130,5 +143,3 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
         </Dialog>
     );
 }
-
-
