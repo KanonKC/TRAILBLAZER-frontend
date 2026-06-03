@@ -25,7 +25,7 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
     // Form State
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
-    const [audioFile, setAudioFile] = useState<File | UploadedFile | null>(initialConfig?.audio || null);
+    const [audioFile, setAudioFile] = useState<UploadedFile | null>(initialConfig?.audio || null);
     const [audioVolume, setAudioVolume] = useState<number>(initialConfig?.audio_volume ?? 100);
     const [botProfile, setBotProfile] = useState<string>(initialConfig?.twitch_bot_id || user?.twitchId || "default");
     
