@@ -96,6 +96,8 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
 
         setIsTesting(true);
         try {
+            const displayName = `TestUser_${Math.random().toString().slice(2, 8)}`;
+            const username = displayName.toLowerCase()
             const mockEvent = {
                 subscription: { status: "enabled", type: "channel.chat.notification" },
                 event: {
@@ -103,17 +105,17 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
                     broadcaster_user_login: user.username,
                     broadcaster_user_name: user.displayName,
                     chatter_user_id: "0",
-                    chatter_user_login: "testuser",
-                    chatter_user_name: "TestUser",
+                    chatter_user_login: username,
+                    chatter_user_name: displayName,
                     message: { text: "Test Shoutout", fragments: [] },
                     color: "#FF0000",
                     badges: [],
-                    system_message: "TestUser raided you with 100 viewers!",
+                    system_message: `${displayName} raided you with 100 viewers!`,
                     notice_type: "raid",
                     raid: {
                         user_id: user.twitchId,
-                        user_login: "testuser",
-                        user_name: `TestUser_${Math.random().toString().slice(2, 8)}`,
+                        user_login: username,
+                        user_name: displayName,
                         viewer_count: 100,
                         profile_image_url: ""
                     }
