@@ -2,7 +2,7 @@
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox";
 import { cn } from "@/lib/utils";
 import { type TwitchCustomReward } from "@/services/twitch.service";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface ChannelRewardSelectorProps {
     value: string | null;
@@ -23,35 +23,25 @@ export function ChannelRewardSelector({
 }: ChannelRewardSelectorProps) {
     const selectedReward = rewards.find(r => r.id === value);
     const selectedIcon = selectedReward?.image?.url_1x || selectedReward?.default_image?.url_1x;
-    const [inputValue, setInputValue] = useState(selectedReward?.title || "");
+    const [isOpen, setIsOpen] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
 
-    useEffect(() => {
-        if (selectedReward) {
-            setInputValue(selectedReward.title);
-        } else if (!value) {
-            setInputValue("");
-        }
-    }, [selectedReward, value]);
+    const inputValue = isOpen ? searchInput : (selectedReward?.title ?? "");
 
     return (
         <Combobox
             value={value}
             onValueChange={(val) => {
                 onValueChange(val);
-                const reward = rewards.find(r => r.id === val);
-                if (reward) {
-                    setInputValue(reward.title);
-                }
+                setSearchInput("");
             }}
             inputValue={inputValue}
             onInputValueChange={(val) => {
-                const reward = rewards.find(r => r.id === val);
-                setInputValue(reward ? reward.title : val);
+                if (isOpen) setSearchInput(val);
             }}
             onOpenChange={(open) => {
-                if (open) {
-                    setInputValue("");
-                }
+                setIsOpen(open);
+                if (open) setSearchInput("");
             }}
         >
             <div className="relative">
@@ -66,9 +56,6 @@ export function ChannelRewardSelector({
                     placeholder={isLoading ? "Loading rewards..." : placeholder}
                     className={cn("w-full transition-all", selectedIcon && "pl-9")}
                     disabled={isLoading || disabled}
-                    onBlur={() => {
-                        setInputValue(selectedReward?.title ?? "");
-                    }}
                 />
             </div>
             <ComboboxContent>
@@ -78,7 +65,7 @@ export function ChannelRewardSelector({
                         <div className="p-2 text-sm text-muted-foreground text-center">Loading rewards...</div>
                     ) : (
                         <>
-                            {rewards.filter(reward => reward.title.toLowerCase().includes(inputValue.toLowerCase())).map((reward) => (
+                            {rewards.filter(reward => reward.title.toLowerCase().includes(searchInput.toLowerCase())).map((reward) => (
                                 <ComboboxItem
                                     key={reward.id}
                                     value={reward.id}
