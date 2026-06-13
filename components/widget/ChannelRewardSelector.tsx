@@ -48,6 +48,11 @@ export function ChannelRewardSelector({
                 const reward = rewards.find(r => r.id === val);
                 setInputValue(reward ? reward.title : val);
             }}
+            onOpenChange={(open) => {
+                if (open) {
+                    setInputValue("");
+                }
+            }}
         >
             <div className="relative">
                 {selectedIcon && (
@@ -61,6 +66,9 @@ export function ChannelRewardSelector({
                     placeholder={isLoading ? "Loading rewards..." : placeholder}
                     className={cn("w-full transition-all", selectedIcon && "pl-9")}
                     disabled={isLoading || disabled}
+                    onBlur={() => {
+                        setInputValue(selectedReward?.title ?? "");
+                    }}
                 />
             </div>
             <ComboboxContent>
