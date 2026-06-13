@@ -1,5 +1,5 @@
 import { YouTube } from "@/components/icons/youtube";
-import { Dices, ImageIcon, MessageSquare, Video } from "lucide-react";
+import { Dices, ImageIcon, MessageSquare, Music, Video } from "lucide-react";
 
 export const StaticWidgets = [
     {
@@ -41,6 +41,16 @@ export const StaticWidgets = [
         color: "text-purple-500",
         bgColor: "bg-purple-500/10",
         borderColor: "border-purple-500/20"
+    },
+    {
+        slug: "spotify-song-request",
+        title: "Spotify Song Request",
+        description: "ให้ผู้ชมของคุณขอเพลง Spotify ผ่านการแลกแต้มช่อง บอทจะเพิ่มเพลงเข้าคิวและตอบกลับในแชท",
+        icon: Music,
+        href: "/dashboard/widgets/spotify-song-request",
+        color: "text-green-500",
+        bgColor: "bg-green-500/10",
+        borderColor: "border-green-500/20"
     },
     {
         slug: "export-video",
