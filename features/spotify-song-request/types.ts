@@ -6,6 +6,6 @@ export interface SpotifySongRequestConfig {
     twitch_bot_id: string | null;
     invalid_message: string | null;
     success_message: string | null;
-    noActiveMessage: string | null;
+    no_active_message: string | null;
     widget: ExtendedWidget;
 }

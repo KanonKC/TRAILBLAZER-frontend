@@ -17,7 +17,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
     const [twitchBotId, setTwitchBotId] = useState<string>(initialConfig?.twitch_bot_id ?? "");
     const [invalidMessage, setInvalidMessage] = useState<string>(initialConfig?.invalid_message ?? "");
     const [successMessage, setSuccessMessage] = useState<string>(initialConfig?.success_message ?? "");
-    const [noActiveMessage, setNoActiveMessage] = useState<string>(initialConfig?.noActiveMessage ?? "");
+    const [noActiveMessage, setNoActiveMessage] = useState<string>(initialConfig?.no_active_message ?? "");
 
     const handleEnable = async () => {
         if (!user) return;
@@ -31,7 +31,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             setTwitchBotId(data.twitch_bot_id ?? "");
             setInvalidMessage(data.invalid_message ?? "");
             setSuccessMessage(data.success_message ?? "");
-            setNoActiveMessage(data.noActiveMessage ?? "");
+            setNoActiveMessage(data.no_active_message ?? "");
             setActiveTab("quick-start");
         } catch (error) {
             console.error("Failed to enable", error);
@@ -50,7 +50,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
                 twitch_bot_id: twitchBotId || null,
                 invalid_message: invalidMessage || null,
                 success_message: successMessage || null,
-                noActiveMessage: noActiveMessage || null,
+                no_active_message: noActiveMessage || null,
             });
             tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
             setConfig(updated);
