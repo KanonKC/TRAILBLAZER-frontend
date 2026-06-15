@@ -7,6 +7,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
+import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
+import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
+import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
+import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
@@ -30,10 +34,12 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
         twitchBotId,
         invalidMessage,
         successMessage,
+        noActiveMessage,
         setTwitchRewardId,
         setTwitchBotId,
         setInvalidMessage,
         setSuccessMessage,
+        setNoActiveMessage,
         setActiveTab,
         handleEnable,
         handleSave,
@@ -57,10 +63,13 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
         >
             {() => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-2" : "grid-cols-1")}>
+                    <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
                         <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
                         {config && (
-                            <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                            <>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                            </>
                         )}
                     </TabsList>
 
@@ -74,42 +83,103 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                     </TabsContent>
 
                     {config && (
-                        <TabsContent value="settings">
-                            <WidgetSettingsCard>
-                                <WidgetSettingsCardContent>
-                                    <TwitchRewardSelector
-                                        value={twitchRewardId}
-                                        onValueChange={setTwitchRewardId}
-                                    />
-                                    <BotProfileSelector
-                                        value={twitchBotId}
-                                        onValueChange={setTwitchBotId}
-                                    />
-                                    <div className="space-y-2">
-                                        <Label>ข้อความเมื่อสำเร็จ</Label>
-                                        <ReplyMessageTextarea
-                                            value={successMessage}
-                                            onChange={setSuccessMessage}
-                                            placeholder="เพิ่ม {{track_name}} โดย {{track_artist}} เข้าคิวแล้ว!"
-                                            rows={2}
+                        <>
+                            <TabsContent value="quick-start">
+                                <WidgetQuickStartCard>
+                                    <WidgetStepper>
+                                        <WidgetStepperItems
+                                            items={[
+                                                {
+                                                    step: 1,
+                                                    title: "เปิดใช้งาน Widget",
+                                                    description: <WidgetEnabledBadge />
+                                                },
+                                                {
+                                                    step: 2,
+                                                    title: "เลือกแต้มช่องที่ต้องการใช้งาน",
+                                                    description: (
+                                                        <div className="space-y-3">
+                                                            <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
+                                                            <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
+                                                        </div>
+                                                    )
+                                                },
+                                                {
+                                                    step: 3,
+                                                    title: "เลือก Bot Profile",
+                                                    description: (
+                                                        <div className="space-y-3">
+                                                            <p className="text-sm text-white/70">เลือกบอทที่จะตอบกลับในแชทเมื่อมีการขอเพลง</p>
+                                                            <BotProfileSelector value={twitchBotId} onValueChange={setTwitchBotId} />
+                                                        </div>
+                                                    )
+                                                },
+                                                {
+                                                    step: 4,
+                                                    title: "บันทึกการตั้งค่า",
+                                                    description: (
+                                                        <div className="space-y-3">
+                                                            <p className="text-sm text-white/70">กดบันทึกเพื่อเริ่มใช้งาน Widget</p>
+                                                            <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
+                                                        </div>
+                                                    )
+                                                }
+                                            ]}
                                         />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <Label>ข้อความเมื่อไม่พบเพลง</Label>
-                                        <ReplyMessageTextarea
-                                            value={invalidMessage}
-                                            onChange={setInvalidMessage}
-                                            placeholder="ไม่พบเพลงที่ต้องการ กรุณาลองใหม่อีกครั้ง"
-                                            rows={2}
+                                    </WidgetStepper>
+                                </WidgetQuickStartCard>
+                            </TabsContent>
+
+                            <TabsContent value="settings">
+                                <WidgetSettingsCard>
+                                    <WidgetSettingsCardContent>
+                                        <TwitchRewardSelector
+                                            value={twitchRewardId}
+                                            onValueChange={setTwitchRewardId}
                                         />
-                                    </div>
-                                </WidgetSettingsCardContent>
-                                <WidgetSettingsCardFooter>
-                                    <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
-                                    <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
-                                </WidgetSettingsCardFooter>
-                            </WidgetSettingsCard>
-                        </TabsContent>
+                                        <BotProfileSelector
+                                            value={twitchBotId}
+                                            onValueChange={setTwitchBotId}
+                                        />
+                                        <div className="space-y-2">
+                                            <Label>ข้อความเมื่อสำเร็จ</Label>
+                                            <ReplyMessageTextarea
+                                                value={successMessage}
+                                                onChange={setSuccessMessage}
+                                                placeholder="เพิ่ม {{track_name}} โดย {{track_artist}} เข้าคิวแล้ว!"
+                                                variables={[
+                                                    { variable: "{{track_name}}", description: "ชื่อเพลง", example: "Blinding Lights" },
+                                                    { variable: "{{track_artist}}", description: "ชื่อศิลปิน", example: "The Weeknd" },
+                                                ]}
+                                                rows={2}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>ข้อความเมื่อไม่พบเพลง</Label>
+                                            <ReplyMessageTextarea
+                                                value={invalidMessage}
+                                                onChange={setInvalidMessage}
+                                                placeholder="ไม่พบเพลงที่ต้องการ กรุณาลองใหม่อีกครั้ง"
+                                                rows={2}
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>ข้อความเมื่อไม่มีอุปกรณ์ที่กำลังเล่นอยู่</Label>
+                                            <ReplyMessageTextarea
+                                                value={noActiveMessage}
+                                                onChange={setNoActiveMessage}
+                                                placeholder="ลืมเปิดเครื่อง"
+                                                rows={2}
+                                            />
+                                        </div>
+                                    </WidgetSettingsCardContent>
+                                    <WidgetSettingsCardFooter>
+                                        <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
+                                        <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
+                                    </WidgetSettingsCardFooter>
+                                </WidgetSettingsCard>
+                            </TabsContent>
+                        </>
                     )}
                 </Tabs>
             )}

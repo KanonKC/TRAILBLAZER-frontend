@@ -17,6 +17,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
     const [twitchBotId, setTwitchBotId] = useState<string>(initialConfig?.twitch_bot_id ?? "");
     const [invalidMessage, setInvalidMessage] = useState<string>(initialConfig?.invalid_message ?? "");
     const [successMessage, setSuccessMessage] = useState<string>(initialConfig?.success_message ?? "");
+    const [noActiveMessage, setNoActiveMessage] = useState<string>(initialConfig?.noActiveMessage ?? "");
 
     const handleEnable = async () => {
         if (!user) return;
@@ -30,7 +31,8 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             setTwitchBotId(data.twitch_bot_id ?? "");
             setInvalidMessage(data.invalid_message ?? "");
             setSuccessMessage(data.success_message ?? "");
-            setActiveTab("settings");
+            setNoActiveMessage(data.noActiveMessage ?? "");
+            setActiveTab("quick-start");
         } catch (error) {
             console.error("Failed to enable", error);
             tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ" });
@@ -48,6 +50,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
                 twitch_bot_id: twitchBotId || null,
                 invalid_message: invalidMessage || null,
                 success_message: successMessage || null,
+                noActiveMessage: noActiveMessage || null,
             });
             tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
             setConfig(updated);
@@ -72,6 +75,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
                 setTwitchBotId("");
                 setInvalidMessage("");
                 setSuccessMessage("");
+                setNoActiveMessage("");
                 setActiveTab("overview");
             }
         } catch (error) {
@@ -102,6 +106,8 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
         setTwitchBotId,
         setInvalidMessage,
         setSuccessMessage,
+        noActiveMessage,
+        setNoActiveMessage,
         setActiveTab,
         setConfig,
         handleEnable,
