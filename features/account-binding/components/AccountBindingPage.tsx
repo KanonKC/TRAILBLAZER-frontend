@@ -1,5 +1,6 @@
 "use client"
 
+import type { LinkedAccount } from "../types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Platforms } from "@/constants/platforms";
 import { Link2 } from "lucide-react";
@@ -7,7 +8,7 @@ import { useAccountBinding } from "../hooks/useAccountBinding";
 import { PlatformCard } from "./PlatformCard";
 
 interface AccountBindingPageProps {
-    initialAccounts: import("../types").LinkedAccount[] | null;
+    initialAccounts: LinkedAccount[] | null;
 }
 
 const AvailablePlatforms = [

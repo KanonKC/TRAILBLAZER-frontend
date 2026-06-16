@@ -2,11 +2,11 @@
 
 import { useDropImage } from "../hooks/useDropImage";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-    ImageIcon, 
-    Gift, 
-    ShieldCheck, 
-    Play 
+import {
+    ImageIcon,
+    Gift,
+    ShieldCheck,
+    Play
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -96,13 +96,13 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                     </TabsList>
 
                     <TabsContent value="overview">
-                        <WidgetOverviewCard 
-                            showLoginButton={!user} 
-                            showEnableButton={!!user && !config} 
+                        <WidgetOverviewCard
+                            showLoginButton={!user}
+                            showEnableButton={!!user && !config}
                             onClickEnable={async () => {
                                 await handleEnable();
                                 triggerRefresh();
-                            }} 
+                            }}
                             isLoading={isSaving}
                         >
                             <p className="text-gray-200 text-base leading-relaxed">
@@ -193,9 +193,9 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                     </TabsContent>
 
                     <TabsContent value="settings">
-                        <WidgetSettingsCard 
-                            widgetId={config?.widget?.id} 
-                            isEnabled={isEnabled} 
+                        <WidgetSettingsCard
+                            widgetId={config?.widget?.id}
+                            isEnabled={isEnabled}
                             cost={config?.widget?.widget_type?.cost}
                             onStatusChange={handleStatusChange}
                             onSuccess={triggerRefresh}
@@ -216,16 +216,29 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
                                         </div>
                                     </div>
 
-                                    <SmartOverlayUrlInput 
-                                        url={overlayUrl} 
-                                        slug="drop-image" 
-                                        onSuccess={setConfig} 
+                                    <SmartOverlayUrlInput
+                                        url={overlayUrl}
+                                        slug="drop-image"
+                                        onSuccess={setConfig}
                                     />
 
+                                    {/* Content Moderation */}
                                     <div className="space-y-4">
+                                        <div className="flex items-center gap-2 border-b pb-2">
+                                            <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                                            <h3 className="text-lg font-semibold">Content Moderation</h3>
+                                        </div>
                                         <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                                            <Label>เปิดใช้งานการตรวจสอบเนื้อหา (Moderation)</Label>
-                                            <Switch checked={enabledModeration} onCheckedChange={setEnabledModeration} />
+                                            <div className="space-y-2 mr-2">
+                                                <Label>เปิดใช้งานการตรวจสอบเนื้อหาด้วย<a href="https://sightengine.com/" target="_blank" rel="noopener noreferrer" className="text-cyan-500 hover:underline">Sightengine</a></Label>
+                                                <p className="text-sm text-muted-foreground">
+                                                    หากเปิดใช้งาน จะทำการตรวจสอบรูปภาพที่ส่งมาว่ามีเนื้อหาไม่เหมาะสมหรือไม่ (NSFW / Gore) และป้องกันการแสดงรูปภาพเหล่านั้นขึ้นบนหน้าจอ
+                                                </p>
+                                            </div>
+                                            <Switch
+                                                checked={enabledModeration}
+                                                onCheckedChange={setEnabledModeration}
+                                            />
                                         </div>
                                     </div>
 

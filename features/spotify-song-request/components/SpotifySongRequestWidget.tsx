@@ -70,10 +70,6 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
         );
     }
 
-    // useEffect(() => {
-    //     console.log("AAA", config)
-    // }, [config])
-
     return (
         <WidgetConfigLayout
             title="Spotify Music Request"

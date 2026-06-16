@@ -5,7 +5,6 @@ import { SpotifySongRequestWidget } from "@/features/spotify-song-request/compon
 async function getSpotifySongRequestConfigServer(): Promise<SpotifySongRequestConfig | null> {
     try {
         const res = await fetchData<SpotifySongRequestConfig>("/api/v1/spotify-song-request");
-        console.log("Res", res)
         if (!res) return null;
         return res;
     } catch {

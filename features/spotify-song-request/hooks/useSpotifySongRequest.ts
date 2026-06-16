@@ -8,7 +8,6 @@ import { SpotifySongRequestConfig } from "../types";
 export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
     const [config, setConfig] = useState<SpotifySongRequestConfig | null>(initialConfig);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
     const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
 
@@ -27,7 +26,6 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             const data = await createSpotifySongRequest(user.twitchId, user.id);
             tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
             setConfig(data);
-            setIsEnabled(data.widget?.enabled ?? false);
             setTwitchRewardId(data.twitch_reward_id);
             setTwitchBotId(data.twitch_bot_id ?? "");
             setInvalidMessage(data.invalid_message ?? "");
@@ -55,9 +53,9 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             });
             tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
             setConfig(updated);
-        } catch (error: any) {
+        } catch (error) {
             console.error("Failed to save", error);
-            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้", error: error.response?.data });
+            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้", error: (error as { response?: { data?: unknown } }).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -71,7 +69,6 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             if (success) {
                 tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
                 setConfig(null);
-                setIsEnabled(false);
                 setTwitchRewardId(null);
                 setTwitchBotId("");
                 setInvalidMessage("");
@@ -88,10 +85,10 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
     };
 
     const handleTestInsert = async () => {
-        if (!user || !twitchRewardId) return;
+        if (!twitchRewardId) return;
         setIsTestingTrack(true);
         try {
-            await testInsertSpotifyTrack(user.twitchId, twitchRewardId);
+            await testInsertSpotifyTrack();
             tbToast.success({ title: "ส่งคำขอทดสอบแล้ว ตรวจสอบคิว Spotify ของคุณ" });
         } catch (error) {
             tbToast.error({ title: "ไม่สามารถทดสอบได้" });
@@ -101,14 +98,12 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
     };
 
     const handleStatusChange = (checked: boolean) => {
-        setIsEnabled(checked);
         setConfig(prev => prev ? { ...prev, widget: { ...prev.widget, enabled: checked } } : null);
     };
 
     return {
         user,
         config,
-        isEnabled,
         isSaving,
         isUserLoading,
         activeTab,
