@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUser } from "@/components/user-context";
 import { tbToast } from "@/utils/tbToast";
-import { createSpotifySongRequest, updateSpotifySongRequestConfig } from "../api/spotifySongRequest.api";
+import { createSpotifySongRequest, updateSpotifySongRequestConfig, testInsertSpotifyTrack } from "../api/spotifySongRequest.api";
 import { deleteWidget } from "@/services/widget.service";
 import { SpotifySongRequestConfig } from "../types";
 
@@ -18,6 +18,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
     const [invalidMessage, setInvalidMessage] = useState<string>(initialConfig?.invalid_message ?? "");
     const [successMessage, setSuccessMessage] = useState<string>(initialConfig?.success_message ?? "");
     const [noActiveMessage, setNoActiveMessage] = useState<string>(initialConfig?.no_active_message ?? "");
+    const [isTestingTrack, setIsTestingTrack] = useState(false);
 
     const handleEnable = async () => {
         if (!user) return;
@@ -86,6 +87,19 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
         }
     };
 
+    const handleTestInsert = async () => {
+        if (!user || !twitchRewardId) return;
+        setIsTestingTrack(true);
+        try {
+            await testInsertSpotifyTrack(user.twitchId, twitchRewardId);
+            tbToast.success({ title: "ส่งคำขอทดสอบแล้ว ตรวจสอบคิว Spotify ของคุณ" });
+        } catch (error) {
+            tbToast.error({ title: "ไม่สามารถทดสอบได้" });
+        } finally {
+            setIsTestingTrack(false);
+        }
+    };
+
     const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
         setConfig(prev => prev ? { ...prev, widget: { ...prev.widget, enabled: checked } } : null);
@@ -114,5 +128,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
         handleSave,
         handleDelete,
         handleStatusChange,
+        handleTestInsert,
+        isTestingTrack,
     };
 };

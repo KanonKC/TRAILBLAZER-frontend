@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Clock, Cog, ExternalLink, MessageSquare, Play, Video } from "lucide-react";
+import { Clock, Cog, ExternalLink, MessageSquare, Video } from "lucide-react";
 import { MSDelaySlider } from "@/components/widget/MSDelaySlider";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
@@ -24,6 +24,7 @@ import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/Widge
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
+import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 
 import { useClipShoutout } from "../hooks/useClipShoutout";
@@ -271,9 +272,7 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
                             <WidgetSettingsCardFooter>
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
                                 <div className="flex gap-2">
-                                    <Button variant="outline" onClick={handleTest} disabled={isTesting}>
-                                        {isTesting ? "Testing..." : <><Play className="mr-2 h-4 w-4" /> Test</>}
-                                    </Button>
+                                    <TestWidgetButton onTest={handleTest} isLoading={isTesting} />
                                     <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
                                 </div>
                             </WidgetSettingsCardFooter>

@@ -2,7 +2,7 @@
 
 import { useFirstWord } from "../hooks/useFirstWord";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MessageSquare, Music, Play } from "lucide-react";
+import { MessageSquare, Music } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,7 @@ import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperI
 import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
+import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
@@ -40,7 +41,7 @@ import { FirstWordVariableMap } from "@/constants/firstWord";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 
 export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false }: { initialConfig: FirstWordConfig | null; initialRequiresProPlan?: boolean }) {
-    
+
     // Connect to the Controller
     const controller = useFirstWord(initialConfig, initialRequiresProPlan);
 
@@ -140,18 +141,21 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
                                                 description: (
                                                     <div className="space-y-3">
                                                         <p className="text-sm text-white/70">นำ Overlay URL ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้เสียงเอฟเฟกต์ทำงาน</p>
-                                                        <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"}/>
+                                                        <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} />
                                                         <OBSSetupHelp />
                                                     </div>
                                                 )
                                             },
                                             {
                                                 step: 4,
-                                                title: "บันทึกและพร้อมลุย!",
+                                                title: "บันทึกและทดสอบ",
                                                 description: (
                                                     <div className="space-y-3">
                                                         <p className="text-sm text-white/70">ตรวจสอบข้อมูลให้เรียบร้อยแล้วกดบันทึกเพื่อเริ่มทักทายคนดูได้เลย</p>
-                                                        <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
+                                                        <div className="flex items-center gap-2">
+                                                            <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
+                                                            <TestWidgetButton onTest={controller.handleTestAudio} isLoading={controller.isTesting} />
+                                                        </div>
                                                     </div>
                                                 )
                                             }
@@ -204,7 +208,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
 
                                         <div className="space-y-2">
                                             <Label>URL ของวิดเจ็ต (สำหรับ OBS)</Label>
-                                            <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"}/>
+                                            <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} />
                                         </div>
 
                                         <div className="pt-4 border-t border-white/10 space-y-4">
@@ -230,13 +234,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
                                 <WidgetSettingsCardFooter>
                                     <DeleteWidgetButton onDelete={controller.handleDelete} isLoading={controller.isSaving} />
                                     <div className="flex gap-2">
-                                        <Button
-                                            variant="outline"
-                                            onClick={controller.handleTestAudio}
-                                            disabled={controller.isTesting}
-                                        >
-                                            {controller.isTesting ? "Testing..." : <><Play className="mr-2 h-4 w-4" /> Test Sound</>}
-                                        </Button>
+                                        <TestWidgetButton onTest={controller.handleTestAudio} isLoading={controller.isTesting} />
                                         <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
                                     </div>
                                 </WidgetSettingsCardFooter>

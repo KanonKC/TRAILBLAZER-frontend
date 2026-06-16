@@ -18,13 +18,13 @@ import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
+import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 import { Label } from "@/components/ui/label";
 import { SpotifySongRequestConfig } from "../types";
 import { Spotify } from "@/components/icons/spotify";
 import SubLabel from "@/components/SubLabel";
-import { Button } from "@/components/ui/button";
 import { Platforms } from "@/constants/platforms";
 import { useAccountBinding } from "@/features/account-binding/hooks/useAccountBinding";
 import { PlatformCard } from "@/features/account-binding/components/PlatformCard";
@@ -50,6 +50,8 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
         handleEnable,
         handleSave,
         handleDelete,
+        handleTestInsert,
+        isTestingTrack,
     } = useSpotifySongRequest(initialConfig);
 
     const {
@@ -154,7 +156,7 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                                     )
                                                 },
                                                 {
-                                                    step: 2,
+                                                    step: 3,
                                                     title: "เลือกแต้มช่องที่ต้องการใช้งาน",
                                                     description: (
                                                         <div className="space-y-3">
@@ -164,7 +166,7 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                                     )
                                                 },
                                                 {
-                                                    step: 3,
+                                                    step: 4,
                                                     title: "โปรไฟล์บอทสำหรับส่งข้อความ",
                                                     description: (
                                                         <div className="space-y-3">
@@ -174,7 +176,7 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                                     )
                                                 },
                                                 {
-                                                    step: 4,
+                                                    step: 5,
                                                     title: "บันทึกการตั้งค่า",
                                                     description: (
                                                         <div className="space-y-3">
@@ -184,7 +186,7 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                                     )
                                                 },
                                                 {
-                                                    step: 5,
+                                                    step: 6,
                                                     title: <span className="flex items-center gap-2 spotify"><Spotify className="w-4 " /> เริ่มเปิดเพลงจากเพลยลิสต์ Spotify ของคุณ</span>,
                                                     description: (
                                                         <div className="space-y-3">
@@ -197,7 +199,27 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                                             </div>
                                                         </div>
                                                     )
-                                                }
+                                                },
+                                                {
+                                                    step: 7,
+                                                    title: "ทดสอบการเพิ่มเพลง",
+                                                    description: (
+                                                        <div className="space-y-3">
+                                                            <SubLabel>
+                                                                <div>กดทดสอบเพื่อใส่เพลงทดสอบเข้าคิว Spotify ของคุณ</div>
+                                                                <ol className="text-sm list-decimal pl-5 space-y-1 mt-2">
+                                                                    <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
+                                                                    <li>บนคิวเพลงใน Spotify ของคุณจะต้องมีเพลงใหม่เพิ่มเข้ามา</li>
+                                                                </ol>
+                                                            </SubLabel>
+                                                            <TestWidgetButton
+                                                                onTest={handleTestInsert}
+                                                                isLoading={isTestingTrack}
+                                                                disabled={!twitchRewardId}
+                                                            />
+                                                        </div>
+                                                    )
+                                                },
                                             ]}
                                         />
                                     </WidgetStepper>
@@ -272,7 +294,14 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                     </WidgetSettingsCardContent>
                                     <WidgetSettingsCardFooter>
                                         <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
-                                        <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
+                                        <div className="flex items-center gap-2">
+                                            <TestWidgetButton
+                                                onTest={handleTestInsert}
+                                                isLoading={isTestingTrack}
+                                                disabled={!twitchRewardId}
+                                            />
+                                            <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
+                                        </div>
                                     </WidgetSettingsCardFooter>
                                 </WidgetSettingsCard>
                             </TabsContent>
