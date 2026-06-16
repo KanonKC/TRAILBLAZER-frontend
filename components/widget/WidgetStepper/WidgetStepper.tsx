@@ -2,7 +2,7 @@ import React from 'react';
 
 export interface WidgetStep {
     step: number;
-    title: string;
+    title: React.ReactNode;
     description: React.ReactNode;
 }
 

@@ -39,6 +39,10 @@ export const useAccountBinding = (initialAccounts: LinkedAccount[] | null) => {
     useEffect(() => {
         if (initialAccounts) {
             setAccounts(initialAccounts);
+        } else {
+            getLinkedAccounts()
+                .then(setAccounts)
+                .catch((error) => console.error("Failed to fetch linked accounts", error));
         }
     }, [initialAccounts]);
 
