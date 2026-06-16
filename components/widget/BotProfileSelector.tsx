@@ -11,6 +11,7 @@ import {
 import { AlertTriangle } from "lucide-react";
 import { useUser } from "../user-context";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import SubLabel from "../SubLabel";
 
 export type BotProfileType = "default" | "self";
 
@@ -45,9 +46,9 @@ export function BotProfileSelector({ value, onValueChange, hideLabel }: BotProfi
                 !hideLabel && (
                     <>
                         <Label>โปรไฟล์บอทสำหรับส่งข้อความ</Label>
-                        <p className="text-sm text-muted-foreground">
+                        <SubLabel>
                             เลือกบัญชีที่จะใช้ส่งข้อความทักทายไปยังห้องแชทของคุณ
-                        </p>
+                        </SubLabel>
                     </>
                 )
             }

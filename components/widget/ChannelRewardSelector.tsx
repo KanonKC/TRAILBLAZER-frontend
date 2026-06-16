@@ -60,13 +60,14 @@ export function ChannelRewardSelector({
             </div>
             <ComboboxContent>
                 <ComboboxList>
-                    <ComboboxItem value={null} textValue="None">None</ComboboxItem>
+                    <ComboboxItem className="cursor-pointer" value={null} textValue="None">None</ComboboxItem>
                     {isLoading ? (
                         <div className="p-2 text-sm text-muted-foreground text-center">Loading rewards...</div>
                     ) : (
                         <>
                             {rewards.filter(reward => reward.title.toLowerCase().includes(searchInput.toLowerCase())).map((reward) => (
                                 <ComboboxItem
+                                    className="cursor-pointer"
                                     key={reward.id}
                                     value={reward.id}
                                     textValue={reward.title}
@@ -93,6 +94,6 @@ export function ChannelRewardSelector({
                     <ComboboxEmpty>No rewards found</ComboboxEmpty>
                 )}
             </ComboboxContent>
-        </Combobox>
+        </Combobox >
     );
 }

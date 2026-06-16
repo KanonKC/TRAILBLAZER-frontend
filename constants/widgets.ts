@@ -1,7 +1,19 @@
 import { YouTube } from "@/components/icons/youtube";
-import { Dices, ImageIcon, MessageSquare, Video } from "lucide-react";
+import { Spotify } from "@/components/icons/spotify"
+import { Dices, ImageIcon, MessageSquare, Music, Video } from "lucide-react";
 
-export const StaticWidgets = [
+export interface StaticWidget {
+    slug: string;
+    title: string;
+    description: string;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    href: string;
+    color: string;
+    bgColor: string;
+    borderColor: string;
+}
+
+export const StaticWidgets: StaticWidget[] = [
     {
         slug: "first-word",
         title: "Greeting Message",
@@ -51,5 +63,15 @@ export const StaticWidgets = [
         color: "text-red-500",
         bgColor: "bg-red-500/10",
         borderColor: "border-red-500/20"
-    }
+    },
+    {
+        slug: "spotify-song-request",
+        title: "Spotify Music Request",
+        description: "ให้ผู้ชมของคุณขอเพลง Spotify ผ่านการแลกแต้มช่อง บอทจะเพิ่มเพลงเข้าคิวและตอบกลับในแชท",
+        icon: Spotify,
+        href: "/dashboard/widgets/spotify-song-request",
+        color: "text-green-500",
+        bgColor: "bg-green-500/10",
+        borderColor: "border-green-500/20"
+    },
 ];

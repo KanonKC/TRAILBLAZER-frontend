@@ -11,60 +11,125 @@ Ensure the backend API is ready (or defined), then determine the widget name (e.
 
 ## Workflow
 
-### 1. Service Layer — `src/services/[widgetName].service.ts`
-- [ ] Define config interface matching backend response
-- [ ] Implement `get[WidgetName]Config()` — GET from `/api/v1/[widget]`
-- [ ] Implement `update[WidgetName]Config()` — PUT to `/api/v1/[widget]`
-- [ ] Implement `enable[WidgetName]()` if applicable
-- [ ] Implement `refresh[WidgetName]Key()` if applicable
+### 1. Types — `features/[widget-name]/types.ts`
+- [ ] Define config interface matching backend response shape
+- [ ] Import `ExtendedWidget` from `@/services/widget.service`
 
 ```typescript
-import { api } from "@/lib/api";
+import { ExtendedWidget } from "@/services/widget.service";
 
 export interface MyNewWidgetConfig {
     id: string;
-    enabled: boolean;
-    // ... other fields
+    some_field: string | null;
+    widget: ExtendedWidget;
 }
+```
 
-export const getMyNewWidgetConfig = async (): Promise<MyNewWidgetConfig | null> => {
-    try {
-        const { data } = await api.get("/api/v1/my-new-widget");
-        return data;
-    } catch {
-        return null;
-    }
+### 2. API Layer — `features/[widget-name]/api/[widgetName].api.ts`
+- [ ] Import `apiClient` from `@/lib/api-client`
+- [ ] Implement `create[WidgetName](twitchId, ownerId)` — POST `/api/v1/[widget]` with `{ twitch_id, owner_id }`
+- [ ] Implement `get[WidgetName]Config()` — GET `/api/v1/[widget]`
+- [ ] Implement `update[WidgetName]Config(data)` — PUT `/api/v1/[widget]`
+- [ ] Add `getEventUrl(userId, key?)` helper if the widget has an overlay SSE stream
+
+```typescript
+import { apiClient } from "@/lib/api-client";
+import { MyNewWidgetConfig } from "../types";
+
+export const createMyNewWidget = async (twitchId: string, ownerId: string): Promise<MyNewWidgetConfig> => {
+    const response = await apiClient.post<MyNewWidgetConfig>("/api/v1/my-new-widget", {
+        twitch_id: twitchId,
+        owner_id: ownerId,
+    });
+    return response.data;
+};
+
+export const getMyNewWidgetConfig = async (): Promise<MyNewWidgetConfig> => {
+    const response = await apiClient.get<MyNewWidgetConfig>("/api/v1/my-new-widget");
+    return response.data;
+};
+
+export const updateMyNewWidgetConfig = async (data: Partial<MyNewWidgetConfig>): Promise<MyNewWidgetConfig> => {
+    const response = await apiClient.put<MyNewWidgetConfig>("/api/v1/my-new-widget", data);
+    return response.data;
 };
 ```
 
-### 2. Dashboard Config Page — `app/dashboard/widgets/[widget-slug]/page.tsx`
-- [ ] `"use client"` directive at top
-- [ ] `useEffect` to fetch config on mount (depends on `user` from `useUser()`)
-- [ ] State for form fields
-- [ ] Implement `handleSave`, `handleEnable` handlers
-- [ ] Use Shadcn UI: `Card`, `Button`, `Input`, `Switch`, `Tabs`
-- [ ] Tab structure: **Overview** → **Quick Start** (if complex) → **Settings**
+### 3. Hook — `features/[widget-name]/hooks/use[WidgetName].ts`
+- [ ] Accept `initialConfig` prop
+- [ ] Use `useUser()` from `@/components/user-context`
+- [ ] Manage state: `config`, `isEnabled`, `isSaving`, `activeTab`, form fields
+- [ ] Implement `handleEnable()` — calls create API, updates state, switches to `"settings"` tab
+- [ ] Implement `handleSave()` — calls update API, updates config
+- [ ] Implement `handleDelete()` — calls `deleteWidget(config.widget.id)` from `@/services/widget.service`, resets state
+- [ ] Use `tbToast` from `@/utils/tbToast` for feedback
 
-### 3. Overlay Page (OBS Source) — `app/overlays/[widget-slug]/[userId]/page.tsx`
+### 4. Component — `features/[widget-name]/components/[WidgetName]Widget.tsx`
 - [ ] `"use client"` directive at top
-- [ ] Get `userId` from `useParams()`, `key` from `useSearchParams()`
-- [ ] Connect `EventSource` SSE to `/api/v1/events/[widget]/[userId]?key=[key]`
-- [ ] Listen for `"trigger"` event and update UI state
-- [ ] Clean up `eventSource.close()` in `useEffect` return
-- [ ] Root div: `w-screen h-screen bg-transparent overflow-hidden`
+- [ ] Accept `{ initialConfig }` prop, delegate all state to hook
+- [ ] Tab layout: **Overview** (1 col when no config) → **Settings** (2 cols when configured)
+- [ ] Use `WidgetConfigLayout` from `@/components/widget/layout/WidgetConfigLayout`
+- [ ] Use `WidgetOverviewCard`, `WidgetSettingsCard`, `WidgetSettingsCardContent`, `WidgetSettingsCardFooter`
+- [ ] Reuse shared form controls: `TwitchRewardSelector`, `BotProfileSelector`, `ReplyMessageTextarea`
+- [ ] Footer: `SaveWidgetButton` + `DeleteWidgetButton`
+
+### 5. Dashboard Page — `app/dashboard/widgets/[widget-slug]/page.tsx`
+- [ ] Server component (no `"use client"`)
+- [ ] Fetch initial config via `fetchData` from `@/lib/data-access`
+- [ ] Return `null` on error (widget renders as unenabled state)
+- [ ] Render the client component with `initialConfig`
 
 ```typescript
-useEffect(() => {
-    const eventSource = new EventSource(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/events/my-new-widget/${userId}?key=${key}`
-    );
-    eventSource.addEventListener("trigger", (event) => { /* handle */ });
-    return () => eventSource.close();
-}, [userId, key]);
+import { fetchData } from "@/lib/data-access";
+import { MyNewWidgetConfig } from "@/features/my-new-widget/types";
+import { MyNewWidgetWidget } from "@/features/my-new-widget/components/MyNewWidgetWidget";
+
+async function getConfigServer(): Promise<MyNewWidgetConfig | null> {
+    try {
+        const res = await fetchData<MyNewWidgetConfig>("/api/v1/my-new-widget");
+        return res ?? null;
+    } catch {
+        return null;
+    }
+}
+
+export default async function MyNewWidgetPage() {
+    const config = await getConfigServer();
+    return <MyNewWidgetWidget initialConfig={config} />;
+}
 ```
+
+### 6. Widget Registry — `constants/widgets.ts`
+- [ ] Import the icon from `lucide-react`
+- [ ] Add entry to the `StaticWidgets` array with `slug`, `title`, `description`, `icon`, `href`, `color`, `bgColor`, `borderColor`
+
+```typescript
+{
+    slug: "my-new-widget",
+    title: "My New Widget",
+    description: "คำอธิบายภาษาไทย",
+    icon: SomeLucideIcon,
+    href: "/dashboard/widgets/my-new-widget",
+    color: "text-green-500",
+    bgColor: "bg-green-500/10",
+    borderColor: "border-green-500/20"
+},
+```
+
+### 7. Overlay Page (OBS Source) — `app/overlays/[widget-slug]/[userId]/page.tsx`
+*Skip this step if the widget has no visual OBS overlay (e.g. chat-only integrations).*
+
+- [ ] `"use client"` directive at top
+- [ ] Get `userId` from `useParams()`, `key` from `useSearchParams()`
+- [ ] Connect `EventSource` SSE using the `getEventUrl` helper from the API module
+- [ ] Implement exponential backoff reconnection (see drop-image overlay as reference)
+- [ ] Root div: `w-screen h-screen bg-transparent overflow-hidden`
+- [ ] Clean up `eventSource.close()` in `useEffect` return
 
 ## Notes
 
+- Use `apiClient` (from `@/lib/api-client`) for all client-side API calls — it handles 401 refresh automatically
+- Use `fetchData` (from `@/lib/data-access`) only in server components for SSR hydration
 - Overlay background must be transparent for OBS browser source
-- Always return `null` (not throw) from service functions on error
-- See [REFERENCE.md](REFERENCE.md) for full page examples
+- `deleteWidget` from `@/services/widget.service` is the shared deletion helper — do not call the DELETE endpoint directly
+- See [REFERENCE.md](REFERENCE.md) for full code examples of existing widgets
