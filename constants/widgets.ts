@@ -2,8 +2,18 @@ import { YouTube } from "@/components/icons/youtube";
 import { Spotify } from "@/components/icons/spotify"
 import { Dices, ImageIcon, MessageSquare, Music, Video } from "lucide-react";
 
+export interface StaticWidget {
+    slug: string;
+    title: string;
+    description: string;
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+    href: string;
+    color: string;
+    bgColor: string;
+    borderColor: string;
+}
 
-export const StaticWidgets = [
+export const StaticWidgets: StaticWidget[] = [
     {
         slug: "first-word",
         title: "Greeting Message",

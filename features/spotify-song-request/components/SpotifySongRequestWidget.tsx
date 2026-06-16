@@ -2,7 +2,7 @@
 
 import { useSpotifySongRequest } from "../hooks/useSpotifySongRequest";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Music2, ListMusic, MessageSquare } from "lucide-react";
+import { Music2, ListMusic, MessageSquare, Link2, AlertTriangle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +24,10 @@ import { Label } from "@/components/ui/label";
 import { SpotifySongRequestConfig } from "../types";
 import { Spotify } from "@/components/icons/spotify";
 import SubLabel from "@/components/SubLabel";
+import { Button } from "@/components/ui/button";
+import { Platforms } from "@/constants/platforms";
+import { useAccountBinding } from "@/features/account-binding/hooks/useAccountBinding";
+import { PlatformCard } from "@/features/account-binding/components/PlatformCard";
 
 export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: SpotifySongRequestConfig | null }) {
     const {
@@ -47,6 +51,14 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
         handleSave,
         handleDelete,
     } = useSpotifySongRequest(initialConfig);
+
+    const {
+        isLoading,
+        unbindingPlatform,
+        getAccountForPlatform,
+        handleBind,
+        handleUnbind,
+    } = useAccountBinding(null);
 
     if (isUserLoading) {
         return (
@@ -122,6 +134,27 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                                 },
                                                 {
                                                     step: 2,
+                                                    title: "เชื่อมบัญชี Spotify",
+                                                    description: (
+                                                        <div className="space-y-3">
+                                                            <SubLabel>ผูกบัญชีของ Spotify เพื่อใช้งานกับ Widget นี้</SubLabel>
+                                                            <PlatformCard
+                                                                key={Platforms.Spotify.key}
+                                                                platform={Platforms.Spotify}
+                                                                isConnected={!!getAccountForPlatform(Platforms.Spotify.key)}
+                                                                linkedAccount={getAccountForPlatform(Platforms.Spotify.key) ?? null}
+                                                                twitchUser={null}
+                                                                isUnbinding={unbindingPlatform === Platforms.Spotify.key}
+                                                                isBindLoading={isLoading}
+                                                                onBind={() => handleBind(Platforms.Spotify.key)}
+                                                                onUnbind={() => handleUnbind(Platforms.Spotify.key)}
+                                                                size="medium"
+                                                            />
+                                                        </div>
+                                                    )
+                                                },
+                                                {
+                                                    step: 2,
                                                     title: "เลือกแต้มช่องที่ต้องการใช้งาน",
                                                     description: (
                                                         <div className="space-y-3">
@@ -155,7 +188,13 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                                     title: <span className="flex items-center gap-2 spotify"><Spotify className="w-4 " /> เริ่มเปิดเพลงจากเพลยลิสต์ Spotify ของคุณ</span>,
                                                     description: (
                                                         <div className="space-y-3">
-                                                            <SubLabel>การใส่เพลงเข้าคิวจะสามารถทำได้แค่เฉพาะตอนที่คุณกำลังเล่นเพลงบน Spotify เท่านั้น การใส่เพลงเข้าไปขณะที่ยังไม่ได้มีการเล่นเพลงจะทำให้การใส่เพลงนั้นล้มเหลว</SubLabel>
+                                                            <SubLabel>เปิดเพลยลิสต์ที่ชอบของคุณบน Spotify ระหว่างการสตรีม ผู้ชมสามารถที่จะแลกแต้มเพื่อใส่เพลงที่อยากฟังเข้ามาในคิวของคุณได้</SubLabel>
+                                                            <div className="flex items-start gap-2 p-3 rounded-md bg-amber-500/10 text-amber-500">
+                                                                <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                                                <p className="text-sm">
+                                                                    การใส่เพลงเข้าคิวจะสามารถทำได้แค่เฉพาะตอนที่คุณกำลังเล่นเพลงบน Spotify เท่านั้น การใส่เพลงเข้าไปขณะที่ยังไม่ได้มีการเล่นเพลงจะทำให้การใส่เพลงนั้นล้มเหลว
+                                                                </p>
+                                                            </div>
                                                         </div>
                                                     )
                                                 }
@@ -221,7 +260,12 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
                                                     rows={2}
                                                 />
 
-                                                <SubLabel>* การใส่เพลงเข้าคิวจะสามารถทำได้แค่เฉพาะตอนที่คุณกำลังเล่นเพลงบน Spotify เท่านั้น การใส่เพลงเข้าไปขณะที่ยังไม่ได้มีการเล่นเพลงจะทำให้การใส่เพลงนั้นล้มเหลว</SubLabel>
+                                                <div className="flex items-start gap-2 p-3 rounded-md bg-amber-500/10 text-amber-500">
+                                                    <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                                                    <p className="text-sm">
+                                                        การใส่เพลงเข้าคิวจะสามารถทำได้แค่เฉพาะตอนที่คุณกำลังเล่นเพลงบน Spotify เท่านั้น การใส่เพลงเข้าไปขณะที่ยังไม่ได้มีการเล่นเพลงจะทำให้การใส่เพลงนั้นล้มเหลว
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
 
