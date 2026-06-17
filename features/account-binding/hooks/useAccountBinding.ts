@@ -94,7 +94,7 @@ export const useAccountBinding = (initialAccounts: LinkedAccount[] | null) => {
                 client_id: SPOTIFY_CLIENT_ID,
                 redirect_uri: CALLBACK_URL,
                 response_type: "code",
-                scope: "user-read-private user-read-email",
+                scope: "user-read-private user-read-email user-modify-playback-state",
                 state: state,
                 show_dialog: "true",
             });
