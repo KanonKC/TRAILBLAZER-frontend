@@ -18,11 +18,13 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
         getWidgetQuota()
             .then(setQuota)
             .catch((e) => {
+                if (e.status === 401) {
+                    return
+                }
                 tbToast.error({
                     title: "เกิดข้อผิดพลาด",
                     description: "ไม่สามารถดึงข้อมูลโควต้าได้",
                 });
-                console.error("Failed to fetch quota", e);
             });
     }, [refreshKey]);
 
