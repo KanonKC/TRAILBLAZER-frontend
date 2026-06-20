@@ -11,6 +11,7 @@ export interface StaticWidget {
     color: string;
     bgColor: string;
     borderColor: string;
+    isActive: boolean
 }
 
 export const StaticWidgets: StaticWidget[] = [
@@ -22,6 +23,7 @@ export const StaticWidgets: StaticWidget[] = [
         href: "/dashboard/widgets/first-word",
         color: "text-blue-500",
         bgColor: "bg-blue-500/10",
+        isActive: true,
         borderColor: "border-blue-500/20"
     },
     {
@@ -32,6 +34,7 @@ export const StaticWidgets: StaticWidget[] = [
         href: "/dashboard/widgets/clip-shoutout",
         color: "text-orange-500",
         bgColor: "bg-orange-500/10",
+        isActive: true,
         borderColor: "border-orange-500/20"
     },
     {
@@ -42,6 +45,7 @@ export const StaticWidgets: StaticWidget[] = [
         href: "/dashboard/widgets/random-dbd-perk",
         color: "text-emerald-500",
         bgColor: "bg-emerald-500/10",
+        isActive: true,
         borderColor: "border-emerald-500/20"
     },
     {
@@ -52,6 +56,7 @@ export const StaticWidgets: StaticWidget[] = [
         href: "/dashboard/widgets/drop-image",
         color: "text-purple-500",
         bgColor: "bg-purple-500/10",
+        isActive: true,
         borderColor: "border-purple-500/20"
     },
     {
@@ -62,6 +67,7 @@ export const StaticWidgets: StaticWidget[] = [
         href: "/dashboard/widgets/export-video",
         color: "text-red-500",
         bgColor: "bg-red-500/10",
+        isActive: true,
         borderColor: "border-red-500/20"
     },
     {
@@ -72,6 +78,7 @@ export const StaticWidgets: StaticWidget[] = [
         href: "/dashboard/widgets/spotify-song-request",
         color: "text-green-500",
         bgColor: "bg-green-500/10",
+        isActive: false,
         borderColor: "border-green-500/20"
     },
 ];
