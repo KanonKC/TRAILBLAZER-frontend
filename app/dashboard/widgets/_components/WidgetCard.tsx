@@ -15,6 +15,7 @@ interface WidgetCardProps {
     href: string;
     color: string;
     bgColor: string;
+    isActive?: boolean;
     apiWidget?: ExtendedWidget;
     onSuccess?: () => void;
 }
@@ -26,6 +27,7 @@ export const WidgetCard = ({
     href,
     color,
     bgColor,
+    isActive = true,
     apiWidget,
     onSuccess
 }: WidgetCardProps) => {
@@ -33,6 +35,9 @@ export const WidgetCard = ({
 
     return (
         <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md group relative overflow-hidden">
+            {!isActive && (
+                <div className="absolute inset-0 bg-black/40 z-10 rounded-[inherit]" />
+            )}
             <CardHeader>
                 <div className="flex items-center gap-4 mb-2 justify-between">
                     <div className="flex items-center gap-4">
@@ -43,7 +48,7 @@ export const WidgetCard = ({
                             {title}
                         </CardTitle>
                     </div>
-                    {apiWidget && (
+                    {apiWidget && isActive && (
                         <div onClick={(e) => e.preventDefault()}>
                             <WidgetStatusSwitch
                                 widgetId={apiWidget.id}
@@ -65,27 +70,34 @@ export const WidgetCard = ({
                     </div>
                 )}
             </CardHeader>
-            <CardContent className="mt-auto flex justify-end">
-                <Link href={href} className="text-sm font-medium text-primary hover:underline">
-                    <Button
-                        variant={!apiWidget ? "default" : "outline"}
-                    >
-                        {
-                            apiWidget ? (
-                                <>
-                                    <Settings />
-                                    ตั้งค่าวิดเจ็ต
-                                </>
-                            ) : (
-                                <>
-                                    <Play />
-                                    เปิดใช้งานวิดเจ็ต
-                                </>
-                            )
-                        }
-                    </Button>
-                </Link>
-            </CardContent>
+            {isActive && (
+                <CardContent className="mt-auto flex justify-end">
+                    <Link href={href} className="text-sm font-medium text-primary hover:underline">
+                        <Button
+                            variant={!apiWidget ? "default" : "outline"}
+                        >
+                            {
+                                apiWidget ? (
+                                    <>
+                                        <Settings />
+                                        ตั้งค่าวิดเจ็ต
+                                    </>
+                                ) : (
+                                    <>
+                                        <Play />
+                                        เปิดใช้งานวิดเจ็ต
+                                    </>
+                                )
+                            }
+                        </Button>
+                    </Link>
+                </CardContent>
+            )}
+            {!isActive && (
+                <div className="relative z-20 mx-4 rounded-lg bg-amber-500/20 border border-amber-500/40 px-3 py-2 text-sm text-amber-400 text-center">
+                    วิดเจ็ตนี้ถูกปิดใช้งานชั่วคราว
+                </div>
+            )}
         </Card>
     );
 };

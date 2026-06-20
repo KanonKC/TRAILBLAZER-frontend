@@ -3,7 +3,14 @@ import { ShowcaseItem, StreamerShowcase } from "@/components/landing/streamer-sh
 import { fetchData } from "@/lib/data-access";
 
 export default async function Page() {
-    const showcase = await fetchData<ShowcaseItem[]>("/api/v1/users/showcase");
+    let showcase: ShowcaseItem[] = [];
+
+    try {
+        const response = await fetchData<ShowcaseItem[]>("/api/v1/users/showcase");
+        if (response) {
+            showcase = response
+        }
+    } catch { }
 
     return (
         <main className="min-h-screen">
