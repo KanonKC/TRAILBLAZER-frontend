@@ -8,7 +8,7 @@ import {
     getDBDKillerMasterList
 } from "../api/randomDBDKiller.api";
 import { deleteWidget } from "@/services/widget.service";
-import { RandomDBDKillerConfig, DBDKillerMaster } from "../types";
+import { RandomDBDKillerConfig, DBDKillerMaster, RandomDBDKillerAnimationStyle } from "../types";
 
 export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
@@ -20,6 +20,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
 
     const [twitchRewardId, setTwitchRewardId] = useState<string | null>(initialConfig?.twitch_reward_id || null);
     const [killerPool, setKillerPool] = useState<string[]>(initialConfig?.killer_pool || []);
+    const [animationStyle, setAnimationStyle] = useState<RandomDBDKillerAnimationStyle>(initialConfig?.animation_style || "slot");
     const [killerMasters, setKillerMasters] = useState<DBDKillerMaster[]>([]);
     const [isLoadingKillerMasters, setIsLoadingKillerMasters] = useState(true);
 
@@ -49,6 +50,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
                 setIsEnabled(data.widget?.enabled ?? false);
                 setTwitchRewardId(data.twitch_reward_id);
                 setKillerPool(data.killer_pool || []);
+                setAnimationStyle(data.animation_style || "slot");
                 setActiveTab("quick-start");
             }
         } catch (error) {
@@ -87,11 +89,13 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
             const updated = await updateRandomDBDKillerConfig({
                 twitch_reward_id: twitchRewardId ?? undefined,
                 killer_pool: killerPool,
+                animation_style: animationStyle,
             });
             if (updated) {
                 tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
                 setConfig(updated);
                 setKillerPool(updated.killer_pool || []);
+                setAnimationStyle(updated.animation_style || "slot");
             }
         } catch (error: any) {
             console.error("Failed to save", error);
@@ -148,10 +152,12 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
         activeTab,
         twitchRewardId,
         killerPool,
+        animationStyle,
         killerMasters,
         isLoadingKillerMasters,
         overlayUrl,
         setTwitchRewardId,
+        setAnimationStyle,
         toggleKiller,
         setActiveTab,
         setConfig,

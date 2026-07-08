@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api-client";
-import { RandomDBDKillerConfig, DBDKillerMaster } from "../types";
+import { RandomDBDKillerConfig, DBDKillerMaster, RandomDBDKillerAnimationStyle } from "../types";
 
 export const getRandomDBDKillerConfig = async (): Promise<RandomDBDKillerConfig> => {
     const response = await apiClient.get<RandomDBDKillerConfig>("/api/v1/random-dbd-killer");
@@ -13,7 +13,7 @@ export const enableRandomDBDKiller = async (twitch_reward_id?: string): Promise<
     return response.data;
 };
 
-export const updateRandomDBDKillerConfig = async (data: { twitch_reward_id?: string; killer_pool?: string[] }): Promise<RandomDBDKillerConfig> => {
+export const updateRandomDBDKillerConfig = async (data: { twitch_reward_id?: string; killer_pool?: string[]; animation_style?: RandomDBDKillerAnimationStyle }): Promise<RandomDBDKillerConfig> => {
     const response = await apiClient.put<RandomDBDKillerConfig>("/api/v1/random-dbd-killer", data);
     return response.data;
 };

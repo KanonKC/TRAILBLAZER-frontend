@@ -5,15 +5,16 @@ import { useParams, useSearchParams } from "next/navigation"
 import { getRandomDBDKillerEventUrl } from "@/features/random-dbd-killer/api/randomDBDKiller.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
+import { KillerSpinner, KillerResult, AnimationStyle } from "./KillerSpinner";
 
 const MAX_RETRY_DELAY = 16000 // 16 seconds max
 const INITIAL_RETRY_DELAY = 1000 // 1 second
 const DISPLAY_DURATION_MS = 10000 // 10 seconds
 
-interface KillerResult {
-    slug: string;
-    title: string;
-    image_url: string;
+interface KillerResultEvent {
+    killer: KillerResult;
+    pool?: KillerResult[];
+    animationStyle?: AnimationStyle;
 }
 
 export default function RandomDBDKillerOverlayPage() {
@@ -22,7 +23,7 @@ export default function RandomDBDKillerOverlayPage() {
     const userId = params.userId as string
     const key = searchParams.get("key") ?? undefined
 
-    const [killer, setKiller] = useState<KillerResult | null>(null);
+    const [result, setResult] = useState<KillerResultEvent | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
     const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -52,17 +53,12 @@ export default function RandomDBDKillerOverlayPage() {
 
         eventSource.addEventListener("killer-result", (event) => {
             try {
-                const data = JSON.parse(event.data)
+                const data = JSON.parse(event.data) as KillerResultEvent
                 console.log("Received killer-result event:", data)
                 if (data.killer) {
-                    setKiller(data.killer);
-                    setIsVisible(true);
-
                     if (timerRef.current) clearTimeout(timerRef.current);
-                    timerRef.current = setTimeout(() => {
-                        setIsVisible(false);
-                        setKiller(null);
-                    }, DISPLAY_DURATION_MS);
+                    setResult(data);
+                    setIsVisible(true);
                 }
             } catch (error) {
                 console.error("Failed to parse event data:", error)
@@ -100,6 +96,14 @@ export default function RandomDBDKillerOverlayPage() {
         }
     }, [connect])
 
+    const handleSpinComplete = useCallback(() => {
+        if (timerRef.current) clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => {
+            setIsVisible(false);
+            setResult(null);
+        }, DISPLAY_DURATION_MS);
+    }, []);
+
     return (
         <div className="w-screen h-screen bg-transparent overflow-hidden pointer-events-none relative flex items-center justify-center p-8">
             <div className="absolute top-4 right-4 pointer-events-auto opacity-0 hover:opacity-100 transition-opacity duration-300">
@@ -113,20 +117,14 @@ export default function RandomDBDKillerOverlayPage() {
                 </Button>
             </div>
 
-            {isVisible && killer && (
-                <div className="animate-in fade-in zoom-in duration-500">
-                    <div className="bg-black/80 backdrop-blur-sm border border-red-500/30 rounded-2xl p-6 shadow-2xl flex flex-col items-center gap-4">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                            src={killer.image_url}
-                            alt={killer.title}
-                            className="max-w-full max-h-[60vh] object-contain rounded-xl shadow-2xl"
-                        />
-                        <span className="text-2xl font-bold text-white uppercase tracking-wide drop-shadow-md">
-                            {killer.title}
-                        </span>
-                    </div>
-                </div>
+            {isVisible && result && (
+                <KillerSpinner
+                    key={result.killer.slug + (result.pool?.length ?? 0)}
+                    pool={result.pool && result.pool.length > 0 ? result.pool : [result.killer]}
+                    finalKiller={result.killer}
+                    animationStyle={result.animationStyle ?? "slot"}
+                    onComplete={handleSpinComplete}
+                />
             )}
         </div>
     )

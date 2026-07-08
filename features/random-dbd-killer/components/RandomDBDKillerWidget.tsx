@@ -23,6 +23,7 @@ import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import SubLabel from "@/components/SubLabel";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 import { KillerPoolSelector } from "./KillerPoolSelector";
+import { AnimationStyleSelect } from "./AnimationStyleSelect";
 import { RandomDBDKillerConfig } from "../types";
 
 export function RandomDBDKillerWidget({ initialConfig }: { initialConfig: RandomDBDKillerConfig | null }) {
@@ -36,10 +37,12 @@ export function RandomDBDKillerWidget({ initialConfig }: { initialConfig: Random
         activeTab,
         twitchRewardId,
         killerPool,
+        animationStyle,
         killerMasters,
         isLoadingKillerMasters,
         overlayUrl,
         setTwitchRewardId,
+        setAnimationStyle,
         toggleKiller,
         setActiveTab,
         setConfig,
@@ -201,6 +204,12 @@ export function RandomDBDKillerWidget({ initialConfig }: { initialConfig: Random
                                             onToggle={toggleKiller}
                                             isLoading={isLoadingKillerMasters}
                                         />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>รูปแบบ Animation ตอนสุ่ม</Label>
+                                        <SubLabel>เลือกรูปแบบการแสดงผลตอนสุ่ม Killer บนหน้า Overlay</SubLabel>
+                                        <AnimationStyleSelect value={animationStyle} onValueChange={setAnimationStyle} />
                                     </div>
 
                                     <SmartOverlayUrlInput
