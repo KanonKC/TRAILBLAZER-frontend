@@ -18,10 +18,9 @@ export function TwitchRewardSelector({
     onValueChange,
     placeholder,
     disabled,
-    userInputRequired = true
+    userInputRequired = false
 }: TwitchRewardSelectorProps) {
     const { rewards, isLoading } = useTwitchRewards({ userInputRequired });
-
     return (
         <ChannelRewardSelector
             value={value}

@@ -11,7 +11,6 @@ export const useTwitchRewards = (options: { userInputRequired?: boolean } = { us
     const [rewards, setRewards] = useState<TwitchCustomReward[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<any>(null);
-
     useEffect(() => {
         if (!user) return;
 

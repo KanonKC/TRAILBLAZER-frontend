@@ -106,12 +106,6 @@ export function RandomDBDKillerWidget({ initialConfig }: { initialConfig: Random
                                     <p className="text-sm text-muted-foreground">เลือกได้ว่าจะให้สุ่มจาก Killer ตัวไหนบ้าง</p>
                                 </div>
                             </div>
-                            {!!user && !config && (
-                                <div className="space-y-2 pt-2">
-                                    <Label>เลือกแต้มช่องที่ต้องการใช้งาน</Label>
-                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
-                                </div>
-                            )}
                         </WidgetOverviewCard>
                     </TabsContent>
 
@@ -131,7 +125,7 @@ export function RandomDBDKillerWidget({ initialConfig }: { initialConfig: Random
                                             description: (
                                                 <div className="space-y-3">
                                                     <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
-                                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
+                                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." userInputRequired={false} />
                                                 </div>
                                             )
                                         },

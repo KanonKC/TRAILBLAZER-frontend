@@ -6,7 +6,7 @@ export const getRandomDBDKillerConfig = async (): Promise<RandomDBDKillerConfig>
     return response.data;
 };
 
-export const enableRandomDBDKiller = async (twitch_reward_id: string): Promise<RandomDBDKillerConfig> => {
+export const enableRandomDBDKiller = async (twitch_reward_id?: string): Promise<RandomDBDKillerConfig> => {
     const response = await apiClient.post<RandomDBDKillerConfig>("/api/v1/random-dbd-killer", {
         twitch_reward_id,
     });

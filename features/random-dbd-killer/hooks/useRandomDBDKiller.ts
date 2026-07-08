@@ -39,10 +39,10 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
     };
 
     const handleEnable = async () => {
-        if (!user || !twitchRewardId) return;
+        if (!user) return;
         setIsSaving(true);
         try {
-            const data = await enableRandomDBDKiller(twitchRewardId);
+            const data = await enableRandomDBDKiller();
             if (data) {
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
                 setConfig(data);

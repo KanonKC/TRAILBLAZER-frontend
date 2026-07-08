@@ -29,6 +29,7 @@ export const getTwitchChannelRewards = async (options?: ListChannelRewardsOption
             user_input_required: options?.userInputRequired
         }
     });
+    console.log("getTwitchChannelRewards", options, response.data.data)
     return response.data.data;
 }
 
