@@ -21,6 +21,7 @@ function LoginContent() {
     const { user, isLoading } = useUser();
     const ref = searchParams.get("ref");
     const [isHoveringLogin, setIsHoveringLogin] = useState(false);
+    const [sectionHeight, setSectionHeight] = useState<number | null>(null);
 
     useEffect(() => {
         if (!isLoading && user) {
@@ -28,12 +29,29 @@ function LoginContent() {
         }
     }, [user, isLoading, router]);
 
+    useEffect(() => {
+        const updateHeight = () => {
+            const navbar = document.querySelector("nav");
+            const footer = document.querySelector("footer");
+            const navbarHeight = navbar?.getBoundingClientRect().height ?? 0;
+            const footerHeight = footer?.getBoundingClientRect().height ?? 0;
+            setSectionHeight(window.innerHeight - navbarHeight - footerHeight);
+        };
+
+        updateHeight();
+        window.addEventListener("resize", updateHeight);
+        return () => window.removeEventListener("resize", updateHeight);
+    }, []);
+
     if (isLoading || user) {
         return <div className="min-h-screen flex items-center justify-center">กำลังโหลด...</div>;
     }
 
     return (
-        <section className="relative h-[calc(100vh-4rem)] flex items-center justify-center overflow-hidden p-4">
+        <section
+            className="relative flex items-center justify-center overflow-hidden p-4"
+            style={{ height: sectionHeight !== null ? `${sectionHeight}px` : "100vh" }}
+        >
             <LightPillar
                 topColor={isHoveringLogin ? HOVER_TOP_COLOR : DEFAULT_TOP_COLOR}
                 bottomColor={isHoveringLogin ? HOVER_BOTTOM_COLOR : DEFAULT_BOTTOM_COLOR}
