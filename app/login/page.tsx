@@ -45,7 +45,7 @@ function LoginContent() {
             />
 
             <div className="relative z-10 w-full max-w-md animate-in fade-in zoom-in duration-500">
-                <Card className="glass border-primary/20 backdrop-blur-xl shadow-2xl">
+                <Card className="border-primary/20 shadow-2xl">
                     <CardHeader className="text-center space-y-4">
                         <div className="flex justify-center mb-2">
                             <BrandLogo />
@@ -69,7 +69,7 @@ function LoginContent() {
                         <div className="space-y-4">
                             <TwitchLoginButton className="w-full h-12 text-lg font-bold shadow-lg shadow-purple-500/20" />
                             <p className="text-xs text-center text-muted-foreground px-4">
-                                การเข้าสู่ระบบแสดงว่าคุณยอมรับ <span className="underline cursor-pointer">ข้อกำหนดการให้บริการ</span> และ <span className="underline cursor-pointer">นโยบายความเป็นส่วนตัว</span> ของเรา
+                                การเข้าสู่ระบบแสดงว่าคุณยอมรับ <a href="/terms-of-service" className="underline cursor-pointer">ข้อกำหนดการให้บริการ</a> และ <a href="/privacy-policy" className="underline cursor-pointer">นโยบายความเป็นส่วนตัว</a> ของเรา
                             </p>
                         </div>
                     </CardContent>
