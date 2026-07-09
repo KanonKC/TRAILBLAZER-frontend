@@ -14,7 +14,7 @@ export function Footer() {
                     </div>
 
                     {/* Links */}
-                    <nav className="flex items-center gap-6 text-sm text-muted-foreground absolute z-10 left-1/2 -translate-x-1/2">
+                    <nav className="flex items-center gap-6 text-sm text-muted-foreground md:absolute md:z-10 md:left-1/2 md:-translate-x-1/2">
                         <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" className="hover:text-foreground transition-colors">
                             Discord
                         </a>
