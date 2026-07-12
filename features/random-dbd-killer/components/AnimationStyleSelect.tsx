@@ -15,10 +15,10 @@ export function AnimationStyleSelect({ value, onValueChange, triggerClassName }:
                 <SelectValue placeholder="เลือกรูปแบบการสุ่ม" />
             </SelectTrigger>
             <SelectContent position="popper">
-                <SelectItem value="slot">Slot Machine (เลื่อนขึ้นลง)</SelectItem>
-                <SelectItem value="flip">สลับเร็ว (Flip)</SelectItem>
-                <SelectItem value="roulette">วงล้อ (Roulette)</SelectItem>
-                <SelectItem value="frame">กรอบเรืองแสง (Frame)</SelectItem>
+                {/* <SelectItem value="slot">Slot Machine (เลื่อนขึ้นลง)</SelectItem> */}
+                {/* <SelectItem value="flip">สลับเร็ว (Flip)</SelectItem> */}
+                {/* <SelectItem value="roulette">วงล้อ (Roulette)</SelectItem> */}
+                <SelectItem value="frame">รูปแบบปกติ (Default)</SelectItem>
             </SelectContent>
         </Select>
     );

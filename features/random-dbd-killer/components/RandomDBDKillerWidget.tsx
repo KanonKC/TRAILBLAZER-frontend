@@ -191,7 +191,7 @@ export function RandomDBDKillerWidget({ initialConfig }: { initialConfig: Random
                                 <div className="space-y-6">
                                     <div className="space-y-2">
                                         <Label>เชื่อมต่อแต้มช่องบน Twitch</Label>
-                                        <SubLabel>เลือกแต้มช่องที่ต้องการใช้งานกับ Widget นี้ หากคุณไม่เห็นแต้มช่องตรงนี้ ลองเช็คให้มั่นใจว่าคุณได้สร้างแต้มช่องแบบที่ให้คนดูกรอกข้อมูลได้แล้ว</SubLabel>
+                                        <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</SubLabel>
                                         <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                     </div>
 
