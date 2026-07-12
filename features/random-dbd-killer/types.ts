@@ -7,7 +7,7 @@ export interface DBDKillerMaster {
     image_url: string;
 }
 
-export type RandomDBDKillerAnimationStyle = "slot" | "flip" | "roulette";
+export type RandomDBDKillerAnimationStyle = "slot" | "flip" | "roulette" | "frame";
 
 export interface RandomDBDKillerConfig {
     id: string;

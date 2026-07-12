@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
+import { KillerFrameReveal } from "./KillerFrameReveal"
 
 export interface KillerResult {
     slug: string;
@@ -9,7 +10,7 @@ export interface KillerResult {
     image_url: string;
 }
 
-export type AnimationStyle = "slot" | "flip" | "roulette";
+export type AnimationStyle = "slot" | "flip" | "roulette" | "frame";
 
 interface KillerSpinnerProps {
     pool: KillerResult[];
@@ -18,23 +19,24 @@ interface KillerSpinnerProps {
     onComplete: () => void;
 }
 
-const SPIN_DURATION_MS = 2000;
+const SPIN_DURATION_MS = 2800;
 
 /** Tick delays that ramp up (ease-out) so the spin visibly decelerates before landing. */
 function buildTickSchedule(totalDurationMs: number): number[] {
     const delays: number[] = [];
     let elapsed = 0;
-    let delay = 80;
+    let delay = 140;
     while (elapsed < totalDurationMs) {
         delays.push(delay);
         elapsed += delay;
-        delay = Math.min(delay * 1.18, 400);
+        delay = Math.min(delay * 1.22, 500);
     }
     return delays;
 }
 
 function useSpinCursor(poolLength: number, active: boolean, onDone: () => void) {
-    const [index, setIndex] = useState(0);
+    const [step, setStep] = useState(0);
+    const [tickMs, setTickMs] = useState(140);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -44,16 +46,17 @@ function useSpinCursor(poolLength: number, active: boolean, onDone: () => void) 
         }
 
         const schedule = buildTickSchedule(SPIN_DURATION_MS);
-        let step = 0;
+        let i = 0;
 
         const tick = () => {
-            if (step >= schedule.length) {
+            if (i >= schedule.length) {
                 onDone();
                 return;
             }
-            setIndex((prev) => (prev + 1) % poolLength);
-            timeoutRef.current = setTimeout(tick, schedule[step]);
-            step += 1;
+            setTickMs(schedule[i]);
+            setStep((prev) => prev + 1);
+            timeoutRef.current = setTimeout(tick, schedule[i]);
+            i += 1;
         };
 
         timeoutRef.current = setTimeout(tick, schedule[0]);
@@ -64,12 +67,37 @@ function useSpinCursor(poolLength: number, active: boolean, onDone: () => void) 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [active, poolLength]);
 
-    return index;
+    return { step, tickMs, index: poolLength > 0 ? step % poolLength : 0 };
 }
 
 export function KillerSpinner({ pool, finalKiller, animationStyle, onComplete }: KillerSpinnerProps) {
     const [isSpinning, setIsSpinning] = useState(pool.length > 1);
-    const cursorIndex = useSpinCursor(pool.length, isSpinning, () => {
+
+    if (animationStyle === "frame") {
+        return <KillerFrameReveal pool={pool} finalKiller={finalKiller} onComplete={onComplete} />;
+    }
+
+    return (
+        <LegacySpinner
+            pool={pool}
+            finalKiller={finalKiller}
+            animationStyle={animationStyle}
+            onComplete={onComplete}
+            isSpinning={isSpinning}
+            setIsSpinning={setIsSpinning}
+        />
+    );
+}
+
+function LegacySpinner({
+    pool,
+    finalKiller,
+    animationStyle,
+    onComplete,
+    isSpinning,
+    setIsSpinning,
+}: KillerSpinnerProps & { isSpinning: boolean; setIsSpinning: (v: boolean) => void }) {
+    const { step, tickMs, index: cursorIndex } = useSpinCursor(pool.length, isSpinning, () => {
         setIsSpinning(false);
         onComplete();
     });
@@ -85,22 +113,35 @@ export function KillerSpinner({ pool, finalKiller, animationStyle, onComplete }:
     }
 
     if (animationStyle === "flip") {
+        // Cross-fade between two stacked layers instead of remounting, so there's
+        // never a frame where both layers are transparent (no "flash to blank").
         return (
-            <div key={current.slug + cursorIndex} className="animate-in fade-in zoom-in duration-150">
-                <KillerCard killer={current} />
+            <div className="relative" style={{ width: "min(80vw, 420px)" }}>
+                <div key={step} className="animate-in fade-in duration-150 fill-mode-forwards">
+                    <KillerCard killer={current} />
+                </div>
             </div>
         );
     }
+
+    // Render two extra copies of the pool ahead of the cursor so the strip can
+    // always slide forward continuously instead of snapping back on wraparound.
+    const loopedPool = [...pool, ...pool, ...pool];
+    const offset = pool.length + cursorIndex;
 
     if (animationStyle === "roulette") {
         return (
             <div className="overflow-hidden" style={{ width: "min(80vw, 420px)" }}>
                 <div
-                    className="flex gap-4 transition-transform duration-150 ease-linear"
-                    style={{ transform: `translateX(-${cursorIndex * 100}%)`, filter: "blur(2px)" }}
+                    className="flex gap-4 ease-linear"
+                    style={{
+                        transform: `translateX(-${offset * 100}%)`,
+                        transitionProperty: "transform",
+                        transitionDuration: `${tickMs}ms`,
+                    }}
                 >
-                    {pool.map((k, i) => (
-                        <div key={k.slug + i} className="shrink-0 w-full">
+                    {loopedPool.map((k, i) => (
+                        <div key={i} className="shrink-0 w-full">
                             <KillerCard killer={k} />
                         </div>
                     ))}
@@ -113,11 +154,15 @@ export function KillerSpinner({ pool, finalKiller, animationStyle, onComplete }:
     return (
         <div className="overflow-hidden rounded-2xl" style={{ height: "min(60vh, 420px)" }}>
             <div
-                className="transition-transform duration-150 ease-linear"
-                style={{ transform: `translateY(-${cursorIndex * 100}%)` }}
+                className="ease-linear"
+                style={{
+                    transform: `translateY(-${offset * 100}%)`,
+                    transitionProperty: "transform",
+                    transitionDuration: `${tickMs}ms`,
+                }}
             >
-                {pool.map((k, i) => (
-                    <div key={k.slug + i}>
+                {loopedPool.map((k, i) => (
+                    <div key={i}>
                         <KillerCard killer={k} />
                     </div>
                 ))}

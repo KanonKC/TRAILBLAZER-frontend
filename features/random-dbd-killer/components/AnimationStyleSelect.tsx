@@ -18,6 +18,7 @@ export function AnimationStyleSelect({ value, onValueChange, triggerClassName }:
                 <SelectItem value="slot">Slot Machine (เลื่อนขึ้นลง)</SelectItem>
                 <SelectItem value="flip">สลับเร็ว (Flip)</SelectItem>
                 <SelectItem value="roulette">วงล้อ (Roulette)</SelectItem>
+                <SelectItem value="frame">กรอบเรืองแสง (Frame)</SelectItem>
             </SelectContent>
         </Select>
     );
