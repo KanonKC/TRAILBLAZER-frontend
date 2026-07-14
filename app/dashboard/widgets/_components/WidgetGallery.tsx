@@ -1,17 +1,17 @@
 "use client";
 
-import { ExtendedWidget, listWidgets } from "@/services/widget.service";
+import { ExtendedWidget, listWidgets, WidgetTypeMeta } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 import { useState } from "react";
 import { WidgetCard } from "./WidgetCard";
-import { StaticWidgets } from "@/constants/widgets";
 import { QuotaMeter } from "@/components/widget/QuotaMeter";
 
 interface WidgetGalleryProps {
     initialData: { data: ExtendedWidget[], pagination: any } | null;
+    initialWidgetTypes: WidgetTypeMeta[];
 }
 
-export const WidgetGallery = ({ initialData }: WidgetGalleryProps) => {
+export const WidgetGallery = ({ initialData, initialWidgetTypes }: WidgetGalleryProps) => {
     const [apiWidgets, setApiWidgets] = useState<ExtendedWidget[]>(initialData?.data || []);
     const [isLoading, setIsLoading] = useState(false);
     const [quotaRefreshKey, setQuotaRefreshKey] = useState(0);
@@ -54,12 +54,12 @@ export const WidgetGallery = ({ initialData }: WidgetGalleryProps) => {
             </div>
             <div className="flex flex-col gap-6 relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {StaticWidgets.map((widget) => {
-                        const apiWidget = apiWidgets.find(w => w.widget_type_slug === widget.slug);
+                    {initialWidgetTypes.map((widgetType) => {
+                        const apiWidget = apiWidgets.find(w => w.widget_type_slug === widgetType.slug);
                         return (
                             <WidgetCard
-                                key={widget.slug}
-                                {...widget}
+                                key={widgetType.slug}
+                                widgetType={widgetType}
                                 apiWidget={apiWidget}
                                 onSuccess={fetchWidgets}
                             />
