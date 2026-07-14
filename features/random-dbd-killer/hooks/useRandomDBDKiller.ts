@@ -20,7 +20,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
 
     const [twitchRewardId, setTwitchRewardId] = useState<string | null>(initialConfig?.twitch_reward_id || null);
     const [killerPool, setKillerPool] = useState<string[]>(initialConfig?.killer_pool || []);
-    const [animationStyle, setAnimationStyle] = useState<RandomDBDKillerAnimationStyle>(initialConfig?.animation_style || "slot");
+    const [animationStyle, setAnimationStyle] = useState<RandomDBDKillerAnimationStyle>(initialConfig?.animation_style || "frame");
     const [killerMasters, setKillerMasters] = useState<DBDKillerMaster[]>([]);
     const [isLoadingKillerMasters, setIsLoadingKillerMasters] = useState(true);
 
@@ -50,7 +50,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
                 setIsEnabled(data.widget?.enabled ?? false);
                 setTwitchRewardId(data.twitch_reward_id);
                 setKillerPool(data.killer_pool || []);
-                setAnimationStyle(data.animation_style || "slot");
+                setAnimationStyle(data.animation_style || "frame");
                 setActiveTab("quick-start");
             }
         } catch (error) {
@@ -95,7 +95,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
                 tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
                 setConfig(updated);
                 setKillerPool(updated.killer_pool || []);
-                setAnimationStyle(updated.animation_style || "slot");
+                setAnimationStyle(updated.animation_style || "frame");
             }
         } catch (error: any) {
             console.error("Failed to save", error);

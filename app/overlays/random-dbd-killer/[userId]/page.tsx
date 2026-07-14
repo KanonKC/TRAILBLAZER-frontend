@@ -122,7 +122,7 @@ export default function RandomDBDKillerOverlayPage() {
                     key={result.killer.slug + (result.pool?.length ?? 0)}
                     pool={result.pool && result.pool.length > 0 ? result.pool : [result.killer]}
                     finalKiller={result.killer}
-                    animationStyle={result.animationStyle ?? "slot"}
+                    animationStyle={result.animationStyle ?? "frame"}
                     onComplete={handleSpinComplete}
                 />
             )}
