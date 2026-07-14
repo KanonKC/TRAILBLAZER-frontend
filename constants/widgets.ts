@@ -1,6 +1,6 @@
 import { YouTube } from "@/components/icons/youtube";
 import { Spotify } from "@/components/icons/spotify"
-import { Dices, ImageIcon, MessageSquare, Music, Video } from "lucide-react";
+import { Dices, ImageIcon, MessageSquare, Music, Skull, Video } from "lucide-react";
 
 export interface StaticWidget {
     slug: string;
@@ -47,6 +47,17 @@ export const StaticWidgets: StaticWidget[] = [
         bgColor: "bg-emerald-500/10",
         isActive: true,
         borderColor: "border-emerald-500/20"
+    },
+    {
+        slug: "random-dbd-killer",
+        title: "Random DBD Killer",
+        description: "สุ่มตัว Killer จาก Dead by Daylight ที่คุณกำหนดไว้ ผ่านการแลกแต้มช่อง",
+        icon: Skull,
+        href: "/dashboard/widgets/random-dbd-killer",
+        color: "text-rose-500",
+        bgColor: "bg-rose-500/10",
+        isActive: true,
+        borderColor: "border-rose-500/20"
     },
     {
         slug: "drop-image",
