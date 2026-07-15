@@ -1,7 +1,9 @@
-import { fetchData } from "@/lib/data-access";
+import { fetchData, getWidgetTypeMeta } from "@/lib/data-access";
 import { RandomDBDKillerConfig } from "@/features/random-dbd-killer/types";
 import { RandomDBDKillerWidget } from "@/features/random-dbd-killer/components/RandomDBDKillerWidget";
-import { WidgetTypeMeta } from "@/services/widget.service";
+import { WidgetTypeLoadError } from "@/components/widget/WidgetTypeLoadError";
+
+const SLUG = "random-dbd-killer";
 
 async function getRandomDBDKillerConfigServer(): Promise<RandomDBDKillerConfig | null> {
     try {
@@ -14,11 +16,11 @@ async function getRandomDBDKillerConfigServer(): Promise<RandomDBDKillerConfig |
 }
 
 export default async function RandomDBDKillerWidgetPage() {
-    const [config, widgetTypesData] = await Promise.all([
+    const [config, widgetType] = await Promise.all([
         getRandomDBDKillerConfigServer(),
-        fetchData<{ data: WidgetTypeMeta[] }>("/api/v1/widget-types"),
+        getWidgetTypeMeta(SLUG),
     ]);
-    const widgetType = widgetTypesData?.data.find(w => w.slug === "random-dbd-killer");
-    if (!widgetType) return null;
+    if (widgetType === undefined) return <WidgetTypeLoadError slug={SLUG} reason="fetch-failed" />;
+    if (widgetType === null) return <WidgetTypeLoadError slug={SLUG} reason="not-found" />;
     return <RandomDBDKillerWidget initialConfig={config} widgetType={widgetType} />;
 }

@@ -34,11 +34,16 @@ export function WidgetConfigLayout({
                 <div className="flex items-center gap-3 mb-2">
                     <div
                         className="p-2 rounded-lg"
-                        style={{ backgroundColor: `${theme_color}1a`, color: theme_color ?? undefined }}
+                        style={theme_color ? { backgroundColor: `${theme_color}1a`, color: theme_color } : undefined}
                     >
                         {icon_url ? (
                             // eslint-disable-next-line @next/next/no-img-element
-                            <img src={icon_url} alt={title} className="w-6 h-6" />
+                            <img
+                                src={icon_url}
+                                alt={title}
+                                className="w-6 h-6"
+                                onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
+                            />
                         ) : (
                             <div className="w-6 h-6" />
                         )}

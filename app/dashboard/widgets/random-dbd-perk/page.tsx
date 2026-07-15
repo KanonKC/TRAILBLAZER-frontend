@@ -1,7 +1,9 @@
-import { fetchData } from "@/lib/data-access";
+import { fetchData, getWidgetTypeMeta } from "@/lib/data-access";
 import { RandomDbdPerkConfig } from "@/features/random-dbd-perk/types";
 import { RandomDbdPerkWidget } from "@/features/random-dbd-perk/components/RandomDbdPerkWidget";
-import { WidgetTypeMeta } from "@/services/widget.service";
+import { WidgetTypeLoadError } from "@/components/widget/WidgetTypeLoadError";
+
+const SLUG = "random-dbd-perk";
 
 async function getRandomDbdPerkConfigServer(): Promise<RandomDbdPerkConfig | null> {
     try {
@@ -14,11 +16,11 @@ async function getRandomDbdPerkConfigServer(): Promise<RandomDbdPerkConfig | nul
 }
 
 export default async function RandomDbdPerkWidgetPage() {
-    const [config, widgetTypesData] = await Promise.all([
+    const [config, widgetType] = await Promise.all([
         getRandomDbdPerkConfigServer(),
-        fetchData<{ data: WidgetTypeMeta[] }>("/api/v1/widget-types"),
+        getWidgetTypeMeta(SLUG),
     ]);
-    const widgetType = widgetTypesData?.data.find(w => w.slug === "random-dbd-perk");
-    if (!widgetType) return null;
+    if (widgetType === undefined) return <WidgetTypeLoadError slug={SLUG} reason="fetch-failed" />;
+    if (widgetType === null) return <WidgetTypeLoadError slug={SLUG} reason="not-found" />;
     return <RandomDbdPerkWidget initialConfig={config} widgetType={widgetType} />;
 }

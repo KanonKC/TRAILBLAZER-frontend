@@ -31,11 +31,16 @@ export const WidgetCard = ({
                     <div className="flex items-center gap-4">
                         <div
                             className="p-3 rounded-xl group-hover:scale-110 transition-transform"
-                            style={{ backgroundColor: `${theme_color}1a`, color: theme_color ?? undefined }}
+                            style={theme_color ? { backgroundColor: `${theme_color}1a`, color: theme_color } : undefined}
                         >
                             {icon_url ? (
                                 // eslint-disable-next-line @next/next/no-img-element
-                                <img src={icon_url} alt={title} className="w-6 h-6" />
+                                <img
+                                    src={icon_url}
+                                    alt={title}
+                                    className="w-6 h-6"
+                                    onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
+                                />
                             ) : (
                                 <div className="w-6 h-6" />
                             )}
@@ -68,10 +73,28 @@ export const WidgetCard = ({
             </CardHeader>
             {isActive && (
                 <CardContent className="mt-auto flex justify-end">
-                    <Link href={href ?? "#"} className="text-sm font-medium text-primary hover:underline">
-                        <Button
-                            variant={!apiWidget ? "default" : "outline"}
-                        >
+                    {href ? (
+                        <Link href={href} className="text-sm font-medium text-primary hover:underline">
+                            <Button
+                                variant={!apiWidget ? "default" : "outline"}
+                            >
+                                {
+                                    apiWidget ? (
+                                        <>
+                                            <Settings />
+                                            ตั้งค่าวิดเจ็ต
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Play />
+                                            เปิดใช้งานวิดเจ็ต
+                                        </>
+                                    )
+                                }
+                            </Button>
+                        </Link>
+                    ) : (
+                        <Button variant={!apiWidget ? "default" : "outline"} disabled>
                             {
                                 apiWidget ? (
                                     <>
@@ -86,7 +109,7 @@ export const WidgetCard = ({
                                 )
                             }
                         </Button>
-                    </Link>
+                    )}
                 </CardContent>
             )}
             {!isActive && (

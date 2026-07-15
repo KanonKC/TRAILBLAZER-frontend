@@ -1,7 +1,9 @@
-import { fetchData } from "@/lib/data-access";
+import { fetchData, getWidgetTypeMeta } from "@/lib/data-access";
 import { DropImageConfig } from "@/features/drop-image/types";
 import { DropImageWidget } from "@/features/drop-image/components/DropImageWidget";
-import { WidgetTypeMeta } from "@/services/widget.service";
+import { WidgetTypeLoadError } from "@/components/widget/WidgetTypeLoadError";
+
+const SLUG = "drop-image";
 
 async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
     try {
@@ -14,11 +16,11 @@ async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
 }
 
 export default async function DropImageWidgetPage() {
-    const [config, widgetTypesData] = await Promise.all([
+    const [config, widgetType] = await Promise.all([
         getDropImageConfigServer(),
-        fetchData<{ data: WidgetTypeMeta[] }>("/api/v1/widget-types"),
+        getWidgetTypeMeta(SLUG),
     ]);
-    const widgetType = widgetTypesData?.data.find(w => w.slug === "drop-image");
-    if (!widgetType) return null;
+    if (widgetType === undefined) return <WidgetTypeLoadError slug={SLUG} reason="fetch-failed" />;
+    if (widgetType === null) return <WidgetTypeLoadError slug={SLUG} reason="not-found" />;
     return <DropImageWidget initialConfig={config} widgetType={widgetType} />;
 }

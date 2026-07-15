@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
 export async function fetchData<T>(url: string): Promise<T | null> {
     const cookieStore = await cookies();
@@ -21,4 +22,15 @@ export async function fetchData<T>(url: string): Promise<T | null> {
     } catch {
         return [] as T;
     }
+}
+
+/**
+ * Fetches the metadata row for a single widget type by slug.
+ * Returns `undefined` if the fetch failed (so callers can show an error state)
+ * vs `null` if the fetch succeeded but no widget type with that slug exists.
+ */
+export async function getWidgetTypeMeta(slug: string): Promise<WidgetTypeMeta | null | undefined> {
+    const widgetTypesData = await fetchData<{ data: WidgetTypeMeta[] }>("/api/v1/widget-types");
+    if (!widgetTypesData?.data) return undefined;
+    return widgetTypesData.data.find(w => w.slug === slug) ?? null;
 }

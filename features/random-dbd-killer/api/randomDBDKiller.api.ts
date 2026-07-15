@@ -28,6 +28,9 @@ export const getDBDKillerMasterList = async (): Promise<DBDKillerMaster[]> => {
 };
 
 export const getRandomDBDKillerEventUrl = (userId: string, key?: string) => {
+    if (!process.env.NEXT_PUBLIC_API_URL) {
+        console.error("NEXT_PUBLIC_API_URL is not set; falling back to localhost, which will not work outside local dev.");
+    }
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
     const url = new URL(`${baseUrl}/api/v1/events/random-dbd-killer/${userId}`);
     if (key) {

@@ -10,7 +10,7 @@ interface KillerFrameRevealProps {
 }
 
 const FRAME_APPEAR_MS = 400;
-const SPIN_DURATION_MS = 5200; // cycling + decelerating
+const FRAME_SPIN_DURATION_MS = 5200; // cycling + decelerating
 const LANDED_BUFFER_MS = 200;
 const PRELOAD_TIMEOUT_MS = 3000;
 
@@ -129,7 +129,7 @@ export function KillerFrameReveal({ pool, finalKiller, onComplete }: KillerFrame
             return;
         }
 
-        if (!scheduleRef.current) scheduleRef.current = buildTickSchedule(SPIN_DURATION_MS);
+        if (!scheduleRef.current) scheduleRef.current = buildTickSchedule(FRAME_SPIN_DURATION_MS);
         const schedule = scheduleRef.current;
         let i = 0;
         let timeoutId: ReturnType<typeof setTimeout>;
@@ -249,6 +249,7 @@ function CrossFadeImage({ killer, fadeMs }: { killer: KillerResult; fadeMs: numb
                         opacity: activeSlot === slotIdx ? 1 : 0,
                         transition: `opacity ${fadeMs}ms linear`,
                     }}
+                    onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
                 />
             ))}
         </div>

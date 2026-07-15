@@ -25,6 +25,7 @@ export default function RandomDBDKillerOverlayPage() {
 
     const [result, setResult] = useState<KillerResultEvent | null>(null);
     const [isVisible, setIsVisible] = useState(false);
+    const [seq, setSeq] = useState(0);
 
     const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
@@ -55,10 +56,13 @@ export default function RandomDBDKillerOverlayPage() {
             try {
                 const data = JSON.parse(event.data) as KillerResultEvent
                 console.log("Received killer-result event:", data)
-                if (data.killer) {
+                if (data.killer?.slug && data.killer?.title && data.killer?.image_url) {
                     if (timerRef.current) clearTimeout(timerRef.current);
                     setResult(data);
                     setIsVisible(true);
+                    setSeq((s) => s + 1);
+                } else {
+                    console.error("Received malformed killer-result payload, ignoring:", data)
                 }
             } catch (error) {
                 console.error("Failed to parse event data:", error)
@@ -119,7 +123,7 @@ export default function RandomDBDKillerOverlayPage() {
 
             {isVisible && result && (
                 <KillerSpinner
-                    key={result.killer.slug + (result.pool?.length ?? 0)}
+                    key={seq}
                     pool={result.pool && result.pool.length > 0 ? result.pool : [result.killer]}
                     finalKiller={result.killer}
                     animationStyle={result.animationStyle ?? "frame"}
