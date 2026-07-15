@@ -59,3 +59,21 @@ export const getWidgetQuota = async (): Promise<WidgetQuota> => {
     const response = await apiClient.get<WidgetQuota>('/api/v1/widgets/quota');
     return response.data;
 };
+
+export interface WidgetTypeMeta {
+    id: number;
+    slug: string;
+    display_name: string;
+    description: string | null;
+    cost: number;
+    icon_url: string | null;
+    theme_color: string | null;
+    href: string | null;
+    is_active: boolean;
+    is_display: boolean;
+}
+
+export const listWidgetTypes = async (): Promise<{ data: WidgetTypeMeta[] }> => {
+    const response = await apiClient.get<{ data: WidgetTypeMeta[] }>('/api/v1/widget-types');
+    return response.data;
+};

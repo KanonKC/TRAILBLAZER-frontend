@@ -3,34 +3,22 @@
 import { Play, Settings, Zap } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ExtendedWidget } from "@/services/widget.service";
+import { ExtendedWidget, WidgetTypeMeta } from "@/services/widget.service";
 import { Button } from "@/components/ui/button";
 import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
 
 interface WidgetCardProps {
-    slug: string;
-    title: string;
-    description: string;
-    icon: React.ComponentType<{ className?: string }>;
-    href: string;
-    color: string;
-    bgColor: string;
-    isActive?: boolean;
+    widgetType: WidgetTypeMeta;
     apiWidget?: ExtendedWidget;
     onSuccess?: () => void;
 }
 
 export const WidgetCard = ({
-    title,
-    description,
-    icon: Icon,
-    href,
-    color,
-    bgColor,
-    isActive = true,
+    widgetType,
     apiWidget,
     onSuccess
 }: WidgetCardProps) => {
+    const { display_name: title, description, icon_url, href, theme_color, is_active: isActive } = widgetType;
     const isEnabled = apiWidget?.enabled || false;
 
     return (
@@ -41,8 +29,21 @@ export const WidgetCard = ({
             <CardHeader>
                 <div className="flex items-center gap-4 mb-2 justify-between">
                     <div className="flex items-center gap-4">
-                        <div className={`p-3 rounded-xl ${bgColor} ${color} group-hover:scale-110 transition-transform`}>
-                            <Icon className="w-6 h-6" />
+                        <div
+                            className="p-3 rounded-xl group-hover:scale-110 transition-transform"
+                            style={theme_color ? { backgroundColor: `${theme_color}1a`, color: theme_color } : undefined}
+                        >
+                            {icon_url ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={icon_url}
+                                    alt={title}
+                                    className="w-6 h-6"
+                                    onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
+                                />
+                            ) : (
+                                <div className="w-6 h-6" />
+                            )}
                         </div>
                         <CardTitle className="text-xl transition-colors">
                             {title}
@@ -72,10 +73,28 @@ export const WidgetCard = ({
             </CardHeader>
             {isActive && (
                 <CardContent className="mt-auto flex justify-end">
-                    <Link href={href} className="text-sm font-medium text-primary hover:underline">
-                        <Button
-                            variant={!apiWidget ? "default" : "outline"}
-                        >
+                    {href ? (
+                        <Link href={href} className="text-sm font-medium text-primary hover:underline">
+                            <Button
+                                variant={!apiWidget ? "default" : "outline"}
+                            >
+                                {
+                                    apiWidget ? (
+                                        <>
+                                            <Settings />
+                                            ตั้งค่าวิดเจ็ต
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Play />
+                                            เปิดใช้งานวิดเจ็ต
+                                        </>
+                                    )
+                                }
+                            </Button>
+                        </Link>
+                    ) : (
+                        <Button variant={!apiWidget ? "default" : "outline"} disabled>
                             {
                                 apiWidget ? (
                                     <>
@@ -90,7 +109,7 @@ export const WidgetCard = ({
                                 )
                             }
                         </Button>
-                    </Link>
+                    )}
                 </CardContent>
             )}
             {!isActive && (

@@ -66,9 +66,9 @@ export const updateMyNewWidgetConfig = async (data: Partial<MyNewWidgetConfig>):
 
 ### 4. Component — `features/[widget-name]/components/[WidgetName]Widget.tsx`
 - [ ] `"use client"` directive at top
-- [ ] Accept `{ initialConfig }` prop, delegate all state to hook
+- [ ] Accept `{ initialConfig, widgetType }` prop, delegate all state to hook
 - [ ] Tab layout: **Overview** (1 col when no config) → **Settings** (2 cols when configured)
-- [ ] Use `WidgetConfigLayout` from `@/components/widget/layout/WidgetConfigLayout`
+- [ ] Use `WidgetConfigLayout` from `@/components/widget/layout/WidgetConfigLayout`, passing `widgetType={widgetType}` (do NOT hardcode `title`/`description`/`icon` — those render from the `WidgetTypeMeta` fetched in the page)
 - [ ] Use `WidgetOverviewCard`, `WidgetSettingsCard`, `WidgetSettingsCardContent`, `WidgetSettingsCardFooter`
 - [ ] Reuse shared form controls: `TwitchRewardSelector`, `BotProfileSelector`, `ReplyMessageTextarea`
 - [ ] Footer: `SaveWidgetButton` + `DeleteWidgetButton`
@@ -76,13 +76,15 @@ export const updateMyNewWidgetConfig = async (data: Partial<MyNewWidgetConfig>):
 ### 5. Dashboard Page — `app/dashboard/widgets/[widget-slug]/page.tsx`
 - [ ] Server component (no `"use client"`)
 - [ ] Fetch initial config via `fetchData` from `@/lib/data-access`
+- [ ] Fetch `WidgetTypeMeta` from `/api/v1/widget-types` and find the row matching this widget's `slug`
 - [ ] Return `null` on error (widget renders as unenabled state)
-- [ ] Render the client component with `initialConfig`
+- [ ] Render the client component with `initialConfig` and `widgetType`
 
 ```typescript
 import { fetchData } from "@/lib/data-access";
 import { MyNewWidgetConfig } from "@/features/my-new-widget/types";
 import { MyNewWidgetWidget } from "@/features/my-new-widget/components/MyNewWidgetWidget";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
 async function getConfigServer(): Promise<MyNewWidgetConfig | null> {
     try {
@@ -94,25 +96,31 @@ async function getConfigServer(): Promise<MyNewWidgetConfig | null> {
 }
 
 export default async function MyNewWidgetPage() {
-    const config = await getConfigServer();
-    return <MyNewWidgetWidget initialConfig={config} />;
+    const [config, widgetTypesData] = await Promise.all([
+        getConfigServer(),
+        fetchData<{ data: WidgetTypeMeta[] }>("/api/v1/widget-types"),
+    ]);
+    const widgetType = widgetTypesData?.data.find(w => w.slug === "my-new-widget");
+    if (!widgetType) return null;
+    return <MyNewWidgetWidget initialConfig={config} widgetType={widgetType} />;
 }
 ```
 
-### 6. Widget Registry — `constants/widgets.ts`
-- [ ] Import the icon from `lucide-react`
-- [ ] Add entry to the `StaticWidgets` array with `slug`, `title`, `description`, `icon`, `href`, `color`, `bgColor`, `borderColor`
+### 6. Widget Registry — `WidgetType` table (backend)
+Widget gallery metadata is no longer hardcoded on the frontend — it's read from the `WidgetType` Prisma table (blaze-backend) via `GET /api/v1/widget-types`.
+- [ ] Add/upsert a row for the new widget (e.g. in `blaze-backend/prisma/seed.ts`) with: `slug`, `display_name`, `description`, `cost`, `icon_url` (image URL, no more lucide icon components), `theme_color` (hex), `href`, `is_active` (whether the widget is enabled/usable), `is_display` (whether it shows up in the gallery at all)
 
 ```typescript
 {
     slug: "my-new-widget",
-    title: "My New Widget",
+    display_name: "My New Widget",
     description: "คำอธิบายภาษาไทย",
-    icon: SomeLucideIcon,
+    cost: 1,
+    icon_url: "https://cdn.trailblazer.bz/widgets/my-new-widget.png",
+    theme_color: "#22c55e",
     href: "/dashboard/widgets/my-new-widget",
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
-    borderColor: "border-green-500/20"
+    is_active: true,
+    is_display: true,
 },
 ```
 

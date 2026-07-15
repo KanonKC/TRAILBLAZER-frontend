@@ -44,6 +44,10 @@ const LightPillar: React.FC<LightPillarProps> = ({
   const mouseRef = useRef<THREE.Vector2>(new THREE.Vector2(0, 0));
   const timeRef = useRef<number>(0);
   const [webGLSupported, setWebGLSupported] = useState<boolean>(true);
+  const targetTopColorRef = useRef<THREE.Vector3 | null>(null);
+  const targetBottomColorRef = useRef<THREE.Vector3 | null>(null);
+  const currentTopColorRef = useRef<THREE.Vector3 | null>(null);
+  const currentBottomColorRef = useRef<THREE.Vector3 | null>(null);
 
   useEffect(() => {
     const canvas = document.createElement('canvas');
@@ -275,6 +279,11 @@ const LightPillar: React.FC<LightPillarProps> = ({
     });
     materialRef.current = material;
 
+    targetTopColorRef.current = parseColor(topColor);
+    targetBottomColorRef.current = parseColor(bottomColor);
+    currentTopColorRef.current = parseColor(topColor);
+    currentBottomColorRef.current = parseColor(bottomColor);
+
     const geometry = new THREE.PlaneGeometry(2, 2);
     geometryRef.current = geometry;
     const mesh = new THREE.Mesh(geometry, material);
@@ -310,6 +319,17 @@ const LightPillar: React.FC<LightPillarProps> = ({
         const rotAngle = timeRef.current * 0.3;
         materialRef.current.uniforms.uRotCos.value = Math.cos(rotAngle);
         materialRef.current.uniforms.uRotSin.value = Math.sin(rotAngle);
+
+        const colorLerp = 0.08;
+        if (currentTopColorRef.current && targetTopColorRef.current) {
+          currentTopColorRef.current.lerp(targetTopColorRef.current, colorLerp);
+          materialRef.current.uniforms.uTopColor.value.copy(currentTopColorRef.current);
+        }
+        if (currentBottomColorRef.current && targetBottomColorRef.current) {
+          currentBottomColorRef.current.lerp(targetBottomColorRef.current, colorLerp);
+          materialRef.current.uniforms.uBottomColor.value.copy(currentBottomColorRef.current);
+        }
+
         rendererRef.current.render(sceneRef.current, cameraRef.current);
         lastTime = currentTime - (deltaTime % frameTime);
       }
@@ -342,7 +362,21 @@ const LightPillar: React.FC<LightPillarProps> = ({
       if (materialRef.current) materialRef.current.dispose();
       if (geometryRef.current) geometryRef.current.dispose();
     };
-  }, [topColor, bottomColor, intensity, rotationSpeed, interactive, glowAmount, pillarWidth, pillarHeight, noiseIntensity, pillarRotation, webGLSupported, quality]);
+  }, [intensity, rotationSpeed, interactive, glowAmount, pillarWidth, pillarHeight, noiseIntensity, pillarRotation, webGLSupported, quality]);
+
+  useEffect(() => {
+    if (targetTopColorRef.current) {
+      const c = new THREE.Color(topColor);
+      targetTopColorRef.current.set(c.r, c.g, c.b);
+    }
+  }, [topColor]);
+
+  useEffect(() => {
+    if (targetBottomColorRef.current) {
+      const c = new THREE.Color(bottomColor);
+      targetBottomColorRef.current.set(c.r, c.g, c.b);
+    }
+  }, [bottomColor]);
 
   if (!webGLSupported) {
     return (

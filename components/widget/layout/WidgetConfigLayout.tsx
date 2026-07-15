@@ -2,23 +2,19 @@
 
 import React, { useState, ReactNode } from "react"
 import { QuotaMeter } from "../QuotaMeter"
+import { WidgetTypeMeta } from "@/services/widget.service"
 
 interface WidgetConfigLayoutProps {
     children: (props: { triggerRefresh: () => void, refreshKey: number }) => ReactNode
-    title: string
-    description: string
-    icon: ReactNode
-    iconClassName?: string
+    widgetType: WidgetTypeMeta
 }
 
 export function WidgetConfigLayout({
     children,
-    title,
-    description,
-    icon,
-    iconClassName = "bg-blue-500/10 text-blue-500"
+    widgetType
 }: WidgetConfigLayoutProps) {
     const [refreshKey, setRefreshKey] = useState(0)
+    const { display_name: title, description, icon_url, theme_color } = widgetType
 
     const triggerRefresh = () => {
         setRefreshKey(prev => prev + 1)
@@ -36,8 +32,21 @@ export function WidgetConfigLayout({
             {/* Header */}
             <div className="w-full max-w-2xl mb-8">
                 <div className="flex items-center gap-3 mb-2">
-                    <div className={`p-2 rounded-lg ${iconClassName}`}>
-                        {icon}
+                    <div
+                        className="p-2 rounded-lg"
+                        style={theme_color ? { backgroundColor: `${theme_color}1a`, color: theme_color } : undefined}
+                    >
+                        {icon_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                                src={icon_url}
+                                alt={title}
+                                className="w-6 h-6"
+                                onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
+                            />
+                        ) : (
+                            <div className="w-6 h-6" />
+                        )}
                     </div>
                     <h1 className="text-3xl font-bold">{title}</h1>
                 </div>

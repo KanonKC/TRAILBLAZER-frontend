@@ -1,6 +1,9 @@
-import { fetchData } from "@/lib/data-access";
+import { fetchData, getWidgetTypeMeta } from "@/lib/data-access";
 import { ClipShoutoutConfig } from "@/features/clip-shoutout/types";
 import { ClipShoutoutWidget } from "@/features/clip-shoutout/components/ClipShoutoutWidget";
+import { WidgetTypeLoadError } from "@/components/widget/WidgetTypeLoadError";
+
+const SLUG = "clip-shoutout";
 
 async function getClipShoutoutConfigServer(): Promise<ClipShoutoutConfig | null> {
     try {
@@ -13,6 +16,11 @@ async function getClipShoutoutConfigServer(): Promise<ClipShoutoutConfig | null>
 }
 
 export default async function ClipShoutoutWidgetPage() {
-    const config = await getClipShoutoutConfigServer();
-    return <ClipShoutoutWidget initialConfig={config} />;
+    const [config, widgetType] = await Promise.all([
+        getClipShoutoutConfigServer(),
+        getWidgetTypeMeta(SLUG),
+    ]);
+    if (widgetType === undefined) return <WidgetTypeLoadError slug={SLUG} reason="fetch-failed" />;
+    if (widgetType === null) return <WidgetTypeLoadError slug={SLUG} reason="not-found" />;
+    return <ClipShoutoutWidget initialConfig={config} widgetType={widgetType} />;
 }

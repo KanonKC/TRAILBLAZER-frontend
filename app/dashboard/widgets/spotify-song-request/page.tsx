@@ -1,7 +1,9 @@
-import { fetchData } from "@/lib/data-access";
+import { fetchData, getWidgetTypeMeta } from "@/lib/data-access";
 import { SpotifySongRequestConfig } from "@/features/spotify-song-request/types";
 import { SpotifySongRequestWidget } from "@/features/spotify-song-request/components/SpotifySongRequestWidget";
-import { StaticWidgets } from "@/constants/widgets";
+import { WidgetTypeLoadError } from "@/components/widget/WidgetTypeLoadError";
+
+const SLUG = "spotify-song-request";
 
 async function getSpotifySongRequestConfigServer(): Promise<SpotifySongRequestConfig | null> {
     try {
@@ -14,9 +16,10 @@ async function getSpotifySongRequestConfigServer(): Promise<SpotifySongRequestCo
 }
 
 export default async function SpotifySongRequestPage() {
-    const widget = StaticWidgets.find(w => w.slug === "spotify-song-request")
-    if (widget && widget.isActive) {
-        const config = await getSpotifySongRequestConfigServer();
-        return <SpotifySongRequestWidget initialConfig={config} />;
-    }
+    const widgetType = await getWidgetTypeMeta(SLUG);
+    if (widgetType === undefined) return <WidgetTypeLoadError slug={SLUG} reason="fetch-failed" />;
+    if (widgetType === null) return <WidgetTypeLoadError slug={SLUG} reason="not-found" />;
+    if (!widgetType.is_active) return null;
+    const config = await getSpotifySongRequestConfigServer();
+    return <SpotifySongRequestWidget initialConfig={config} widgetType={widgetType} />;
 }

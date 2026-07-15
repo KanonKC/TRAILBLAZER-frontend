@@ -21,9 +21,9 @@ export const metadata: Metadata = {
 import { UserProvider } from "@/components/user-context";
 import Navbar from "@/components/navbar";
 import { Toaster } from "@/components/ui/sonner";
-import { Footer } from "@/components/landing/footer";
 import { FloatingSupport } from "@/components/floating-support";
 import { ReferralTracker } from "@/components/referral-tracker";
+import { ConditionalFooter } from "@/components/conditional-footer";
 
 // ... existing imports
 
@@ -44,7 +44,7 @@ export default function RootLayout({
             {children}
           </main>
           <Toaster />
-          <Footer />
+          <ConditionalFooter />
           {/* <FloatingSupport /> */}
         </UserProvider>
       </body>

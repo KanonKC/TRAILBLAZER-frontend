@@ -30,6 +30,7 @@ import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { PerkConfigItem } from "./PerkConfigItem";
 import { RandomDbdPerkConfig } from "../types";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
+import { WidgetTypeMeta } from "@/services/widget.service";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -38,7 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import RandomFormatInfo from "./RandomFormatInfo";
 
-export function RandomDbdPerkWidget({ initialConfig }: { initialConfig: RandomDbdPerkConfig | null }) {
+export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConfig: RandomDbdPerkConfig | null; widgetType: WidgetTypeMeta }) {
     const {
         user,
         config,
@@ -72,12 +73,7 @@ export function RandomDbdPerkWidget({ initialConfig }: { initialConfig: RandomDb
     }
 
     return (
-        <WidgetConfigLayout
-            title="Random DBD Perk"
-            description="สุ่ม Perk Dead by Daylight สำหรับ Survivor และ Killer ผ่านการแลกแต้มช่อง หรือคำสั่งแชท"
-            icon={<Dices className="w-6 h-6" />}
-            iconClassName="bg-emerald-500/10 text-emerald-500"
-        >
+        <WidgetConfigLayout widgetType={widgetType}>
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>

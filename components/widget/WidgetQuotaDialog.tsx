@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { ExtendedWidget } from "@/services/widget.service";
 import { useRouter } from "next/navigation";
-import { StaticWidgets } from "@/constants/widgets";
 import { ToggleLeft } from "lucide-react";
 
 interface WidgetQuotaDialogProps {
@@ -47,8 +46,7 @@ export const WidgetQuotaDialog = ({
                                     <p className="text-sm font-semibold text-foreground">วิดเจ็ตที่เปิดอยู่:</p>
                                     <ul className="space-y-2">
                                         {enabledWidgets.map((widget) => {
-                                            const staticWidget = StaticWidgets.find(w => w.slug === widget.widget_type_slug);
-                                            const displayName = widget.widget_type?.displayName ?? staticWidget?.title ?? widget.widget_type_slug ?? "Unknown";
+                                            const displayName = widget.widget_type?.displayName ?? widget.widget_type_slug ?? "Unknown";
                                             const cost = widget.widget_type?.cost ?? 1;
                                             return (
                                                 <li

@@ -1,6 +1,10 @@
 import { FirstWordWidget } from "@/features/first-word/components/FirstWordWidget";
 import { FirstWordConfig } from "@/features/first-word/types";
+import { getWidgetTypeMeta } from "@/lib/data-access";
+import { WidgetTypeLoadError } from "@/components/widget/WidgetTypeLoadError";
 import { cookies } from "next/headers";
+
+const SLUG = "first-word";
 
 interface FirstWordServerResult {
     config: FirstWordConfig | null;
@@ -34,6 +38,11 @@ async function getFirstWordConfigServer(): Promise<FirstWordServerResult> {
 }
 
 export default async function FirstWordWidgetPage() {
-    const { config, requiresProPlan } = await getFirstWordConfigServer();
-    return <FirstWordWidget initialConfig={config} initialRequiresProPlan={requiresProPlan} />;
+    const [{ config, requiresProPlan }, widgetType] = await Promise.all([
+        getFirstWordConfigServer(),
+        getWidgetTypeMeta(SLUG),
+    ]);
+    if (widgetType === undefined) return <WidgetTypeLoadError slug={SLUG} reason="fetch-failed" />;
+    if (widgetType === null) return <WidgetTypeLoadError slug={SLUG} reason="not-found" />;
+    return <FirstWordWidget initialConfig={config} initialRequiresProPlan={requiresProPlan} widgetType={widgetType} />;
 }

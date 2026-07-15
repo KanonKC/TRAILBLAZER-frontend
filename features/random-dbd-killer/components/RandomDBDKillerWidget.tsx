@@ -1,26 +1,17 @@
 "use client"
 
-import { useDropImage } from "../hooks/useDropImage";
+import { useRandomDBDKiller } from "../hooks/useRandomDBDKiller";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-    ImageIcon,
-    Gift,
-    ShieldCheck,
-    Play
-} from "lucide-react";
+import { Gift, ShieldQuestion } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
-import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
@@ -29,14 +20,14 @@ import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
-import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
-import { DropImageConfig } from "../types";
-import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 import SubLabel from "@/components/SubLabel";
+import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
+import { KillerPoolSelector } from "./KillerPoolSelector";
+import { AnimationStyleSelect } from "./AnimationStyleSelect";
+import { RandomDBDKillerConfig } from "../types";
 import { WidgetTypeMeta } from "@/services/widget.service";
 
-export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: DropImageConfig | null; widgetType: WidgetTypeMeta }) {
+export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialConfig: RandomDBDKillerConfig | null; widgetType: WidgetTypeMeta }) {
     const {
         user,
         config,
@@ -46,20 +37,14 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
         isUserLoading,
         activeTab,
         twitchRewardId,
-        displayDuration,
-        enabledModeration,
-        botProfile,
-        invalidMessage,
-        notImageMessage,
-        containMatureMessage,
+        killerPool,
+        animationStyle,
+        killerMasters,
+        isLoadingKillerMasters,
         overlayUrl,
         setTwitchRewardId,
-        setDisplayDuration,
-        setEnabledModeration,
-        setBotProfile,
-        setInvalidMessage,
-        setNotImageMessage,
-        setContainMatureMessage,
+        setAnimationStyle,
+        toggleKiller,
         setActiveTab,
         setConfig,
         handleEnable,
@@ -67,7 +52,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
         handleSave,
         handleTest,
         handleStatusChange
-    } = useDropImage(initialConfig);
+    } = useRandomDBDKiller(initialConfig);
 
     if (isUserLoading) {
         return (
@@ -102,22 +87,22 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                             isLoading={isSaving}
                         >
                             <p className="text-gray-200 text-base leading-relaxed">
-                                วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณและส่ง URL ของรูปภาพ โดยมีระบบตรวจสอบความถูกต้องและคัดกรองเนื้อหาที่ไม่เหมาะสม ก่อนปล่อยตกบนสตรีม
+                                วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณเพื่อสุ่มตัว Killer จาก Dead by Daylight ที่คุณเลือกไว้ล่วงหน้า แล้วแสดงผลลัพธ์บนหน้าจอสตรีมทันที
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-red-500/10 text-red-500 mb-3">
                                         <Gift className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Channel Points</h3>
-                                    <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch และรับ URL ของภาพจากผู้ใช้ได้อย่างสะดวก</p>
+                                    <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch เพื่อสุ่ม Killer ทันทีที่มีการแลกแต้ม</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                     <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-500 mb-3">
-                                        <ShieldCheck className="w-5 h-5" />
+                                        <ShieldQuestion className="w-5 h-5" />
                                     </div>
-                                    <h3 className="font-semibold mb-1">Image Moderation</h3>
-                                    <p className="text-sm text-muted-foreground">AI คอยคัดกรองรูปภาพก่อนแสดงผลเสมอ ป้องกันเนื้อหาที่ไม่เหมาะสม</p>
+                                    <h3 className="font-semibold mb-1">กำหนด Killer Pool เอง</h3>
+                                    <p className="text-sm text-muted-foreground">เลือกได้ว่าจะให้สุ่มจาก Killer ตัวไหนบ้าง</p>
                                 </div>
                             </div>
                         </WidgetOverviewCard>
@@ -135,24 +120,26 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                         },
                                         {
                                             step: 2,
-                                            title: `เลือกแต้มช่องที่ต้องการใช้งาน`,
+                                            title: "เลือกแต้มช่องที่ต้องการใช้งาน",
                                             description: (
                                                 <div className="space-y-3">
                                                     <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
-                                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
+                                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." userInputRequired={false} />
                                                 </div>
                                             )
                                         },
                                         {
                                             step: 3,
-                                            title: "ตั้งค่าระยะเวลาการแสดงผล",
+                                            title: "เลือก Killer ที่ต้องการให้สุ่ม",
                                             description: (
-                                                <div className="space-y-4">
-                                                    <p className="text-sm text-muted-foreground">ตั้งเวลาให้รูปภาพแสดงค้างไว้กี่วินาที</p>
-                                                    <div className="flex items-center gap-3">
-                                                        <Slider value={[displayDuration]} onValueChange={([v]) => setDisplayDuration(v)} min={1} max={20} className="flex-1" />
-                                                        <span className="text-sm tabular-nums w-16 text-right text-muted-foreground">{displayDuration} วินาที</span>
-                                                    </div>
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-white/70">เลือก Killer อย่างน้อยหนึ่งตัวเพื่อให้ระบบสุ่มได้</p>
+                                                    <KillerPoolSelector
+                                                        killerMasters={killerMasters}
+                                                        killerPool={killerPool}
+                                                        onToggle={toggleKiller}
+                                                        isLoading={isLoadingKillerMasters}
+                                                    />
                                                 </div>
                                             )
                                         },
@@ -164,7 +151,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                                     <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
                                                     <SmartOverlayUrlInput
                                                         url={overlayUrl}
-                                                        slug="drop-image"
+                                                        slug="random-dbd-killer"
                                                         onSuccess={setConfig}
                                                         hideLabel
                                                     />
@@ -178,7 +165,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             description: (
                                                 <div className="space-y-3">
                                                     <p className="text-sm text-white/70">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
-                                                    <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId} />
+                                                    <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId && killerPool.length > 0} />
                                                 </div>
                                             )
                                         }
@@ -200,60 +187,37 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                 <div className="space-y-6">
                                     <div className="space-y-2">
                                         <Label>เชื่อมต่อแต้มช่องบน Twitch</Label>
-                                        <SubLabel>เลือกแต้มช่องที่ต้องการใช้งานกับ Widget นี้ หากคุณไม่เห็นแต้มช่องตรงนี้ ลองเช็คให้มั่นใจว่าคุณได้สร้างแต้มช่องแบบที่ให้คนดูกรอกข้อมูลได้แล้ว</SubLabel>
+                                        <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</SubLabel>
                                         <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>ระยะเวลาการแสดงผลรูปภาพ (วินาที)</Label>
-                                        <div className="flex items-center gap-3">
-                                            <Slider value={[displayDuration]} onValueChange={([v]) => setDisplayDuration(v)} min={1} max={20} className="flex-1" />
-                                            <span className="text-sm tabular-nums w-16 text-right text-muted-foreground">{displayDuration} วินาที</span>
-                                        </div>
+                                        <Label>Killer Pool</Label>
+                                        <SubLabel>เลือก Killer ที่ต้องการให้ระบบสุ่ม</SubLabel>
+                                        <KillerPoolSelector
+                                            killerMasters={killerMasters}
+                                            killerPool={killerPool}
+                                            onToggle={toggleKiller}
+                                            isLoading={isLoadingKillerMasters}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>รูปแบบ Animation ตอนสุ่ม</Label>
+                                        <SubLabel>เลือกรูปแบบการแสดงผลตอนสุ่ม Killer บนหน้า Overlay</SubLabel>
+                                        <AnimationStyleSelect value={animationStyle} onValueChange={setAnimationStyle} />
                                     </div>
 
                                     <SmartOverlayUrlInput
                                         url={overlayUrl}
-                                        slug="drop-image"
+                                        slug="random-dbd-killer"
                                         onSuccess={setConfig}
                                     />
-
-                                    {/* Content Moderation */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 border-b pb-2">
-                                            <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                                            <h3 className="text-lg font-semibold">Content Moderation</h3>
-                                        </div>
-                                        <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                                            <div className="space-y-2 mr-2">
-                                                <Label>เปิดใช้งานการตรวจสอบเนื้อหาด้วย<a href="https://sightengine.com/" target="_blank" rel="noopener noreferrer" className="text-cyan-500 hover:underline">Sightengine</a></Label>
-                                                <p className="text-sm text-muted-foreground">
-                                                    หากเปิดใช้งาน จะทำการตรวจสอบรูปภาพที่ส่งมาว่ามีเนื้อหาไม่เหมาะสมหรือไม่ (NSFW / Gore) และป้องกันการแสดงรูปภาพเหล่านั้นขึ้นบนหน้าจอ
-                                                </p>
-                                            </div>
-                                            <Switch
-                                                checked={enabledModeration}
-                                                onCheckedChange={setEnabledModeration}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <BotProfileSelector value={botProfile} onValueChange={setBotProfile} />
-                                        <div className="space-y-2"><Label>ข้อความเมื่อ URL ไม่ถูกต้อง</Label><ReplyMessageTextarea value={invalidMessage} onChange={setInvalidMessage} rows={2} /></div>
-                                        <div className="space-y-2"><Label>ข้อความเมื่อไม่ใช่รูปภาพ</Label><ReplyMessageTextarea value={notImageMessage} onChange={setNotImageMessage} rows={2} /></div>
-                                        <div className="space-y-2"><Label>ข้อความเมื่อเนื้อหาไม่เหมาะสม</Label><ReplyMessageTextarea value={containMatureMessage} onChange={setContainMatureMessage} rows={2} disabled={!enabledModeration} /></div>
-                                    </div>
                                 </div>
                             </WidgetSettingsCardContent>
                             <WidgetSettingsCardFooter>
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
-                                <div className="flex gap-2">
-                                    <Button variant="outline" disabled={isTesting} onClick={handleTest}>
-                                        {isTesting ? "Testing..." : <><Play className="mr-2 h-4 w-4" /> Test</>}
-                                    </Button>
-                                    <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
-                                </div>
+                                <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId && killerPool.length > 0} />
                             </WidgetSettingsCardFooter>
                         </WidgetSettingsCard>
                     </TabsContent>
