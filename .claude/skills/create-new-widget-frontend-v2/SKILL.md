@@ -99,20 +99,21 @@ export default async function MyNewWidgetPage() {
 }
 ```
 
-### 6. Widget Registry — `constants/widgets.ts`
-- [ ] Import the icon from `lucide-react`
-- [ ] Add entry to the `StaticWidgets` array with `slug`, `title`, `description`, `icon`, `href`, `color`, `bgColor`, `borderColor`
+### 6. Widget Registry — `WidgetType` table (backend)
+Widget gallery metadata is no longer hardcoded on the frontend — it's read from the `WidgetType` Prisma table (blaze-backend) via `GET /api/v1/widget-types`.
+- [ ] Add/upsert a row for the new widget (e.g. in `blaze-backend/prisma/seed.ts`) with: `slug`, `display_name`, `description`, `cost`, `icon_url` (image URL, no more lucide icon components), `theme_color` (hex), `href`, `is_active` (whether the widget is enabled/usable), `is_display` (whether it shows up in the gallery at all)
 
 ```typescript
 {
     slug: "my-new-widget",
-    title: "My New Widget",
+    display_name: "My New Widget",
     description: "คำอธิบายภาษาไทย",
-    icon: SomeLucideIcon,
+    cost: 1,
+    icon_url: "https://cdn.trailblazer.bz/widgets/my-new-widget.png",
+    theme_color: "#22c55e",
     href: "/dashboard/widgets/my-new-widget",
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
-    borderColor: "border-green-500/20"
+    is_active: true,
+    is_display: true,
 },
 ```
 

@@ -70,6 +70,7 @@ export interface WidgetTypeMeta {
     theme_color: string | null;
     href: string | null;
     is_active: boolean;
+    is_display: boolean;
 }
 
 export const listWidgetTypes = async (): Promise<{ data: WidgetTypeMeta[] }> => {

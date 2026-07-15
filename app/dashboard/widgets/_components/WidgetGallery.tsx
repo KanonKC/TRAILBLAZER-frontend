@@ -54,7 +54,7 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes }: WidgetGallery
             </div>
             <div className="flex flex-col gap-6 relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {initialWidgetTypes.map((widgetType) => {
+                    {initialWidgetTypes.filter((widgetType) => widgetType.is_display).map((widgetType) => {
                         const apiWidget = apiWidgets.find(w => w.widget_type_slug === widgetType.slug);
                         return (
                             <WidgetCard
