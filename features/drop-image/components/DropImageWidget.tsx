@@ -34,8 +34,9 @@ import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 import { DropImageConfig } from "../types";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 import SubLabel from "@/components/SubLabel";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
-export function DropImageWidget({ initialConfig }: { initialConfig: DropImageConfig | null }) {
+export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: DropImageConfig | null; widgetType: WidgetTypeMeta }) {
     const {
         user,
         config,
@@ -77,12 +78,7 @@ export function DropImageWidget({ initialConfig }: { initialConfig: DropImageCon
     }
 
     return (
-        <WidgetConfigLayout
-            title="Drop Image"
-            description="ให้ผู้ชมของคุณโชว์รูปภาพบนหน้าจอผ่านการแลกแต้มช่อง พร้อมระบบฟิสิกส์หล่นตุบๆ ลงมา"
-            icon={<ImageIcon className="w-6 h-6" />}
-            iconClassName="bg-purple-500/10 text-purple-500"
-        >
+        <WidgetConfigLayout widgetType={widgetType}>
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>

@@ -66,9 +66,9 @@ export const updateMyNewWidgetConfig = async (data: Partial<MyNewWidgetConfig>):
 
 ### 4. Component — `features/[widget-name]/components/[WidgetName]Widget.tsx`
 - [ ] `"use client"` directive at top
-- [ ] Accept `{ initialConfig }` prop, delegate all state to hook
+- [ ] Accept `{ initialConfig, widgetType }` prop, delegate all state to hook
 - [ ] Tab layout: **Overview** (1 col when no config) → **Settings** (2 cols when configured)
-- [ ] Use `WidgetConfigLayout` from `@/components/widget/layout/WidgetConfigLayout`
+- [ ] Use `WidgetConfigLayout` from `@/components/widget/layout/WidgetConfigLayout`, passing `widgetType={widgetType}` (do NOT hardcode `title`/`description`/`icon` — those render from the `WidgetTypeMeta` fetched in the page)
 - [ ] Use `WidgetOverviewCard`, `WidgetSettingsCard`, `WidgetSettingsCardContent`, `WidgetSettingsCardFooter`
 - [ ] Reuse shared form controls: `TwitchRewardSelector`, `BotProfileSelector`, `ReplyMessageTextarea`
 - [ ] Footer: `SaveWidgetButton` + `DeleteWidgetButton`
@@ -76,13 +76,15 @@ export const updateMyNewWidgetConfig = async (data: Partial<MyNewWidgetConfig>):
 ### 5. Dashboard Page — `app/dashboard/widgets/[widget-slug]/page.tsx`
 - [ ] Server component (no `"use client"`)
 - [ ] Fetch initial config via `fetchData` from `@/lib/data-access`
+- [ ] Fetch `WidgetTypeMeta` from `/api/v1/widget-types` and find the row matching this widget's `slug`
 - [ ] Return `null` on error (widget renders as unenabled state)
-- [ ] Render the client component with `initialConfig`
+- [ ] Render the client component with `initialConfig` and `widgetType`
 
 ```typescript
 import { fetchData } from "@/lib/data-access";
 import { MyNewWidgetConfig } from "@/features/my-new-widget/types";
 import { MyNewWidgetWidget } from "@/features/my-new-widget/components/MyNewWidgetWidget";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
 async function getConfigServer(): Promise<MyNewWidgetConfig | null> {
     try {
@@ -94,8 +96,13 @@ async function getConfigServer(): Promise<MyNewWidgetConfig | null> {
 }
 
 export default async function MyNewWidgetPage() {
-    const config = await getConfigServer();
-    return <MyNewWidgetWidget initialConfig={config} />;
+    const [config, widgetTypesData] = await Promise.all([
+        getConfigServer(),
+        fetchData<{ data: WidgetTypeMeta[] }>("/api/v1/widget-types"),
+    ]);
+    const widgetType = widgetTypesData?.data.find(w => w.slug === "my-new-widget");
+    if (!widgetType) return null;
+    return <MyNewWidgetWidget initialConfig={config} widgetType={widgetType} />;
 }
 ```
 

@@ -39,8 +39,9 @@ import { CustomReplyList } from "./CustomReplyList";
 import { FirstWordConfig } from "../types";
 import { FirstWordVariableMap } from "@/constants/firstWord";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
-export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false }: { initialConfig: FirstWordConfig | null; initialRequiresProPlan?: boolean }) {
+export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false, widgetType }: { initialConfig: FirstWordConfig | null; initialRequiresProPlan?: boolean; widgetType: WidgetTypeMeta }) {
 
     // Connect to the Controller
     const controller = useFirstWord(initialConfig, initialRequiresProPlan);
@@ -54,12 +55,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false 
     }
 
     return (
-        <WidgetConfigLayout
-            title="Greeting Message"
-            description="ต้อนรับผู้ชมใหม่โดยอัตโนมัติด้วยข้อความทักทายและเสียงเอฟเฟกต์ที่คุณกำหนดเอง"
-            icon={<MessageSquare className="w-6 h-6" />}
-            iconClassName="bg-blue-500/10 text-blue-500"
-        >
+        <WidgetConfigLayout widgetType={widgetType}>
             {({ triggerRefresh, refreshKey }) => (
                 <>
                     <Tabs value={controller.activeTab} onValueChange={controller.setActiveTab} className="w-full">

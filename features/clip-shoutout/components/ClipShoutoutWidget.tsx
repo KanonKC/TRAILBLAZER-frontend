@@ -30,8 +30,9 @@ import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayou
 import { useClipShoutout } from "../hooks/useClipShoutout";
 import { ClipShoutoutConfig } from "../types";
 import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
-export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShoutoutConfig | null }) {
+export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfig: ClipShoutoutConfig | null; widgetType: WidgetTypeMeta }) {
     const {
         user,
         config,
@@ -76,12 +77,7 @@ export function ClipShoutoutWidget({ initialConfig }: { initialConfig: ClipShout
     ];
 
     return (
-        <WidgetConfigLayout
-            title="Clip Shoutout"
-            description="โปรโมทเพื่อนสตรีมเมอร์ที่มา Raid ด้วยการโชว์คลิปล่าสุดของอัตโนมัติ"
-            icon={<Video className="w-6 h-6" />}
-            iconClassName="bg-orange-500/10 text-orange-500"
-        >
+        <WidgetConfigLayout widgetType={widgetType}>
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>

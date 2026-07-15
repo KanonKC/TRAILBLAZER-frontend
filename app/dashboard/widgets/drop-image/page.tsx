@@ -1,6 +1,7 @@
 import { fetchData } from "@/lib/data-access";
 import { DropImageConfig } from "@/features/drop-image/types";
 import { DropImageWidget } from "@/features/drop-image/components/DropImageWidget";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
 async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
     try {
@@ -13,6 +14,11 @@ async function getDropImageConfigServer(): Promise<DropImageConfig | null> {
 }
 
 export default async function DropImageWidgetPage() {
-    const config = await getDropImageConfigServer();
-    return <DropImageWidget initialConfig={config} />;
+    const [config, widgetTypesData] = await Promise.all([
+        getDropImageConfigServer(),
+        fetchData<{ data: WidgetTypeMeta[] }>("/api/v1/widget-types"),
+    ]);
+    const widgetType = widgetTypesData?.data.find(w => w.slug === "drop-image");
+    if (!widgetType) return null;
+    return <DropImageWidget initialConfig={config} widgetType={widgetType} />;
 }

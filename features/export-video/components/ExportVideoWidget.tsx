@@ -47,8 +47,9 @@ import TrailblazerAccordianTrigger from "@/components/TrailblazerAccordian/Trail
 import TrailblazerAccordianContent from "@/components/TrailblazerAccordian/TrailblazerAccordianContent";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
-export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = false }: { initialConfig: any | null; initialRequiresProPlan?: boolean }) {
+export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = false, widgetType }: { initialConfig: any | null; initialRequiresProPlan?: boolean; widgetType: WidgetTypeMeta }) {
     const controller = useExportVideo(initialConfig, initialRequiresProPlan);
     const { user } = useUser()
 
@@ -61,12 +62,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
     }
 
     return (
-        <WidgetConfigLayout
-            title="Auto Export Video to YouTube"
-            description="ส่งออกวิดีโอ (VOD) จาก Twitch ไปยัง YouTube โดยอัตโนมัติเมื่อคุณสตรีมจบ"
-            icon={<YouTube className="w-6 h-6" />}
-            iconClassName="bg-red-500/10 text-red-500"
-        >
+        <WidgetConfigLayout widgetType={widgetType}>
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={controller.activeTab} onValueChange={controller.setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", controller.config ? "grid-cols-4" : "grid-cols-1")}>

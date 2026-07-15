@@ -18,6 +18,6 @@ export default async function SpotifySongRequestPage() {
     const widgetType = widgetTypesData?.data.find(w => w.slug === "spotify-song-request");
     if (widgetType && widgetType.is_active) {
         const config = await getSpotifySongRequestConfigServer();
-        return <SpotifySongRequestWidget initialConfig={config} />;
+        return <SpotifySongRequestWidget initialConfig={config} widgetType={widgetType} />;
     }
 }

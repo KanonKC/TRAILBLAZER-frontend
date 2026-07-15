@@ -28,8 +28,9 @@ import SubLabel from "@/components/SubLabel";
 import { Platforms } from "@/constants/platforms";
 import { useAccountBinding } from "@/features/account-binding/hooks/useAccountBinding";
 import { PlatformCard } from "@/features/account-binding/components/PlatformCard";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
-export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: SpotifySongRequestConfig | null }) {
+export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initialConfig: SpotifySongRequestConfig | null; widgetType: WidgetTypeMeta }) {
     const {
         user,
         config,
@@ -71,12 +72,7 @@ export function SpotifySongRequestWidget({ initialConfig }: { initialConfig: Spo
     }
 
     return (
-        <WidgetConfigLayout
-            title="Spotify Music Request"
-            description="ให้ผู้ชมของคุณขอเพลง Spotify ผ่านการแลกแต้มช่อง บอทจะเพิ่มเพลงเข้าคิวและตอบกลับในแชท"
-            icon={<Spotify className="w-6 h-6" />}
-            iconClassName="bg-green-500/10 text-green-500"
-        >
+        <WidgetConfigLayout widgetType={widgetType}>
             {() => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>

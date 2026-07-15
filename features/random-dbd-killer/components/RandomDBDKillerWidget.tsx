@@ -25,8 +25,9 @@ import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayou
 import { KillerPoolSelector } from "./KillerPoolSelector";
 import { AnimationStyleSelect } from "./AnimationStyleSelect";
 import { RandomDBDKillerConfig } from "../types";
+import { WidgetTypeMeta } from "@/services/widget.service";
 
-export function RandomDBDKillerWidget({ initialConfig }: { initialConfig: RandomDBDKillerConfig | null }) {
+export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialConfig: RandomDBDKillerConfig | null; widgetType: WidgetTypeMeta }) {
     const {
         user,
         config,
@@ -62,12 +63,7 @@ export function RandomDBDKillerWidget({ initialConfig }: { initialConfig: Random
     }
 
     return (
-        <WidgetConfigLayout
-            title="Random DBD Killer"
-            description="สุ่มตัว Killer จาก Dead by Daylight ที่คุณกำหนดไว้ ผ่านการแลกแต้มช่อง"
-            icon={<Skull className="w-6 h-6" />}
-            iconClassName="bg-red-500/10 text-red-500"
-        >
+        <WidgetConfigLayout widgetType={widgetType}>
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
