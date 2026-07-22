@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { tbToast } from "@/utils/tbToast";
 import { updateCanvas, updateCanvasLinks, testCanvas } from "../api/canvas.api";
 import { CanvasElement, CanvasElementInput, CanvasWithLinks } from "../types";
@@ -20,69 +20,149 @@ const DEFAULT_ELEMENT: Omit<CanvasElementInput, "type"> = {
     loop: false,
 };
 
+/** A continuous gesture (drag/resize) settles into a single undo step. */
+const HISTORY_COALESCE_MS = 400;
+const HISTORY_LIMIT = 50;
+
 let localIdCounter = 0;
 const nextLocalId = () => `local-${Date.now()}-${localIdCounter++}`;
 
 export const useCanvasEditor = (initialCanvas: CanvasWithLinks) => {
     const [canvas, setCanvas] = useState<CanvasWithLinks>(initialCanvas);
     const [elements, setElements] = useState<CanvasElement[]>(initialCanvas.elements);
-    const [selectedElementId, setSelectedElementId] = useState<string | null>(elements[0]?.id ?? null);
+    const [selectedElementId, setSelectedElementId] = useState<string | null>(initialCanvas.elements[0]?.id ?? null);
     const [linkedWidgetIds, setLinkedWidgetIds] = useState<string[]>(
         initialCanvas.links.map((link) => link.widget.id)
     );
     const [isDirty, setIsDirty] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isTesting, setIsTesting] = useState(false);
+    const [currentTimeMs, setCurrentTimeMs] = useState(0);
+
+    const [past, setPast] = useState<CanvasElement[][]>([]);
+    const [future, setFuture] = useState<CanvasElement[][]>([]);
+    const pendingSnapshot = useRef<CanvasElement[] | null>(null);
+    const coalesceTimer = useRef<NodeJS.Timeout | null>(null);
 
     const selectedElement = elements.find((el) => el.id === selectedElementId) ?? null;
 
+    /**
+     * Snapshots the pre-change state, coalescing rapid successive edits so a whole
+     * drag gesture collapses into one undo step instead of hundreds.
+     */
+    const recordHistory = useCallback((before: CanvasElement[]) => {
+        if (!pendingSnapshot.current) {
+            pendingSnapshot.current = before;
+        }
+        if (coalesceTimer.current) clearTimeout(coalesceTimer.current);
+        coalesceTimer.current = setTimeout(() => {
+            const snapshot = pendingSnapshot.current;
+            pendingSnapshot.current = null;
+            if (!snapshot) return;
+            setPast((prev) => [...prev, snapshot].slice(-HISTORY_LIMIT));
+            setFuture([]);
+        }, HISTORY_COALESCE_MS);
+    }, []);
+
+    useEffect(() => () => {
+        if (coalesceTimer.current) clearTimeout(coalesceTimer.current);
+    }, []);
+
+    const mutateElements = useCallback((updater: (prev: CanvasElement[]) => CanvasElement[]) => {
+        setElements((prev) => {
+            recordHistory(prev);
+            return updater(prev);
+        });
+        setIsDirty(true);
+    }, [recordHistory]);
+
     const addElement = useCallback((type: CanvasElement["type"]) => {
-        const newElement: CanvasElement = {
+        const newElement = {
             id: nextLocalId(),
             type,
             media_key: null,
             media: null,
-            text_content: type === "text" ? "New text" : null,
+            text_content: type === "text" ? "ข้อความใหม่" : null,
             text_style: null,
-            z_index: elements.length,
             ...DEFAULT_ELEMENT,
+            z_index: elements.length,
         } as CanvasElement;
-        setElements((prev) => [...prev, newElement]);
+        mutateElements((prev) => [...prev, newElement]);
         setSelectedElementId(newElement.id);
-        setIsDirty(true);
-    }, [elements.length]);
+    }, [elements.length, mutateElements]);
 
     const updateElement = useCallback((id: string, patch: Partial<CanvasElement>) => {
-        setElements((prev) => prev.map((el) => (el.id === id ? { ...el, ...patch } : el)));
-        setIsDirty(true);
-    }, []);
+        mutateElements((prev) => prev.map((el) => (el.id === id ? { ...el, ...patch } : el)));
+    }, [mutateElements]);
 
     const removeElement = useCallback((id: string) => {
-        setElements((prev) => prev.filter((el) => el.id !== id));
+        mutateElements((prev) => prev.filter((el) => el.id !== id));
         setSelectedElementId((current) => (current === id ? null : current));
-        setIsDirty(true);
-    }, []);
+    }, [mutateElements]);
 
-    const moveLayer = useCallback((id: string, direction: "up" | "down") => {
-        setElements((prev) => {
-            const sorted = [...prev].sort((a, b) => a.z_index - b.z_index);
-            const index = sorted.findIndex((el) => el.id === id);
-            const swapWith = direction === "up" ? index + 1 : index - 1;
-            if (index === -1 || swapWith < 0 || swapWith >= sorted.length) return prev;
+    const duplicateElement = useCallback((id: string) => {
+        const source = elements.find((el) => el.id === id);
+        if (!source) return;
+        const copy: CanvasElement = {
+            ...source,
+            id: nextLocalId(),
+            x: Math.min(100, source.x + 2),
+            y: Math.min(100, source.y + 2),
+            z_index: elements.length,
+        };
+        mutateElements((prev) => [...prev, copy]);
+        setSelectedElementId(copy.id);
+    }, [elements, mutateElements]);
 
-            const a = sorted[index];
-            const b = sorted[swapWith];
-            const aZ = a.z_index;
-            a.z_index = b.z_index;
-            b.z_index = aZ;
+    const nudgeElement = useCallback((id: string, dx: number, dy: number) => {
+        mutateElements((prev) => prev.map((el) =>
+            el.id === id
+                ? { ...el, x: Math.min(100, Math.max(0, el.x + dx)), y: Math.min(100, Math.max(0, el.y + dy)) }
+                : el
+        ));
+    }, [mutateElements]);
+
+    /** Reorders z_index from a top-down (highest first) layer list. */
+    const reorderLayers = useCallback((orderedIdsTopFirst: string[]) => {
+        mutateElements((prev) => {
+            const total = orderedIdsTopFirst.length;
             return prev.map((el) => {
-                if (el.id === a.id) return { ...el, z_index: a.z_index };
-                if (el.id === b.id) return { ...el, z_index: b.z_index };
-                return el;
+                const index = orderedIdsTopFirst.indexOf(el.id);
+                return index === -1 ? el : { ...el, z_index: total - 1 - index };
             });
         });
-        setIsDirty(true);
-    }, []);
+    }, [mutateElements]);
+
+    const moveLayer = useCallback((id: string, direction: "up" | "down") => {
+        const sortedTopFirst = [...elements].sort((a, b) => b.z_index - a.z_index).map((el) => el.id);
+        const index = sortedTopFirst.indexOf(id);
+        const swapWith = direction === "up" ? index - 1 : index + 1;
+        if (index === -1 || swapWith < 0 || swapWith >= sortedTopFirst.length) return;
+        [sortedTopFirst[index], sortedTopFirst[swapWith]] = [sortedTopFirst[swapWith], sortedTopFirst[index]];
+        reorderLayers(sortedTopFirst);
+    }, [elements, reorderLayers]);
+
+    const undo = useCallback(() => {
+        setPast((prevPast) => {
+            if (prevPast.length === 0) return prevPast;
+            const previous = prevPast[prevPast.length - 1];
+            setFuture((f) => [elements, ...f]);
+            setElements(previous);
+            setIsDirty(true);
+            return prevPast.slice(0, -1);
+        });
+    }, [elements]);
+
+    const redo = useCallback(() => {
+        setFuture((prevFuture) => {
+            if (prevFuture.length === 0) return prevFuture;
+            const next = prevFuture[0];
+            setPast((p) => [...p, elements]);
+            setElements(next);
+            setIsDirty(true);
+            return prevFuture.slice(1);
+        });
+    }, [elements]);
 
     const updateMeta = useCallback((patch: { name?: string; enabled?: boolean; duration_ms?: number }) => {
         setCanvas((prev) => ({ ...prev, ...patch }));
@@ -163,11 +243,20 @@ export const useCanvasEditor = (initialCanvas: CanvasWithLinks) => {
         isDirty,
         isSaving,
         isTesting,
+        currentTimeMs,
+        canUndo: past.length > 0,
+        canRedo: future.length > 0,
+        setCurrentTimeMs,
         setSelectedElementId,
         addElement,
         updateElement,
         removeElement,
+        duplicateElement,
+        nudgeElement,
         moveLayer,
+        reorderLayers,
+        undo,
+        redo,
         updateMeta,
         toggleWidgetLink,
         save,

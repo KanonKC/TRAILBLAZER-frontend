@@ -72,7 +72,7 @@ export function CanvasInspector({ element, variables, onChange, onRemove }: Canv
                         selectedKey={element.media_key}
                         onSelect={(file) => onChange(element.id, {
                             media_key: file.key,
-                            media: { id: file.id, key: file.key, name: file.name, type: file.type },
+                            media: { id: file.id, key: file.key, name: file.name, type: file.type, url: file.url },
                         })}
                     />
                 </div>

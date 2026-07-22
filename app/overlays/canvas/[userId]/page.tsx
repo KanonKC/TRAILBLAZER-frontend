@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useRef, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { getCanvasEventUrl } from "@/features/canvas/api/canvas.api"
 import { useOverlayEvents } from "@/hooks/use-overlay-events"
@@ -28,9 +28,9 @@ export default function CanvasOverlayPage() {
 
     const current = queue[0] ?? null
 
-    const handleComplete = useCallback(() => {
+    const handleComplete = () => {
         setQueue((prev) => prev.slice(1))
-    }, [])
+    }
 
     return (
         <div className="w-screen h-screen bg-transparent overflow-hidden pointer-events-none relative">
