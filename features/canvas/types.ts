@@ -15,6 +15,8 @@ export interface CanvasElementMedia {
     key: string;
     name: string;
     type: string;
+    /** Short-lived signed URL, present on read responses so the editor can render the media. */
+    url: string;
 }
 
 export interface CanvasElement {
