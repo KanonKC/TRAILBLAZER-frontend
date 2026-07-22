@@ -1,13 +1,11 @@
 "use client"
 
-import { useEffect, useRef, useCallback, useState } from "react"
+import { useRef, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { getDropImageEventUrl } from "@/features/drop-image/api/dropImage.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
-
-const MAX_RETRY_DELAY = 16000 // 16 seconds max
-const INITIAL_RETRY_DELAY = 1000 // 1 second
+import { useOverlayEvents } from "@/hooks/use-overlay-events";
 
 export default function DropImageOverlayPage() {
     const params = useParams()
@@ -17,86 +15,23 @@ export default function DropImageOverlayPage() {
 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [isVisible, setIsVisible] = useState(false);
-
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
-    const eventSourceRef = useRef<EventSource | null>(null)
     const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-    const connect = useCallback(() => {
-        if (!userId) return
+    useOverlayEvents(userId ? getDropImageEventUrl(userId, key) : null, {
+        "image-url": (data) => {
+            if (data.url) {
+                setImageUrl(data.url);
+                setIsVisible(true);
 
-        // Clean up existing connection
-        if (eventSourceRef.current) {
-            eventSourceRef.current.close()
-        }
-
-        const eventSource = new EventSource(getDropImageEventUrl(userId, key))
-        eventSourceRef.current = eventSource
-
-        eventSource.onopen = () => {
-            console.log("EventSource connected")
-        }
-
-        eventSource.addEventListener("connected", () => {
-            console.log("Received connected event")
-            // Reset retry delay on successful logical connection
-            retryDelayRef.current = INITIAL_RETRY_DELAY
-        })
-
-        eventSource.addEventListener("image-url", (event) => {
-            try {
-                const data = JSON.parse(event.data)
-                console.log("Received image-url event:", data)
-                if (data.url) {
-                    setImageUrl(data.url);
-                    setIsVisible(true);
-
-                    // Hide the image after 10 seconds
-                    if (timerRef.current) clearTimeout(timerRef.current);
-                    timerRef.current = setTimeout(() => {
-                        setIsVisible(false);
-                        setImageUrl(null);
-                    }, 10000);
-                }
-            } catch (error) {
-                console.error("Failed to parse event data:", error)
+                // Hide the image after 10 seconds
+                if (timerRef.current) clearTimeout(timerRef.current);
+                timerRef.current = setTimeout(() => {
+                    setIsVisible(false);
+                    setImageUrl(null);
+                }, 10000);
             }
-        })
-
-        eventSource.onerror = () => {
-            console.log("EventSource error, attempting reconnect...")
-            eventSource.close()
-
-            // Schedule retry with exponential backoff
-            const delay = retryDelayRef.current
-            console.log(`Reconnecting in ${delay / 1000}s...`)
-
-            retryTimeoutRef.current = setTimeout(() => {
-                connect()
-            }, delay)
-
-            // Increase delay for next retry (exponential backoff with cap)
-            retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY)
-        }
-    }, [userId, key])
-
-    useEffect(() => {
-        connect()
-
-        return () => {
-            // Clean up on unmount
-            if (retryTimeoutRef.current) {
-                clearTimeout(retryTimeoutRef.current)
-            }
-            if (eventSourceRef.current) {
-                eventSourceRef.current.close()
-            }
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-        }
-    }, [connect])
+        },
+    })
 
     return (
         <div className="w-screen h-screen bg-transparent overflow-hidden pointer-events-none relative flex items-center justify-center p-8">

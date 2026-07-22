@@ -1,13 +1,11 @@
 "use client"
 
-import { useEffect, useRef, useCallback } from "react"
+import { useRef } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { getFirstWordEventUrl } from "@/features/first-word/api/firstWord.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
-
-const MAX_RETRY_DELAY = 16000 // 16 seconds max
-const INITIAL_RETRY_DELAY = 1000 // 1 second
+import { useOverlayEvents } from "@/hooks/use-overlay-events";
 
 export default function FirstWordOverlayPage() {
     const params = useParams()
@@ -15,71 +13,16 @@ export default function FirstWordOverlayPage() {
     const userId = params.userId as string
     const key = searchParams.get("key") ?? undefined
     const audioRef = useRef<HTMLAudioElement>(null)
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
-    const eventSourceRef = useRef<EventSource | null>(null)
 
-    const connect = useCallback(() => {
-        if (!userId) return
-
-        // Clean up existing connection
-        if (eventSourceRef.current) {
-            eventSourceRef.current.close()
-        }
-
-        const eventSource = new EventSource(getFirstWordEventUrl(userId, key))
-        eventSourceRef.current = eventSource
-
-        eventSource.onopen = () => {
-            console.log("Connected to FirstWord events")
-            // Reset retry delay on successful connection
-            retryDelayRef.current = INITIAL_RETRY_DELAY
-        }
-
-        eventSource.addEventListener("audio", (event) => {
-            try {
-                const data = JSON.parse(event.data)
-                console.log("Received audio event:", data)
-                if (data.url && audioRef.current) {
-                    audioRef.current.volume = (data.volume ?? 100) / 100
-                    audioRef.current.src = data.url
-                    audioRef.current.play().catch(e => console.error("Failed to play audio:", e))
-                }
-            } catch (error) {
-                console.error("Failed to parse event data:", error)
+    useOverlayEvents(userId ? getFirstWordEventUrl(userId, key) : null, {
+        audio: (data) => {
+            if (data.url && audioRef.current) {
+                audioRef.current.volume = (data.volume ?? 100) / 100
+                audioRef.current.src = data.url
+                audioRef.current.play().catch(e => console.error("Failed to play audio:", e))
             }
-        })
-
-        eventSource.onerror = () => {
-            console.log("EventSource error, attempting reconnect...")
-            eventSource.close()
-
-            // Schedule retry with exponential backoff
-            const delay = retryDelayRef.current
-            console.log(`Reconnecting in ${delay / 1000}s...`)
-
-            retryTimeoutRef.current = setTimeout(() => {
-                connect()
-            }, delay)
-
-            // Increase delay for next retry (exponential backoff with cap)
-            retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY)
-        }
-    }, [userId, key])
-
-    useEffect(() => {
-        connect()
-
-        return () => {
-            // Clean up on unmount
-            if (retryTimeoutRef.current) {
-                clearTimeout(retryTimeoutRef.current)
-            }
-            if (eventSourceRef.current) {
-                eventSourceRef.current.close()
-            }
-        }
-    }, [connect])
+        },
+    })
 
     return (
         <div className="w-screen h-screen bg-transparent overflow-hidden pointer-events-none relative">
