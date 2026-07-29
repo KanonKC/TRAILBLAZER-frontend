@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Play, Save, Undo2, Redo2, X } from "lucide-react";
+import { ArrowLeft, Pause, Play, Save, Square, Undo2, Redo2, X } from "lucide-react";
 
 const NUDGE_PCT = 0.5;
 const NUDGE_PCT_LARGE = 5;
@@ -29,11 +29,14 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
     const editor = useCanvasEditor(initialCanvas);
     const [variables, setVariables] = useState<CanvasVariable[]>([]);
     const [previewEvent, setPreviewEvent] = useState<CanvasPlayEvent | null>(null);
+    const [isPreviewPaused, setIsPreviewPaused] = useState(false);
 
     // Builds the play event straight from whatever's currently in the editor —
     // no save and no round-trip to the backend, so you can try an in-progress
     // edit immediately instead of only ever previewing the last saved version.
     const handlePreview = () => {
+        setIsPreviewPaused(false);
+        editor.setCurrentTimeMs(0);
         setPreviewEvent({
             userId: "preview",
             playId: `preview-${Date.now()}`,
@@ -61,6 +64,45 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                 loop: el.loop,
             })),
         });
+    };
+
+    // Drives the timeline playhead in lockstep with the preview. Each tick adds
+    // the frame's delta on top of whatever currentTimeMs currently is (via a
+    // functional update) rather than recomputing from a fixed start reference —
+    // that's what lets a ruler click land correctly: the click already moved
+    // currentTimeMs, and the very next tick just continues forward from there
+    // instead of snapping back to "elapsed since play was pressed". Pausing
+    // simply stops this effect from running (dependency below), so nothing
+    // advances until it's resumed.
+    useEffect(() => {
+        if (!previewEvent || isPreviewPaused) return;
+        let raf: number;
+        let lastFrame = performance.now();
+
+        const tick = (t: number) => {
+            const delta = t - lastFrame;
+            lastFrame = t;
+            editor.setCurrentTimeMs((prev) => Math.min(prev + delta, previewEvent.durationMs));
+            raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(raf);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [previewEvent, isPreviewPaused]);
+
+    // Reaching the end is detected here (reacting to state) rather than inside
+    // the tick above, so it isn't tangled up with the functional setState call.
+    useEffect(() => {
+        if (previewEvent && editor.currentTimeMs >= previewEvent.durationMs) {
+            closePreview();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [editor.currentTimeMs, previewEvent]);
+
+    const closePreview = () => {
+        setPreviewEvent(null);
+        setIsPreviewPaused(false);
+        editor.setCurrentTimeMs(0);
     };
 
     useEffect(() => {
@@ -128,10 +170,21 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                     <Button variant="ghost" size="icon" onClick={editor.redo} disabled={!editor.canRedo} title="ทำซ้ำ (Ctrl+Shift+Z)">
                         <Redo2 className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" onClick={handlePreview} disabled={!!previewEvent} title="เล่นตัวอย่างในหน้านี้เลย ไม่ต้องบันทึกก่อน">
-                        <Play className="h-4 w-4 mr-1" />
-                        {previewEvent ? "กำลังเล่น..." : "เล่น"}
-                    </Button>
+                    {previewEvent ? (
+                        <>
+                            <Button variant="outline" size="icon" onClick={() => setIsPreviewPaused((p) => !p)} title={isPreviewPaused ? "เล่นต่อ" : "หยุดชั่วคราว"}>
+                                {isPreviewPaused ? <Play className="h-4 w-4" /> : <Pause className="h-4 w-4" />}
+                            </Button>
+                            <Button variant="outline" size="icon" onClick={closePreview} title="หยุด">
+                                <Square className="h-4 w-4" />
+                            </Button>
+                        </>
+                    ) : (
+                        <Button variant="outline" onClick={handlePreview} title="เล่นตัวอย่างในหน้านี้เลย ไม่ต้องบันทึกก่อน">
+                            <Play className="h-4 w-4 mr-1" />
+                            เล่น
+                        </Button>
+                    )}
                     <Button variant="outline" onClick={editor.test} disabled={editor.isTesting}>
                         <Play className="h-4 w-4 mr-1" />
                         {editor.isTesting ? "กำลังทดสอบ..." : "ทดสอบ"}
@@ -167,17 +220,24 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                             selectedElementId={editor.selectedElementId}
                             hiddenIds={editor.hiddenIds}
                             lockedIds={editor.lockedIds}
+                            currentTimeMs={editor.currentTimeMs}
+                            isPreviewPlaying={!!previewEvent}
                             onSelect={editor.setSelectedElementId}
                             onChange={editor.updateElement}
                         />
                         {previewEvent && (
                             <div className="absolute inset-0 rounded-lg overflow-hidden bg-black">
-                                <CanvasPlayer event={previewEvent} onComplete={() => setPreviewEvent(null)} />
+                                <CanvasPlayer
+                                    event={previewEvent}
+                                    onComplete={closePreview}
+                                    currentTimeMs={editor.currentTimeMs}
+                                    isPaused={isPreviewPaused}
+                                />
                                 <Button
                                     variant="ghost"
                                     size="icon"
                                     className="absolute top-2 right-2 text-white hover:bg-white/20 hover:text-white"
-                                    onClick={() => setPreviewEvent(null)}
+                                    onClick={closePreview}
                                     title="ปิดตัวอย่าง"
                                 >
                                     <X className="h-4 w-4" />

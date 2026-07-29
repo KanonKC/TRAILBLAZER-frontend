@@ -14,6 +14,17 @@ interface CanvasStageProps {
     selectedElementId: string | null;
     hiddenIds?: Set<string>;
     lockedIds?: Set<string>;
+    /** Current playhead position, in ms — only meaningful while isPreviewPlaying. */
+    currentTimeMs?: number;
+    /**
+     * While a preview is playing, the stage should mirror what's actually on
+     * screen at the playhead (only elements whose window contains it), instead
+     * of the "show everything so you can position it" behaviour used while
+     * editing. Gating this on a flag (rather than always filtering by time)
+     * is deliberate: filtering during normal editing was tried before and had
+     * to be removed because switching selection made unrelated elements fade.
+     */
+    isPreviewPlaying?: boolean;
     onSelect: (id: string | null) => void;
     onChange: (id: string, patch: Partial<CanvasElement>) => void;
 }
@@ -23,6 +34,8 @@ export function CanvasStage({
     selectedElementId,
     hiddenIds,
     lockedIds,
+    currentTimeMs,
+    isPreviewPlaying,
     onSelect,
     onChange,
 }: CanvasStageProps) {
@@ -37,9 +50,15 @@ export function CanvasStage({
     const visualElements = useMemo(
         () =>
             elements
-                .filter((el) => el.type !== "audio" && !hiddenIds?.has(el.id))
+                .filter((el) => {
+                    if (el.type === "audio" || hiddenIds?.has(el.id)) return false;
+                    if (isPreviewPlaying && currentTimeMs !== undefined) {
+                        return currentTimeMs >= el.start_delay_ms && currentTimeMs <= el.start_delay_ms + el.duration_ms;
+                    }
+                    return true;
+                })
                 .sort((a, b) => a.z_index - b.z_index),
-        [elements, hiddenIds]
+        [elements, hiddenIds, isPreviewPlaying, currentTimeMs]
     );
 
     // A locked element can't be the active Moveable target — selection is already
