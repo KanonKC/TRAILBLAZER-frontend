@@ -36,31 +36,82 @@ function preloadMedia(el: CanvasPlayElement): Promise<void> {
 
 type ElementPhase = "waiting" | "entering" | "visible" | "exiting" | "done";
 
-function CanvasElementView({ element }: { element: CanvasPlayElement }) {
-    const [phase, setPhase] = useState<ElementPhase>("waiting");
+function phaseAt(element: CanvasPlayElement, t: number): ElementPhase {
+    const enterEnd = element.start_delay_ms + element.transition_ms;
+    const visibleEnd = element.start_delay_ms + element.duration_ms;
+    const exitEnd = visibleEnd + element.transition_ms;
+    if (t < element.start_delay_ms) return "waiting";
+    if (t < enterEnd) return "entering";
+    if (t < visibleEnd) return "visible";
+    if (t < exitEnd) return "exiting";
+    return "done";
+}
+
+interface CanvasElementViewProps {
+    element: CanvasPlayElement;
+    /**
+     * When provided, this element's visibility/phase is a pure function of this
+     * clock instead of being scheduled once via setTimeout at mount — required
+     * for the editor's scrubbable/pausable preview (seeking or pausing a
+     * fire-and-forget setTimeout schedule doesn't mean anything), while the real
+     * overlay page (no currentTimeMs passed) keeps the simpler timer-based path.
+     */
+    currentTimeMs?: number;
+    isPaused?: boolean;
+}
+
+function CanvasElementView({ element, currentTimeMs, isPaused }: CanvasElementViewProps) {
+    const isControlled = currentTimeMs !== undefined;
+    const [timerPhase, setTimerPhase] = useState<ElementPhase>("waiting");
     const mediaRef = useRef<HTMLVideoElement | HTMLAudioElement>(null);
 
     useEffect(() => {
+        if (isControlled) return;
         const timers = [
-            setTimeout(() => setPhase("entering"), element.start_delay_ms),
-            setTimeout(() => setPhase("visible"), element.start_delay_ms + element.transition_ms),
-            setTimeout(() => setPhase("exiting"), element.start_delay_ms + element.duration_ms),
-            setTimeout(() => setPhase("done"), element.start_delay_ms + element.duration_ms + element.transition_ms),
+            setTimeout(() => setTimerPhase("entering"), element.start_delay_ms),
+            setTimeout(() => setTimerPhase("visible"), element.start_delay_ms + element.transition_ms),
+            setTimeout(() => setTimerPhase("exiting"), element.start_delay_ms + element.duration_ms),
+            setTimeout(() => setTimerPhase("done"), element.start_delay_ms + element.duration_ms + element.transition_ms),
         ];
         return () => timers.forEach(clearTimeout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const phase = isControlled ? phaseAt(element, currentTimeMs) : timerPhase;
+
+    // Controlled mode: keep the media element's position and play/pause state in
+    // sync with the scrubber instead of firing once on an "entering" transition.
     useEffect(() => {
-        if (phase === "entering" && mediaRef.current) {
+        if (!isControlled || !mediaRef.current) return;
+        const media = mediaRef.current;
+        const active = phase === "entering" || phase === "visible" || phase === "exiting";
+        if (!active) {
+            media.pause();
+            return;
+        }
+        media.volume = (element.volume ?? 100) / 100;
+        const expectedSec = (currentTimeMs - element.start_delay_ms) / 1000;
+        if (Math.abs(media.currentTime - expectedSec) > 0.3) {
+            media.currentTime = Math.max(0, expectedSec);
+        }
+        if (isPaused) {
+            media.pause();
+        } else {
+            media.play().catch((e) => console.error("Failed to play media:", e));
+        }
+    }, [isControlled, phase, currentTimeMs, isPaused, element.volume, element.start_delay_ms]);
+
+    useEffect(() => {
+        if (isControlled) return;
+        if (timerPhase === "entering" && mediaRef.current) {
             mediaRef.current.volume = (element.volume ?? 100) / 100;
             mediaRef.current.currentTime = 0;
             mediaRef.current.play().catch((e) => console.error("Failed to play media:", e));
         }
-        if (phase === "done" && mediaRef.current) {
+        if (timerPhase === "done" && mediaRef.current) {
             mediaRef.current.pause();
         }
-    }, [phase, element.volume]);
+    }, [isControlled, timerPhase, element.volume]);
 
     if (phase === "waiting" || phase === "done") return null;
 
@@ -79,6 +130,10 @@ function CanvasElementView({ element }: { element: CanvasPlayElement }) {
         zIndex: element.z_index,
         animationDuration: `${element.transition_ms}ms`,
         animationFillMode: "both",
+        // Freezing the CSS enter/exit animation exactly where it is is what
+        // makes Pause actually look paused instead of the animation continuing
+        // to run on the browser's own compositor clock regardless of our state.
+        animationPlayState: isControlled && isPaused ? "paused" : undefined,
     };
 
     if (element.type === "text") {
@@ -146,10 +201,14 @@ function CanvasElementView({ element }: { element: CanvasPlayElement }) {
 interface CanvasPlayerProps {
     event: CanvasPlayEvent;
     onComplete: () => void;
+    /** Controlled/scrubbable mode — see CanvasElementView for why. */
+    currentTimeMs?: number;
+    isPaused?: boolean;
 }
 
-export function CanvasPlayer({ event, onComplete }: CanvasPlayerProps) {
+export function CanvasPlayer({ event, onComplete, currentTimeMs, isPaused }: CanvasPlayerProps) {
     const [isReady, setIsReady] = useState(false);
+    const isControlled = currentTimeMs !== undefined;
 
     useEffect(() => {
         let cancelled = false;
@@ -159,6 +218,11 @@ export function CanvasPlayer({ event, onComplete }: CanvasPlayerProps) {
             if (!cancelled) setIsReady(true);
         });
 
+        // In controlled mode the caller owns the clock and decides when playback
+        // is "done" (it needs to anyway, to stop advancing currentTimeMs), so
+        // this component doesn't schedule its own end timer.
+        if (isControlled) return () => { cancelled = true; };
+
         const doneTimer = setTimeout(onComplete, event.durationMs);
 
         return () => {
@@ -166,7 +230,7 @@ export function CanvasPlayer({ event, onComplete }: CanvasPlayerProps) {
             clearTimeout(doneTimer);
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [event.playId]);
+    }, [event.playId, isControlled]);
 
     if (!isReady) return null;
 
@@ -176,7 +240,7 @@ export function CanvasPlayer({ event, onComplete }: CanvasPlayerProps) {
                 .slice()
                 .sort((a, b) => a.z_index - b.z_index)
                 .map((element) => (
-                    <CanvasElementView key={element.id} element={element} />
+                    <CanvasElementView key={element.id} element={element} currentTimeMs={currentTimeMs} isPaused={isPaused} />
                 ))}
         </div>
     );
