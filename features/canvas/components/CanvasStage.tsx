@@ -106,7 +106,10 @@ export function CanvasStage({
             }}
         >
             {visualElements.map((element) => {
+                // Never dim the element being actively edited — you need to see it
+                // clearly while positioning it, regardless of where the playhead sits.
                 const isOutsideTime =
+                    element.id !== selectedElementId &&
                     currentTimeMs !== undefined &&
                     (currentTimeMs < element.start_delay_ms ||
                         currentTimeMs > element.start_delay_ms + element.duration_ms);
