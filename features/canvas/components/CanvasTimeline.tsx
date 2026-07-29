@@ -174,6 +174,7 @@ export function CanvasTimeline({
                     {(currentTimeMs / 1000).toFixed(2)}s
                 </div>
                 <div
+                    ref={laneRef}
                     className="relative flex-1 h-7 cursor-pointer"
                     onPointerDown={scrub}
                 >

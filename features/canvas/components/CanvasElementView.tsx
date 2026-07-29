@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react";
 import { CanvasElement } from "../types";
 
 /**
@@ -37,15 +38,7 @@ export function CanvasElementView({ element }: { element: CanvasElement }) {
     }
 
     if (element.type === "image") {
-        return (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
-                src={element.media.url}
-                alt={element.media.name}
-                draggable={false}
-                className="w-full h-full object-contain pointer-events-none select-none"
-            />
-        );
+        return <ImagePreview key={element.media.url} src={element.media.url} alt={element.media.name} />;
     }
 
     if (element.type === "video") {
@@ -61,4 +54,32 @@ export function CanvasElementView({ element }: { element: CanvasElement }) {
     }
 
     return null;
+}
+
+/**
+ * A failed <img> load falls back to the browser's native broken-image icon,
+ * which renders semi-transparent and reads as "opacity is broken" even
+ * though element.opacity is 1 — swap in an opaque placeholder instead.
+ */
+function ImagePreview({ src, alt }: { src: string; alt: string }) {
+    const [failed, setFailed] = useState(false);
+
+    if (failed) {
+        return (
+            <div className="w-full h-full flex items-center justify-center bg-muted border border-dashed rounded text-[10px] text-muted-foreground pointer-events-none">
+                โหลดไฟล์ไม่สำเร็จ
+            </div>
+        );
+    }
+
+    return (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+            src={src}
+            alt={alt}
+            draggable={false}
+            className="w-full h-full object-contain pointer-events-none select-none"
+            onError={() => setFailed(true)}
+        />
+    );
 }
