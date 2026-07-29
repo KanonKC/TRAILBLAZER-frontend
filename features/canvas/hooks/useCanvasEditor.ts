@@ -39,6 +39,34 @@ export const useCanvasEditor = (initialCanvas: CanvasWithLinks) => {
     const [isTesting, setIsTesting] = useState(false);
     const [currentTimeMs, setCurrentTimeMs] = useState(0);
 
+    // Preview-hide and lock are editor conveniences, not part of the saved canvas
+    // data — they reset on reload, same as any other design tool's layer panel.
+    const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+    const [lockedIds, setLockedIds] = useState<Set<string>>(new Set());
+
+    const toggleHidden = useCallback((id: string) => {
+        setHiddenIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) next.delete(id); else next.add(id);
+            return next;
+        });
+    }, []);
+
+    const toggleLocked = useCallback((id: string) => {
+        setLockedIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(id)) {
+                next.delete(id);
+            } else {
+                next.add(id);
+            }
+            return next;
+        });
+        // A locked element can't be selected/edited on the stage, so drop the
+        // selection when locking whatever is currently selected.
+        setSelectedElementId((current) => (current === id ? null : current));
+    }, []);
+
     const [past, setPast] = useState<CanvasElement[][]>([]);
     const [future, setFuture] = useState<CanvasElement[][]>([]);
     const pendingSnapshot = useRef<CanvasElement[] | null>(null);
@@ -244,10 +272,14 @@ export const useCanvasEditor = (initialCanvas: CanvasWithLinks) => {
         isSaving,
         isTesting,
         currentTimeMs,
+        hiddenIds,
+        lockedIds,
         canUndo: past.length > 0,
         canRedo: future.length > 0,
         setCurrentTimeMs,
         setSelectedElementId,
+        toggleHidden,
+        toggleLocked,
         addElement,
         updateElement,
         removeElement,

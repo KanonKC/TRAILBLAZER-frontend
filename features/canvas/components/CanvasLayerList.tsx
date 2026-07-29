@@ -25,6 +25,10 @@ import {
     Type,
     Plus,
     GripVertical,
+    Eye,
+    EyeOff,
+    Lock,
+    Unlock,
 } from "lucide-react";
 import {
     DropdownMenu,
@@ -43,11 +47,19 @@ const TYPE_ICON: Record<CanvasElement["type"], React.ComponentType<{ className?:
 function SortableLayer({
     element,
     isSelected,
+    isHidden,
+    isLocked,
     onSelect,
+    onToggleHidden,
+    onToggleLocked,
 }: {
     element: CanvasElement;
     isSelected: boolean;
+    isHidden: boolean;
+    isLocked: boolean;
     onSelect: (id: string) => void;
+    onToggleHidden: (id: string) => void;
+    onToggleLocked: (id: string) => void;
 }) {
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: element.id });
     const Icon = TYPE_ICON[element.type];
@@ -64,7 +76,7 @@ function SortableLayer({
             style={{ transform: CSS.Transform.toString(transform), transition }}
             onClick={() => onSelect(element.id)}
             className={`flex items-center gap-1.5 p-2 rounded-md border cursor-pointer text-sm bg-background ${isSelected ? "border-primary bg-primary/5" : "border-muted"
-                } ${isDragging ? "opacity-50 z-10" : ""}`}
+                } ${isDragging ? "opacity-50 z-10" : ""} ${isHidden ? "opacity-50" : ""}`}
         >
             <button
                 type="button"
@@ -89,6 +101,22 @@ function SortableLayer({
                 <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
             )}
             <span className="truncate flex-1" title={label}>{label}</span>
+            <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onToggleHidden(element.id); }}
+                className={`shrink-0 hover:text-foreground ${isHidden ? "text-foreground" : "text-muted-foreground"}`}
+                title={isHidden ? "แสดง element" : "ซ่อน element"}
+            >
+                {isHidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            </button>
+            <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onToggleLocked(element.id); }}
+                className={`shrink-0 hover:text-foreground ${isLocked ? "text-foreground" : "text-muted-foreground"}`}
+                title={isLocked ? "ปลดล็อค element" : "ล็อค element"}
+            >
+                {isLocked ? <Lock className="h-3.5 w-3.5" /> : <Unlock className="h-3.5 w-3.5" />}
+            </button>
         </div>
     );
 }
@@ -96,12 +124,26 @@ function SortableLayer({
 interface CanvasLayerListProps {
     elements: CanvasElement[];
     selectedElementId: string | null;
+    hiddenIds: Set<string>;
+    lockedIds: Set<string>;
     onSelect: (id: string) => void;
     onReorder: (orderedIdsTopFirst: string[]) => void;
     onAdd: (type: CanvasElement["type"]) => void;
+    onToggleHidden: (id: string) => void;
+    onToggleLocked: (id: string) => void;
 }
 
-export function CanvasLayerList({ elements, selectedElementId, onSelect, onReorder, onAdd }: CanvasLayerListProps) {
+export function CanvasLayerList({
+    elements,
+    selectedElementId,
+    hiddenIds,
+    lockedIds,
+    onSelect,
+    onReorder,
+    onAdd,
+    onToggleHidden,
+    onToggleLocked,
+}: CanvasLayerListProps) {
     // Highest z_index renders on top, so it sits first in the list.
     const sortedTopFirst = [...elements].sort((a, b) => b.z_index - a.z_index);
     const ids = sortedTopFirst.map((el) => el.id);
@@ -149,7 +191,11 @@ export function CanvasLayerList({ elements, selectedElementId, onSelect, onReord
                                 key={element.id}
                                 element={element}
                                 isSelected={element.id === selectedElementId}
+                                isHidden={hiddenIds.has(element.id)}
+                                isLocked={lockedIds.has(element.id)}
                                 onSelect={onSelect}
+                                onToggleHidden={onToggleHidden}
+                                onToggleLocked={onToggleLocked}
                             />
                         ))}
                     </div>
