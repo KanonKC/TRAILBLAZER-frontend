@@ -56,6 +56,8 @@ function SortableLayer({
         ? (element.text_content || "ข้อความ")
         : element.media?.name ?? element.type;
 
+    const hasThumb = (element.type === "image" || element.type === "video") && !!element.media?.url;
+
     return (
         <div
             ref={setNodeRef}
@@ -74,7 +76,18 @@ function SortableLayer({
             >
                 <GripVertical className="h-4 w-4" />
             </button>
-            <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+            {hasThumb ? (
+                <div className="h-6 w-6 shrink-0 rounded overflow-hidden bg-muted border">
+                    {element.type === "image" ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img src={element.media!.url} alt={element.media!.name} className="w-full h-full object-cover" />
+                    ) : (
+                        <video src={element.media!.url} muted preload="metadata" className="w-full h-full object-cover" />
+                    )}
+                </div>
+            ) : (
+                <Icon className="h-4 w-4 shrink-0 text-muted-foreground" />
+            )}
             <span className="truncate flex-1" title={label}>{label}</span>
         </div>
     );

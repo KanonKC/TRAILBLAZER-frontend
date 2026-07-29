@@ -71,6 +71,7 @@ export function CanvasInspector({ element, variables, onChange, onRemove }: Canv
                         type={element.type}
                         selectedKey={element.media_key}
                         selectedName={element.media?.name}
+                        selectedUrl={element.media?.url}
                         onSelect={(file) => onChange(element.id, {
                             media_key: file.key,
                             media: { id: file.id, key: file.key, name: file.name, type: file.type, url: file.url },
