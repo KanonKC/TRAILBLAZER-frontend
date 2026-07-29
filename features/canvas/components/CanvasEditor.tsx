@@ -105,9 +105,13 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                     <CanvasLayerList
                         elements={editor.elements}
                         selectedElementId={editor.selectedElementId}
+                        hiddenIds={editor.hiddenIds}
+                        lockedIds={editor.lockedIds}
                         onSelect={editor.setSelectedElementId}
                         onReorder={editor.reorderLayers}
                         onAdd={editor.addElement}
+                        onToggleHidden={editor.toggleHidden}
+                        onToggleLocked={editor.toggleLocked}
                     />
                 </div>
 
@@ -115,7 +119,8 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                     <CanvasStage
                         elements={editor.elements}
                         selectedElementId={editor.selectedElementId}
-                        currentTimeMs={editor.currentTimeMs}
+                        hiddenIds={editor.hiddenIds}
+                        lockedIds={editor.lockedIds}
                         onSelect={editor.setSelectedElementId}
                         onChange={editor.updateElement}
                     />

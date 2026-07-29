@@ -12,8 +12,8 @@ const EIGHT_HANDLES = ["nw", "n", "ne", "w", "e", "sw", "s", "se"];
 interface CanvasStageProps {
     elements: CanvasElement[];
     selectedElementId: string | null;
-    /** When set, elements outside their time window are dimmed (timeline scrubbing). */
-    currentTimeMs?: number;
+    hiddenIds?: Set<string>;
+    lockedIds?: Set<string>;
     onSelect: (id: string | null) => void;
     onChange: (id: string, patch: Partial<CanvasElement>) => void;
 }
@@ -21,7 +21,8 @@ interface CanvasStageProps {
 export function CanvasStage({
     elements,
     selectedElementId,
-    currentTimeMs,
+    hiddenIds,
+    lockedIds,
     onSelect,
     onChange,
 }: CanvasStageProps) {
@@ -31,12 +32,22 @@ export function CanvasStage({
     const stage = useElementSize(stageRef);
 
     // Audio has no visual footprint — it lives in its own track below the stage.
+    // Hidden elements are a preview-only convenience, not deleted, so they stay out
+    // of the stage entirely rather than just being dimmed.
     const visualElements = useMemo(
-        () => elements.filter((el) => el.type !== "audio").sort((a, b) => a.z_index - b.z_index),
-        [elements]
+        () =>
+            elements
+                .filter((el) => el.type !== "audio" && !hiddenIds?.has(el.id))
+                .sort((a, b) => a.z_index - b.z_index),
+        [elements, hiddenIds]
     );
 
-    const selected = visualElements.find((el) => el.id === selectedElementId) ?? null;
+    // A locked element can't be the active Moveable target — selection is already
+    // blocked at the pointerdown handler below, but this is a second guard in case
+    // something else set selectedElementId to a locked id.
+    const selected = selectedElementId && !lockedIds?.has(selectedElementId)
+        ? visualElements.find((el) => el.id === selectedElementId) ?? null
+        : null;
 
     // Moveable resolves these selectors itself, so there is no need to hold DOM
     // nodes in state (which would mean reading refs during render or an effect).
@@ -171,20 +182,18 @@ export function CanvasStage({
             }}
         >
             {visualElements.map((element) => {
-                // Never dim the element being actively edited — you need to see it
-                // clearly while positioning it, regardless of where the playhead sits.
-                const isOutsideTime =
-                    element.id !== selectedElementId &&
-                    currentTimeMs !== undefined &&
-                    (currentTimeMs < element.start_delay_ms ||
-                        currentTimeMs > element.start_delay_ms + element.duration_ms);
-
+                const isLocked = !!lockedIds?.has(element.id);
                 return (
                     <div
                         key={element.id}
                         data-canvas-el={element.id}
-                        onPointerDown={(e) => { e.stopPropagation(); onSelect(element.id); }}
-                        className={`absolute cursor-move ${isOutsideTime ? "opacity-20" : ""}`}
+                        onPointerDown={(e) => {
+                            e.stopPropagation();
+                            // A locked element can't be picked from the stage — it stays
+                            // visible, but only the layer list can select/unlock it.
+                            if (!isLocked) onSelect(element.id);
+                        }}
+                        className={`absolute ${isLocked ? "cursor-not-allowed" : "cursor-move"}`}
                         style={{
                             // Model stores the centre; render as a plain box so moveable's
                             // geometry lines up, and keep rotate as the only transform.
@@ -194,7 +203,7 @@ export function CanvasStage({
                             height: `${element.height}%`,
                             transform: `rotate(${element.rotation}deg)`,
                             zIndex: element.z_index,
-                            opacity: isOutsideTime ? undefined : element.opacity,
+                            opacity: element.opacity,
                         }}
                     >
                         <CanvasElementView element={element} />
