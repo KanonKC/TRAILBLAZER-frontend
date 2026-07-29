@@ -268,7 +268,7 @@ export default function MediaPickerDialog({ isOpen, onOpenChange, type, currentK
                                                 <div className="relative aspect-video bg-muted flex items-center justify-center">
                                                     {type === "image" ? (
                                                         /* eslint-disable-next-line @next/next/no-img-element */
-                                                        <img src={file.url} alt={file.name} className="w-full h-full object-cover" />
+                                                        <img src={file.url} alt={file.name} className="w-full h-full object-contain" />
                                                     ) : (
                                                         <>
                                                             <video src={file.url} muted preload="metadata" className="w-full h-full object-cover" />
