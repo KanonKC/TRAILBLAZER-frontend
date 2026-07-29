@@ -4,18 +4,19 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useCanvasEditor } from "../hooks/useCanvasEditor";
-import { CanvasWithLinks, CanvasVariable } from "../types";
+import { CanvasWithLinks, CanvasVariable, CanvasPlayEvent } from "../types";
 import { CanvasStage } from "./CanvasStage";
 import { CanvasLayerList } from "./CanvasLayerList";
 import { CanvasInspector } from "./CanvasInspector";
 import { CanvasTimeline } from "./CanvasTimeline";
 import { ConnectedWidgets } from "./ConnectedWidgets";
+import { CanvasPlayer } from "@/components/canvas/CanvasPlayer";
 import { getCanvasVariables } from "../api/canvas.api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Play, Save, Undo2, Redo2 } from "lucide-react";
+import { ArrowLeft, Play, Save, Undo2, Redo2, X } from "lucide-react";
 
 const NUDGE_PCT = 0.5;
 const NUDGE_PCT_LARGE = 5;
@@ -27,6 +28,40 @@ interface CanvasEditorProps {
 export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
     const editor = useCanvasEditor(initialCanvas);
     const [variables, setVariables] = useState<CanvasVariable[]>([]);
+    const [previewEvent, setPreviewEvent] = useState<CanvasPlayEvent | null>(null);
+
+    // Builds the play event straight from whatever's currently in the editor —
+    // no save and no round-trip to the backend, so you can try an in-progress
+    // edit immediately instead of only ever previewing the last saved version.
+    const handlePreview = () => {
+        setPreviewEvent({
+            userId: "preview",
+            playId: `preview-${Date.now()}`,
+            canvasId: editor.canvas.id,
+            durationMs: editor.canvas.duration_ms,
+            elements: editor.elements.map((el) => ({
+                id: el.id,
+                type: el.type,
+                media_url: el.media?.url ?? null,
+                text_content: el.text_content,
+                text_style: el.text_style,
+                x: el.x,
+                y: el.y,
+                width: el.width,
+                height: el.height,
+                rotation: el.rotation,
+                z_index: el.z_index,
+                opacity: el.opacity,
+                start_delay_ms: el.start_delay_ms,
+                duration_ms: el.duration_ms,
+                enter_transition: el.enter_transition,
+                exit_transition: el.exit_transition,
+                transition_ms: el.transition_ms,
+                volume: el.volume,
+                loop: el.loop,
+            })),
+        });
+    };
 
     useEffect(() => {
         const widgetTypeSlugs = editor.canvas.links
@@ -60,8 +95,12 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
     useHotkeys("shift+right", (e) => { e.preventDefault(); if (selectedId) editor.nudgeElement(selectedId, NUDGE_PCT_LARGE, 0); }, [selectedId, editor.nudgeElement]);
 
     return (
-        <div className="max-w-[1400px] mx-auto p-6 space-y-4">
-            <div className="flex items-center justify-between">
+        // 65px ≈ the navbar's h-16 + its border. Filling exactly the remaining
+        // viewport (instead of growing with content) is what keeps the timeline
+        // visible without a page-level scroll — the grid below scrolls internally
+        // per-column instead.
+        <div className="h-[calc(100vh-65px)] flex flex-col px-4 py-4 gap-4 overflow-hidden">
+            <div className="flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-3">
                     <Button variant="ghost" size="icon" asChild>
                         <Link href="/dashboard/canvas"><ArrowLeft className="h-4 w-4" /></Link>
@@ -89,6 +128,10 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                     <Button variant="ghost" size="icon" onClick={editor.redo} disabled={!editor.canRedo} title="ทำซ้ำ (Ctrl+Shift+Z)">
                         <Redo2 className="h-4 w-4" />
                     </Button>
+                    <Button variant="outline" onClick={handlePreview} disabled={!!previewEvent} title="เล่นตัวอย่างในหน้านี้เลย ไม่ต้องบันทึกก่อน">
+                        <Play className="h-4 w-4 mr-1" />
+                        {previewEvent ? "กำลังเล่น..." : "เล่น"}
+                    </Button>
                     <Button variant="outline" onClick={editor.test} disabled={editor.isTesting}>
                         <Play className="h-4 w-4 mr-1" />
                         {editor.isTesting ? "กำลังทดสอบ..." : "ทดสอบ"}
@@ -100,8 +143,8 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-[220px_1fr_300px] gap-4">
-                <div className="border rounded-lg p-3 h-fit">
+            <div className="grid grid-cols-[260px_1fr_340px] gap-4 flex-1 min-h-0">
+                <div className="border rounded-lg p-3 overflow-y-auto min-h-0">
                     <CanvasLayerList
                         elements={editor.elements}
                         selectedElementId={editor.selectedElementId}
@@ -115,18 +158,36 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                     />
                 </div>
 
-                <div className="space-y-4 min-w-0">
-                    <CanvasStage
-                        elements={editor.elements}
-                        selectedElementId={editor.selectedElementId}
-                        hiddenIds={editor.hiddenIds}
-                        lockedIds={editor.lockedIds}
-                        onSelect={editor.setSelectedElementId}
-                        onChange={editor.updateElement}
-                    />
+                <div className="flex flex-col gap-3 min-w-0 min-h-0">
+                    {/* Capped narrower than the column so the stage doesn't dominate
+                        the page — the timeline below needs guaranteed room too. */}
+                    <div className="w-full max-w-[640px] mx-auto shrink-0 relative">
+                        <CanvasStage
+                            elements={editor.elements}
+                            selectedElementId={editor.selectedElementId}
+                            hiddenIds={editor.hiddenIds}
+                            lockedIds={editor.lockedIds}
+                            onSelect={editor.setSelectedElementId}
+                            onChange={editor.updateElement}
+                        />
+                        {previewEvent && (
+                            <div className="absolute inset-0 rounded-lg overflow-hidden bg-black">
+                                <CanvasPlayer event={previewEvent} onComplete={() => setPreviewEvent(null)} />
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="absolute top-2 right-2 text-white hover:bg-white/20 hover:text-white"
+                                    onClick={() => setPreviewEvent(null)}
+                                    title="ปิดตัวอย่าง"
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        )}
+                    </div>
 
-                    <div className="space-y-2">
-                        <div className="flex items-center justify-between">
+                    <div className="flex flex-col gap-2 flex-1 min-h-0">
+                        <div className="flex items-center justify-between shrink-0">
                             <h4 className="text-sm font-semibold">Timeline</h4>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground">
                                 <span>ความยาวรวม (ms)</span>
@@ -138,19 +199,21 @@ export function CanvasEditor({ initialCanvas }: CanvasEditorProps) {
                                 />
                             </div>
                         </div>
-                        <CanvasTimeline
-                            elements={editor.elements}
-                            canvasDurationMs={editor.canvas.duration_ms}
-                            selectedElementId={editor.selectedElementId}
-                            currentTimeMs={editor.currentTimeMs}
-                            onSelect={editor.setSelectedElementId}
-                            onChange={editor.updateElement}
-                            onTimeChange={editor.setCurrentTimeMs}
-                        />
+                        <div className="flex-1 min-h-0 overflow-y-auto">
+                            <CanvasTimeline
+                                elements={editor.elements}
+                                canvasDurationMs={editor.canvas.duration_ms}
+                                selectedElementId={editor.selectedElementId}
+                                currentTimeMs={editor.currentTimeMs}
+                                onSelect={editor.setSelectedElementId}
+                                onChange={editor.updateElement}
+                                onTimeChange={editor.setCurrentTimeMs}
+                            />
+                        </div>
                     </div>
                 </div>
 
-                <div className="border rounded-lg p-3 h-fit">
+                <div className="border rounded-lg p-3 overflow-y-auto min-h-0">
                     <Tabs defaultValue="inspector">
                         <TabsList className="w-full">
                             <TabsTrigger value="inspector" className="flex-1">Element</TabsTrigger>
