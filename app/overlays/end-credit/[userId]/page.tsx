@@ -1,9 +1,17 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
-import { fetchEndCreditOverlayData, EndCreditOverlayData } from "@/features/end-credit/api/endCredit.api"
+import { getEndCreditEventUrl, EndCreditOverlayData } from "@/features/end-credit/api/endCredit.api"
 import { EndCreditRecordType, EndCreditViewerRecord } from "@/features/end-credit/types"
+
+const MAX_RETRY_DELAY = 16000
+const INITIAL_RETRY_DELAY = 1000
+
+/** Pixels the credits travel per second. */
+const SCROLL_SPEED = 60
+/** Sections render in this order, matching how a real end-credit sequence reads. */
+const SECTION_ORDER: EndCreditRecordType[] = ["follow", "sub", "raid", "bit"]
 
 const DEFAULT_HEADERS: Record<EndCreditRecordType, string> = {
     follow: "ผู้ติดตามใหม่",
@@ -18,57 +26,128 @@ export default function EndCreditOverlayPage() {
     const userId = params.userId as string
     const key = searchParams.get("key") ?? undefined
 
-    const [data, setData] = useState<EndCreditOverlayData | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
+    const [roll, setRoll] = useState<EndCreditOverlayData | null>(null)
+    const [scrollDistance, setScrollDistance] = useState(0)
 
-    useEffect(() => {
+    const contentRef = useRef<HTMLDivElement | null>(null)
+    const eventSourceRef = useRef<EventSource | null>(null)
+    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+    const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
+    const endTimerRef = useRef<NodeJS.Timeout | null>(null)
+
+    const connect = useCallback(() => {
         if (!userId) return
-        fetchEndCreditOverlayData(userId, key)
-            .then(setData)
-            .catch((error) => console.error("Failed to fetch end credit records:", error))
-            .finally(() => setIsLoading(false))
+
+        if (eventSourceRef.current) {
+            eventSourceRef.current.close()
+        }
+
+        const eventSource = new EventSource(getEndCreditEventUrl(userId, key))
+        eventSourceRef.current = eventSource
+
+        eventSource.addEventListener("connected", () => {
+            retryDelayRef.current = INITIAL_RETRY_DELAY
+        })
+
+        eventSource.addEventListener("roll", (event) => {
+            try {
+                const data: EndCreditOverlayData = JSON.parse((event as MessageEvent).data)
+                // Restart cleanly if a roll is already playing.
+                if (endTimerRef.current) clearTimeout(endTimerRef.current)
+                setScrollDistance(0)
+                setRoll(data)
+            } catch (error) {
+                console.error("Failed to parse roll event:", error)
+            }
+        })
+
+        eventSource.onerror = () => {
+            eventSource.close()
+            const delay = retryDelayRef.current
+            retryTimeoutRef.current = setTimeout(() => connect(), delay)
+            retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY)
+        }
     }, [userId, key])
 
-    if (isLoading || !data) {
+    useEffect(() => {
+        connect()
+        return () => {
+            if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current)
+            if (eventSourceRef.current) eventSourceRef.current.close()
+            if (endTimerRef.current) clearTimeout(endTimerRef.current)
+        }
+    }, [connect])
+
+    // Once the roll content is laid out, measure it so the credits travel their full
+    // height plus one screen — the last line clears the top before we hide.
+    // The distance is applied on the next frame so the browser paints the starting
+    // position first and actually animates the transition instead of jumping.
+    useEffect(() => {
+        if (!roll || !contentRef.current) return
+
+        const distance = contentRef.current.offsetHeight + window.innerHeight
+        const frame = requestAnimationFrame(() => setScrollDistance(distance))
+
+        const durationMs = (distance / SCROLL_SPEED) * 1000
+        endTimerRef.current = setTimeout(() => {
+            setRoll(null)
+            setScrollDistance(0)
+        }, durationMs)
+
+        return () => {
+            cancelAnimationFrame(frame)
+            if (endTimerRef.current) clearTimeout(endTimerRef.current)
+        }
+    }, [roll])
+
+    if (!roll) {
         return <div className="w-screen h-screen bg-transparent overflow-hidden" />
     }
 
-    const grouped = data.records.reduce<Record<string, EndCreditViewerRecord[]>>((acc, record) => {
+    const headerFor = (type: EndCreditRecordType): string => {
+        switch (type) {
+            case "follow": return roll.followers_header || DEFAULT_HEADERS.follow
+            case "sub": return roll.subscribes_header || DEFAULT_HEADERS.sub
+            case "raid": return roll.raids_header || DEFAULT_HEADERS.raid
+            case "bit": return roll.bits_header || DEFAULT_HEADERS.bit
+        }
+    }
+
+    const grouped = roll.records.reduce<Record<string, EndCreditViewerRecord[]>>((acc, record) => {
         (acc[record.type] ??= []).push(record)
         return acc
     }, {})
 
-    const headerFor = (type: EndCreditRecordType): string => {
-        switch (type) {
-            case "follow": return data.followers_header || DEFAULT_HEADERS.follow
-            case "sub": return data.subscribes_header || DEFAULT_HEADERS.sub
-            case "raid": return data.raids_header || DEFAULT_HEADERS.raid
-            case "bit": return data.bits_header || DEFAULT_HEADERS.bit
-        }
-    }
+    const sections = SECTION_ORDER
+        .map(type => ({ type, items: grouped[type] ?? [] }))
+        .filter(section => section.items.length > 0)
+
+    const durationSeconds = scrollDistance > 0 ? scrollDistance / SCROLL_SPEED : 0
 
     return (
-        <div className="w-screen h-screen bg-transparent overflow-hidden flex items-center justify-center p-12">
-            <div className="w-full max-w-3xl space-y-8 text-white">
-                {Object.entries(grouped).map(([type, items]) => (
-                    <div key={type} className="space-y-3">
-                        <h2 className="text-2xl font-bold drop-shadow-lg">{headerFor(type as EndCreditRecordType)}</h2>
-                        <div className="flex flex-wrap gap-3">
+        <div className="w-screen h-screen bg-transparent overflow-hidden">
+            <div
+                ref={contentRef}
+                className="flex flex-col items-center gap-12 text-white text-center px-12"
+                style={{
+                    // Start just below the fold, then travel up past the top edge.
+                    transform: scrollDistance > 0 ? `translateY(-${scrollDistance}px)` : "translateY(100vh)",
+                    transition: durationSeconds > 0 ? `transform ${durationSeconds}s linear` : undefined,
+                    willChange: "transform",
+                }}
+            >
+                {sections.map(({ type, items }) => (
+                    <div key={type} className="space-y-4">
+                        <h2 className="text-4xl font-bold tracking-wide drop-shadow-lg">{headerFor(type)}</h2>
+                        <div className="flex flex-col items-center gap-2">
                             {items.map((item) => (
-                                <span
-                                    key={item.id}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/50 backdrop-blur-sm text-lg font-medium drop-shadow"
-                                >
-                                    {data.is_show_viewer_avatars && item.avatar_url && (
+                                <div key={item.id} className="flex items-center gap-3 text-2xl font-medium drop-shadow">
+                                    {roll.is_show_viewer_avatars && item.avatar_url && (
                                         // eslint-disable-next-line @next/next/no-img-element
-                                        <img
-                                            src={item.avatar_url}
-                                            alt=""
-                                            className="w-6 h-6 rounded-full"
-                                        />
+                                        <img src={item.avatar_url} alt="" className="w-9 h-9 rounded-full" />
                                     )}
-                                    {item.display_name ?? item.viewer_id}
-                                </span>
+                                    <span>{item.display_name ?? item.viewer_id}</span>
+                                </div>
                             ))}
                         </div>
                     </div>

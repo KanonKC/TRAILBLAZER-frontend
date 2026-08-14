@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useUser } from "@/components/user-context";
 import { tbToast } from "@/utils/tbToast";
-import { enableEndCredit, updateEndCreditConfig } from "../api/endCredit.api";
+import { enableEndCredit, updateEndCreditConfig, testEndCredit } from "../api/endCredit.api";
 import { deleteWidget } from "@/services/widget.service";
 import { EndCreditConfig } from "../types";
 
@@ -16,6 +16,7 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
     const [isShowViewerAvatars, setIsShowViewerAvatars] = useState(initialConfig?.is_show_viewer_avatars ?? true);
     const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
+    const [isTesting, setIsTesting] = useState(false);
     const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
 
     const overlayUrl = typeof window !== 'undefined' && user
@@ -72,6 +73,20 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
         }
     };
 
+    const handleTest = async () => {
+        if (!user || isTesting) return;
+        setIsTesting(true);
+        try {
+            await testEndCredit();
+            tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ", description: "Credit Roll จะเล่นบน Overlay ที่เปิดอยู่" });
+        } catch (error) {
+            console.error("Test failed:", error);
+            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ" });
+        } finally {
+            setIsTesting(false);
+        }
+    };
+
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
         setIsSaving(true);
@@ -110,6 +125,7 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
         isShowViewerAvatars,
         isEnabled,
         isSaving,
+        isTesting,
         isUserLoading,
         activeTab,
         overlayUrl,
@@ -123,6 +139,7 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
         setConfig,
         handleEnable,
         handleSave,
+        handleTest,
         handleDelete,
         handleStatusChange
     };

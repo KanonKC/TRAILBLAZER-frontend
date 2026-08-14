@@ -3,12 +3,13 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Heart, Type, Users } from "lucide-react";
+import { Heart, Play, Type, Users } from "lucide-react";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
@@ -33,6 +34,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         isShowViewerAvatars,
         isEnabled,
         isSaving,
+        isTesting,
         isUserLoading,
         activeTab,
         overlayUrl,
@@ -46,6 +48,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         setConfig,
         handleEnable,
         handleSave,
+        handleTest,
         handleDelete,
         handleStatusChange
     } = useEndCredit(initialConfig);
@@ -80,16 +83,16 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                             isLoading={isSaving}
                         >
                             <p className="text-gray-200 text-base leading-relaxed">
-                                แสดงเครดิตท้ายสตรีมสรุปผู้ติดตามใหม่ สมาชิกใหม่ ผู้ที่ Raid เข้ามา และผู้สนับสนุน Bits ตลอดการสตรีมของคุณ
-                                นำ Overlay ไปวางในฉาก &quot;จบสตรีม&quot; ของ OBS เพื่อขอบคุณผู้ชมได้อย่างมืออาชีพ
+                                เมื่อคุณกด Raid ไปช่องอื่น วิดเจ็ตนี้จะเล่น Credit Roll บน Overlay โดยอัตโนมัติ
+                                สรุปผู้ติดตามใหม่ สมาชิกใหม่ ผู้ที่ Raid เข้ามา และผู้สนับสนุน Bits ตลอดการสตรีมของคุณ เลื่อนขึ้นแบบเครดิตท้ายหนัง
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                     <div className="p-2 w-fit rounded-lg bg-pink-500/10 text-pink-500 mb-3">
                                         <Heart className="w-5 h-5" />
                                     </div>
-                                    <h3 className="font-semibold mb-1">สรุปกิจกรรมท้ายสตรีม</h3>
-                                    <p className="text-sm text-muted-foreground">รวบรวมผู้ติดตาม สมาชิก การ Raid และ Bits ตลอดสตรีม</p>
+                                    <h3 className="font-semibold mb-1">เล่นอัตโนมัติเมื่อ Raid</h3>
+                                    <p className="text-sm text-muted-foreground">เริ่ม Credit Roll ทันทีที่คุณกด Raid ไปช่องอื่น</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
                                     <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
@@ -163,7 +166,12 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                             </WidgetSettingsCardContent>
                             <WidgetSettingsCardFooter>
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
-                                <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
+                                <div className="flex gap-2">
+                                    <Button variant="outline" disabled={isTesting} onClick={handleTest}>
+                                        {isTesting ? "Testing..." : <><Play className="mr-2 h-4 w-4" /> Test</>}
+                                    </Button>
+                                    <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
+                                </div>
                             </WidgetSettingsCardFooter>
                         </WidgetSettingsCard>
                     </TabsContent>

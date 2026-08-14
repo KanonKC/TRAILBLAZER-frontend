@@ -24,9 +24,22 @@ export const refreshEndCreditOverlayKey = async (): Promise<EndCreditConfig> => 
     return response.data;
 };
 
+export const testEndCredit = async (): Promise<void> => {
+    await apiClient.post("/api/v1/end-credit/test");
+};
+
 export const getEndCreditRecordsUrl = (userId: string, key?: string): string => {
     const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
     const url = `${BASE_URL}/api/v1/end-credit/${userId}/records`;
+    if (key) {
+        return `${url}?key=${key}`;
+    }
+    return url;
+};
+
+export const getEndCreditEventUrl = (userId: string, key?: string): string => {
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const url = `${BASE_URL}/api/v1/events/end-credit/${userId}`;
     if (key) {
         return `${url}?key=${key}`;
     }
