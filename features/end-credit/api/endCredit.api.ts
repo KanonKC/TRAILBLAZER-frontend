@@ -54,6 +54,10 @@ export interface EndCreditOverlayData {
     raids_header: string | null;
     bits_header: string | null;
     viewers_header: string | null;
+    scroll_speed: number;
+    is_show_sub_months: boolean;
+    is_show_raid_count: boolean;
+    is_show_bits_amount: boolean;
 }
 
 export const fetchEndCreditOverlayData = async (userId: string, key?: string): Promise<EndCreditOverlayData> => {

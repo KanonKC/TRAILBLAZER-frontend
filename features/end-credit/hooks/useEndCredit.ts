@@ -14,6 +14,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
     const [bitsHeader, setBitsHeader] = useState(initialConfig?.bits_header || "ผู้สนับสนุน Bits");
     const [viewersHeader, setViewersHeader] = useState(initialConfig?.viewers_header || "ผู้ชมในสตรีมนี้");
     const [isShowViewerAvatars, setIsShowViewerAvatars] = useState(initialConfig?.is_show_viewer_avatars ?? true);
+    const [scrollSpeed, setScrollSpeed] = useState(initialConfig?.scroll_speed || 60);
+    const [isShowSubMonths, setIsShowSubMonths] = useState(initialConfig?.is_show_sub_months ?? false);
+    const [isShowRaidCount, setIsShowRaidCount] = useState(initialConfig?.is_show_raid_count ?? false);
+    const [isShowBitsAmount, setIsShowBitsAmount] = useState(initialConfig?.is_show_bits_amount ?? false);
     const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
     const [isTesting, setIsTesting] = useState(false);
@@ -37,6 +41,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
                 setBitsHeader(data.bits_header || "ผู้สนับสนุน Bits");
                 setViewersHeader(data.viewers_header || "ผู้ชมในสตรีมนี้");
                 setIsShowViewerAvatars(data.is_show_viewer_avatars ?? true);
+                setScrollSpeed(data.scroll_speed || 60);
+                setIsShowSubMonths(data.is_show_sub_months ?? false);
+                setIsShowRaidCount(data.is_show_raid_count ?? false);
+                setIsShowBitsAmount(data.is_show_bits_amount ?? false);
                 setIsEnabled(data.widget?.enabled ?? false);
                 setActiveTab("settings");
             }
@@ -59,6 +67,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
                 bits_header: bitsHeader,
                 viewers_header: viewersHeader,
                 is_show_viewer_avatars: isShowViewerAvatars,
+                scroll_speed: scrollSpeed,
+                is_show_sub_months: isShowSubMonths,
+                is_show_raid_count: isShowRaidCount,
+                is_show_bits_amount: isShowBitsAmount,
             });
 
             if (updated) {
@@ -123,6 +135,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
         bitsHeader,
         viewersHeader,
         isShowViewerAvatars,
+        scrollSpeed,
+        isShowSubMonths,
+        isShowRaidCount,
+        isShowBitsAmount,
         isEnabled,
         isSaving,
         isTesting,
@@ -135,6 +151,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
         setBitsHeader,
         setViewersHeader,
         setIsShowViewerAvatars,
+        setScrollSpeed,
+        setIsShowSubMonths,
+        setIsShowRaidCount,
+        setIsShowBitsAmount,
         setActiveTab,
         setConfig,
         handleEnable,

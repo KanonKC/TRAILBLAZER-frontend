@@ -8,8 +8,8 @@ import { EndCreditRecordType, EndCreditViewerRecord } from "@/features/end-credi
 const MAX_RETRY_DELAY = 16000
 const INITIAL_RETRY_DELAY = 1000
 
-/** Pixels the credits travel per second. */
-const SCROLL_SPEED = 60
+/** Fallback pixels-per-second if the widget config hasn't loaded a custom speed yet. */
+const DEFAULT_SCROLL_SPEED = 60
 /** Sections render in this order, matching how a real end-credit sequence reads. */
 const SECTION_ORDER: EndCreditRecordType[] = ["follow", "sub", "raid", "bit"]
 
@@ -85,10 +85,11 @@ export default function EndCreditOverlayPage() {
     useEffect(() => {
         if (!roll || !contentRef.current) return
 
+        const scrollSpeed = roll.scroll_speed || DEFAULT_SCROLL_SPEED
         const distance = contentRef.current.offsetHeight + window.innerHeight
         const frame = requestAnimationFrame(() => setScrollDistance(distance))
 
-        const durationMs = (distance / SCROLL_SPEED) * 1000
+        const durationMs = (distance / scrollSpeed) * 1000
         endTimerRef.current = setTimeout(() => {
             setRoll(null)
             setScrollDistance(0)
@@ -122,7 +123,17 @@ export default function EndCreditOverlayPage() {
         .map(type => ({ type, items: grouped[type] ?? [] }))
         .filter(section => section.items.length > 0)
 
-    const durationSeconds = scrollDistance > 0 ? scrollDistance / SCROLL_SPEED : 0
+    const scrollSpeed = roll.scroll_speed || DEFAULT_SCROLL_SPEED
+    const durationSeconds = scrollDistance > 0 ? scrollDistance / scrollSpeed : 0
+
+    const suffixFor = (item: EndCreditViewerRecord): string | null => {
+        switch (item.type) {
+            case "sub": return roll.is_show_sub_months ? ` (${item.value} เดือน)` : null
+            case "raid": return roll.is_show_raid_count ? ` (${item.value} คน)` : null
+            case "bit": return roll.is_show_bits_amount ? ` (${item.value} Bits)` : null
+            default: return null
+        }
+    }
 
     return (
         <div className="w-screen h-screen bg-transparent overflow-hidden">
@@ -146,7 +157,7 @@ export default function EndCreditOverlayPage() {
                                         // eslint-disable-next-line @next/next/no-img-element
                                         <img src={item.avatar_url} alt="" className="w-9 h-9 rounded-full" />
                                     )}
-                                    <span>{item.display_name ?? item.viewer_id}</span>
+                                    <span>{item.display_name ?? item.viewer_id}{suffixFor(item)}</span>
                                 </div>
                             ))}
                         </div>

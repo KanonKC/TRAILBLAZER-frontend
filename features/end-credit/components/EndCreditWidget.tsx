@@ -3,6 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
@@ -32,6 +33,10 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         bitsHeader,
         viewersHeader,
         isShowViewerAvatars,
+        scrollSpeed,
+        isShowSubMonths,
+        isShowRaidCount,
+        isShowBitsAmount,
         isEnabled,
         isSaving,
         isTesting,
@@ -44,6 +49,10 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         setBitsHeader,
         setViewersHeader,
         setIsShowViewerAvatars,
+        setScrollSpeed,
+        setIsShowSubMonths,
+        setIsShowRaidCount,
+        setIsShowBitsAmount,
         setActiveTab,
         setConfig,
         handleEnable,
@@ -154,6 +163,38 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                             <p className="text-sm text-muted-foreground">แสดงรูปโปรไฟล์ของผู้ชมแต่ละคนควบคู่กับชื่อในเครดิต</p>
                                         </div>
                                         <Switch checked={isShowViewerAvatars} onCheckedChange={setIsShowViewerAvatars} />
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                        <div className="space-y-0.5 mr-2">
+                                            <Label>แสดงจำนวนเดือนที่สมัครสมาชิก</Label>
+                                            <p className="text-sm text-muted-foreground">แสดงจำนวนเดือนที่สมาชิกใหม่แต่ละคนสมัครสมาชิกต่อเนื่องมา</p>
+                                        </div>
+                                        <Switch checked={isShowSubMonths} onCheckedChange={setIsShowSubMonths} />
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                        <div className="space-y-0.5 mr-2">
+                                            <Label>แสดงจำนวนคนที่ Raid เข้ามา</Label>
+                                            <p className="text-sm text-muted-foreground">แสดงจำนวนผู้ชมที่ Raid มาด้วยควบคู่กับชื่อผู้ที่ Raid เข้ามา</p>
+                                        </div>
+                                        <Switch checked={isShowRaidCount} onCheckedChange={setIsShowRaidCount} />
+                                    </div>
+
+                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                        <div className="space-y-0.5 mr-2">
+                                            <Label>แสดงจำนวน Bits ทั้งหมดในสตรีมนี้</Label>
+                                            <p className="text-sm text-muted-foreground">แสดงจำนวน Bits รวมที่ผู้สนับสนุนแต่ละคนส่งเข้ามาตลอดสตรีมนี้</p>
+                                        </div>
+                                        <Switch checked={isShowBitsAmount} onCheckedChange={setIsShowBitsAmount} />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>ความเร็วการเลื่อนของเครดิต (px/วินาที)</Label>
+                                        <div className="flex items-center gap-3">
+                                            <Slider value={[scrollSpeed]} onValueChange={([v]) => setScrollSpeed(v)} min={20} max={200} step={5} className="flex-1" />
+                                            <span className="text-sm tabular-nums w-16 text-right text-muted-foreground">{scrollSpeed} px/s</span>
+                                        </div>
                                     </div>
 
                                     <SmartOverlayUrlInput
