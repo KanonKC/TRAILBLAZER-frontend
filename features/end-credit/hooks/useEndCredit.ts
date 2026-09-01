@@ -54,7 +54,7 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
                 setIsShowRaidCount(data.is_show_raid_count ?? false);
                 setIsShowBitsAmount(data.is_show_bits_amount ?? false);
                 setIsEnabled(data.widget?.enabled ?? false);
-                setActiveTab("settings");
+                setActiveTab("quick-start");
             }
         } catch (error) {
             console.error("Failed to enable", error);

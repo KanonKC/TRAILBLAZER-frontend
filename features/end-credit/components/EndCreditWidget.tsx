@@ -4,19 +4,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Gem, Heart, Play, Radio, Star, Type, UserPlus, Users } from "lucide-react";
+import { Gem, Heart, Radio, Star, Type, UserPlus, Users } from "lucide-react";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
+import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
+import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
+import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
+import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
+import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 
 import { useEndCredit } from "../hooks/useEndCredit";
@@ -43,6 +47,29 @@ interface CategoryCardProps {
  * this section rolls at all — its header text and "show count" toggle only matter
  * when it's on, so they're disabled together rather than left editable but inert.
  */
+interface CategoryToggleRowProps {
+    icon: React.ReactNode;
+    iconClassName: string;
+    title: string;
+    enabled: boolean;
+    onEnabledChange: (checked: boolean) => void;
+}
+
+/** Toggle-only row for Quick Start step 2 — on/off per category, no header text or count options here. */
+function CategoryToggleRow({ icon, iconClassName, title, enabled, onEnabledChange }: CategoryToggleRowProps) {
+    return (
+        <div className="flex items-center justify-between gap-3 p-3 border rounded-lg bg-card">
+            <div className="flex items-center gap-3 min-w-0">
+                <div className={cn("p-2 w-fit rounded-lg shrink-0", iconClassName)}>
+                    {icon}
+                </div>
+                <Label className="text-sm font-medium">{title}</Label>
+            </div>
+            <Switch checked={enabled} onCheckedChange={onEnabledChange} />
+        </div>
+    );
+}
+
 function CategoryCard({
     icon,
     iconClassName,
@@ -149,10 +176,13 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         <WidgetConfigLayout widgetType={widgetType}>
             {({ triggerRefresh }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-2" : "grid-cols-1")}>
+                    <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
                         <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
                         {config && (
-                            <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                            <>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                            </>
                         )}
                     </TabsList>
 
@@ -187,6 +217,90 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                 </div>
                             </div>
                         </WidgetOverviewCard>
+                    </TabsContent>
+
+                    <TabsContent value="quick-start">
+                        <WidgetQuickStartCard>
+                            <WidgetStepper>
+                                <WidgetStepperItems
+                                    items={[
+                                        {
+                                            step: 1,
+                                            title: "เปิดใช้งาน Widget",
+                                            description: (
+                                                <WidgetEnabledBadge />
+                                            )
+                                        },
+                                        {
+                                            step: 2,
+                                            title: "เลือกหมวดหมู่ที่จะแสดงใน Credit Roll",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-white/70">
+                                                        เปิดเฉพาะหมวดที่ต้องการให้แสดงในเครดิต หมวดที่ปิดไว้จะไม่ถูก Roll ขึ้นจอ
+                                                        (ตั้งชื่อหัวข้อและตัวเลือกย่อยเพิ่มเติมได้ที่แท็บ Settings)
+                                                    </p>
+                                                    <div className="space-y-2">
+                                                        <CategoryToggleRow
+                                                            icon={<UserPlus className="w-4 h-4" />}
+                                                            iconClassName="bg-violet-500/10 text-violet-500"
+                                                            title="ผู้ติดตามใหม่"
+                                                            enabled={isShowFollowers}
+                                                            onEnabledChange={setIsShowFollowers}
+                                                        />
+                                                        <CategoryToggleRow
+                                                            icon={<Star className="w-4 h-4" />}
+                                                            iconClassName="bg-yellow-500/10 text-yellow-500"
+                                                            title="สมาชิกใหม่"
+                                                            enabled={isShowSubs}
+                                                            onEnabledChange={setIsShowSubs}
+                                                        />
+                                                        <CategoryToggleRow
+                                                            icon={<Radio className="w-4 h-4" />}
+                                                            iconClassName="bg-orange-500/10 text-orange-500"
+                                                            title="ผู้ที่ Raid เข้ามา"
+                                                            enabled={isShowRaids}
+                                                            onEnabledChange={setIsShowRaids}
+                                                        />
+                                                        <CategoryToggleRow
+                                                            icon={<Gem className="w-4 h-4" />}
+                                                            iconClassName="bg-teal-500/10 text-teal-500"
+                                                            title="ผู้สนับสนุน Bits"
+                                                            enabled={isShowBits}
+                                                            onEnabledChange={setIsShowBits}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            step: 3,
+                                            title: "เชื่อมต่อกับ OBS",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-white/70">นำ Overlay URL ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้ Credit Roll แสดงผลได้</p>
+                                                    <SmartOverlayUrlInput url={overlayUrl} slug={"end-credit"} onSuccess={setConfig} />
+                                                    <OBSSetupHelp />
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            step: 4,
+                                            title: "บันทึกและทดสอบ",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-white/70">ตรวจสอบข้อมูลให้เรียบร้อยแล้วกดบันทึก จากนั้นกด Test เพื่อดู Credit Roll ตัวอย่างบน Overlay</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
+                                                        <TestWidgetButton onTest={handleTest} isLoading={isTesting} />
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    ]}
+                                />
+                            </WidgetStepper>
+                        </WidgetQuickStartCard>
                     </TabsContent>
 
                     <TabsContent value="settings">
@@ -295,9 +409,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                             <WidgetSettingsCardFooter>
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
                                 <div className="flex gap-2">
-                                    <Button variant="outline" disabled={isTesting} onClick={handleTest}>
-                                        {isTesting ? "Testing..." : <><Play className="mr-2 h-4 w-4" /> Test</>}
-                                    </Button>
+                                    <TestWidgetButton onTest={handleTest} isLoading={isTesting} />
                                     <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
                                 </div>
                             </WidgetSettingsCardFooter>
