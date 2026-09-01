@@ -87,7 +87,7 @@ export default function EndCreditOverlayPage() {
     useEffect(() => {
         if (!roll || !contentRef.current) return
 
-        const scrollSpeed = roll.scroll_speed || DEFAULT_SCROLL_SPEED
+        const scrollSpeed = Math.max(1, roll.scroll_speed || DEFAULT_SCROLL_SPEED)
         const distance = contentRef.current.offsetHeight + window.innerHeight
         const frame = requestAnimationFrame(() => setScrollDistance(distance))
 
@@ -117,7 +117,8 @@ export default function EndCreditOverlayPage() {
     }
 
     const grouped = roll.records.reduce<Record<string, EndCreditViewerRecord[]>>((acc, record) => {
-        (acc[record.type] ??= []).push(record)
+        acc[record.type] ??= []
+        acc[record.type].push(record)
         return acc
     }, {})
 
@@ -135,7 +136,7 @@ export default function EndCreditOverlayPage() {
             }
         })
 
-    const scrollSpeed = roll.scroll_speed || DEFAULT_SCROLL_SPEED
+    const scrollSpeed = Math.max(1, roll.scroll_speed || DEFAULT_SCROLL_SPEED)
     const durationSeconds = scrollDistance > 0 ? scrollDistance / scrollSpeed : 0
 
     return (

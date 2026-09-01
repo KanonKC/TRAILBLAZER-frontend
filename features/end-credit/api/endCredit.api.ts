@@ -30,18 +30,18 @@ export const testEndCredit = async (): Promise<void> => {
 
 export const getEndCreditRecordsUrl = (userId: string, key?: string): string => {
     const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = `${BASE_URL}/api/v1/end-credit/${userId}/records`;
+    const url = `${BASE_URL}/api/v1/end-credit/${encodeURIComponent(userId)}/records`;
     if (key) {
-        return `${url}?key=${key}`;
+        return `${url}?key=${encodeURIComponent(key)}`;
     }
     return url;
 };
 
 export const getEndCreditEventUrl = (userId: string, key?: string): string => {
     const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = `${BASE_URL}/api/v1/events/end-credit/${userId}`;
+    const url = `${BASE_URL}/api/v1/events/end-credit/${encodeURIComponent(userId)}`;
     if (key) {
-        return `${url}?key=${key}`;
+        return `${url}?key=${encodeURIComponent(key)}`;
     }
     return url;
 };

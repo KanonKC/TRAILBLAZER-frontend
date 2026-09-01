@@ -37,7 +37,12 @@ export const CreditRow = ({ item, badge, isTop, showAvatar, withLeader, scrollSp
             <div className="ec-row-name">
                 {showAvatar && item.avatar_url && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={item.avatar_url} alt="" className="w-9 h-9 rounded-full" />
+                    <img
+                        src={item.avatar_url}
+                        alt=""
+                        className="w-9 h-9 rounded-full"
+                        onError={(e) => { e.currentTarget.style.display = "none" }}
+                    />
                 )}
                 <span>{item.display_name ?? item.viewer_id}</span>
             </div>

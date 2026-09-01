@@ -127,6 +127,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         subscribesHeader,
         raidsHeader,
         bitsHeader,
+        viewersHeader,
         isShowViewerAvatars,
         scrollSpeed,
         isShowFollowers,
@@ -146,6 +147,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         setSubscribesHeader,
         setRaidsHeader,
         setBitsHeader,
+        setViewersHeader,
         setIsShowViewerAvatars,
         setScrollSpeed,
         setIsShowFollowers,
@@ -388,6 +390,15 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                             <p className="text-sm text-muted-foreground">แสดงรูปโปรไฟล์ของผู้ชมแต่ละคนควบคู่กับชื่อในเครดิต</p>
                                         </div>
                                         <Switch checked={isShowViewerAvatars} onCheckedChange={setIsShowViewerAvatars} />
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label>ข้อความหัวข้อผู้ชมในสตรีมนี้</Label>
+                                        <Input
+                                            value={viewersHeader}
+                                            onChange={(e) => setViewersHeader(e.target.value)}
+                                            maxLength={500}
+                                        />
                                     </div>
 
                                     <div className="space-y-2">
