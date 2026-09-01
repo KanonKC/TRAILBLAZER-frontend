@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { getEndCreditEventUrl, EndCreditOverlayData } from "@/features/end-credit/api/endCredit.api"
+import { CreditRow } from "@/features/end-credit/components/CreditRow"
+import { describeBadge, topBadgeIndex } from "@/features/end-credit/tiers"
 import { EndCreditRecordType, EndCreditViewerRecord } from "@/features/end-credit/types"
 
 const MAX_RETRY_DELAY = 16000
@@ -122,26 +124,19 @@ export default function EndCreditOverlayPage() {
     const sections = SECTION_ORDER
         .map(type => ({ type, items: grouped[type] ?? [] }))
         .filter(section => section.items.length > 0)
+        .map(section => {
+            const badges = section.items.map(item => describeBadge(item, roll))
+            return {
+                ...section,
+                badges,
+                // Hybrid tiering: the section's biggest number also earns a crown.
+                topIndex: topBadgeIndex(badges),
+                hasBadges: badges.some(badge => badge.kind !== "none"),
+            }
+        })
 
     const scrollSpeed = roll.scroll_speed || DEFAULT_SCROLL_SPEED
     const durationSeconds = scrollDistance > 0 ? scrollDistance / scrollSpeed : 0
-
-    const suffixFor = (item: EndCreditViewerRecord): string | null => {
-        switch (item.type) {
-            case "sub":
-                if (roll.is_show_sub_months) {
-                    if (item.value === "1") {
-                        return " สมาชิกใหม่"
-                    } else if (item.value) {
-                        return ` ${item.value} เดือน`
-                    }
-                    return null
-                }
-            case "raid": return roll.is_show_raid_count ? ` ${item.value} คน` : null
-            case "bit": return roll.is_show_bits_amount ? ` ${item.value} Bits` : null
-            default: return null
-        }
-    }
 
     return (
         <div className="w-screen h-screen bg-transparent overflow-hidden">
@@ -155,24 +150,21 @@ export default function EndCreditOverlayPage() {
                     willChange: "transform",
                 }}
             >
-                {sections.map(({ type, items }) => (
+                {sections.map(({ type, items, badges, topIndex, hasBadges }) => (
                     <div key={type} className="space-y-4">
                         <h2 className="text-4xl font-bold tracking-wide drop-shadow-lg trailblazer-gradient-text">{headerFor(type)}</h2>
-                        <div className="flex flex-col items-stretch gap-2 w-max mx-auto">
-                            {items.map((item) => (
-                                <div key={item.id} className="flex items-center gap-10 text-2xl font-medium drop-shadow justify-between px-[25px]">
-                                    <div className="flex items-center gap-3 ">
-                                        <div>{roll.is_show_viewer_avatars && item.avatar_url && (
-                                            // eslint-disable-next-line @next/next/no-img-element
-                                            <img src={item.avatar_url} alt="" className="w-9 h-9 rounded-full" />
-                                        )}</div>
-                                        <div>{item.display_name ?? item.viewer_id}</div>
-                                        {/* <span>{item.display_name ?? item.viewer_id}{suffixFor(item)}</span> */}
-                                    </div>
-                                    <div>
-                                        {suffixFor(item)}
-                                    </div>
-                                </div>
+                        {/* A minimum width gives the leader dots something to span; without badges
+                            the names just sit as wide as they need to. */}
+                        <div className={`flex flex-col items-stretch gap-2 w-max mx-auto ${hasBadges ? "min-w-[32rem]" : ""}`}>
+                            {items.map((item, index) => (
+                                <CreditRow
+                                    key={item.id}
+                                    item={item}
+                                    badge={badges[index]}
+                                    isTop={index === topIndex}
+                                    showAvatar={roll.is_show_viewer_avatars}
+                                    withLeader={hasBadges}
+                                />
                             ))}
                         </div>
                     </div>
