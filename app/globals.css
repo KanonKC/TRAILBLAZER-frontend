@@ -341,3 +341,209 @@
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+/* ---------------------------------------------------------------------------
+   End-credit roll: name rows and their value badges.
+   Motion is gated on two data attributes set by useCreditRowMotion:
+   [data-live] fires once as the row reaches reading position, [data-visible]
+   keeps looping effects off for the rows that are outside the viewport.
+   --------------------------------------------------------------------------- */
+
+.ec-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0 25px;
+  --ec-color: #a0a6b0;
+  --ec-scale: 1;
+  --ec-glow: 0;
+}
+
+.ec-row[data-tier="1"] { --ec-scale: 1.10; --ec-glow: 0.20; }
+.ec-row[data-tier="2"] { --ec-scale: 1.22; --ec-glow: 0.30; }
+.ec-row[data-tier="3"] { --ec-scale: 1.38; --ec-glow: 0.40; }
+.ec-row[data-tier="4"] { --ec-scale: 1.55; --ec-glow: 0.50; }
+
+/* Bits follow Twitch's own cheermote colours so the tiers read instantly. */
+.ec-row[data-type="bit"][data-tier="1"] { --ec-color: #9c3ee8; }
+.ec-row[data-type="bit"][data-tier="2"] { --ec-color: #1db2a5; }
+.ec-row[data-type="bit"][data-tier="3"] { --ec-color: #0099fe; }
+.ec-row[data-type="bit"][data-tier="4"] { --ec-color: #ff6154; }
+
+/* Subs climb a loyalty ladder: bronze, silver, gold, then the brand's own fire. */
+.ec-row[data-type="sub"][data-tier="1"] { --ec-color: #cd8b4e; }
+.ec-row[data-type="sub"][data-tier="2"] { --ec-color: #cbd5e1; }
+.ec-row[data-type="sub"][data-tier="3"] { --ec-color: #ffc53d; }
+.ec-row[data-type="sub"][data-tier="4"] { --ec-color: #ff8a3d; }
+
+/* Raids heat up towards the brand orange as the crowd grows. */
+.ec-row[data-type="raid"][data-tier="1"] { --ec-color: #fdba74; }
+.ec-row[data-type="raid"][data-tier="2"] { --ec-color: #fb923c; }
+.ec-row[data-type="raid"][data-tier="3"] { --ec-color: #f97316; }
+.ec-row[data-type="raid"][data-tier="4"] { --ec-color: #ea580c; }
+
+/* A top-tier row lights up its whole line, not just the number. Timed by --ec-delay (set
+   inline per row, see CreditRow.tsx) rather than any JS visibility/observer state — OBS's
+   Browser Source renders off-screen, where requestAnimationFrame and IntersectionObserver
+   are unreliable, but plain CSS animation timelines run regardless. */
+.ec-row[data-tier="4"]::before {
+  content: "";
+  position: absolute;
+  inset: -0.35rem 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--ec-color) 20%, transparent) 50%, transparent 100%);
+  opacity: 0;
+  animation: ec-row-glow-in 0.7s ease var(--ec-delay, 0s) both;
+  pointer-events: none;
+}
+
+.ec-row-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.ec-leader {
+  flex: 1 1 auto;
+  align-self: center;
+  min-width: 1.5rem;
+  height: 3px;
+  margin-top: 0.6rem;
+  background-image: radial-gradient(circle, currentColor 1.1px, transparent 1.4px);
+  background-size: 9px 3px;
+  background-repeat: repeat-x;
+  opacity: 0.3;
+}
+
+.ec-badge {
+  position: relative;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3em;
+  color: var(--ec-color);
+  font-size: calc(1em * var(--ec-scale));
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  animation: ec-badge-pop 0.5s cubic-bezier(0.22, 1.2, 0.36, 1) var(--ec-delay, 0s) both;
+}
+
+/* The glow is a pre-blurred layer so the breathing loop only ever animates opacity. --ec-glow
+   is 0 below tier 1, so this stays invisible for plain rows without any extra gating. */
+.ec-badge::before {
+  content: "";
+  position: absolute;
+  inset: -45% -25%;
+  z-index: -1;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at center, var(--ec-color) 0%, transparent 70%);
+  filter: blur(10px);
+  pointer-events: none;
+  animation: ec-glow-breathe 2.6s ease-in-out var(--ec-delay, 0s) infinite both;
+}
+
+.ec-badge-value {
+  display: inline-block;
+  text-align: right;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.ec-badge-unit {
+  font-size: 0.52em;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  opacity: 0.72;
+  white-space: nowrap;
+}
+
+.ec-crown {
+  align-self: center;
+  width: 0.55em;
+  height: 0.55em;
+  margin-right: 0.05em;
+  color: #ffc53d;
+  filter: drop-shadow(0 0 4px rgba(255, 197, 61, 0.6));
+}
+
+/* Raid shockwave: rings ripple out from the number as the crowd lands. animation-delay is
+   set per-ring inline (CreditValueBadge.tsx), offset from --ec-delay. */
+.ec-ring {
+  position: absolute;
+  inset: -0.3em -0.5em;
+  border: 2px solid var(--ec-color);
+  border-radius: 999px;
+  opacity: 0;
+  pointer-events: none;
+  animation: ec-ring-pulse 1.15s ease-out both;
+}
+
+.ec-badge--new {
+  --ec-color: #f97316;
+  font-size: calc(0.62em * var(--ec-scale));
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.3em 0.85em;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--ec-color) 55%, transparent);
+  background: color-mix(in srgb, var(--ec-color) 16%, transparent);
+  color: #ffd9b8;
+  animation: ec-badge-pop-strong 0.62s cubic-bezier(0.18, 1.4, 0.38, 1) var(--ec-delay, 0s) both;
+}
+
+/* Top tier and section leaders get a light sweeping across the digits, once revealed. */
+.ec-badge[data-shine] .ec-badge-value {
+  background-image: linear-gradient(100deg, var(--ec-color) 38%, #ffffff 50%, var(--ec-color) 62%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: ec-shimmer 3.2s linear var(--ec-delay, 0s) infinite;
+}
+
+@keyframes ec-badge-pop {
+  0% { opacity: 0; transform: translateY(0.35em) scale(0.86); }
+  60% { opacity: 1; transform: translateY(0) scale(1.06); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes ec-badge-pop-strong {
+  0% { opacity: 0; transform: translateY(0.4em) scale(0.7); }
+  55% { opacity: 1; transform: translateY(0) scale(1.18); }
+  75% { transform: translateY(0) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes ec-glow-breathe {
+  0%, 100% { opacity: var(--ec-glow); }
+  50% { opacity: calc(var(--ec-glow) * 1.9); }
+}
+
+@keyframes ec-ring-pulse {
+  0% { transform: scale(0.55); opacity: 0; }
+  15% { opacity: 0.55; }
+  100% { transform: scale(1.9); opacity: 0; }
+}
+
+@keyframes ec-shimmer {
+  0% { background-position: 180% 0; }
+  100% { background-position: -60% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ec-badge,
+  .ec-badge--new,
+  .ec-badge::before,
+  .ec-row[data-tier="4"]::before,
+  .ec-badge[data-shine] .ec-badge-value {
+    animation: none;
+    opacity: 1;
+  }
+
+  .ec-badge::before { opacity: var(--ec-glow); }
+
+  .ec-ring { animation: none; }
+}
