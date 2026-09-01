@@ -1,7 +1,6 @@
 "use client"
 
-import { useCountUp } from "../hooks/useCreditRowMotion"
-import { CreditBadge, CreditTier, countUpDurationMs, ringCountFor } from "../tiers"
+import { CreditBadge, CreditTier, ringCountFor } from "../tiers"
 import { EndCreditRecordType } from "../types"
 
 const CrownIcon = () => (
@@ -15,13 +14,9 @@ interface CreditValueBadgeProps {
     type: EndCreditRecordType
     tier: CreditTier
     isTop: boolean
-    live: boolean
 }
 
-export const CreditValueBadge = ({ badge, type, tier, isTop, live }: CreditValueBadgeProps) => {
-    const target = badge.kind === "value" ? badge.value : 0
-    const counted = useCountUp(target, live, countUpDurationMs(target))
-
+export const CreditValueBadge = ({ badge, type, tier, isTop }: CreditValueBadgeProps) => {
     if (badge.kind === "none") return null
 
     if (badge.kind === "new") {
@@ -36,9 +31,7 @@ export const CreditValueBadge = ({ badge, type, tier, isTop, live }: CreditValue
         )
     }
 
-    // The final string reserves the badge's width up front so the leader dots never twitch
-    // while the counter is still rolling.
-    const finalText = badge.value.toLocaleString("en-US")
+    const valueText = badge.value.toLocaleString("en-US")
     const rings = type === "raid" ? Array.from({ length: ringCountFor(tier) }) : []
 
     return (
@@ -47,14 +40,12 @@ export const CreditValueBadge = ({ badge, type, tier, isTop, live }: CreditValue
                 <span
                     key={index}
                     className="ec-ring"
-                    style={{ animationDelay: `${index * 0.16}s` }}
+                    style={{ animationDelay: `calc(var(--ec-delay, 0s) + ${index * 0.16}s)` }}
                     aria-hidden="true"
                 />
             ))}
             {isTop && <CrownIcon />}
-            <span className="ec-badge-value" style={{ minWidth: `${finalText.length}ch` }}>
-                {counted.toLocaleString("en-US")}
-            </span>
+            <span className="ec-badge-value">{valueText}</span>
             <span className="ec-badge-unit">{badge.unit}</span>
         </span>
     )

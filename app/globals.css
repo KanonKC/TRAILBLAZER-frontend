@@ -382,7 +382,10 @@
 .ec-row[data-type="raid"][data-tier="3"] { --ec-color: #f97316; }
 .ec-row[data-type="raid"][data-tier="4"] { --ec-color: #ea580c; }
 
-/* A top-tier row lights up its whole line, not just the number. */
+/* A top-tier row lights up its whole line, not just the number. Timed by --ec-delay (set
+   inline per row, see CreditRow.tsx) rather than any JS visibility/observer state — OBS's
+   Browser Source renders off-screen, where requestAnimationFrame and IntersectionObserver
+   are unreliable, but plain CSS animation timelines run regardless. */
 .ec-row[data-tier="4"]::before {
   content: "";
   position: absolute;
@@ -390,11 +393,9 @@
   border-radius: 999px;
   background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--ec-color) 20%, transparent) 50%, transparent 100%);
   opacity: 0;
-  transition: opacity 0.7s ease;
+  animation: ec-row-glow-in 0.7s ease var(--ec-delay, 0s) both;
   pointer-events: none;
 }
-
-.ec-row[data-tier="4"][data-live]::before { opacity: 1; }
 
 .ec-row-name {
   display: flex;
@@ -426,11 +427,12 @@
   line-height: 1.15;
   font-variant-numeric: tabular-nums;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
-  /* Hidden until the row reaches reading position, then popped in by ec-badge-pop. */
   opacity: 0;
+  animation: ec-badge-pop 0.5s cubic-bezier(0.22, 1.2, 0.36, 1) var(--ec-delay, 0s) both;
 }
 
-/* The glow is a pre-blurred layer so the breathing loop only ever animates opacity. */
+/* The glow is a pre-blurred layer so the breathing loop only ever animates opacity. --ec-glow
+   is 0 below tier 1, so this stays invisible for plain rows without any extra gating. */
 .ec-badge::before {
   content: "";
   position: absolute;
@@ -439,15 +441,8 @@
   border-radius: 999px;
   background: radial-gradient(ellipse at center, var(--ec-color) 0%, transparent 70%);
   filter: blur(10px);
-  opacity: 0;
-  transition: opacity 0.5s ease;
   pointer-events: none;
-}
-
-.ec-row[data-live] .ec-badge::before { opacity: var(--ec-glow); }
-
-.ec-row[data-live][data-visible] .ec-badge::before {
-  animation: ec-glow-breathe 2.6s ease-in-out infinite;
+  animation: ec-glow-breathe 2.6s ease-in-out var(--ec-delay, 0s) infinite both;
 }
 
 .ec-badge-value {
@@ -474,7 +469,8 @@
   filter: drop-shadow(0 0 4px rgba(255, 197, 61, 0.6));
 }
 
-/* Raid shockwave: rings ripple out from the number as the crowd lands. */
+/* Raid shockwave: rings ripple out from the number as the crowd lands. animation-delay is
+   set per-ring inline (CreditValueBadge.tsx), offset from --ec-delay. */
 .ec-ring {
   position: absolute;
   inset: -0.3em -0.5em;
@@ -482,6 +478,7 @@
   border-radius: 999px;
   opacity: 0;
   pointer-events: none;
+  animation: ec-ring-pulse 1.15s ease-out both;
 }
 
 .ec-badge--new {
@@ -494,28 +491,17 @@
   border: 1px solid color-mix(in srgb, var(--ec-color) 55%, transparent);
   background: color-mix(in srgb, var(--ec-color) 16%, transparent);
   color: #ffd9b8;
+  animation: ec-badge-pop-strong 0.62s cubic-bezier(0.18, 1.4, 0.38, 1) var(--ec-delay, 0s) both;
 }
 
-.ec-row[data-live] .ec-badge {
-  animation: ec-badge-pop 0.5s cubic-bezier(0.22, 1.2, 0.36, 1) both;
-}
-
-.ec-row[data-live] .ec-badge--new {
-  animation: ec-badge-pop-strong 0.62s cubic-bezier(0.18, 1.4, 0.38, 1) both;
-}
-
-.ec-row[data-live] .ec-ring {
-  animation: ec-ring-pulse 1.15s ease-out both;
-}
-
-/* Top tier and section leaders get a light sweeping across the digits. */
-.ec-row[data-live][data-visible] .ec-badge[data-shine] .ec-badge-value {
+/* Top tier and section leaders get a light sweeping across the digits, once revealed. */
+.ec-badge[data-shine] .ec-badge-value {
   background-image: linear-gradient(100deg, var(--ec-color) 38%, #ffffff 50%, var(--ec-color) 62%);
   background-size: 260% 100%;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: ec-shimmer 3.2s linear infinite;
+  animation: ec-shimmer 3.2s linear var(--ec-delay, 0s) infinite;
 }
 
 @keyframes ec-badge-pop {
@@ -548,13 +534,16 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ec-badge { opacity: 1; }
-
-  .ec-row[data-live] .ec-badge,
-  .ec-row[data-live] .ec-badge--new,
-  .ec-row[data-live] .ec-ring,
-  .ec-row[data-live][data-visible] .ec-badge::before,
-  .ec-row[data-live][data-visible] .ec-badge[data-shine] .ec-badge-value {
+  .ec-badge,
+  .ec-badge--new,
+  .ec-badge::before,
+  .ec-row[data-tier="4"]::before,
+  .ec-badge[data-shine] .ec-badge-value {
     animation: none;
+    opacity: 1;
   }
+
+  .ec-badge::before { opacity: var(--ec-glow); }
+
+  .ec-ring { animation: none; }
 }

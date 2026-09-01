@@ -15,6 +15,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
     const [viewersHeader, setViewersHeader] = useState(initialConfig?.viewers_header || "ผู้ชมในสตรีมนี้");
     const [isShowViewerAvatars, setIsShowViewerAvatars] = useState(initialConfig?.is_show_viewer_avatars ?? true);
     const [scrollSpeed, setScrollSpeed] = useState(initialConfig?.scroll_speed || 60);
+    const [isShowFollowers, setIsShowFollowers] = useState(initialConfig?.is_show_followers ?? true);
+    const [isShowSubs, setIsShowSubs] = useState(initialConfig?.is_show_subs ?? true);
+    const [isShowRaids, setIsShowRaids] = useState(initialConfig?.is_show_raids ?? true);
+    const [isShowBits, setIsShowBits] = useState(initialConfig?.is_show_bits ?? true);
     const [isShowSubMonths, setIsShowSubMonths] = useState(initialConfig?.is_show_sub_months ?? false);
     const [isShowRaidCount, setIsShowRaidCount] = useState(initialConfig?.is_show_raid_count ?? false);
     const [isShowBitsAmount, setIsShowBitsAmount] = useState(initialConfig?.is_show_bits_amount ?? false);
@@ -42,6 +46,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
                 setViewersHeader(data.viewers_header || "ผู้ชมในสตรีมนี้");
                 setIsShowViewerAvatars(data.is_show_viewer_avatars ?? true);
                 setScrollSpeed(data.scroll_speed || 60);
+                setIsShowFollowers(data.is_show_followers ?? true);
+                setIsShowSubs(data.is_show_subs ?? true);
+                setIsShowRaids(data.is_show_raids ?? true);
+                setIsShowBits(data.is_show_bits ?? true);
                 setIsShowSubMonths(data.is_show_sub_months ?? false);
                 setIsShowRaidCount(data.is_show_raid_count ?? false);
                 setIsShowBitsAmount(data.is_show_bits_amount ?? false);
@@ -68,6 +76,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
                 viewers_header: viewersHeader,
                 is_show_viewer_avatars: isShowViewerAvatars,
                 scroll_speed: scrollSpeed,
+                is_show_followers: isShowFollowers,
+                is_show_subs: isShowSubs,
+                is_show_raids: isShowRaids,
+                is_show_bits: isShowBits,
                 is_show_sub_months: isShowSubMonths,
                 is_show_raid_count: isShowRaidCount,
                 is_show_bits_amount: isShowBitsAmount,
@@ -136,6 +148,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
         viewersHeader,
         isShowViewerAvatars,
         scrollSpeed,
+        isShowFollowers,
+        isShowSubs,
+        isShowRaids,
+        isShowBits,
         isShowSubMonths,
         isShowRaidCount,
         isShowBitsAmount,
@@ -152,6 +168,10 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
         setViewersHeader,
         setIsShowViewerAvatars,
         setScrollSpeed,
+        setIsShowFollowers,
+        setIsShowSubs,
+        setIsShowRaids,
+        setIsShowBits,
         setIsShowSubMonths,
         setIsShowRaidCount,
         setIsShowBitsAmount,

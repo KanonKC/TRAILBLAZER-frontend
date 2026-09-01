@@ -10,7 +10,7 @@ import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Heart, Play, Type, Users } from "lucide-react";
+import { Gem, Heart, Play, Radio, Star, Type, UserPlus, Users } from "lucide-react";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
@@ -23,6 +23,75 @@ import { useEndCredit } from "../hooks/useEndCredit";
 import { EndCreditConfig } from "../types";
 import { WidgetTypeMeta } from "@/services/widget.service";
 
+interface CategoryCardProps {
+    icon: React.ReactNode;
+    iconClassName: string;
+    title: string;
+    enabled: boolean;
+    onEnabledChange: (checked: boolean) => void;
+    headerLabel: string;
+    headerValue: string;
+    onHeaderChange: (value: string) => void;
+    countLabel?: string;
+    countDescription?: string;
+    countValue?: boolean;
+    onCountChange?: (checked: boolean) => void;
+}
+
+/**
+ * One category = one card: the master switch here is what actually decides whether
+ * this section rolls at all — its header text and "show count" toggle only matter
+ * when it's on, so they're disabled together rather than left editable but inert.
+ */
+function CategoryCard({
+    icon,
+    iconClassName,
+    title,
+    enabled,
+    onEnabledChange,
+    headerLabel,
+    headerValue,
+    onHeaderChange,
+    countLabel,
+    countDescription,
+    countValue,
+    onCountChange,
+}: CategoryCardProps) {
+    return (
+        <div className={cn("border rounded-lg bg-card p-4 space-y-4 transition-opacity", !enabled && "opacity-60")}>
+            <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className={cn("p-2 w-fit rounded-lg shrink-0", iconClassName)}>
+                        {icon}
+                    </div>
+                    <Label className="text-base font-semibold">{title}</Label>
+                </div>
+                <Switch checked={enabled} onCheckedChange={onEnabledChange} />
+            </div>
+
+            <div className="space-y-2">
+                <Label className={cn(!enabled && "text-muted-foreground")}>{headerLabel}</Label>
+                <Input
+                    value={headerValue}
+                    onChange={(e) => onHeaderChange(e.target.value)}
+                    maxLength={500}
+                    disabled={!enabled}
+                />
+            </div>
+
+            {countLabel && (
+                <div className="flex items-center justify-between p-3 border rounded-lg bg-background/40">
+                    <div className="space-y-0.5 mr-2">
+                        <Label className={cn(!enabled && "text-muted-foreground")}>{countLabel}</Label>
+                        <p className="text-sm text-muted-foreground">{countDescription}</p>
+                    </div>
+                    <Switch checked={!!countValue} onCheckedChange={onCountChange} disabled={!enabled} />
+                </div>
+            )}
+        </div>
+    );
+}
+
 export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: EndCreditConfig | null; widgetType: WidgetTypeMeta }) {
     const {
         user,
@@ -31,9 +100,12 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         subscribesHeader,
         raidsHeader,
         bitsHeader,
-        viewersHeader,
         isShowViewerAvatars,
         scrollSpeed,
+        isShowFollowers,
+        isShowSubs,
+        isShowRaids,
+        isShowBits,
         isShowSubMonths,
         isShowRaidCount,
         isShowBitsAmount,
@@ -47,9 +119,12 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
         setSubscribesHeader,
         setRaidsHeader,
         setBitsHeader,
-        setViewersHeader,
         setIsShowViewerAvatars,
         setScrollSpeed,
+        setIsShowFollowers,
+        setIsShowSubs,
+        setIsShowRaids,
+        setIsShowBits,
         setIsShowSubMonths,
         setIsShowRaidCount,
         setIsShowBitsAmount,
@@ -126,36 +201,72 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 border-b pb-2">
                                         <Type className="w-5 h-5 text-purple-500" />
-                                        <h3 className="text-lg font-semibold">หัวข้อแต่ละหมวดหมู่</h3>
+                                        <h3 className="text-lg font-semibold">หมวดหมู่ Credit Roll</h3>
                                     </div>
-                                    <div className="grid gap-4 md:grid-cols-2">
-                                        <div className="space-y-2">
-                                            <Label>ผู้ติดตามใหม่</Label>
-                                            <Input value={followersHeader} onChange={(e) => setFollowersHeader(e.target.value)} maxLength={500} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>สมาชิกใหม่</Label>
-                                            <Input value={subscribesHeader} onChange={(e) => setSubscribesHeader(e.target.value)} maxLength={500} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>ผู้ที่ Raid เข้ามา</Label>
-                                            <Input value={raidsHeader} onChange={(e) => setRaidsHeader(e.target.value)} maxLength={500} />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>ผู้สนับสนุน Bits</Label>
-                                            <Input value={bitsHeader} onChange={(e) => setBitsHeader(e.target.value)} maxLength={500} />
-                                        </div>
-                                        <div className="space-y-2 md:col-span-2">
-                                            <Label>ผู้ชมในสตรีมนี้</Label>
-                                            <Input value={viewersHeader} onChange={(e) => setViewersHeader(e.target.value)} maxLength={500} />
-                                        </div>
+                                    <p className="text-sm text-muted-foreground">
+                                        เปิดเฉพาะหมวดที่ต้องการแสดงในเครดิต — หมวดที่ปิดไว้จะไม่ถูก Roll ขึ้นจอเลย
+                                        และการตั้งค่าย่อยของหมวดนั้นจะถูกปิดใช้งานไปด้วย
+                                    </p>
+                                    <div className="space-y-3">
+                                        <CategoryCard
+                                            icon={<UserPlus className="w-5 h-5" />}
+                                            iconClassName="bg-violet-500/10 text-violet-500"
+                                            title="ผู้ติดตามใหม่"
+                                            enabled={isShowFollowers}
+                                            onEnabledChange={setIsShowFollowers}
+                                            headerLabel="ข้อความหัวข้อ"
+                                            headerValue={followersHeader}
+                                            onHeaderChange={setFollowersHeader}
+                                        />
+                                        <CategoryCard
+                                            icon={<Star className="w-5 h-5" />}
+                                            iconClassName="bg-yellow-500/10 text-yellow-500"
+                                            title="สมาชิกใหม่"
+                                            enabled={isShowSubs}
+                                            onEnabledChange={setIsShowSubs}
+                                            headerLabel="ข้อความหัวข้อ"
+                                            headerValue={subscribesHeader}
+                                            onHeaderChange={setSubscribesHeader}
+                                            countLabel="แสดงจำนวนเดือนที่สมัครสมาชิก"
+                                            countDescription="แสดงจำนวนเดือนที่สมาชิกใหม่แต่ละคนสมัครสมาชิกต่อเนื่องมา"
+                                            countValue={isShowSubMonths}
+                                            onCountChange={setIsShowSubMonths}
+                                        />
+                                        <CategoryCard
+                                            icon={<Radio className="w-5 h-5" />}
+                                            iconClassName="bg-orange-500/10 text-orange-500"
+                                            title="ผู้ที่ Raid เข้ามา"
+                                            enabled={isShowRaids}
+                                            onEnabledChange={setIsShowRaids}
+                                            headerLabel="ข้อความหัวข้อ"
+                                            headerValue={raidsHeader}
+                                            onHeaderChange={setRaidsHeader}
+                                            countLabel="แสดงจำนวนคนที่ Raid เข้ามา"
+                                            countDescription="แสดงจำนวนผู้ชมที่ Raid มาด้วยควบคู่กับชื่อผู้ที่ Raid เข้ามา"
+                                            countValue={isShowRaidCount}
+                                            onCountChange={setIsShowRaidCount}
+                                        />
+                                        <CategoryCard
+                                            icon={<Gem className="w-5 h-5" />}
+                                            iconClassName="bg-teal-500/10 text-teal-500"
+                                            title="ผู้สนับสนุน Bits"
+                                            enabled={isShowBits}
+                                            onEnabledChange={setIsShowBits}
+                                            headerLabel="ข้อความหัวข้อ"
+                                            headerValue={bitsHeader}
+                                            onHeaderChange={setBitsHeader}
+                                            countLabel="แสดงจำนวน Bits ทั้งหมดในสตรีมนี้"
+                                            countDescription="แสดงจำนวน Bits รวมที่ผู้สนับสนุนแต่ละคนส่งเข้ามาตลอดสตรีมนี้"
+                                            countValue={isShowBitsAmount}
+                                            onCountChange={setIsShowBitsAmount}
+                                        />
                                     </div>
                                 </div>
 
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 border-b pb-2">
                                         <Users className="w-5 h-5 text-blue-500" />
-                                        <h3 className="text-lg font-semibold">ตัวเลือกการแสดงผล</h3>
+                                        <h3 className="text-lg font-semibold">ตัวเลือกทั่วไป</h3>
                                     </div>
                                     <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
                                         <div className="space-y-0.5">
@@ -163,30 +274,6 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                             <p className="text-sm text-muted-foreground">แสดงรูปโปรไฟล์ของผู้ชมแต่ละคนควบคู่กับชื่อในเครดิต</p>
                                         </div>
                                         <Switch checked={isShowViewerAvatars} onCheckedChange={setIsShowViewerAvatars} />
-                                    </div>
-
-                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                                        <div className="space-y-0.5 mr-2">
-                                            <Label>แสดงจำนวนเดือนที่สมัครสมาชิก</Label>
-                                            <p className="text-sm text-muted-foreground">แสดงจำนวนเดือนที่สมาชิกใหม่แต่ละคนสมัครสมาชิกต่อเนื่องมา</p>
-                                        </div>
-                                        <Switch checked={isShowSubMonths} onCheckedChange={setIsShowSubMonths} />
-                                    </div>
-
-                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                                        <div className="space-y-0.5 mr-2">
-                                            <Label>แสดงจำนวนคนที่ Raid เข้ามา</Label>
-                                            <p className="text-sm text-muted-foreground">แสดงจำนวนผู้ชมที่ Raid มาด้วยควบคู่กับชื่อผู้ที่ Raid เข้ามา</p>
-                                        </div>
-                                        <Switch checked={isShowRaidCount} onCheckedChange={setIsShowRaidCount} />
-                                    </div>
-
-                                    <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
-                                        <div className="space-y-0.5 mr-2">
-                                            <Label>แสดงจำนวน Bits ทั้งหมดในสตรีมนี้</Label>
-                                            <p className="text-sm text-muted-foreground">แสดงจำนวน Bits รวมที่ผู้สนับสนุนแต่ละคนส่งเข้ามาตลอดสตรีมนี้</p>
-                                        </div>
-                                        <Switch checked={isShowBitsAmount} onCheckedChange={setIsShowBitsAmount} />
                                     </div>
 
                                     <div className="space-y-2">

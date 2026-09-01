@@ -164,6 +164,7 @@ export default function EndCreditOverlayPage() {
                                     isTop={index === topIndex}
                                     showAvatar={roll.is_show_viewer_avatars}
                                     withLeader={hasBadges}
+                                    scrollSpeed={scrollSpeed}
                                 />
                             ))}
                         </div>

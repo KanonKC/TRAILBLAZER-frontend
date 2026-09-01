@@ -77,9 +77,5 @@ export const topBadgeIndex = (badges: CreditBadge[]): number => {
     return contenders >= 2 ? best : -1
 }
 
-/** Bigger numbers deserve a longer roll-up, but never long enough to outlive the row on screen. */
-export const countUpDurationMs = (value: number): number =>
-    value <= 1 ? 0 : Math.min(1200, 380 + Math.log10(value) * 260)
-
 /** Raid shockwave: the more people arrived, the more rings ripple out. */
 export const ringCountFor = (tier: CreditTier): number => [0, 1, 2, 3, 3][tier]

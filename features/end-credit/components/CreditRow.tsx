@@ -1,7 +1,7 @@
 "use client"
 
-import { useRef } from "react"
-import { useCreditRowMotion } from "../hooks/useCreditRowMotion"
+import { CSSProperties, useRef } from "react"
+import { useRevealDelay } from "../hooks/useCreditRowMotion"
 import { CreditBadge, CreditTier, badgeTier } from "../tiers"
 import { EndCreditViewerRecord } from "../types"
 import { CreditValueBadge } from "./CreditValueBadge"
@@ -14,11 +14,13 @@ interface CreditRowProps {
     showAvatar: boolean
     /** Draw the dotted leader that ties the name to its number, credit-roll style. */
     withLeader: boolean
+    /** px/second the roll travels at — needed to time this row's reveal against real elapsed time. */
+    scrollSpeed: number
 }
 
-export const CreditRow = ({ item, badge, isTop, showAvatar, withLeader }: CreditRowProps) => {
+export const CreditRow = ({ item, badge, isTop, showAvatar, withLeader, scrollSpeed }: CreditRowProps) => {
     const rowRef = useRef<HTMLDivElement>(null)
-    const { live, visible } = useCreditRowMotion(rowRef)
+    const revealDelaySeconds = useRevealDelay(rowRef, scrollSpeed)
 
     // Topping a section is worth at least a little shine even when the raw number is modest.
     const tier = (isTop ? Math.max(1, badgeTier(badge)) : badgeTier(badge)) as CreditTier
@@ -30,8 +32,7 @@ export const CreditRow = ({ item, badge, isTop, showAvatar, withLeader }: Credit
             className="ec-row text-2xl font-medium drop-shadow"
             data-type={item.type}
             data-tier={tier}
-            data-live={live ? "" : undefined}
-            data-visible={visible ? "" : undefined}
+            style={{ "--ec-delay": `${revealDelaySeconds}s` } as CSSProperties}
         >
             <div className="ec-row-name">
                 {showAvatar && item.avatar_url && (
@@ -41,7 +42,7 @@ export const CreditRow = ({ item, badge, isTop, showAvatar, withLeader }: Credit
                 <span>{item.display_name ?? item.viewer_id}</span>
             </div>
             {withLeader && hasBadge && <span className="ec-leader" aria-hidden="true" />}
-            <CreditValueBadge badge={badge} type={item.type} tier={tier} isTop={isTop} live={live} />
+            <CreditValueBadge badge={badge} type={item.type} tier={tier} isTop={isTop} />
         </div>
     )
 }
