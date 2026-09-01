@@ -128,9 +128,17 @@ export default function EndCreditOverlayPage() {
 
     const suffixFor = (item: EndCreditViewerRecord): string | null => {
         switch (item.type) {
-            case "sub": return roll.is_show_sub_months ? ` (${item.value} เดือน)` : null
-            case "raid": return roll.is_show_raid_count ? ` (${item.value} คน)` : null
-            case "bit": return roll.is_show_bits_amount ? ` (${item.value} Bits)` : null
+            case "sub":
+                if (roll.is_show_sub_months) {
+                    if (item.value === "1") {
+                        return " สมาชิกใหม่"
+                    } else if (item.value) {
+                        return ` ${item.value} เดือน`
+                    }
+                    return null
+                }
+            case "raid": return roll.is_show_raid_count ? ` ${item.value} คน` : null
+            case "bit": return roll.is_show_bits_amount ? ` ${item.value} Bits` : null
             default: return null
         }
     }
@@ -149,15 +157,21 @@ export default function EndCreditOverlayPage() {
             >
                 {sections.map(({ type, items }) => (
                     <div key={type} className="space-y-4">
-                        <h2 className="text-4xl font-bold tracking-wide drop-shadow-lg">{headerFor(type)}</h2>
-                        <div className="flex flex-col items-center gap-2">
+                        <h2 className="text-4xl font-bold tracking-wide drop-shadow-lg trailblazer-gradient-text">{headerFor(type)}</h2>
+                        <div className="flex flex-col items-stretch gap-2 w-max mx-auto">
                             {items.map((item) => (
-                                <div key={item.id} className="flex items-center gap-3 text-2xl font-medium drop-shadow">
-                                    {roll.is_show_viewer_avatars && item.avatar_url && (
-                                        // eslint-disable-next-line @next/next/no-img-element
-                                        <img src={item.avatar_url} alt="" className="w-9 h-9 rounded-full" />
-                                    )}
-                                    <span>{item.display_name ?? item.viewer_id}{suffixFor(item)}</span>
+                                <div key={item.id} className="flex items-center gap-10 text-2xl font-medium drop-shadow justify-between px-[25px]">
+                                    <div className="flex items-center gap-3 ">
+                                        <div>{roll.is_show_viewer_avatars && item.avatar_url && (
+                                            // eslint-disable-next-line @next/next/no-img-element
+                                            <img src={item.avatar_url} alt="" className="w-9 h-9 rounded-full" />
+                                        )}</div>
+                                        <div>{item.display_name ?? item.viewer_id}</div>
+                                        {/* <span>{item.display_name ?? item.viewer_id}{suffixFor(item)}</span> */}
+                                    </div>
+                                    <div>
+                                        {suffixFor(item)}
+                                    </div>
                                 </div>
                             ))}
                         </div>
