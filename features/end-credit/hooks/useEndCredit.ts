@@ -19,9 +19,9 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
     const [isShowSubs, setIsShowSubs] = useState(initialConfig?.is_show_subs ?? true);
     const [isShowRaids, setIsShowRaids] = useState(initialConfig?.is_show_raids ?? true);
     const [isShowBits, setIsShowBits] = useState(initialConfig?.is_show_bits ?? true);
-    const [isShowSubMonths, setIsShowSubMonths] = useState(initialConfig?.is_show_sub_months ?? false);
-    const [isShowRaidCount, setIsShowRaidCount] = useState(initialConfig?.is_show_raid_count ?? false);
-    const [isShowBitsAmount, setIsShowBitsAmount] = useState(initialConfig?.is_show_bits_amount ?? false);
+    const [isShowSubMonths, setIsShowSubMonths] = useState(initialConfig?.is_show_sub_months ?? true);
+    const [isShowRaidCount, setIsShowRaidCount] = useState(initialConfig?.is_show_raid_count ?? true);
+    const [isShowBitsAmount, setIsShowBitsAmount] = useState(initialConfig?.is_show_bits_amount ?? true);
     const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
     const [isSaving, setIsSaving] = useState(false);
     const [isTesting, setIsTesting] = useState(false);
