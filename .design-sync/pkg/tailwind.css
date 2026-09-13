@@ -1,0 +1,54 @@
+/* design-sync stylesheet source for the TRAILBLAZER design system.
+   Compiled by `node .design-sync/build-css.mjs` (the repo's own Tailwind v4 via
+   @tailwindcss/postcss) into .design-sync/pkg/styles.css, which the converter
+   ships as _ds_bundle.css. The app's real stylesheet is app/globals.css - this
+   file only adds what next/font and the Next.js build normally provide. */
+
+@import "./fonts/fonts.css";
+@import "../../app/globals.css";
+
+/* Utility vocabulary: everything the app itself uses ... */
+@source "../../components";
+@source "../../app";
+@source "../../features";
+/* ... plus the authored preview cards ... */
+@source "../previews";
+/* ... plus a safelist of common layout glue so a design's own markup resolves
+   without a Tailwind compiler at runtime. Keep this in sync with the family
+   table in .design-sync/conventions.md. */
+@source inline("{sm:,md:,lg:,}{flex,inline-flex,grid,block,inline-block,hidden,flex-col,flex-row,flex-wrap,flex-1,flex-none,shrink-0,grow}");
+@source inline("{items,justify,content,self,justify-self,place-items,place-content}-{start,center,end,between,stretch,baseline,around,auto}");
+@source inline("{sm:,md:,lg:,}{gap,gap-x,gap-y,space-x,space-y}-{0,0.5,1,1.5,2,2.5,3,4,5,6,8,10,12,16}");
+@source inline("{sm:,md:,lg:,}grid-cols-{1,2,3,4,5,6,12} col-span-{1,2,3,4,6,full}");
+@source inline("{p,px,py,pt,pb,pl,pr,m,mx,my,mt,mb,ml,mr}-{0,0.5,1,1.5,2,2.5,3,4,5,6,8,10,12,16,20,24} {mx,my,m}-auto -mt-{1,2,4}");
+@source inline("{w,h,size,min-w,min-h,max-w,max-h}-{0,1,2,3,4,5,6,7,8,9,10,11,12,14,16,20,24,28,32,36,40,44,48,52,56,60,64,72,80,96,full,fit,auto,screen,px,min,max} {w,h}-{1/2,1/3,2/3,1/4,3/4,1/5,2/5,3/5,4/5} min-h-screen h-dvh min-h-dvh");
+@source inline("max-w-{xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,prose,none}");
+@source inline("{relative,absolute,fixed,sticky,inset-0,inset-x-0,inset-y-0,top-0,right-0,bottom-0,left-0,top-4,right-4,z-0,z-10,z-20,z-30,z-40,z-50,-z-10}");
+@source inline("overflow-{hidden,auto,visible,x-auto,y-auto,x-hidden,y-hidden}");
+@source inline("text-{xs,sm,base,lg,xl,2xl,3xl,4xl,5xl,6xl} font-{light,normal,medium,semibold,bold,extrabold,black} font-{sans,kanit,mono}");
+@source inline("text-{left,center,right} leading-{none,tight,snug,normal,relaxed,loose} tracking-{tighter,tight,normal,wide,wider,widest}");
+@source inline("{truncate,uppercase,lowercase,capitalize,underline,line-through,no-underline,italic,not-italic,whitespace-nowrap,whitespace-pre-wrap,break-words,tabular-nums,antialiased,line-clamp-1,line-clamp-2,line-clamp-3}");
+@source inline("{hover:,focus:,}{bg,text,border,ring,fill,stroke}-{background,foreground,card,card-foreground,popover,popover-foreground,primary,primary-foreground,secondary,secondary-foreground,muted,muted-foreground,accent,accent-foreground,destructive,border,input,ring,sidebar,sidebar-foreground,sidebar-primary,sidebar-accent,sidebar-border,chart-1,chart-2,chart-3,chart-4,chart-5}");
+@source inline("{hover:,}{bg,border,text}-{primary,secondary,muted,accent,destructive,foreground,card,border,input}/{5,10,15,20,25,30,40,50,60,70,80,90}");
+@source inline("{bg,text,border}-{white,black,transparent,current} {bg,text}-{white,black}/{5,10,20,30,40,50,60,70,80,90}");
+@source inline("{hover:,}{bg,text,border}-{orange,amber,yellow,green,emerald,red,rose,blue,sky,purple,violet,slate,gray,zinc,neutral}-{50,100,200,300,400,500,600,700,800,900,950}");
+@source inline("{bg,border}-{orange,amber,yellow,green,red,blue,purple}-{400,500,600}/{10,20,30,50}");
+@source inline("bg-{linear-to-r,linear-to-l,linear-to-t,linear-to-b,linear-to-br,linear-to-bl,linear-to-tr,gradient-to-r,gradient-to-b,gradient-to-br} {from,via,to}-{primary,accent,background,card,transparent,orange-500,orange-600,amber-500,yellow-500,yellow-400,black,white,black/50,black/80}");
+@source inline("{rounded,rounded-t,rounded-b,rounded-l,rounded-r}-{none,sm,md,lg,xl,2xl,3xl,full} rounded");
+@source inline("{border,border-t,border-b,border-l,border-r,border-x,border-y}-{0,2,4} border border-t border-b border-l border-r border-x border-y border-dashed border-none divide-y divide-x divide-border");
+@source inline("shadow-{none,xs,sm,md,lg,xl,2xl} ring-{0,1,2,4} ring-offset-2 outline-none");
+@source inline("opacity-{0,5,10,20,30,40,50,60,70,75,80,90,100} {transition,transition-all,transition-colors,transition-opacity,transition-transform} duration-{75,100,150,200,300,500,700,1000} ease-{in,out,in-out,linear}");
+@source inline("{cursor-pointer,cursor-default,cursor-not-allowed,select-none,pointer-events-none,sr-only,not-sr-only,appearance-none,resize-none}");
+@source inline("{animate-spin,animate-pulse,animate-bounce,animate-ping,animate-float,animate-pulse-glow,animate-gradient,animate-marquee}");
+@source inline("aspect-{square,video,auto} object-{cover,contain,center} {backdrop-blur,backdrop-blur-sm,backdrop-blur-md,backdrop-blur-lg,blur,blur-sm,blur-xl,blur-2xl,blur-3xl}");
+@source inline("{scale,hover:scale}-{90,95,100,105,110} {translate-x,translate-y,-translate-x,-translate-y}-{1/2,full,1,2,4} rotate-{0,45,90,180} origin-center");
+@source inline("{list-disc,list-decimal,list-none,list-inside} {table-auto,table-fixed,border-collapse}");
+@source inline("{glass,trailblazer-gradient,trailblazer-gradient-text,bg-discord,text-discord,spotify}");
+
+/* next/font/google sets these on <html> at runtime (app/layout.tsx). The
+   design system ships the same families as local @font-face (fonts/). */
+:root {
+  --font-sans: "Anuphan", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-kanit: "Kanit", "Anuphan", ui-sans-serif, system-ui, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

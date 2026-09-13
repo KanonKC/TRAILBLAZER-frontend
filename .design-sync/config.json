@@ -1,0 +1,76 @@
+{
+  "projectId": "eb9f2d4e-9628-43d3-937b-6f8f4ffa920c",
+  "shape": "package",
+  "pkg": "trailblazer-ui",
+  "globalName": "Trailblazer",
+  "buildCmd": "node .design-sync/build-css.mjs",
+  "srcDir": "../../components/ui",
+  "tsconfig": "../../tsconfig.json",
+  "cssEntry": "styles.css",
+  "provider": {
+    "component": "TrailblazerTheme"
+  },
+  "libOverrides": {
+    "dts.mjs": "workspace sources outside the shim package are the DS's own API (keep on*/aria-* props)",
+    "story-imports.mjs": "skip plugin resolve round-trip for imports originating inside node_modules (preview compile speed; same outcome)"
+  },
+  "docsDir": "../docs",
+  "overrides": {
+    "Dialog": {
+      "cardMode": "single",
+      "viewport": "720x480"
+    },
+    "AlertDialog": {
+      "cardMode": "single",
+      "viewport": "720x440"
+    },
+    "Popover": {
+      "cardMode": "single",
+      "viewport": "640x440"
+    },
+    "Tooltip": {
+      "cardMode": "single",
+      "viewport": "640x260"
+    },
+    "DropdownMenu": {
+      "cardMode": "single",
+      "viewport": "640x520"
+    },
+    "Select": {
+      "cardMode": "single",
+      "viewport": "640x560"
+    },
+    "Combobox": {
+      "cardMode": "single",
+      "viewport": "640x560"
+    },
+    "Toaster": {
+      "cardMode": "single",
+      "viewport": "720x380"
+    },
+    "Table": {
+      "cardMode": "column"
+    },
+    "Features": {
+      "cardMode": "column",
+      "viewport": "1100x900"
+    },
+    "Footer": {
+      "cardMode": "column",
+      "viewport": "1100x300"
+    },
+    "Progress": {
+      "cardMode": "column"
+    },
+    "Slider": {
+      "cardMode": "column"
+    },
+    "ScrollArea": {
+      "cardMode": "column"
+    },
+    "BrandLogo": {
+      "cardMode": "column"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}
