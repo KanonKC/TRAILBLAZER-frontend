@@ -10,6 +10,26 @@ export const apiClient = axios.create({
     },
 });
 
+// The backend rotates the refresh token on every use (old one is invalidated
+// as soon as a new one is issued). If several requests 401 at the same time
+// (e.g. multiple widgets fetching on page load right as the access token
+// expires), each one calling /refresh-token independently means only the
+// first succeeds and the rest fail on the now-stale token - which can
+// spuriously log a genuinely-authenticated user out. Sharing one in-flight
+// refresh promise across all concurrent 401s avoids that dogpile.
+let refreshPromise: Promise<unknown> | null = null;
+
+function refreshTokens() {
+    if (!refreshPromise) {
+        refreshPromise = axios
+            .post("/api/v1/refresh-token", {}, { withCredentials: true })
+            .finally(() => {
+                refreshPromise = null;
+            });
+    }
+    return refreshPromise;
+}
+
 apiClient.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -20,11 +40,7 @@ apiClient.interceptors.response.use(
 
             try {
                 // Now we call our own proxy route for refresh
-                await axios.post(
-                    "/api/v1/refresh-token",
-                    {},
-                    { withCredentials: true }
-                );
+                await refreshTokens();
                 return apiClient(originalRequest);
             } catch (refreshError) {
                 return Promise.reject(refreshError);
