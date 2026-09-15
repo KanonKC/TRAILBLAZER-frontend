@@ -1,34 +1,24 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Twitch } from "@/components/icons/twitch"
 import { cn } from "@/lib/utils"
-import crypto from "crypto"
+import { hasAcceptedConsent, redirectToTwitchLogin } from "@/lib/twitch-login"
 
 interface TwitchLoginButtonProps extends React.ComponentProps<typeof Button> {
   children?: React.ReactNode
 }
 
 export function TwitchLoginButton({ className, children, ...props }: TwitchLoginButtonProps) {
-  const LOGIN_URL = process.env.NEXT_PUBLIC_TWITCH_LOGIN_URL
+  const router = useRouter()
 
   const handleClick = () => {
-    const getCookie = (name: string) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop()?.split(";").shift();
-      return null;
-    };
-
-    const ref = getCookie("blaze_ref");
-    const nonce = crypto.randomBytes(16).toString("hex");
-    const state = ref ? `${nonce}:${ref}` : nonce;
-
-    if (LOGIN_URL) {
-      window.location.href = LOGIN_URL + "&state=" + state
+    if (hasAcceptedConsent()) {
+      redirectToTwitchLogin()
     } else {
-      console.error("LOGIN_URL is not defined")
+      router.push("/consent")
     }
   }
 
