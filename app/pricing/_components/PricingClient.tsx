@@ -5,11 +5,12 @@ import { useUser } from "@/components/user-context";
 import { Check, Info } from "lucide-react";
 import SelectPlanButton from "./SelectPlanButton";
 import { PricingTwitchDialog } from "./PricingTwitchDialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 
 const PricingClient = () => {
 
-    const { user } = useUser()
+    const { user, isLoading } = useUser()
 
     const calculateButtonStatus = (tierRequired: number) => {
         const tier = (user?.tier || 0) > 0 ? 1 : 0
@@ -53,7 +54,11 @@ const PricingClient = () => {
                         </ul>
                     </CardContent>
                     <CardFooter className="pt-6">
-                        <SelectPlanButton status={calculateButtonStatus(0)} />
+                        {isLoading ? (
+                            <Skeleton className="w-full h-12" />
+                        ) : (
+                            <SelectPlanButton status={calculateButtonStatus(0)} />
+                        )}
                     </CardFooter>
                 </Card>
 
@@ -91,7 +96,11 @@ const PricingClient = () => {
                         </ul>
                     </CardContent>
                     <CardFooter className="pt-6">
-                        <SelectPlanButton status={calculateButtonStatus(1)} />
+                        {isLoading ? (
+                            <Skeleton className="w-full h-12" />
+                        ) : (
+                            <SelectPlanButton status={calculateButtonStatus(1)} />
+                        )}
                     </CardFooter>
                 </Card>
             </div>
