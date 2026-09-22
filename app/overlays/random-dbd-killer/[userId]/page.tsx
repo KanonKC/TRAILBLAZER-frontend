@@ -6,6 +6,7 @@ import { getRandomDBDKillerEventUrl } from "@/features/random-dbd-killer/api/ran
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import { KillerSpinner, KillerResult, AnimationStyle } from "./KillerSpinner";
+import { ackOverlayJob } from "@/lib/overlay-queue";
 
 const MAX_RETRY_DELAY = 16000 // 16 seconds max
 const INITIAL_RETRY_DELAY = 1000 // 1 second
@@ -15,6 +16,8 @@ interface KillerResultEvent {
     killer: KillerResult;
     pool?: KillerResult[];
     animationStyle?: AnimationStyle;
+    jobId?: string;
+    duration_ms?: number;
 }
 
 export default function RandomDBDKillerOverlayPage() {
@@ -105,8 +108,11 @@ export default function RandomDBDKillerOverlayPage() {
         timerRef.current = setTimeout(() => {
             setIsVisible(false);
             setResult(null);
+            // Lets the backend queue release the next roll now rather than
+            // waiting out its estimate of the spin animation.
+            ackOverlayJob("random-dbd-killer", userId, result?.jobId, key);
         }, DISPLAY_DURATION_MS);
-    }, []);
+    }, [userId, key, result?.jobId]);
 
     return (
         <div className="w-screen h-screen bg-transparent overflow-hidden pointer-events-none relative flex items-center justify-center p-8">
