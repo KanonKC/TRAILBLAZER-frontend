@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation"
 import { getClipShoutoutEventUrl } from "@/features/clip-shoutout/api/clipShoutout.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
+import { ackOverlayJob } from "@/lib/overlay-queue";
 
 const MAX_RETRY_DELAY = 16000 // 16 seconds max
 const INITIAL_RETRY_DELAY = 1000 // 1 second
@@ -22,6 +23,17 @@ export default function ClipShoutoutOverlayPage() {
     const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
     const eventSourceRef = useRef<EventSource | null>(null)
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const jobIdRef = useRef<string | null>(null);
+
+    // Told to the backend queue so the next raid's shoutout, chat reply and
+    // clip all go out together as soon as this clip is done.
+    const finishCurrent = useCallback(() => {
+        setIsVisible(false);
+        setUrl(null);
+        const jobId = jobIdRef.current;
+        jobIdRef.current = null;
+        ackOverlayJob("clip-shoutout", userId, jobId ?? undefined, key);
+    }, [userId, key])
 
     const connect = useCallback(() => {
         if (!userId) return
@@ -51,15 +63,14 @@ export default function ClipShoutoutOverlayPage() {
                 if (data.url) {
                     setUrl(data.url);
                     setIsVisible(true);
+                    jobIdRef.current = data.jobId ?? null;
 
-                    // Duration is in seconds, convert to ms and add a small buffer (e.g. 1s)
-                    const durationMs = (data.duration ? data.duration * 1000 : 60000) + 3000;
+                    // The queue's own figure when it sends one, otherwise the
+                    // clip length plus a small buffer.
+                    const durationMs = data.duration_ms ?? ((data.duration ? data.duration * 1000 : 60000) + 3000);
 
                     if (timerRef.current) clearTimeout(timerRef.current);
-                    timerRef.current = setTimeout(() => {
-                        setIsVisible(false);
-                        setUrl(null);
-                    }, durationMs);
+                    timerRef.current = setTimeout(finishCurrent, durationMs);
                 }
             } catch (error) {
                 console.error("Failed to parse event data:", error)
@@ -81,7 +92,7 @@ export default function ClipShoutoutOverlayPage() {
             // Increase delay for next retry (exponential backoff with cap)
             retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY)
         }
-    }, [userId, key])
+    }, [userId, key, finishCurrent])
 
     useEffect(() => {
         connect()
@@ -126,6 +137,7 @@ export default function ClipShoutoutOverlayPage() {
                         width="1280"
                         height="720"
                         className="bg-black block"
+                        onEnded={finishCurrent}
                     />
                 </div>
             )}

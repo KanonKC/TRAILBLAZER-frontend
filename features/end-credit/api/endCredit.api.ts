@@ -58,6 +58,9 @@ export interface EndCreditOverlayData {
     is_show_sub_months: boolean;
     is_show_raid_count: boolean;
     is_show_bits_amount: boolean;
+    /** Set when the roll came through the backend's overlay queue. */
+    jobId?: string;
+    duration_ms?: number;
 }
 
 export const fetchEndCreditOverlayData = async (userId: string, key?: string): Promise<EndCreditOverlayData> => {
