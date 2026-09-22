@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation"
 import { getFirstWordEventUrl } from "@/features/first-word/api/firstWord.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
+import { ackOverlayJob } from "@/lib/overlay-queue";
 
 const MAX_RETRY_DELAY = 16000 // 16 seconds max
 const INITIAL_RETRY_DELAY = 1000 // 1 second
@@ -15,9 +16,19 @@ export default function FirstWordOverlayPage() {
     const userId = params.userId as string
     const key = searchParams.get("key") ?? undefined
     const audioRef = useRef<HTMLAudioElement>(null)
+    // The greeting currently playing, so we can tell the backend queue the
+    // moment it really ends instead of making the next viewer wait out an
+    // estimate.
+    const jobIdRef = useRef<string | null>(null)
     const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
     const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
     const eventSourceRef = useRef<EventSource | null>(null)
+
+    const finishCurrent = useCallback(() => {
+        const jobId = jobIdRef.current
+        jobIdRef.current = null
+        ackOverlayJob("first-word", userId, jobId ?? undefined, key)
+    }, [userId, key])
 
     const connect = useCallback(() => {
         if (!userId) return
@@ -41,9 +52,15 @@ export default function FirstWordOverlayPage() {
                 const data = JSON.parse(event.data)
                 console.log("Received audio event:", data)
                 if (data.url && audioRef.current) {
+                    jobIdRef.current = data.jobId ?? null
                     audioRef.current.volume = (data.volume ?? 100) / 100
                     audioRef.current.src = data.url
-                    audioRef.current.play().catch(e => console.error("Failed to play audio:", e))
+                    audioRef.current.play().catch(e => {
+                        console.error("Failed to play audio:", e)
+                        // A greeting the browser refuses to play must not hold
+                        // the queue for the whole estimated duration.
+                        finishCurrent()
+                    })
                 }
             } catch (error) {
                 console.error("Failed to parse event data:", error)
@@ -65,7 +82,7 @@ export default function FirstWordOverlayPage() {
             // Increase delay for next retry (exponential backoff with cap)
             retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY)
         }
-    }, [userId, key])
+    }, [userId, key, finishCurrent])
 
     useEffect(() => {
         connect()
@@ -94,7 +111,12 @@ export default function FirstWordOverlayPage() {
                 </Button>
             </div>
             {/* Hidden audio element */}
-            <audio ref={audioRef} className="hidden" />
+            <audio
+                ref={audioRef}
+                className="hidden"
+                onEnded={finishCurrent}
+                onError={finishCurrent}
+            />
         </div>
     )
 }

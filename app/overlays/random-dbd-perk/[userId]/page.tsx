@@ -1,5 +1,10 @@
 "use client"
 
+// TODO(overlay-queue): this overlay is not reachable today — the backend has no
+// SSE route for it and the widget config screen offers no Overlay URL. It is
+// therefore excluded from the overlay queue; wire up the backend event path
+// first, then queue it like the other widgets.
+
 import { useEffect, useRef, useCallback, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 import { getRandomDbdPerkEventUrl } from "@/features/random-dbd-perk/api/randomDbdPerk.api";
