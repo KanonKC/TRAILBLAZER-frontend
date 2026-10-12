@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TwitchLoginButton } from "@/components/button/TwitchLoginButton";
-import { File, Link2, LogOut, MessageSquare, RefreshCw, Upload, Menu } from "lucide-react";
+import { File, LayoutTemplate, Link2, LogOut, MessageSquare, RefreshCw, Upload, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useUser } from "./user-context";
@@ -137,6 +137,12 @@ export default function Navbar() {
                                             <Link href="/my/uploaded-files" className="cursor-pointer">
                                                 <Upload className="mr-2 h-4 w-4" />
                                                 จัดการไฟล์อัปโหลดของคุณ
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild>
+                                            <Link href="/my/canvas" className="cursor-pointer">
+                                                <LayoutTemplate className="mr-2 h-4 w-4" />
+                                                Canvas
                                             </Link>
                                         </DropdownMenuItem>
                                         <DropdownMenuItem asChild>

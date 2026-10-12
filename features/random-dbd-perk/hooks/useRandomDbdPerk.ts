@@ -24,6 +24,10 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
     const [killerUnit, setKillerUnit] = useState<"perk" | "page">("perk");
     const [wizardType, setWizardType] = useState<"survivor" | "killer">("survivor");
 
+    const overlayUrl = typeof window !== 'undefined' && user
+        ? `${window.location.origin}/overlays/random-dbd-perk/${user.id}${config?.widget?.overlay_key ? `?key=${config.widget.overlay_key}` : ''}`
+        : "";
+
     useEffect(() => {
         if (typeof window === 'undefined') return;
         const savedSurvivorUnit = localStorage.getItem("random-dbd-perk-unit-preference-survivor");
@@ -130,6 +134,10 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
         }
     };
 
+    const handleOverlayKeyRefreshed = (data: { overlay_key: string }) => {
+        setConfig(prev => prev ? { ...prev, widget: { ...prev.widget, overlay_key: data.overlay_key } } : null);
+    };
+
     const handleStatusChange = (checked: boolean) => {
         setIsEnabled(checked);
         setConfig(prev => prev ? { ...prev, widget: { ...prev.widget, enabled: checked } } : null);
@@ -147,6 +155,7 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
         survivorUnit,
         killerUnit,
         wizardType,
+        overlayUrl,
         setWizardType,
         setSurvivorUnit,
         setKillerUnit,
@@ -156,6 +165,7 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
         handleSave,
         handleTest,
         handleStatusChange,
+        handleOverlayKeyRefreshed,
         updatePerkClass
     };
 };

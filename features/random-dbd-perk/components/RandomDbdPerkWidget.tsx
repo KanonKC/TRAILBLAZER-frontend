@@ -38,6 +38,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import RandomFormatInfo from "./RandomFormatInfo";
+import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
+import { CanvasTemplateSelector } from "@/components/widget/CanvasTemplateSelector";
 
 export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConfig: RandomDbdPerkConfig | null; widgetType: WidgetTypeMeta }) {
     const {
@@ -52,6 +54,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
         survivorUnit,
         killerUnit,
         wizardType,
+        overlayUrl,
         setWizardType,
         setSurvivorUnit,
         setKillerUnit,
@@ -61,6 +64,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
         handleSave,
         handleTest,
         handleStatusChange,
+        handleOverlayKeyRefreshed,
         updatePerkClass
     } = useRandomDbdPerk(initialConfig);
 
@@ -220,6 +224,22 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                         onUnitChange={item.type === 'survivor' ? setSurvivorUnit : setKillerUnit}
                                     />
                                 ))}
+                                {config?.widget?.id && (
+                                    <div className="space-y-4 border-t pt-4">
+                                        <div>
+                                            <h3 className="font-semibold">Canvas Overlay</h3>
+                                            <p className="text-sm text-muted-foreground">
+                                                เลือก Canvas ที่จะเล่นบน Overlay ทุกครั้งที่มีการสุ่ม Perk แล้วนำ URL ด้านล่างไปใส่เป็น Browser Source ใน OBS
+                                            </p>
+                                        </div>
+                                        <CanvasTemplateSelector widgetId={config.widget.id} />
+                                        <SmartOverlayUrlInput
+                                            url={overlayUrl}
+                                            slug="random-dbd-perk"
+                                            onSuccess={handleOverlayKeyRefreshed}
+                                        />
+                                    </div>
+                                )}
                             </WidgetSettingsCardContent>
                             <WidgetSettingsCardFooter>
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
