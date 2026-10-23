@@ -71,6 +71,7 @@ export interface WidgetTypeMeta {
     href: string | null;
     is_active: boolean;
     is_display: boolean;
+    availability: "hide" | "inactive" | "whitelist_only" | "active";
 }
 
 export const listWidgetTypes = async (): Promise<{ data: WidgetTypeMeta[] }> => {

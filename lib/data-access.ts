@@ -32,5 +32,12 @@ export async function fetchData<T>(url: string): Promise<T | null> {
 export async function getWidgetTypeMeta(slug: string): Promise<WidgetTypeMeta | null | undefined> {
     const widgetTypesData = await fetchData<{ data: WidgetTypeMeta[] }>("/api/v1/widget-types");
     if (!widgetTypesData?.data) return undefined;
-    return widgetTypesData.data.find(w => w.slug === slug) ?? null;
+    const widgetType = widgetTypesData.data.find(widgetType => widgetType.slug === slug);
+    if (!widgetType) return null;
+    if (widgetType.availability === "active") return widgetType;
+    if (widgetType.availability === "whitelist_only") {
+        const user = await fetchData<{ is_whitelisted: boolean }>("/api/v1/user/me");
+        if (user?.is_whitelisted) return widgetType;
+    }
+    return null;
 }
