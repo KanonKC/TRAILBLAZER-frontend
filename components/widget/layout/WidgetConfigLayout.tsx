@@ -7,11 +7,17 @@ import { WidgetTypeMeta } from "@/services/widget.service"
 interface WidgetConfigLayoutProps {
     children: (props: { triggerRefresh: () => void, refreshKey: number }) => ReactNode
     widgetType: WidgetTypeMeta
+    /** Widens the content column (e.g. for pages with a side preview panel). */
+    wide?: boolean
+    /** Bump this from the page to re-fetch the quota meter. */
+    quotaRefreshKey?: number
 }
 
 export function WidgetConfigLayout({
     children,
-    widgetType
+    widgetType,
+    wide = false,
+    quotaRefreshKey = 0
 }: WidgetConfigLayoutProps) {
     const [refreshKey, setRefreshKey] = useState(0)
     const { display_name: title, description, icon_url, theme_color } = widgetType
@@ -21,16 +27,17 @@ export function WidgetConfigLayout({
     }
 
     return (
-        <div className="container relative mx-auto py-10 flex flex-col items-center">
+        <div className="container relative mx-auto px-4 py-10 flex flex-col items-center">
             {/* Quota Meter at the top */}
-            <div className="flex items-center self-end absolute">
-                <div className="w-[250px]">
-                    <QuotaMeter refreshKey={refreshKey} />
+            <div className="flex items-center w-full mb-4 lg:mb-0 lg:w-auto lg:self-end lg:absolute lg:right-4">
+                <div className="w-full lg:w-[250px]">
+                    <QuotaMeter refreshKey={refreshKey + quotaRefreshKey} />
                 </div>
             </div>
 
             {/* Header */}
-            <div className="w-full max-w-2xl mb-8">
+            <div className={wide ? "w-full max-w-[1016px] mb-8" : "w-full max-w-2xl mb-8"}>
+                <div className="max-w-2xl">
                 <div className="flex items-center gap-3 mb-2">
                     <div
                         className="p-2 rounded-lg"
@@ -53,10 +60,11 @@ export function WidgetConfigLayout({
                 <p className="text-muted-foreground text-lg">
                     {description}
                 </p>
+                </div>
             </div>
 
             {/* Children Content */}
-            <div className="w-full max-w-2xl">
+            <div className={wide ? "w-full max-w-[1016px]" : "w-full max-w-2xl"}>
                 {children({ triggerRefresh, refreshKey })}
             </div>
         </div>

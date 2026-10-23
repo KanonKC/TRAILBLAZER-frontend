@@ -1,5 +1,9 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { Footer } from "@/components/landing/footer";
 
 export function ConditionalFooter() {
-    return <Footer />;
+  const pathname = usePathname();
+  return pathname?.startsWith("/overlays/") ? null : <Footer />;
 }
