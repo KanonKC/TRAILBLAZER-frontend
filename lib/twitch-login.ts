@@ -15,10 +15,19 @@ export function getCookie(name: string): string | null {
 	return null;
 }
 
+export const OAUTH_STATE_COOKIE_NAME = "tb_oauth_state";
+
+function cookieSuffix() {
+	const secure = window.location.protocol === "https:" ? "; Secure" : "";
+	// Shared with the API (a sibling subdomain) so it can check the state on the callback
+	const domain = process.env.NEXT_PUBLIC_COOKIE_DOMAIN ? `; Domain=${process.env.NEXT_PUBLIC_COOKIE_DOMAIN}` : "";
+	return `; SameSite=Lax${secure}${domain}`;
+}
+
 export function setCookie(name: string, value: string, days: number) {
 	const expires = new Date();
 	expires.setDate(expires.getDate() + days);
-	document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}; SameSite=Lax`;
+	document.cookie = `${name}=${value}; path=/; expires=${expires.toUTCString()}${cookieSuffix()}`;
 }
 
 export function hasAcceptedConsent(): boolean {
@@ -40,6 +49,9 @@ export function redirectToTwitchLogin() {
 	const ref = getCookie("blaze_ref");
 	const nonce = crypto.randomBytes(16).toString("hex");
 	const state = ref ? `${nonce}:${ref}` : nonce;
+
+	// The backend compares this against the state Twitch hands back (10 minutes is plenty to sign in)
+	document.cookie = `${OAUTH_STATE_COOKIE_NAME}=${nonce}; path=/; max-age=600${cookieSuffix()}`;
 
 	window.location.href = LOGIN_URL + "&state=" + state;
 }
