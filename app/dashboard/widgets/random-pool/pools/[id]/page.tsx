@@ -1,9 +1,6 @@
-import { RandomPoolPage } from "@/features/random-pool/components/RandomPoolPage";
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  return <RandomPoolPage view="pool" poolId={id} />;
+import { redirect } from "next/navigation";
+
+// Pools are managed from the Settings tab now.
+export default function Page() {
+  redirect("/dashboard/widgets/random-pool?tab=settings");
 }

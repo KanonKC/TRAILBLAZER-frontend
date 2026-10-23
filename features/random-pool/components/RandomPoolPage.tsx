@@ -1,34 +1,38 @@
-import { fetchData } from "@/lib/data-access";
+import { fetchData, getWidgetTypeMeta } from "@/lib/data-access";
+import { WidgetTypeLoadError } from "@/components/widget/WidgetTypeLoadError";
 import { InitialData } from "../types";
-import { RandomPoolDashboard } from "./RandomPoolDashboard";
+import { RandomPoolTab } from "../hooks/useRandomPool";
+import { RandomPoolWidget } from "./RandomPoolWidget";
+
+const SLUG = "random-pool";
+const tabs: RandomPoolTab[] = ["overview", "quick-start", "settings"];
+
 export async function RandomPoolPage({
-  view,
+  tab,
   configId,
-  poolId,
 }: {
-  view?: "list" | "pool" | "config";
+  tab?: string;
   configId?: string;
-  poolId?: string;
 }) {
-  const [pools, configs] = await Promise.all([
+  const [pools, configs, widgetType] = await Promise.all([
     fetchData<InitialData["pools"]>("/api/v1/random-pool/pools"),
     fetchData<InitialData["configs"]>("/api/v1/random-pool/configs"),
+    getWidgetTypeMeta(SLUG),
   ]);
-  if (!pools?.data || !configs?.data)
-    return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold">Random Pool</h1>
-        <p className="mt-3">
-          โหลดข้อมูลไม่สำเร็จ กรุณาเข้าสู่ระบบใหม่หรือรีเฟรชหน้า
-        </p>
-      </div>
-    );
+  if (widgetType === undefined)
+    return <WidgetTypeLoadError slug={SLUG} reason="fetch-failed" />;
+  if (widgetType === null)
+    return <WidgetTypeLoadError slug={SLUG} reason="not-found" />;
+
+  // Without a session the API refuses both lists, so show the public overview.
+  const initial = pools?.data && configs?.data ? { pools, configs } : null;
+  const startTab = tabs.find((candidate) => candidate === tab);
+
   return (
-    <RandomPoolDashboard
-      initial={{ pools, configs }}
-      view={view}
-      configId={configId}
-      poolId={poolId}
+    <RandomPoolWidget
+      initial={initial}
+      widgetType={widgetType}
+      start={{ tab: startTab, configId }}
     />
   );
 }

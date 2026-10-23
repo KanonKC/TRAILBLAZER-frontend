@@ -43,10 +43,18 @@ export interface InitialData {
   pools: { data: Pool[]; limit: number };
   configs: { data: Config[] };
 }
+export interface RewardImage {
+  url_1x: string;
+  url_2x?: string;
+  url_4x?: string;
+}
 export interface Reward {
   id: string;
   title: string;
   cost: number;
+  background_color?: string;
+  image?: RewardImage | null;
+  default_image?: RewardImage | null;
 }
 export interface SpinItem {
   id: string;

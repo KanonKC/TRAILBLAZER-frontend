@@ -1,4 +1,5 @@
-import { RandomPoolPage } from "@/features/random-pool/components/RandomPoolPage";
+import { redirect } from "next/navigation";
+
 export default function Page() {
-  return <RandomPoolPage view="pool" />;
+  redirect("/dashboard/widgets/random-pool?tab=settings");
 }
