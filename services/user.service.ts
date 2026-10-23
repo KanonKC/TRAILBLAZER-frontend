@@ -8,6 +8,7 @@ export interface User {
     twitchId: string;
     tier: number;
     extraWidgetQuota: number;
+    is_whitelisted: boolean;
     hasTwitchGqlToken?: boolean;
 }
 

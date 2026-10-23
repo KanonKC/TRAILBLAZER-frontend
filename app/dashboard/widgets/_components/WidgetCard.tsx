@@ -9,16 +9,19 @@ import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
 
 interface WidgetCardProps {
     widgetType: WidgetTypeMeta;
+    isWhitelisted: boolean;
     apiWidget?: ExtendedWidget;
     onSuccess?: () => void;
 }
 
 export const WidgetCard = ({
     widgetType,
+    isWhitelisted,
     apiWidget,
     onSuccess
 }: WidgetCardProps) => {
-    const { display_name: title, description, icon_url, href, theme_color, is_active: isActive } = widgetType;
+    const { display_name: title, description, icon_url, href, theme_color } = widgetType;
+    const isActive = widgetType.availability === "active" || (widgetType.availability === "whitelist_only" && isWhitelisted);
     const isEnabled = apiWidget?.enabled || false;
     const hasMultipleConfigs = widgetType.slug === "random-pool";
 

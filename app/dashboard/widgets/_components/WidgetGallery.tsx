@@ -9,9 +9,10 @@ import { QuotaMeter } from "@/components/widget/QuotaMeter";
 interface WidgetGalleryProps {
     initialData: { data: ExtendedWidget[], pagination: any } | null;
     initialWidgetTypes: WidgetTypeMeta[];
+    isWhitelisted: boolean;
 }
 
-export const WidgetGallery = ({ initialData, initialWidgetTypes }: WidgetGalleryProps) => {
+export const WidgetGallery = ({ initialData, initialWidgetTypes, isWhitelisted }: WidgetGalleryProps) => {
     const [apiWidgets, setApiWidgets] = useState<ExtendedWidget[]>(initialData?.data || []);
     const [isLoading, setIsLoading] = useState(false);
     const [quotaRefreshKey, setQuotaRefreshKey] = useState(0);
@@ -54,12 +55,13 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes }: WidgetGallery
             </div>
             <div className="flex flex-col gap-6 relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {initialWidgetTypes.filter((widgetType) => widgetType.is_display).map((widgetType) => {
+                    {initialWidgetTypes.filter((widgetType) => widgetType.availability !== "hide").map((widgetType) => {
                         const apiWidget = apiWidgets.find(w => w.widget_type_slug === widgetType.slug);
                         return (
                             <WidgetCard
                                 key={widgetType.slug}
                                 widgetType={widgetType}
+                                isWhitelisted={isWhitelisted}
                                 apiWidget={apiWidget}
                                 onSuccess={fetchWidgets}
                             />
