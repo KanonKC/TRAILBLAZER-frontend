@@ -43,13 +43,6 @@ export function RandomPoolWidget({
   // test spin runs in the bottom sheet there.
   const controller = {
     ...base,
-    requestTestSpin: () => {
-      base.requestTestSpin();
-      if (!showAside || !window.matchMedia("(min-width: 1024px)").matches) {
-        setSpinOnOpen(true);
-        setPreviewOpen(true);
-      }
-    },
   };
   const showPreview =
     controller.activeTab === "settings" && controller.settingsView === "edit";

@@ -4,12 +4,14 @@ import { Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
+import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
+import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
+import { overlayPath } from "../api/randomPool.api";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import { RandomPoolController } from "../hooks/useRandomPool";
 import { neutralFocus } from "../constants";
 import { ConfigSwitcher } from "./ConfigSwitcher";
-import { OverlayUrlField } from "./OverlayUrlField";
 import { PoolCreateForm } from "./PoolCreateForm";
 import { PoolItemsEditor } from "./PoolItemsEditor";
 import { RewardSelect } from "./RewardSelect";
@@ -82,11 +84,27 @@ export function QuickStartTab({
                 step: 4,
                 title: "นำ Overlay ไปใส่ใน OBS",
                 description: (
-                  <OverlayUrlField
-                    config={savedConfig}
-                    onRefreshed={controller.reload}
-                    description="URL นี้เหมือนรหัสผ่านสตรีมของคุณ เก็บเป็นความลับ"
-                  />
+                  savedConfig ? (
+                    <div className="grid gap-2">
+                      <SmartOverlayUrlInput
+                        url={`${window.location.origin}${overlayPath(savedConfig)}`}
+                        slug={`random-pool/configs/${savedConfig.id}`}
+                        onSuccess={() => void controller.reload()}
+                        hideLabel
+                      />
+                      <p className="text-muted-foreground text-sm">
+                        URL นี้เหมือนรหัสผ่านสตรีมของคุณ เก็บเป็นความลับ
+                      </p>
+                      <OBSSetupHelp variant="default" className="mt-0" />
+                      <p className="text-muted-foreground text-sm">
+                        ขนาดแนะนำ 800 × 600 · พื้นหลังโปร่งใส
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground text-sm">
+                      บันทึกการตั้งค่าก่อน แล้ว Overlay URL ของการตั้งค่านี้จะแสดงที่นี่
+                    </p>
+                  )
                 ),
               },
               {
@@ -130,9 +148,6 @@ export function QuickStartTab({
                         ทดสอบ
                       </Button>
                     </div>
-                    <p className="text-muted-foreground text-sm">
-                      ปุ่มทดสอบเล่นตัวอย่างในหน้านี้ ยังไม่ส่งไปที่ OBS
-                    </p>
                   </div>
                 ),
               },

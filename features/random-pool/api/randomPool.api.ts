@@ -49,6 +49,9 @@ export const randomPoolApi = {
       await apiClient.put<Config>(`${base}/configs/${id}/enabled`, { enabled })
     ).data;
   },
+  async testSpin(id: string) {
+    await apiClient.post(`${base}/configs/${id}/test`);
+  },
   async rewards() {
     return (
       await apiClient.get<{ data: Reward[] }>("/api/v1/twitch/channel-rewards")

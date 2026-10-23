@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import { UploadedFile } from "@/services/uploadedFile.service";
 import { ItemSetting, PoolItem } from "../types";
+import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 import { UploadHandler } from "../hooks/useRandomPool";
 import {
   CHAT_VARIABLES,
@@ -63,6 +63,12 @@ interface Props {
 }
 
 /** Remount per item so the form state always starts from the item being edited. */
+const chatVariables = CHAT_VARIABLES.map((variable) => ({
+  variable: variable.token,
+  description: variable.description,
+  example: variable.example,
+}));
+
 export function ItemSheet(props: Props) {
   const { editing, onClose } = props;
   return (
@@ -266,20 +272,17 @@ function ItemSheetBody({
                 </span>
               }
             >
-              <Textarea
-                id="item-chat"
-                rows={3}
-                maxLength={MAX_CHAT_MESSAGE_LENGTH}
-                className={neutralFocus}
+              <ReplyMessageTextarea
                 placeholder="ว่างไว้เพื่อใช้ข้อความเริ่มต้น"
                 value={chatMessage}
-                onChange={(event) => setChatMessage(event.target.value)}
+                onChange={setChatMessage}
+                variables={chatVariables}
+                error={
+                  chatMessage.length > MAX_CHAT_MESSAGE_LENGTH
+                    ? `ข้อความต้องไม่เกิน ${MAX_CHAT_MESSAGE_LENGTH} ตัวอักษร`
+                    : null
+                }
               />
-              <p className="text-muted-foreground text-sm">
-                ใช้{" "}
-                {CHAT_VARIABLES.map((variable) => variable.token).join(" และ ")}{" "}
-                ได้ ถ้าว่างไว้ระบบใช้ข้อความเริ่มต้น
-              </p>
             </Field>
           </div>
         )}

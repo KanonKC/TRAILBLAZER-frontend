@@ -110,7 +110,7 @@ export function useRandomPool(
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [busy, setBusy] = useState(false);
-  const [testSpinKey, setTestSpinKey] = useState(0);
+  const [testSpinKey] = useState(0);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [quota, setQuota] = useState<WidgetQuota | null>(null);
   const [quotaVersion, setQuotaVersion] = useState(0);
@@ -454,7 +454,19 @@ export function useRandomPool(
     busy,
     togglingId,
     testSpinKey,
-    requestTestSpin: () => setTestSpinKey((previous) => previous + 1),
+    requestTestSpin: () => {
+      if (!savedConfig) {
+        tbToast.error({ title: "บันทึกการตั้งค่าก่อนจึงจะทดสอบได้" });
+        return;
+      }
+      void run(async () => {
+        await randomPoolApi.testSpin(savedConfig.id);
+        tbToast.success({
+          title: "ส่งการทดสอบไปที่ overlay แล้ว",
+          description: "ใช้ค่าที่บันทึกไว้ล่าสุด",
+        });
+      }, "ทดสอบไม่สำเร็จ");
+    },
     quota,
     quotaVersion,
     limitDialog,
