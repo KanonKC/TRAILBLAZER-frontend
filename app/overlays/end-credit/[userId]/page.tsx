@@ -6,6 +6,7 @@ import { getEndCreditEventUrl, EndCreditOverlayData } from "@/features/end-credi
 import { CreditRow } from "@/features/end-credit/components/CreditRow"
 import { describeBadge, topBadgeIndex } from "@/features/end-credit/tiers"
 import { EndCreditRecordType, EndCreditViewerRecord } from "@/features/end-credit/types"
+import { ackOverlayJob } from "@/lib/overlay-queue"
 
 const MAX_RETRY_DELAY = 16000
 const INITIAL_RETRY_DELAY = 1000
@@ -54,7 +55,8 @@ export default function EndCreditOverlayPage() {
         eventSource.addEventListener("roll", (event) => {
             try {
                 const data: EndCreditOverlayData = JSON.parse((event as MessageEvent).data)
-                // Restart cleanly if a roll is already playing.
+                // The backend queue holds rolls back until the previous one has
+                // scrolled off, so this only ever starts from an idle overlay.
                 if (endTimerRef.current) clearTimeout(endTimerRef.current)
                 setScrollDistance(0)
                 setRoll(data)
@@ -92,16 +94,20 @@ export default function EndCreditOverlayPage() {
         const frame = requestAnimationFrame(() => setScrollDistance(distance))
 
         const durationMs = (distance / scrollSpeed) * 1000
+        const jobId = roll.jobId
         endTimerRef.current = setTimeout(() => {
             setRoll(null)
             setScrollDistance(0)
+            // Only the browser knows how tall the credits turned out, so the
+            // backend queue waits for this rather than its own estimate.
+            ackOverlayJob("end-credit", userId, jobId, key)
         }, durationMs)
 
         return () => {
             cancelAnimationFrame(frame)
             if (endTimerRef.current) clearTimeout(endTimerRef.current)
         }
-    }, [roll])
+    }, [roll, userId, key])
 
     if (!roll) {
         return <div className="w-screen h-screen bg-transparent overflow-hidden" />

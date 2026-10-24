@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, Settings, Zap } from "lucide-react";
+import { Dice5, Play, Settings, Zap } from "lucide-react";
 import Link from "next/link";
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ExtendedWidget, WidgetTypeMeta } from "@/services/widget.service";
@@ -9,17 +9,21 @@ import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
 
 interface WidgetCardProps {
     widgetType: WidgetTypeMeta;
+    isWhitelisted: boolean;
     apiWidget?: ExtendedWidget;
     onSuccess?: () => void;
 }
 
 export const WidgetCard = ({
     widgetType,
+    isWhitelisted,
     apiWidget,
     onSuccess
 }: WidgetCardProps) => {
-    const { display_name: title, description, icon_url, href, theme_color, is_active: isActive } = widgetType;
+    const { display_name: title, description, icon_url, href, theme_color } = widgetType;
+    const isActive = widgetType.availability === "active" || (widgetType.availability === "whitelist_only" && isWhitelisted);
     const isEnabled = apiWidget?.enabled || false;
+    const hasMultipleConfigs = widgetType.slug === "random-pool";
 
     return (
         <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md group relative overflow-hidden">
@@ -41,6 +45,8 @@ export const WidgetCard = ({
                                     className="w-6 h-6"
                                     onError={(e) => { e.currentTarget.style.visibility = "hidden"; }}
                                 />
+                            ) : hasMultipleConfigs ? (
+                                <Dice5 className="w-6 h-6" />
                             ) : (
                                 <div className="w-6 h-6" />
                             )}
@@ -49,7 +55,7 @@ export const WidgetCard = ({
                             {title}
                         </CardTitle>
                     </div>
-                    {apiWidget && isActive && (
+                    {apiWidget && isActive && !hasMultipleConfigs && (
                         <div onClick={(e) => e.preventDefault()}>
                             <WidgetStatusSwitch
                                 widgetId={apiWidget.id}
@@ -62,11 +68,11 @@ export const WidgetCard = ({
                 <CardDescription className="text-base">
                     {description}
                 </CardDescription>
-                {apiWidget?.widget_type?.cost !== undefined && (
+                {(hasMultipleConfigs || apiWidget?.widget_type?.cost !== undefined) && (
                     <div className="flex items-center gap-1 mt-1">
                         <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-sm font-medium text-amber-600">
                             <Zap className="h-3 w-3" />
-                            {apiWidget.widget_type.cost} พอยท์
+                            {hasMultipleConfigs ? "1 พอยท์ต่อ Config ที่เปิดใช้" : `${apiWidget?.widget_type?.cost} พอยท์`}
                         </span>
                     </div>
                 )}
@@ -79,7 +85,9 @@ export const WidgetCard = ({
                                 variant={!apiWidget ? "default" : "outline"}
                             >
                                 {
-                                    apiWidget ? (
+                                    hasMultipleConfigs ? (
+                                        <><Settings />จัดการ Configs</>
+                                    ) : apiWidget ? (
                                         <>
                                             <Settings />
                                             ตั้งค่าวิดเจ็ต

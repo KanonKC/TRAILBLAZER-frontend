@@ -5,6 +5,7 @@ import { useParams, useSearchParams } from "next/navigation"
 import { getDropImageEventUrl } from "@/features/drop-image/api/dropImage.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
+import { ackOverlayJob } from "@/lib/overlay-queue";
 
 const MAX_RETRY_DELAY = 16000 // 16 seconds max
 const INITIAL_RETRY_DELAY = 1000 // 1 second
@@ -52,12 +53,18 @@ export default function DropImageOverlayPage() {
                     setImageUrl(data.url);
                     setIsVisible(true);
 
-                    // Hide the image after 10 seconds
+                    // How long to show it comes from the streamer's own
+                    // display_duration setting, which is also what the backend
+                    // queue waits for before releasing the next image.
+                    const displayMs = data.duration_ms ?? 5000;
+                    const jobId = data.jobId;
+
                     if (timerRef.current) clearTimeout(timerRef.current);
                     timerRef.current = setTimeout(() => {
                         setIsVisible(false);
                         setImageUrl(null);
-                    }, 10000);
+                        ackOverlayJob("drop-image", userId, jobId, key);
+                    }, displayMs);
                 }
             } catch (error) {
                 console.error("Failed to parse event data:", error)
