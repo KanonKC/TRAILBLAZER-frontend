@@ -89,7 +89,7 @@ export function ConfigSwitcher({
                   className={cn(
                     "text-sm",
                     config.widget.enabled
-                      ? "text-emerald-400"
+                      ? "text-success"
                       : "text-muted-foreground",
                   )}
                 >

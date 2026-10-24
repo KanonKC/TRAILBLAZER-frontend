@@ -79,7 +79,7 @@ export function AudioFileUploader({
         <div className={cn("space-y-4", className)}>
             {!hideLabel && (
                 <div>
-                    <Label htmlFor="qs_audio_file" className={cn(className?.includes("text-white") ? "text-white" : "")}>
+                    <Label htmlFor="qs_audio_file" className={cn(className?.includes("text-foreground") ? "text-foreground" : "")}>
                         ไฟล์เสียง
                     </Label>
                     <p className="text-sm text-muted-foreground mt-2">
@@ -90,18 +90,18 @@ export function AudioFileUploader({
 
             <div className={cn(
                 "border rounded-lg overflow-hidden",
-                className?.includes("text-white") ? "border-white/20 bg-white/5" : "bg-card"
+                className?.includes("text-foreground") ? "border-foreground/20 bg-secondary/40" : "bg-card"
             )}>
                 <div className="flex items-center justify-between p-3">
                     <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <div className={cn("p-2 rounded-md", className?.includes("text-white") ? "bg-white/10" : "bg-secondary")}>
-                            <AudioWaveform className={cn("w-4 h-4", className?.includes("text-white") ? "text-white" : "text-primary")} />
+                        <div className={cn("p-2 rounded-md", className?.includes("text-foreground") ? "bg-secondary" : "bg-secondary")}>
+                            <AudioWaveform className={cn("w-4 h-4", className?.includes("text-foreground") ? "text-foreground" : "text-primary")} />
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <span className={cn("text-sm font-medium truncate mr-4", className?.includes("text-white") ? "text-white" : "")}>
+                            <span className={cn("text-sm font-medium truncate mr-4", className?.includes("text-foreground") ? "text-foreground" : "")}>
                                 {currentFileName?.split('/').pop() || "ยังไม่ได้เลือกไฟล์เสียง"}
                             </span>
-                            <span className={cn("text-sm", className?.includes("text-white") ? "text-white/50" : "text-muted-foreground")}>
+                            <span className={cn("text-sm", className?.includes("text-foreground") ? "text-muted-foreground" : "text-muted-foreground")}>
                                 {currentFileName ? "ไฟล์เสียงปัจจุบัน" : "กดปุ่มเพื่อเลือกไฟล์"}
                             </span>
                         </div>
@@ -115,10 +115,10 @@ export function AudioFileUploader({
                                 disabled={disabled || isLoading}
                                 className={cn(
                                     "h-8 w-8 shrink-0",
-                                    className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
+                                    className?.includes("text-foreground") ? "bg-transparent border-foreground/20 text-foreground hover:bg-secondary hover:text-foreground" : ""
                                 )}
                             >
-                                {isPlaying ? <Square className="h-3.5 w-3.5 text-red-500" /> : <Play className="h-3.5 w-3.5 text-green-500" />}
+                                {isPlaying ? <Square className="h-3.5 w-3.5 text-destructive" /> : <Play className="h-3.5 w-3.5 text-success" />}
                             </Button>
                         )}
                         <Button
@@ -127,7 +127,7 @@ export function AudioFileUploader({
                             onClick={() => setIsDialogOpen(true)}
                             disabled={disabled}
                             className={cn(
-                                className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
+                                className?.includes("text-foreground") ? "bg-transparent border-foreground/20 text-foreground hover:bg-secondary hover:text-foreground" : ""
                             )}
                         >
                             {currentFileName ? "เปลี่ยนไฟล์ใหม่" : "เลือกไฟล์เสียง"}
@@ -138,9 +138,9 @@ export function AudioFileUploader({
                 {audioVolume !== undefined && onAudioVolumeChange && (
                     <div className={cn(
                         "flex items-center gap-3 px-3 pb-3 pt-3 border-t",
-                        className?.includes("text-white") ? "border-white/20" : ""
+                        className?.includes("text-foreground") ? "border-foreground/20" : ""
                     )}>
-                        <Volume2 className={cn("w-4 h-4 shrink-0", className?.includes("text-white") ? "text-white" : "text-muted-foreground")} />
+                        <Volume2 className={cn("w-4 h-4 shrink-0", className?.includes("text-foreground") ? "text-foreground" : "text-muted-foreground")} />
                         <Slider
                             value={[audioVolume]}
                             onValueChange={([v]) => onAudioVolumeChange(v)}
@@ -150,7 +150,7 @@ export function AudioFileUploader({
                             disabled={disabled}
                             className="flex-1 cursor-pointer"
                         />
-                        <span className={cn("text-sm tabular-nums w-10 text-right shrink-0", className?.includes("text-white") ? "text-white" : "text-muted-foreground")}>
+                        <span className={cn("text-sm tabular-nums w-10 text-right shrink-0", className?.includes("text-foreground") ? "text-foreground" : "text-muted-foreground")}>
                             {audioVolume}%
                         </span>
                     </div>

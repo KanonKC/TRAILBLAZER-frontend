@@ -81,19 +81,19 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                 }}
                                 isLoading={controller.isSaving}
                             >
-                                <p className="text-gray-200 text-base leading-relaxed">
+                                <p className="text-foreground text-base leading-relaxed">
                                     อยากให้ช่องคึกคัก ต้องเริ่มที่การทักทาย! วิดเจ็ตนี้จะช่วยต้อนรับผู้ชมหน้าใหม่ทันทีที่เขาพิมพ์แชทครั้งแรก ไม่ต้องกลัวหลุดโฟกัสตอนเล่นเกม หรือคุยเพลินจนลืมทัก ช่วยสร้างความประทับใจแรกสุดปัง ให้ทุกคนรู้สึกอบอุ่นเหมือนเพื่อนสนิท แถมยังตั้งค่าข้อความและเสียงเอฟเฟกต์กวนๆ ได้ตามสไตล์คุณ!
                                 </p>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                        <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
+                                        <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
                                             <MessageSquare className="w-5 h-5" />
                                         </div>
                                         <h3 className="font-semibold mb-1">Auto Greeting</h3>
                                         <p className="text-sm text-muted-foreground">ต้อนรับผู้ชมใหม่โดยอัตโนมัติเมื่อพวกเขาพิมพ์ข้อความแรก</p>
                                     </div>
                                     <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                        <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
+                                        <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3">
                                             <Music className="w-5 h-5" />
                                         </div>
                                         <h3 className="font-semibold mb-1">Sound Alerts</h3>
@@ -120,7 +120,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                                 title: "ใส่ข้อความ",
                                                 description: (
                                                     <div className="space-y-3">
-                                                        <p className="text-sm text-white/70">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
+                                                        <p className="text-sm text-muted-foreground">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
                                                         <ReplyMessageTextarea
                                                             defaultOpenHelp
                                                             value={controller.replyMessage}
@@ -136,7 +136,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                                 title: "เชื่อมต่อกับ OBS",
                                                 description: (
                                                     <div className="space-y-3">
-                                                        <p className="text-sm text-white/70">นำ Overlay URL ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้เสียงเอฟเฟกต์ทำงาน</p>
+                                                        <p className="text-sm text-muted-foreground">นำ Overlay URL ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้เสียงเอฟเฟกต์ทำงาน</p>
                                                         <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} />
                                                         <OBSSetupHelp />
                                                     </div>
@@ -147,7 +147,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                                 title: "บันทึกและทดสอบ",
                                                 description: (
                                                     <div className="space-y-3">
-                                                        <p className="text-sm text-white/70">ตรวจสอบข้อมูลให้เรียบร้อยแล้วกดบันทึกเพื่อเริ่มทักทายคนดูได้เลย</p>
+                                                        <p className="text-sm text-muted-foreground">ตรวจสอบข้อมูลให้เรียบร้อยแล้วกดบันทึกเพื่อเริ่มทักทายคนดูได้เลย</p>
                                                         <div className="flex items-center gap-2">
                                                             <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
                                                             <TestWidgetButton onTest={controller.handleTestAudio} isLoading={controller.isTesting} />
@@ -207,9 +207,9 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                             <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} />
                                         </div>
 
-                                        <div className="pt-4 border-t border-white/10 space-y-4">
+                                        <div className="pt-4 border-t border-border space-y-4">
                                             <div className="flex flex-col gap-1">
-                                                <h3 className="text-sm font-medium text-white/90">รีเซ็ตรายชื่อคนดู</h3>
+                                                <h3 className="text-sm font-medium text-foreground">รีเซ็ตรายชื่อคนดู</h3>
                                                 <p className="text-xs text-muted-foreground leading-relaxed">
                                                     ระบบจะจำว่าใครที่ทักทายไปแล้วบ้างเพื่อป้องกันการส่งซ้ำ หากคุณต้องการเริ่มนับใหม่ (เช่น เริ่มสตรีมใหม่) คุณสามารถกดรีเซ็ตที่นี่ได้
                                                 </p>
@@ -244,18 +244,18 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
 
                     {/* Reset Confirmation Dialog */}
                     <AlertDialog open={controller.showConfirmReset} onOpenChange={controller.setShowConfirmReset}>
-                        <AlertDialogContent className="bg-[#1A1A1A] border-white/10 text-white">
+                        <AlertDialogContent className="bg-popover border-border text-foreground">
                             <AlertDialogHeader>
                                 <AlertDialogTitle>ยืนยันการรีเซ็ต?</AlertDialogTitle>
-                                <AlertDialogDescription className="text-white/70">
+                                <AlertDialogDescription className="text-muted-foreground">
                                     คุณมีรายชื่อคนดูที่ทักทายไปแล้วทั้งหมด {controller.chattersCount} คน การรีเซ็ตจะทำให้ทุกคนที่พิมพ์แชทเข้ามาใหม่ถูกทักทายอีกครั้งเหมือนเป็นคนดูใหม่
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/5 text-white">ยกเลิก</AlertDialogCancel>
+                                <AlertDialogCancel className="bg-transparent border-border hover:bg-secondary/40 text-foreground">ยกเลิก</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={controller.handleConfirmReset}
-                                    className="bg-red-500 hover:bg-red-600 text-white"
+                                    className="bg-destructive hover:bg-destructive text-foreground"
                                 >
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     ยืนยันการรีเซ็ต

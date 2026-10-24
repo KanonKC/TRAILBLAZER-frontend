@@ -101,19 +101,19 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                             }}
                             isLoading={isSaving}
                         >
-                            <p className="text-gray-200 text-base leading-relaxed">
+                            <p className="text-foreground text-base leading-relaxed">
                                 วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณและส่ง URL ของรูปภาพ โดยมีระบบตรวจสอบความถูกต้องและคัดกรองเนื้อหาที่ไม่เหมาะสม ก่อนปล่อยตกบนสตรีม
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3">
                                         <Gift className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Channel Points</h3>
                                     <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch และรับ URL ของภาพจากผู้ใช้ได้อย่างสะดวก</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3">
                                         <ShieldCheck className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Image Moderation</h3>
@@ -138,7 +138,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: `เลือกแต้มช่องที่ต้องการใช้งาน`,
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
+                                                    <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
                                                     <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                                 </div>
                                             )
@@ -161,7 +161,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: "นำ Overlay ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
+                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
                                                     <SmartOverlayUrlInput
                                                         url={overlayUrl}
                                                         slug="drop-image"
@@ -177,7 +177,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
+                                                    <p className="text-sm text-muted-foreground">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
                                                     <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId} />
                                                 </div>
                                             )
@@ -221,12 +221,12 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                     {/* Content Moderation */}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 border-b pb-2">
-                                            <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                                            <ShieldCheck className="w-5 h-5 text-success" />
                                             <h3 className="text-lg font-semibold">Content Moderation</h3>
                                         </div>
                                         <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
                                             <div className="space-y-2 mr-2">
-                                                <Label>เปิดใช้งานการตรวจสอบเนื้อหาด้วย<a href="https://sightengine.com/" target="_blank" rel="noopener noreferrer" className="text-cyan-500 hover:underline">Sightengine</a></Label>
+                                                <Label>เปิดใช้งานการตรวจสอบเนื้อหาด้วย<a href="https://sightengine.com/" target="_blank" rel="noopener noreferrer" className="text-info hover:underline">Sightengine</a></Label>
                                                 <p className="text-sm text-muted-foreground">
                                                     หากเปิดใช้งาน จะทำการตรวจสอบรูปภาพที่ส่งมาว่ามีเนื้อหาไม่เหมาะสมหรือไม่ (NSFW / Gore) และป้องกันการแสดงรูปภาพเหล่านั้นขึ้นบนหน้าจอ
                                                 </p>

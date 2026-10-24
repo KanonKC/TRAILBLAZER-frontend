@@ -136,11 +136,11 @@ export function ConfigEditor({
         <CardHeader>
           <CardTitle className="flex items-center justify-between gap-2">
             <span className="flex items-center gap-2">
-              <Settings2 className="size-5 text-blue-500" />
+              <Settings2 className="size-5 text-info" />
               ตั้งค่า
             </span>
             <span className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-sm font-medium text-amber-500">
+              <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-sm font-medium text-warning">
                 <Zap className="size-3" />1 พอยท์
               </span>
               <ConfigEnableSwitch

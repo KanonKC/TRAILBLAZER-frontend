@@ -19,7 +19,7 @@ export function WidgetTestControl({ isSaving, isTesting, onSave, onTest, canTest
                 variant="outline"
                 onClick={onTest}
                 disabled={isTesting || !canTest}
-                className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+                className="bg-transparent border-foreground/20 text-foreground hover:bg-secondary hover:text-foreground"
             >
                 {isTesting ? "กำลังทดสอบ..." : (
                     <>

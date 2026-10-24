@@ -42,7 +42,7 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
         <div className="flex flex-col gap-1.5 p-3 rounded-lg border bg-muted/30 w-full">
             <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-1.5 font-medium text-foreground">
-                    <Zap className="h-4 w-4 text-amber-500" />
+                    <Zap className="h-4 w-4 text-warning" />
                     โควต้าวิดเจ็ต
                 </div>
                 <span
@@ -50,7 +50,7 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
                         isAtLimit
                             ? "text-destructive font-semibold"
                             : isNearLimit
-                                ? "text-amber-500 font-semibold"
+                                ? "text-warning font-semibold"
                                 : "text-muted-foreground"
                     }
                 >
@@ -59,7 +59,7 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
             </div>
             <Progress
                 value={percentage}
-                className={`h-2 ${isAtLimit ? "[&>div]:bg-destructive" : isNearLimit ? "[&>div]:bg-amber-500" : ""}`}
+                className={`h-2 ${isAtLimit ? "[&>div]:bg-destructive" : isNearLimit ? "[&>div]:bg-warning" : ""}`}
             />
             {isAtLimit && (
                 <p className="text-sm text-destructive">

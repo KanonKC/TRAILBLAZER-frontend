@@ -49,7 +49,7 @@ const UpgradeToProPlanDialog = ({ open, onOpenChange }: { open: boolean; onOpenC
                         </Button>
                         <Button
                             asChild
-                            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold"
+                            className="trailblazer-gradient hover:brightness-110 text-primary-foreground font-semibold"
                         >
                             <a href="https://www.twitch.tv/kanonkc" target="_blank" rel="noopener noreferrer">
                                 อัปเกรดเป็น Pro

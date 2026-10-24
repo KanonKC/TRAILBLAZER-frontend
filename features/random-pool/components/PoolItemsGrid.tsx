@@ -84,7 +84,7 @@ export function PoolItemsGrid({
         </button>
       </div>
       {full && (
-        <p className="text-sm text-amber-300">
+        <p className="text-sm text-warning">
           กองสุ่มนี้ครบ {MAX_POOL_ITEMS} รายการแล้ว
           ลบรายการเดิมก่อนถึงจะเพิ่มได้
         </p>

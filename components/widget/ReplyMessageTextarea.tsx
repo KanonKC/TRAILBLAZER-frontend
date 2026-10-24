@@ -53,18 +53,18 @@ export function ReplyMessageTextarea({ value, onChange, variant = "overlay", err
                     className={cn(
                         "resize-none",
                         isOverlay
-                            ? "bg-transparent border-white/20 text-white placeholder:text-white/40 focus-visible:ring-offset-0 focus-visible:ring-white/20"
+                            ? "bg-transparent border-foreground/20 text-foreground placeholder:text-muted-foreground focus-visible:ring-offset-0 focus-visible:ring-foreground/20"
                             : "bg-background border-input text-foreground"
                     )}
                     rows={rows}
                 />
                 <div className="flex justify-between items-start absolute bottom-0 right-0 mr-2 mb-2">
                     {error ? (
-                        <p className="text-sm text-red-500 font-medium">{error}</p>
+                        <p className="text-sm text-destructive font-medium">{error}</p>
                     ) : (
                         <div></div>
                     )}
-                    <span className={cn("text-sm", isOverlay ? "text-white/50" : "text-muted-foreground", value.length > 500 ? "text-red-500" : "")}>
+                    <span className={cn("text-sm", isOverlay ? "text-muted-foreground" : "text-muted-foreground", value.length > 500 ? "text-destructive" : "")}>
                         {value.length}/500
                     </span>
                 </div>

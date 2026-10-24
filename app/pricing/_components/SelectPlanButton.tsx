@@ -31,7 +31,7 @@ const SelectPlanButton = ({ status }: SelectPlanButtonProps) => {
             <>
                 <Button
                     onClick={() => setShowTwitchDialog(true)}
-                    className="w-full text-md h-12 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
+                    className="w-full text-md h-12 trailblazer-gradient hover:brightness-110 text-primary-foreground font-semibold shadow-md"
                 >
                     อัปเกรด
                 </Button>

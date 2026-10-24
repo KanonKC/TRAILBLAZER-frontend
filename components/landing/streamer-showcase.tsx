@@ -64,7 +64,7 @@ export function StreamerShowcase({ streamers }: StreamerShowcaseProps) {
                                     />
                                     {/* Overlay on hover */}
                                     <div className="absolute inset-0 opacity-0 group-hover/card:opacity-100 transition-opacity flex items-center justify-center">
-                                        {/* <ExternalLink className="w-8 h-8 text-white" /> */}
+                                        {/* <ExternalLink className="w-8 h-8 text-foreground" /> */}
                                     </div>
                                 </div>
 

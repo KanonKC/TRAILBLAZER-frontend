@@ -87,19 +87,19 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                             }}
                             isLoading={controller.isSaving}
                         >
-                            <p className="text-gray-200 text-base leading-relaxed">
+                            <p className="text-foreground text-base leading-relaxed">
                                 อยากเก็บวิดีโอสตรีมย้อนหลังทุกอันของคุณไว้ดูนานๆ หรือเอาไปลง YouTube แต่ขี้เกียจโหลดแล้วอัปโหลดใหม่เองทุกครั้งใช่ไหม? วิดเจ็ตนี้จะทำการส่งออก วิดีโอสตรีมล่าสุดของคุณไปยัง YouTube โดยอัตโนมัติทันทีที่คุณจบการสตรีม
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-red-500/10 text-red-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-destructive/10 text-destructive mb-3">
                                         <Zap className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Auto Export</h3>
                                     <p className="text-sm text-muted-foreground">ทำงานอัตโนมัติเมื่อคุณลงสตรีม</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
                                         <Shield className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Privacy Control</h3>
@@ -111,7 +111,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
 
                     <TabsContent value="quick-start">
                         <WidgetQuickStartCard>
-                            <div className="flex items-start gap-2 p-3 rounded-md bg-blue-500/10 text-white mb-4">
+                            <div className="flex items-start gap-2 p-3 rounded-md bg-info/10 text-foreground mb-4">
                                 <Info className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                 <p className="text-sm">
                                     โปรดตั้งต่าวิดเจ็ตนี้โดยใช้บราวเซอร์ Google Chrome
@@ -130,7 +130,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                             title: "เปิดใช้งาน เก็บการถ่ายทอดสดในอดีต บน Twitch",
                                             description: (
                                                 <div className="space-y-2">
-                                                    <p className="text-sm text-white/70">ปรับให้ช่องบน Twitch ของคุณ เก็บวิดีโอย้อนหลังตอนสตรีมได้</p>
+                                                    <p className="text-sm text-muted-foreground">ปรับให้ช่องบน Twitch ของคุณ เก็บวิดีโอย้อนหลังตอนสตรีมได้</p>
                                                     <Button size="sm" variant="twitch" className="gap-2" asChild>
                                                         <a href={`https://dashboard.twitch.tv/u/${user?.username}/settings/stream`} target="_blank">
                                                             ไปที่หน้าตั้งค่าการสตรีม
@@ -162,7 +162,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                             title: "เชื่อมต่อบัญชี YouTube",
                                             description: (
                                                 <div className="space-y-2">
-                                                    <p className="text-sm text-white/70">ตรวจสอบให้แน่ใจว่าคุณได้เชื่อมต่อบัญชี YouTube บน Twitch แล้ว สามารถเช็คได้โดยกดปุ่มด้านล่างแล้วเลื่อนหาช่องที่เป็น YouTube ได้เลย</p>
+                                                    <p className="text-sm text-muted-foreground">ตรวจสอบให้แน่ใจว่าคุณได้เชื่อมต่อบัญชี YouTube บน Twitch แล้ว สามารถเช็คได้โดยกดปุ่มด้านล่างแล้วเลื่อนหาช่องที่เป็น YouTube ได้เลย</p>
                                                     <Button size="sm" variant="twitch" className="gap-2" asChild>
                                                         <a href="https://www.twitch.tv/settings/connections" target="_blank">
                                                             ไปที่หน้าเชื่อมต่อบัญชี Twitch
@@ -177,7 +177,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                             title: "ติดตั้ง Extension เพื่อ Sync Twitch Token",
                                             description: (
                                                 <div className="space-y-4">
-                                                    <p className="text-sm text-white/70">เนื่องจากการนำสตรีมย้อนหลังจาก Twitch ไปยัง YouTube จำเป็นต้องใช้โทเค่นจาก Twitch ของผู้ใช้งาน TRAILBLAZER จึงทำ Extension ออกมาเพื่อให้คุณสามารถเชื่อมกับโทเค่นบน Twitch ได้อย่างง่ายดาย</p>
+                                                    <p className="text-sm text-muted-foreground">เนื่องจากการนำสตรีมย้อนหลังจาก Twitch ไปยัง YouTube จำเป็นต้องใช้โทเค่นจาก Twitch ของผู้ใช้งาน TRAILBLAZER จึงทำ Extension ออกมาเพื่อให้คุณสามารถเชื่อมกับโทเค่นบน Twitch ได้อย่างง่ายดาย</p>
 
                                                     <a href="https://chromewebstore.google.com/detail/trailblazer-%E2%80%93-twitch-toke/gpabiodlfkjndeomiilbigjaokomldgl?authuser=0&hl=en" target="_blank">
                                                         <Button>
@@ -198,7 +198,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                                                 <li>เปิด Google Chrome และติดตั้ง Extension</li>
                                                                 <li>
                                                                     หลังจากติดตั้งแล้ว Extension จะอยู่ทางบนขวาของ Google Chrome กดเปิดเข้าไป จะได้หน้าตาเหมือนในรูป
-                                                                    <div className="my-4 flex justify-center"><Image className="rounded-md border border-yellow-700 p-2" src={ExtensionImage} alt="Extension Image" width={400} height={400} /></div>
+                                                                    <div className="my-4 flex justify-center"><Image className="rounded-md border border-warning p-2" src={ExtensionImage} alt="Extension Image" width={400} height={400} /></div>
                                                                 </li>
                                                                 <li>Login ผ่านแพล็ตฟอร์มของทั้งสอง เมื่อเชื่อมต่อแล้วปุ่มจะเป็นสีเขียว และขึ้นว่า "เชื่อมต่อแล้ว"</li>
                                                                 <li>เมื่อเชื่อมต่อทั้ง 2 แพล็ตฟอร์มแล้วให้กดปุ่ม "ซิงค์ตอนนี้" หากมีข้อความสีเขียวขึ้นมา จะถือว่าการซิงค์เสร็จสมบูรณ์</li>
@@ -214,7 +214,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                             title: "ตั้งค่าความเป็นส่วนตัว",
                                             description: (
                                                 <div className="space-y-4">
-                                                    <p className="text-sm text-white/70">กำหนดสถานะความเป็นส่วนตัวของวิดีโอที่จะถูกส่งออกไปยัง YouTube หากยังไม่แน่ใจ แนะนำให้เลือกเป็นแบบ Unlisted จะทำให้วิดีโอไม่โผล่ในช่อง YouTube ให้คนอื่นเห็น แต่ยังสามารถเข้าดูผ่านลิงก์ได้</p>
+                                                    <p className="text-sm text-muted-foreground">กำหนดสถานะความเป็นส่วนตัวของวิดีโอที่จะถูกส่งออกไปยัง YouTube หากยังไม่แน่ใจ แนะนำให้เลือกเป็นแบบ Unlisted จะทำให้วิดีโอไม่โผล่ในช่อง YouTube ให้คนอื่นเห็น แต่ยังสามารถเข้าดูผ่านลิงก์ได้</p>
                                                     <div className="space-y-2">
                                                         <YouTubePrivacySelect
                                                             value={controller.privacyStatus}
@@ -229,7 +229,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                             title: "บันทึกการตั้งค่า",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">กดบันทึกเพื่อให้ระบบเริ่มทำงานโดยอัตโนมัติในการสตรีมครั้งถัดไป</p>
+                                                    <p className="text-sm text-muted-foreground">กดบันทึกเพื่อให้ระบบเริ่มทำงานโดยอัตโนมัติในการสตรีมครั้งถัดไป</p>
                                                     <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
                                                 </div>
                                             )
@@ -239,12 +239,12 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                             title: "ทดลองใช้งาน",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">คุณสามารถกดปุ่มด้านล่างเพื่อส่งออกวิดีโอล่าสุดของคุณไปยัง YouTube ได้ทันที</p>
+                                                    <p className="text-sm text-muted-foreground">คุณสามารถกดปุ่มด้านล่างเพื่อส่งออกวิดีโอล่าสุดของคุณไปยัง YouTube ได้ทันที</p>
                                                     <Button
                                                         variant="outline"
                                                         onClick={controller.handleTestExport}
                                                         disabled={controller.isTesting}
-                                                        className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+                                                        className="bg-transparent border-foreground/20 text-foreground hover:bg-secondary hover:text-foreground"
                                                     >
                                                         {controller.isTesting ? "กำลังทดสอบ..." : (
                                                             <>
@@ -275,18 +275,18 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                     <div className="space-y-4">
                                         <Label>สถานะการเชื่อมต่อกับ Twitch</Label>
                                         {controller.user?.hasTwitchGqlToken ? (
-                                            <Alert className="border-green-500/50 bg-green-500/10 backdrop-blur-md">
-                                                <CheckCircle className="h-4 w-4 text-green-500" />
-                                                <AlertTitle className="text-green-500 font-bold">ซิงค์ข้อมูลกับ Twitch สำเร็จ</AlertTitle>
-                                                <AlertDescription className="text-white/80">
+                                            <Alert className="border-success/50 bg-success/10 backdrop-blur-md">
+                                                <CheckCircle className="h-4 w-4 text-success" />
+                                                <AlertTitle className="text-success font-bold">ซิงค์ข้อมูลกับ Twitch สำเร็จ</AlertTitle>
+                                                <AlertDescription className="text-foreground">
                                                     ระบบได้รับ Twitch Token ของคุณแล้ว คุณสามารถใช้งานวิดเจ็ตนี้ได้ตามปกติ
                                                 </AlertDescription>
                                             </Alert>
                                         ) : (
-                                            <Alert className="border-red-500/50 bg-red-500/10 backdrop-blur-md">
-                                                <AlertTriangle className="h-4 w-4 text-red-500" />
-                                                <AlertTitle className="text-red-500 font-bold">ยังไม่ได้ซิงค์ข้อมูล</AlertTitle>
-                                                <AlertDescription className="text-white/80 flex flex-col gap-3">
+                                            <Alert className="border-destructive/50 bg-destructive/10 backdrop-blur-md">
+                                                <AlertTriangle className="h-4 w-4 text-destructive" />
+                                                <AlertTitle className="text-destructive font-bold">ยังไม่ได้ซิงค์ข้อมูล</AlertTitle>
+                                                <AlertDescription className="text-foreground flex flex-col gap-3">
                                                     <span>กรุณาซิงค์ Twitch Token ผ่าน Chrome Extension เพื่อให้วิดเจ็ตสามารถส่งออกวิดีโอไปยัง YouTube ได้</span>
                                                     <Button
                                                         variant="destructive"
@@ -302,8 +302,8 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-2 border-b border-white/10 pb-2">
-                                            <YouTube className="w-5 h-5 text-red-500" />
+                                        <div className="flex items-center gap-2 border-b border-border pb-2">
+                                            <YouTube className="w-5 h-5 text-destructive" />
                                             <h3 className="text-lg font-semibold">YouTube Settings</h3>
                                         </div>
                                         <div className="space-y-2">
@@ -317,8 +317,8 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                     </div>
 
                                     <div className="space-y-4">
-                                        <div className="flex items-center gap-2 border-b border-white/10 pb-2">
-                                            <Tags className="w-5 h-5 text-yellow-500" />
+                                        <div className="flex items-center gap-2 border-b border-border pb-2">
+                                            <Tags className="w-5 h-5 text-warning" />
                                             <h3 className="text-lg font-semibold">Tags & Metadata</h3>
                                         </div>
                                         <div className="space-y-2">
@@ -333,7 +333,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                                     onChange={(e) => controller.setDescription(e.target.value)}
                                                 />
                                                 <div className="flex justify-between items-center absolute bottom-0 right-0 mr-4 mb-2">
-                                                    <span className={cn("text-xs", controller.description.length > 5000 ? "text-red-500" : "text-muted-foreground")}>
+                                                    <span className={cn("text-xs", controller.description.length > 5000 ? "text-destructive" : "text-muted-foreground")}>
                                                         {controller.description.length}/5000
                                                     </span>
                                                 </div>
@@ -356,7 +356,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                                 {controller.tags?.map(tag => (
                                                     <Badge key={tag} variant="secondary" className="gap-1">
                                                         <span className="text-sm">{tag}</span>
-                                                        <span><X className="w-3 h-3 cursor-pointer hover:text-red-500" onClick={() => controller.handleRemoveTag(tag)} /></span>
+                                                        <span><X className="w-3 h-3 cursor-pointer hover:text-destructive" onClick={() => controller.handleRemoveTag(tag)} /></span>
                                                     </Badge>
                                                 ))}
                                                 {(!controller.tags || controller.tags.length === 0) && (
@@ -395,7 +395,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Clock className="w-5 h-5 text-red-500" />
+                                    <Clock className="w-5 h-5 text-destructive" />
                                     Export History
                                 </CardTitle>
                                 <CardDescription>

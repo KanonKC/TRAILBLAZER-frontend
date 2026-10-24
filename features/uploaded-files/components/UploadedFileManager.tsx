@@ -303,7 +303,7 @@ export default function UploadedFileManager() {
                             <div
                                 className={cn(
                                     "h-full transition-all duration-500 ease-out",
-                                    (totalSizeKb / maxStorageKb) > 0.9 ? "bg-red-500" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-yellow-500" : "bg-primary"
+                                    (totalSizeKb / maxStorageKb) > 0.9 ? "bg-destructive" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-warning" : "bg-primary"
                                 )}
                                 style={{ width: `${Math.min((totalSizeKb / maxStorageKb) * 100, 100)}%` }}
                             />
@@ -368,9 +368,9 @@ export default function UploadedFileManager() {
                                                         {isLoadingAudio === file.id ? (
                                                             <Loader2 className="w-4 h-4 animate-spin text-primary" />
                                                         ) : playingFileId === file.id ? (
-                                                            <Square className="w-4 h-4 text-red-500 fill-red-500" />
+                                                            <Square className="w-4 h-4 text-destructive fill-destructive" />
                                                         ) : (
-                                                            <Play className="w-4 h-4 text-emerald-500 fill-emerald-500" />
+                                                            <Play className="w-4 h-4 text-success fill-success" />
                                                         )}
                                                     </Button>
                                                 )}
@@ -389,10 +389,10 @@ export default function UploadedFileManager() {
                                                                 }}
                                                             />
                                                             <div className="flex gap-0.5">
-                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" onClick={handleRename} disabled={isUpdating}>
+                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-success hover:text-success hover:bg-success" onClick={handleRename} disabled={isUpdating}>
                                                                     {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                                                                 </Button>
-                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" onClick={cancelEditing} disabled={isUpdating}>
+                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={cancelEditing} disabled={isUpdating}>
                                                                     <X className="h-4 w-4" />
                                                                 </Button>
                                                             </div>
@@ -433,7 +433,7 @@ export default function UploadedFileManager() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 text-muted-foreground/30 group-hover:text-rose-600 hover:bg-rose-50 transition-all rounded-lg"
+                                                    className="h-8 w-8 text-muted-foreground/30 group-hover:text-destructive hover:bg-destructive/10 transition-all rounded-lg"
                                                     onClick={() => setFileToDelete(file)}
                                                 >
                                                     <Trash2 className="w-4 h-4" />

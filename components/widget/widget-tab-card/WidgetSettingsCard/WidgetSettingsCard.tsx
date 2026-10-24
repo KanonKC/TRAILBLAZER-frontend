@@ -18,12 +18,12 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, cost, onSta
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
-                        <Info className="w-5 h-5 text-blue-500" />
+                        <Info className="w-5 h-5 text-info" />
                         Settings
                     </span>
                     <div className="flex items-center gap-3">
                         {cost !== undefined && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-sm font-medium text-amber-600">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-sm font-medium text-warning">
                                 <Zap className="h-3 w-3" />
                                 {cost} พอยท์
                             </span>

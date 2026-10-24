@@ -257,7 +257,7 @@ export default function AudioFileUploaderDialog({
                                 <div
                                     className={cn(
                                         "h-full transition-all duration-500 ease-out",
-                                        (totalSizeKb / maxStorageKb) > 0.9 ? "bg-red-500" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-yellow-500" : "bg-green-500"
+                                        (totalSizeKb / maxStorageKb) > 0.9 ? "bg-destructive" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-warning" : "bg-success"
                                     )}
                                     style={{ width: `${Math.min((totalSizeKb / maxStorageKb) * 100, 100)}%` }}
                                 />
@@ -301,9 +301,9 @@ export default function AudioFileUploaderDialog({
                                                 {isLoadingAudio === file.id ? (
                                                     <Loader2 className="w-4 h-4 animate-spin" />
                                                 ) : playingFileId === file.id ? (
-                                                    <Square className="w-3.5 h-3.5 text-red-500" />
+                                                    <Square className="w-3.5 h-3.5 text-destructive" />
                                                 ) : (
-                                                    <Play className="w-3.5 h-3.5 text-green-500" />
+                                                    <Play className="w-3.5 h-3.5 text-success" />
                                                 )}
                                             </Button>
                                             <div className="flex flex-col min-w-0 max-w-[300px]">

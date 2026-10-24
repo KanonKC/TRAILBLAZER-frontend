@@ -20,7 +20,7 @@ const WidgetOverviewCard = ({ children, showLoginButton, showEnableButton, showU
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <Info className="w-5 h-5 text-blue-500" />
+                    <Info className="w-5 h-5 text-info" />
                     Overview
                 </CardTitle>
                 <CardDescription>
@@ -42,7 +42,7 @@ const WidgetOverviewCard = ({ children, showLoginButton, showEnableButton, showU
                 {showUpgradeButton && (
                     <Button
                         onClick={() => setOpenUpgradeDialog(true)}
-                        className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold"
+                        className="w-full trailblazer-gradient hover:brightness-110 text-primary-foreground font-semibold"
                     >
                         <Crown className="w-4 h-4 mr-2" />
                         อัปเกรดเป็น Pro

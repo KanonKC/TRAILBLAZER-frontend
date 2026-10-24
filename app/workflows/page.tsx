@@ -77,7 +77,7 @@ export default function WorkflowsPage() {
                         </p>
                     </div>
                     <Link href="/workflows/new">
-                        <Button className="trailblazer-gradient text-white font-semibold gap-2">
+                        <Button className="trailblazer-gradient text-primary-foreground font-semibold gap-2">
                             <Plus className="w-4 h-4" />
                             สร้าง Workflow
                         </Button>
@@ -89,14 +89,14 @@ export default function WorkflowsPage() {
                     <Card className="glass border-primary/10">
                         <CardContent className="flex flex-col items-center justify-center py-16">
                             <div className="p-4 rounded-2xl trailblazer-gradient mb-4">
-                                <Zap className="w-8 h-8 text-white" />
+                                <Zap className="w-8 h-8 text-foreground" />
                             </div>
                             <h3 className="text-xl font-semibold mb-2">ยังไม่มี Workflow</h3>
                             <p className="text-muted-foreground mb-6 text-center max-w-md">
                                 เริ่มสร้าง Workflow แรกของคุณเพื่อทำให้การสตรีมเป็นอัตโนมัติ
                             </p>
                             <Link href="/workflows/new">
-                                <Button className="trailblazer-gradient text-white font-semibold gap-2">
+                                <Button className="trailblazer-gradient text-primary-foreground font-semibold gap-2">
                                     <Plus className="w-4 h-4" />
                                     สร้าง Workflow แรก
                                 </Button>
@@ -117,7 +117,7 @@ export default function WorkflowsPage() {
                                             <Badge
                                                 variant={workflow.status === "active" ? "default" : "secondary"}
                                                 className={workflow.status === "active"
-                                                    ? "trailblazer-gradient text-white border-0"
+                                                    ? "trailblazer-gradient text-primary-foreground border-0"
                                                     : ""
                                                 }
                                             >
@@ -149,7 +149,7 @@ export default function WorkflowsPage() {
                                         <Button
                                             variant="outline"
                                             size="icon"
-                                            className="glass border-red-500/20 hover:bg-red-500/10 hover:text-red-400"
+                                            className="glass border-destructive/20 hover:bg-destructive/10 hover:text-destructive"
                                             onClick={() => deleteWorkflow(workflow.id)}
                                         >
                                             <Trash2 className="w-4 h-4" />

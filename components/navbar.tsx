@@ -74,8 +74,8 @@ export default function Navbar() {
                         <Link href="/pricing" className="text-base font-medium transition-colors hover:text-primary">
                             Pricing
                         </Link>
-                        <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="text-base font-medium transition-colors flex items-center gap-2 hover:bg-[#5865F2] hover:text-white p-2 rounded-md">
-                            <Discord className="text-white w-5 h-5" />
+                        <a href="https://discord.gg/aH4X6PJ3kt" target="_blank" rel="noopener noreferrer" className="text-base font-medium transition-colors flex items-center gap-2 hover:bg-discord hover:text-foreground p-2 rounded-md">
+                            <Discord className="text-foreground w-5 h-5" />
                             <span>
                                 Join Discord
                             </span>
@@ -103,7 +103,7 @@ export default function Navbar() {
                             {tier === 0 && (
                                 <Button 
                                     onClick={() => setOpen(true)} 
-                                    className="trailblazer-gradient text-white font-bold text-sm h-8 px-2 sm:h-10 sm:px-4"
+                                    className="trailblazer-gradient text-primary-foreground font-bold text-sm h-8 px-2 sm:h-10 sm:px-4"
                                 >
                                     <span className="hidden min-[400px]:inline">อัปเกรดเป็น</span> PRO
                                 </Button>
@@ -126,7 +126,7 @@ export default function Navbar() {
                                     <DropdownMenuContent className="w-56" align="end" forceMount>
                                         <DropdownMenuLabel className="font-normal">
                                             <div className="flex flex-col space-y-1">
-                                                <p className="text-sm text-white font-medium leading-none">{user.displayName}</p>
+                                                <p className="text-sm text-foreground font-medium leading-none">{user.displayName}</p>
                                                 <p className="text-xs leading-none text-muted-foreground">
                                                     {user.username}
                                                 </p>
@@ -153,7 +153,7 @@ export default function Navbar() {
                                             </span>
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={logout} className="cursor-pointer text-red-500 focus:text-red-500">
+                                        <DropdownMenuItem onClick={logout} className="cursor-pointer text-destructive focus:text-destructive">
                                             <LogOut className="mr-2 h-4 w-4" />
                                             <span>Log out</span>
                                         </DropdownMenuItem>

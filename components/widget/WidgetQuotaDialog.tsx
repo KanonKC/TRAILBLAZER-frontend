@@ -79,7 +79,7 @@ export const WidgetQuotaDialog = ({
                     <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                     <Button
                         onClick={() => router.push('/pricing')}
-                        className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
+                        className="trailblazer-gradient hover:brightness-110 text-primary-foreground font-semibold shadow-md"
                     >
                         อัปเกรดเป็น Pro
                     </Button>

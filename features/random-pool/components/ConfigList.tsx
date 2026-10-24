@@ -36,8 +36,8 @@ function RowTag({
       className={cn(
         "mt-1 inline-flex h-6 items-center gap-1 rounded-full border px-2 text-sm font-medium",
         tone === "danger"
-          ? "border-red-400/40 bg-red-400/10 text-red-300"
-          : "border-amber-400/40 bg-amber-400/10 text-amber-300",
+          ? "border-destructive/40 bg-destructive/10 text-destructive"
+          : "border-warning/40 bg-warning/10 text-warning",
       )}
     >
       <TriangleAlert className="size-3.5" aria-hidden="true" />
@@ -115,7 +115,7 @@ function ConfigRow({
       </button>
       <div className="flex shrink-0 items-center gap-3 max-sm:w-full max-sm:justify-end">
         {enabled && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-sm font-medium text-amber-500">
+          <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-sm font-medium text-warning">
             <Zap className="size-3.5" />1 พอยท์
           </span>
         )}
@@ -147,7 +147,7 @@ export function ConfigList({
       <CardHeader>
         <CardTitle className="flex flex-wrap items-center justify-between gap-2">
           <span className="flex items-center gap-2">
-            <Layers className="size-5 text-blue-500" />
+            <Layers className="size-5 text-info" />
             การตั้งค่าทั้งหมด
           </span>
           <span className="flex items-center gap-3">

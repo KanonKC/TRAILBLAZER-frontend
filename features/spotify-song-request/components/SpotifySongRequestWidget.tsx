@@ -92,19 +92,19 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                             onClickEnable={handleEnable}
                             isLoading={isSaving}
                         >
-                            <p className="text-gray-200 text-base leading-relaxed">
+                            <p className="text-foreground text-base leading-relaxed">
                                 วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณเพื่อขอเพลง Spotify บอทจะเพิ่มเพลงเข้าคิวอัตโนมัติและตอบกลับในแชท
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-green-500/10 text-green-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3">
                                         <Music2 className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Song Request</h3>
                                     <p className="text-sm text-muted-foreground">ผู้ชมส่ง URL หรือชื่อเพลง Spotify เพื่อเพิ่มเข้าคิวเพลงของคุณได้ทันที</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-green-500/10 text-green-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3">
                                         <ListMusic className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Queue Management</h3>
@@ -179,11 +179,11 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                 },
                                                 {
                                                     step: 6,
-                                                    title: <span className="flex items-center gap-2 spotify"><Spotify className="w-4 " /> เริ่มเปิดเพลงจากเพลยลิสต์ Spotify ของคุณ</span>,
+                                                    title: <span className="flex items-center gap-2 text-spotify"><Spotify className="w-4 " /> เริ่มเปิดเพลงจากเพลยลิสต์ Spotify ของคุณ</span>,
                                                     description: (
                                                         <div className="space-y-3">
                                                             <SubLabel>เปิดเพลยลิสต์ที่ชอบของคุณบน Spotify ระหว่างการสตรีม ผู้ชมสามารถที่จะแลกแต้มเพื่อใส่เพลงที่อยากฟังเข้ามาในคิวของคุณได้</SubLabel>
-                                                            <div className="flex items-start gap-2 p-3 rounded-md bg-amber-500/10 text-amber-500">
+                                                            <div className="flex items-start gap-2 p-3 rounded-md bg-warning/10 text-warning">
                                                                 <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                                                 <p className="text-sm">
                                                                     การใส่เพลงเข้าคิวจะสามารถทำได้แค่เฉพาะตอนที่คุณกำลังเล่นเพลงบน Spotify เท่านั้น การใส่เพลงเข้าไปขณะที่ยังไม่ได้มีการเล่นเพลงจะทำให้การใส่เพลงนั้นล้มเหลว
@@ -235,7 +235,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                         />
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-2 border-b pb-2">
-                                                <MessageSquare className="w-5 h-5 text-blue-500" />
+                                                <MessageSquare className="w-5 h-5 text-info" />
                                                 <h3 className="text-lg font-semibold">ข้อความตอบกลับ</h3>
                                             </div>
 
@@ -274,7 +274,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                     rows={2}
                                                 />
 
-                                                <div className="flex items-start gap-2 p-3 rounded-md bg-amber-500/10 text-amber-500">
+                                                <div className="flex items-start gap-2 p-3 rounded-md bg-warning/10 text-warning">
                                                     <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                                                     <p className="text-sm">
                                                         การใส่เพลงเข้าคิวจะสามารถทำได้แค่เฉพาะตอนที่คุณกำลังเล่นเพลงบน Spotify เท่านั้น การใส่เพลงเข้าไปขณะที่ยังไม่ได้มีการเล่นเพลงจะทำให้การใส่เพลงนั้นล้มเหลว

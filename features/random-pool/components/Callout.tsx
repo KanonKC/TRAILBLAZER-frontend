@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 
 const tones = {
   danger: {
-    box: "border-red-400/25 bg-red-400/10",
-    text: "text-red-300",
+    box: "border-destructive/25 bg-destructive/10",
+    text: "text-destructive",
     Icon: OctagonAlert,
   },
   warning: {
-    box: "border-amber-400/25 bg-amber-400/10",
-    text: "text-amber-300",
+    box: "border-warning/25 bg-warning/10",
+    text: "text-warning",
     Icon: AlertTriangle,
   },
   info: {

@@ -105,12 +105,12 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
                             <TableRow key={item.id}>
                                 <TableCell className="font-medium">
                                     <div className="flex items-center gap-2">
-                                        <Video className="w-4 h-4 text-blue-500" />
+                                        <Video className="w-4 h-4 text-info" />
                                         <a
                                             href={`https://www.twitch.tv/videos/${item.video_id}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="hover:underline text-blue-400"
+                                            className="hover:underline text-info"
                                         >
                                             {item.video_id}
                                         </a>
@@ -121,7 +121,7 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
                                         variant={item.status === "SUCCESS" ? "outline" : "destructive"}
                                         className={cn(
                                             "font-semibold",
-                                            item.status === "SUCCESS" && "bg-green-500/10 text-green-500 border-green-500/20 hover:bg-green-500/20"
+                                            item.status === "SUCCESS" && "bg-success/10 text-success border-success/20 hover:bg-success/20"
                                         )}
                                     >
                                         {item.status}
@@ -171,13 +171,13 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
             </div>
 
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent className="sm:max-w-[500px] bg-zinc-950/90 backdrop-blur-xl border-zinc-800 shadow-2xl">
+                <DialogContent className="sm:max-w-[500px] bg-card/90 backdrop-blur-xl border-border shadow-2xl">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-xl font-bold">
-                            <Info className="w-5 h-5 text-blue-500" />
+                            <Info className="w-5 h-5 text-info" />
                             รายละเอียดการส่งออก
                         </DialogTitle>
-                        <DialogDescription className="text-zinc-400">
+                        <DialogDescription className="text-muted-foreground">
                             ข้อมูลรายละเอียดเกี่ยวกับการส่งออกวิดีโอไปยัง YouTube
                         </DialogDescription>
                     </DialogHeader>
@@ -194,13 +194,13 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
                                         <Input
                                             value={selectedItem.video_id}
                                             readOnly
-                                            className="bg-white/5 border-white/10 pr-10"
+                                            className="bg-secondary/40 border-border pr-10"
                                         />
                                         <a
                                             href={`https://www.twitch.tv/videos/${selectedItem.video_id}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-400 hover:text-blue-300"
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-info hover:text-info"
                                         >
                                             <ExternalLink className="w-4 h-4" />
                                         </a>
@@ -216,7 +216,7 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
                                             variant={selectedItem.status === "SUCCESS" ? "outline" : "destructive"}
                                             className={cn(
                                                 "h-10 px-4 flex-1 justify-center font-bold",
-                                                selectedItem.status === "SUCCESS" && "bg-green-500/10 text-green-500 border-green-500/20"
+                                                selectedItem.status === "SUCCESS" && "bg-success/10 text-success border-success/20"
                                             )}
                                         >
                                             {selectedItem.status}
@@ -234,12 +234,12 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
                                     <Input
                                         value={showRawDate ? selectedItem.created_at : formatDate(selectedItem.created_at)}
                                         readOnly
-                                        className="bg-white/5 border-white/10 pr-10"
+                                        className="bg-secondary/40 border-border pr-10"
                                     />
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-white"
+                                        className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 text-muted-foreground hover:text-foreground"
                                         onClick={() => setShowRawDate(!showRawDate)}
                                         title={showRawDate ? "Show Formatted Date" : "Show Raw Date"}
                                     >
@@ -257,7 +257,7 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        className="h-8 px-2 gap-1.5 text-xs text-muted-foreground hover:text-white"
+                                        className="h-8 px-2 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
                                         onClick={handleCopyMessage}
                                     >
                                         {isCopied ? (
@@ -277,7 +277,7 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
                                     value={displayMessage}
                                     readOnly
                                     rows={displayMessage.split("\n").length}
-                                    className="bg-white/5 border-white/10 min-h-[150px] leading-relaxed font-mono"
+                                    className="bg-secondary/40 border-border min-h-[150px] leading-relaxed font-mono"
                                 />
                             </div>
                         </div>

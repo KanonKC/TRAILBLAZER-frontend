@@ -195,7 +195,7 @@ function ItemSheetBody({
             </div>
           </div>
           {imageError && (
-            <p role="alert" className="text-sm text-red-300">
+            <p role="alert" className="text-sm text-destructive">
               {imageError}
             </p>
           )}
@@ -206,7 +206,7 @@ function ItemSheetBody({
               <span
                 className={
                   nameLength > MAX_ITEM_NAME_LENGTH
-                    ? "text-sm text-red-300"
+                    ? "text-sm text-destructive"
                     : "text-muted-foreground text-sm"
                 }
               >
@@ -227,7 +227,7 @@ function ItemSheetBody({
               }
             />
             {nameLength > MAX_ITEM_NAME_LENGTH && (
-              <p className="text-sm text-red-300">ชื่อยาวเกิน 32 ตัวอักษร</p>
+              <p className="text-sm text-destructive">ชื่อยาวเกิน 32 ตัวอักษร</p>
             )}
             <p className="text-muted-foreground text-sm">
               ใส่รูปหรือชื่ออย่างน้อยหนึ่งอย่าง
@@ -309,7 +309,7 @@ function ItemSheetBody({
           <Button
             type="button"
             variant="ghost"
-            className="text-red-300 hover:bg-red-400/10 hover:text-red-300"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
             disabled={busy}
             onClick={() => setConfirmDelete(true)}
           >

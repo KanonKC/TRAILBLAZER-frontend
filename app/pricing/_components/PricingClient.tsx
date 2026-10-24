@@ -63,18 +63,18 @@ const PricingClient = () => {
                 </Card>
 
                 {/* Pro Plan */}
-                <Card className="flex flex-col relative border-2 border-amber-500 shadow-lg shadow-amber-500/20">
+                <Card className="flex flex-col relative border-2 border-warning shadow-lg shadow-primary/20">
                     {/* <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-3">
-                        <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        <span className="trailblazer-gradient text-primary-foreground text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                             ยอดนิยม
                         </span>
                     </div> */}
                     <CardHeader className="text-center pb-8 border-b">
-                        <CardTitle className="text-2xl font-bold mb-2 text-amber-500 flex items-center gap-2 justify-center">
+                        <CardTitle className="text-2xl font-bold mb-2 text-warning flex items-center gap-2 justify-center">
                             Pro
                             <Info
                                 onClick={() => setShowTwitchDialog(true)}
-                                className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-amber-500"
+                                className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-warning"
                             />
                         </CardTitle>
                         <CardDescription>ปลดล็อกทุกความสามารถ</CardDescription>
@@ -86,11 +86,11 @@ const PricingClient = () => {
                     <CardContent className="flex-1 pt-6">
                         <ul className="space-y-4">
                             <li className="flex items-center gap-3">
-                                <span className="bg-amber-500/20 text-amber-500 p-1 rounded-full"><Check className="h-4 w-4" /></span>
+                                <span className="bg-warning/20 text-warning p-1 rounded-full"><Check className="h-4 w-4" /></span>
                                 <span className="font-semibold">โควต้า <span className="text-primary">10 พอยท์</span></span>
                             </li>
                             <li className="flex items-center gap-3">
-                                <span className="bg-amber-500/20 text-amber-500 p-1 rounded-full"><Check className="h-4 w-4" /></span>
+                                <span className="bg-warning/20 text-warning p-1 rounded-full"><Check className="h-4 w-4" /></span>
                                 <span className="font-semibold">พื้นที่เก็บข้อมูล <span className="text-primary">50 MB</span></span>
                             </li>
                         </ul>

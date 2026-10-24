@@ -96,17 +96,17 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                             }} 
                             isLoading={isSaving}
                         >
-                            <p className="text-gray-200 text-base leading-relaxed">
+                            <p className="text-foreground text-base leading-relaxed">
                                 วิดเจ็ตนี้ช่วยให้ผู้ชมใช้แต้มช่องของคุณ เพื่อสุ่ม Perk โดยแยกการตั้งค่าระหว่าง Survivor และ Killer ได้อย่างอิสระ
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-500 mb-3"><Dices className="w-5 h-5" /></div>
+                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3"><Dices className="w-5 h-5" /></div>
                                     <h3 className="font-semibold mb-1">Randomizer</h3>
                                     <p className="text-sm text-muted-foreground">สุ่มได้ทั้งราย Perk หรือรายหน้า</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3"><Gift className="w-5 h-5" /></div>
+                                    <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3"><Gift className="w-5 h-5" /></div>
                                     <h3 className="font-semibold mb-1">Channel Points</h3>
                                     <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่อง Twitch โดยตรง</p>
                                 </div>
@@ -129,8 +129,8 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                             title: "เลือกประเภท Perk",
                                             description: (
                                                 <RadioGroup value={wizardType} onValueChange={(val) => setWizardType(val as "survivor" | "killer")} className="flex gap-4">
-                                                    <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "survivor" ? "bg-blue-500/10 border-blue-500/50" : "bg-transparent border-white/10")}><RadioGroupItem value="survivor" id="r-survivor" /><Label htmlFor="r-survivor" className="flex-1 text-blue-400">Survivor</Label></div>
-                                                    <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "killer" ? "bg-red-500/10 border-red-500/50" : "bg-transparent border-white/10")}><RadioGroupItem value="killer" id="r-killer" /><Label htmlFor="r-killer" className="flex-1 text-red-400">Killer</Label></div>
+                                                    <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "survivor" ? "bg-info/10 border-info/50" : "bg-transparent border-border")}><RadioGroupItem value="survivor" id="r-survivor" /><Label htmlFor="r-survivor" className="flex-1 text-info">Survivor</Label></div>
+                                                    <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "killer" ? "bg-destructive/10 border-destructive/50" : "bg-transparent border-border")}><RadioGroupItem value="killer" id="r-killer" /><Label htmlFor="r-killer" className="flex-1 text-destructive">Killer</Label></div>
                                                 </RadioGroup>
                                             )
                                         },
@@ -139,7 +139,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                             title: "เลือกแต้มช่อง",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">ช่องเชื่อมต่อแต้มช่อง</p>
+                                                    <p className="text-sm text-muted-foreground">ช่องเชื่อมต่อแต้มช่อง</p>
                                                     <TwitchRewardSelector
                                                         value={perkClasses.find(c => c.type === wizardType)?.twitch_reward_id || null}
                                                         onValueChange={(val) => {

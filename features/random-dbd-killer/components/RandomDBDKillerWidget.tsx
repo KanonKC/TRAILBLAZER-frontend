@@ -86,19 +86,19 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                             }}
                             isLoading={isSaving}
                         >
-                            <p className="text-gray-200 text-base leading-relaxed">
+                            <p className="text-foreground text-base leading-relaxed">
                                 วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณเพื่อสุ่มตัว Killer จาก Dead by Daylight ที่คุณเลือกไว้ล่วงหน้า แล้วแสดงผลลัพธ์บนหน้าจอสตรีมทันที
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-red-500/10 text-red-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-destructive/10 text-destructive mb-3">
                                         <Gift className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Channel Points</h3>
                                     <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch เพื่อสุ่ม Killer ทันทีที่มีการแลกแต้ม</p>
                                 </div>
                                 <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-500 mb-3">
+                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3">
                                         <ShieldQuestion className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">กำหนด Killer Pool เอง</h3>
@@ -123,7 +123,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             title: "เลือกแต้มช่องที่ต้องการใช้งาน",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
+                                                    <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
                                                     <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." userInputRequired={false} />
                                                 </div>
                                             )
@@ -133,7 +133,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             title: "เลือก Killer ที่ต้องการให้สุ่ม",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">เลือก Killer อย่างน้อยหนึ่งตัวเพื่อให้ระบบสุ่มได้</p>
+                                                    <p className="text-sm text-muted-foreground">เลือก Killer อย่างน้อยหนึ่งตัวเพื่อให้ระบบสุ่มได้</p>
                                                     <KillerPoolSelector
                                                         killerMasters={killerMasters}
                                                         killerPool={killerPool}
@@ -148,7 +148,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             title: "นำ Overlay ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
+                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
                                                     <SmartOverlayUrlInput
                                                         url={overlayUrl}
                                                         slug="random-dbd-killer"
@@ -164,7 +164,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
+                                                    <p className="text-sm text-muted-foreground">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
                                                     <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId && killerPool.length > 0} />
                                                 </div>
                                             )

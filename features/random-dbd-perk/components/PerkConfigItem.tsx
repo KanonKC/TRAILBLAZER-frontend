@@ -43,7 +43,7 @@ export function PerkConfigItem({ item, index, totalPerks, updatePerkClass, unit,
                 <div className="flex items-center gap-2">
                     <div className={cn(
                         "p-1.5 rounded-md",
-                        item.type === 'survivor' ? "bg-blue-500/10 text-blue-500" : "bg-red-500/10 text-red-500"
+                        item.type === 'survivor' ? "bg-info/10 text-info" : "bg-destructive/10 text-destructive"
                     )}>
                         {item.type === 'survivor' ? (
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>

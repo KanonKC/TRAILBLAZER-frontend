@@ -88,7 +88,7 @@ export function PoolPicker({
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="text-red-300 hover:bg-red-400/10 hover:text-red-300"
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                 disabled={busy}
                 onClick={() => setDeleting(true)}
               >

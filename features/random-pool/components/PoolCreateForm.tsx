@@ -120,7 +120,7 @@ export function PoolCreateForm({
           </div>
           <p className="text-muted-foreground text-sm">ขนาดไม่เกิน 2 MB</p>
           {coverError && (
-            <p role="alert" className="text-sm text-red-300">
+            <p role="alert" className="text-sm text-destructive">
               {coverError}
             </p>
           )}

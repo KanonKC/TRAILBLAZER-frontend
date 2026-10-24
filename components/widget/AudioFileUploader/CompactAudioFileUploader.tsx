@@ -82,7 +82,7 @@ export function CompactAudioFileUploader({
                     disabled={disabled}
                     className={cn(
                         "flex-1 justify-start gap-2 h-9 px-3 overflow-hidden",
-                        className?.includes("text-white") && "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
+                        className?.includes("text-foreground") && "bg-transparent border-foreground/20 text-foreground hover:bg-secondary hover:text-foreground"
                     )}
                 >
                     <AudioWaveform className="w-4 h-4 shrink-0" />
@@ -97,7 +97,7 @@ export function CompactAudioFileUploader({
                         disabled={disabled || isLoading}
                         className={cn(
                             "h-9 w-9 shrink-0",
-                            className?.includes("text-white") ? "bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white" : ""
+                            className?.includes("text-foreground") ? "bg-transparent border-foreground/20 text-foreground hover:bg-secondary hover:text-foreground" : ""
                         )}
                     >
                         {isPlaying ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
@@ -114,7 +114,7 @@ export function CompactAudioFileUploader({
 
             {audioVolume !== undefined && onAudioVolumeChange && (
                 <div className="flex items-center gap-2">
-                    <Volume2 className={cn("w-3.5 h-3.5 shrink-0", className?.includes("text-white") ? "text-white" : "text-muted-foreground")} />
+                    <Volume2 className={cn("w-3.5 h-3.5 shrink-0", className?.includes("text-foreground") ? "text-foreground" : "text-muted-foreground")} />
                     <Slider
                         value={[audioVolume]}
                         onValueChange={([v]) => onAudioVolumeChange(v)}
@@ -124,7 +124,7 @@ export function CompactAudioFileUploader({
                         disabled={disabled}
                         className="flex-1"
                     />
-                    <span className={cn("text-sm tabular-nums w-10 text-right shrink-0", className?.includes("text-white") ? "text-white" : "text-muted-foreground")}>
+                    <span className={cn("text-sm tabular-nums w-10 text-right shrink-0", className?.includes("text-foreground") ? "text-foreground" : "text-muted-foreground")}>
                         {audioVolume}%
                     </span>
                 </div>
