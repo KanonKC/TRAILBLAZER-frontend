@@ -9,6 +9,7 @@ import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
 
 interface WidgetCardProps {
     widgetType: WidgetTypeMeta;
+    isAuthenticated: boolean;
     isWhitelisted: boolean;
     apiWidget?: ExtendedWidget;
     onSuccess?: () => void;
@@ -16,6 +17,7 @@ interface WidgetCardProps {
 
 export const WidgetCard = ({
     widgetType,
+    isAuthenticated,
     isWhitelisted,
     apiWidget,
     onSuccess
@@ -85,7 +87,11 @@ export const WidgetCard = ({
                                 variant={!apiWidget ? "default" : "outline"}
                             >
                                 {
-                                    hasMultipleConfigs ? (
+                                    !isAuthenticated ? (
+                                        <>
+                                        <Play className=""/>
+                                        เปิดใช้งานวิดเจ็ต</>
+                                    ) : hasMultipleConfigs ? (
                                         <><Settings />จัดการ Configs</>
                                     ) : apiWidget ? (
                                         <>

@@ -9,10 +9,11 @@ import { QuotaMeter } from "@/components/widget/QuotaMeter";
 interface WidgetGalleryProps {
     initialData: { data: ExtendedWidget[], pagination: any } | null;
     initialWidgetTypes: WidgetTypeMeta[];
+    isAuthenticated: boolean;
     isWhitelisted: boolean;
 }
 
-export const WidgetGallery = ({ initialData, initialWidgetTypes, isWhitelisted }: WidgetGalleryProps) => {
+export const WidgetGallery = ({ initialData, initialWidgetTypes, isAuthenticated, isWhitelisted }: WidgetGalleryProps) => {
     const [apiWidgets, setApiWidgets] = useState<ExtendedWidget[]>(initialData?.data || []);
     const [isLoading, setIsLoading] = useState(false);
     const [quotaRefreshKey, setQuotaRefreshKey] = useState(0);
@@ -49,9 +50,7 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes, isWhitelisted }
                         เลือกวิดเจ็ตที่คุณต้องการใช้งานเพื่อเสริมประสบการณ์การสตรีมของคุณ
                     </p>
                 </div>
-                <div className="w-[410px]">
-                    <QuotaMeter refreshKey={quotaRefreshKey} />
-                </div>
+                {isAuthenticated && <div className="w-[410px]"><QuotaMeter refreshKey={quotaRefreshKey} /></div>}
             </div>
             <div className="flex flex-col gap-6 relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -61,6 +60,7 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes, isWhitelisted }
                             <WidgetCard
                                 key={widgetType.slug}
                                 widgetType={widgetType}
+                                isAuthenticated={isAuthenticated}
                                 isWhitelisted={isWhitelisted}
                                 apiWidget={apiWidget}
                                 onSuccess={fetchWidgets}
