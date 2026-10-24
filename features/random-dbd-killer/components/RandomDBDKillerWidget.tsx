@@ -115,7 +115,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                     items={[
                                         {
                                             step: 1,
-                                            title: "เปิดใช้งาน Widget",
+                                            title: "เปิดใช้งานวิดเจ็ต",
                                             description: <WidgetEnabledBadge />
                                         },
                                         {
@@ -123,7 +123,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             title: "เลือกแต้มช่องที่ต้องการใช้งาน",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
+                                                    <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</p>
                                                     <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." userInputRequired={false} />
                                                 </div>
                                             )
@@ -187,7 +187,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                 <div className="space-y-6">
                                     <div className="space-y-2">
                                         <Label>เชื่อมต่อแต้มช่องบน Twitch</Label>
-                                        <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</SubLabel>
+                                        <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</SubLabel>
                                         <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                     </div>
 

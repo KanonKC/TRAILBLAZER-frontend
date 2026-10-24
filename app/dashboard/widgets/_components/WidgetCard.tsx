@@ -72,7 +72,7 @@ export const WidgetCard = ({
                 </CardDescription>
                 {(hasMultipleConfigs || apiWidget?.widget_type?.cost !== undefined) && (
                     <div className="flex items-center gap-1 mt-1">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-sm font-medium text-warning">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-supernova/10 px-2 py-0.5 text-sm font-medium text-supernova">
                             <Zap className="h-3 w-3" />
                             {hasMultipleConfigs ? "1 พอยท์ต่อ Config ที่เปิดใช้" : `${apiWidget?.widget_type?.cost} พอยท์`}
                         </span>

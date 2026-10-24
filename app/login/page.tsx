@@ -85,7 +85,7 @@ function LoginContent() {
                                 <Gift className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                                 <div>
                                     <p className="font-bold text-primary">ตรวจพบโบนัสจากการแนะนำเพื่อน!</p>
-                                    <p className="text-muted-foreground">สมัครใช้งานตอนนี้เพื่อรับ <span className="font-bold text-foreground">โควตา Widget เพิ่มอีก +1</span> เป็นของขวัญต้อนรับ</p>
+                                    <p className="text-muted-foreground">สมัครใช้งานตอนนี้เพื่อรับ <span className="font-bold text-foreground">โควตาวิดเจ็ต เพิ่มอีก +1</span> เป็นของขวัญต้อนรับ</p>
                                 </div>
                             </div>
                         )}

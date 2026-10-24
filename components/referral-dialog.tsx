@@ -59,7 +59,7 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
     };
 
     const translateReward = (reward: string) => {
-        if (reward.includes("Widget Quota")) return "โควตา Widget +1";
+        if (reward.includes("Widget Quota")) return "โควตาวิดเจ็ต +1";
         if (reward.includes("Storage")) return "พื้นที่เก็บข้อมูล +15 MB";
         return reward;
     };
@@ -126,7 +126,7 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
 
                     <div className="p-4 bg-primary/5 rounded-lg border border-primary/10">
                         <p className="text-sm text-muted-foreground text-center">
-                            เพื่อนของคุณจะได้รับ <span className="text-foreground font-bold">โควตา Widget +1</span> ทันทีหลังจากสมัครใช้งาน!
+                            เพื่อนของคุณจะได้รับ <span className="text-foreground font-bold">โควตาวิดเจ็ต +1</span> ทันทีหลังจากสมัครใช้งาน!
                         </p>
                     </div>
                 </div>

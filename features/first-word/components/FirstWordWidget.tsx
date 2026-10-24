@@ -60,12 +60,12 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                 <>
                     <Tabs value={controller.activeTab} onValueChange={controller.setActiveTab} className="w-full">
                         <TabsList className={cn("grid w-full mb-4", controller.config ? "grid-cols-4" : "grid-cols-1")}>
-                            <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                            <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                             {controller.config && (
                                 <>
-                                    <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                    <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
-                                    <TabsTrigger value="custom-replies" className="cursor-pointer">Custom Replies</TabsTrigger>
+                                    <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                    <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
+                                    <TabsTrigger value="custom-replies" className="cursor-pointer">ข้อความเฉพาะคน</TabsTrigger>
                                 </>
                             )}
                         </TabsList>
@@ -85,14 +85,14 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                     อยากให้ช่องคึกคัก ต้องเริ่มที่การทักทาย! วิดเจ็ตนี้จะช่วยต้อนรับผู้ชมหน้าใหม่ทันทีที่เขาพิมพ์แชทครั้งแรก ไม่ต้องกลัวหลุดโฟกัสตอนเล่นเกม หรือคุยเพลินจนลืมทัก ช่วยสร้างความประทับใจแรกสุดปัง ให้ทุกคนรู้สึกอบอุ่นเหมือนเพื่อนสนิท แถมยังตั้งค่าข้อความและเสียงเอฟเฟกต์กวนๆ ได้ตามสไตล์คุณ!
                                 </p>
                                 <div className="grid gap-4 md:grid-cols-2">
-                                    <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
+                                    <div className="p-4 border rounded-xl bg-card">
                                         <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
                                             <MessageSquare className="w-5 h-5" />
                                         </div>
                                         <h3 className="font-semibold mb-1">Auto Greeting</h3>
                                         <p className="text-sm text-muted-foreground">ต้อนรับผู้ชมใหม่โดยอัตโนมัติเมื่อพวกเขาพิมพ์ข้อความแรก</p>
                                     </div>
-                                    <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
+                                    <div className="p-4 border rounded-xl bg-card">
                                         <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3">
                                             <Music className="w-5 h-5" />
                                         </div>
@@ -110,9 +110,12 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                         items={[
                                             {
                                                 step: 1,
-                                                title: "เปิดใช้งาน Widget",
+                                                title: "เปิดใช้งานวิดเจ็ต",
                                                 description: (
-                                                    <WidgetEnabledBadge />
+                                                    <div className="space-y-3">
+                                                        <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ระบบทักทายคนดูที่เข้ามาใหม่ในช่องของคุณโดยอัตโนมัติ</p>
+                                                        <WidgetEnabledBadge />
+                                                    </div>
                                                 )
                                             },
                                             {
@@ -137,7 +140,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                                 description: (
                                                     <div className="space-y-3">
                                                         <p className="text-sm text-muted-foreground">นำ Overlay URL ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้เสียงเอฟเฟกต์ทำงาน</p>
-                                                        <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} />
+                                                        <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} hideLabel />
                                                         <OBSSetupHelp />
                                                     </div>
                                                 )
@@ -204,7 +207,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
 
                                         <div className="space-y-2">
                                             <Label>URL ของวิดเจ็ต (สำหรับ OBS)</Label>
-                                            <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} />
+                                            <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} hideLabel />
                                         </div>
 
                                         <div className="pt-4 border-t border-border space-y-4">

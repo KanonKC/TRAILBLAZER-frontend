@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Info, Zap } from 'lucide-react'
+import { Settings, Zap } from 'lucide-react'
 import React from 'react'
 import { WidgetStatusSwitch } from '@/components/widget/WidgetStatusSwitch'
 
@@ -18,12 +18,12 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, cost, onSta
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
-                        <Info className="w-5 h-5 text-info" />
-                        Settings
+                        <Settings className="w-5 h-5 text-primary" />
+                        ตั้งค่า
                     </span>
                     <div className="flex items-center gap-3">
                         {cost !== undefined && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-sm font-medium text-warning">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-supernova/10 px-2 py-0.5 text-sm font-medium text-supernova">
                                 <Zap className="h-3 w-3" />
                                 {cost} พอยท์
                             </span>

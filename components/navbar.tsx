@@ -69,7 +69,7 @@ export default function Navbar() {
 
                     <div className="hidden md:flex items-center gap-8 ml-8">
                         <Link href="/dashboard/widgets" className="text-base font-medium transition-colors hover:text-primary">
-                            Widgets
+                            วิดเจ็ต
                         </Link>
                         <Link href="/pricing" className="text-base font-medium transition-colors hover:text-primary">
                             Pricing
@@ -185,7 +185,7 @@ export default function Navbar() {
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem asChild>
                                     <Link href="/dashboard/widgets" className="w-full">
-                                        Widgets
+                                        วิดเจ็ต
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem asChild>

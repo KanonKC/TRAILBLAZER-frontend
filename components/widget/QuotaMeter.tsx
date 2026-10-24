@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getWidgetQuota, WidgetQuota } from "@/services/widget.service";
-import { Zap } from "lucide-react";
+import { AlertCircle, Zap } from "lucide-react";
 import { Progress } from "../ui/progress";
 import { tbToast } from "@/utils/tbToast";
 
@@ -39,10 +39,10 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
     const isAtLimit = quota.remaining_quota === 0;
 
     return (
-        <div className="flex flex-col gap-1.5 p-3 rounded-lg border bg-muted/30 w-full">
+        <div className="flex flex-col gap-1.5 p-3 rounded-lg border bg-card w-full">
             <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-1.5 font-medium text-foreground">
-                    <Zap className="h-4 w-4 text-warning" />
+                    <Zap className="h-4 w-4 text-supernova" />
                     โควต้าวิดเจ็ต
                 </div>
                 <span
@@ -62,7 +62,8 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
                 className={`h-2 ${isAtLimit ? "[&>div]:bg-destructive" : isNearLimit ? "[&>div]:bg-warning" : ""}`}
             />
             {isAtLimit && (
-                <p className="text-sm text-destructive">
+                <p className="flex items-start gap-1.5 text-sm text-destructive">
+                    <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
                     โควต้าของคุณหมดแล้ว กรุณาปิดวิดเจ็ตหรืออัปเกรดเป็น Pro
                 </p>
             )}

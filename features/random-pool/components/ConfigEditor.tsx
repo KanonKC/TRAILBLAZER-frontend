@@ -94,7 +94,7 @@ export function ConfigEditor({
   const blockedReason = enableBlockedReason(savedConfig, controller);
   const pointsNote =
     !savedConfig?.widget.enabled && quota && quota.remaining_quota <= 0
-      ? `เปิดใช้งานการตั้งค่านี้ไม่ได้ เพราะ Widget Points ครบ ${quota.used_quota} / ${quota.total_quota} ปิดการตั้งค่าอื่นเพื่อคืนพอยท์`
+      ? `เปิดใช้งานการตั้งค่านี้ไม่ได้ เพราะ พอยท์วิดเจ็ต ครบ ${quota.used_quota} / ${quota.total_quota} ปิดการตั้งค่าอื่นเพื่อคืนพอยท์`
       : ``;
 
   return (
@@ -140,7 +140,7 @@ export function ConfigEditor({
               ตั้งค่า
             </span>
             <span className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-sm font-medium text-warning">
+              <span className="inline-flex items-center gap-1 rounded-full bg-supernova/10 px-2 py-0.5 text-sm font-medium text-supernova">
                 <Zap className="size-3" />1 พอยท์
               </span>
               <ConfigEnableSwitch

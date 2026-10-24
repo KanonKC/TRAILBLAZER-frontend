@@ -8,6 +8,7 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-supernova: var(--supernova);
   --color-twitch: var(--twitch);
   --color-spotify: var(--spotify);
   --color-discord: var(--discord);
@@ -110,6 +111,7 @@
   --success: #4ade80;
   --warning: #facc15;
   --info: #60a5fa;
+  --supernova: #ffd700;
   --twitch: #6441a5;
   --spotify: #1ed760;
   --discord: #5865f2;

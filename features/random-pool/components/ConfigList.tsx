@@ -115,7 +115,7 @@ function ConfigRow({
       </button>
       <div className="flex shrink-0 items-center gap-3 max-sm:w-full max-sm:justify-end">
         {enabled && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-sm font-medium text-warning">
+          <span className="inline-flex items-center gap-1 rounded-full bg-supernova/10 px-2 py-0.5 text-sm font-medium text-supernova">
             <Zap className="size-3.5" />1 พอยท์
           </span>
         )}
@@ -198,7 +198,7 @@ export function ConfigList({
         )}
         <p className="text-muted-foreground text-sm">
           สร้างได้สูงสุด {MAX_CONFIGS} การตั้งค่า แต่เปิดใช้งานพร้อมกันได้ตาม
-          Widget Points ที่เหลือ เปิด 1 การตั้งค่าใช้ 1 พอยท์
+          พอยท์วิดเจ็ต ที่เหลือ เปิด 1 การตั้งค่าใช้ 1 พอยท์
           {quota ? ` (ใช้อยู่ ${quota.used_quota} / ${quota.total_quota})` : ""}
         </p>
       </CardContent>

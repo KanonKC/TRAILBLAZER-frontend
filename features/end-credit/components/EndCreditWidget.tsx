@@ -228,7 +228,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                     items={[
                                         {
                                             step: 1,
-                                            title: "เปิดใช้งาน Widget",
+                                            title: "เปิดใช้งานวิดเจ็ต",
                                             description: (
                                                 <WidgetEnabledBadge />
                                             )

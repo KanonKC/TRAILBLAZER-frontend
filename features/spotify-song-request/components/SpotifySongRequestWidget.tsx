@@ -123,7 +123,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                             items={[
                                                 {
                                                     step: 1,
-                                                    title: "เปิดใช้งาน Widget",
+                                                    title: "เปิดใช้งานวิดเจ็ต",
                                                     description: <WidgetEnabledBadge />
                                                 },
                                                 {
@@ -131,7 +131,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                     title: "เชื่อมบัญชี Spotify",
                                                     description: (
                                                         <div className="space-y-3">
-                                                            <SubLabel>ผูกบัญชีของ Spotify เพื่อใช้งานกับ Widget นี้</SubLabel>
+                                                            <SubLabel>ผูกบัญชีของ Spotify เพื่อใช้งานกับวิดเจ็ตนี้</SubLabel>
                                                             <PlatformCard
                                                                 key={Platforms.Spotify.key}
                                                                 platform={Platforms.Spotify}
@@ -152,7 +152,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                     title: "เลือกแต้มช่องที่ต้องการใช้งาน",
                                                     description: (
                                                         <div className="space-y-3">
-                                                            <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</SubLabel>
+                                                            <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</SubLabel>
                                                             <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                                         </div>
                                                     )
@@ -172,7 +172,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                     title: "บันทึกการตั้งค่า",
                                                     description: (
                                                         <div className="space-y-3">
-                                                            <SubLabel>กดบันทึกเพื่อเริ่มใช้งาน Widget</SubLabel>
+                                                            <SubLabel>กดบันทึกเพื่อเริ่มใช้งานวิดเจ็ต</SubLabel>
                                                             <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
                                                         </div>
                                                     )
@@ -223,7 +223,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                     <WidgetSettingsCardContent>
                                         <div className="space-y-2">
                                             <Label>เลือกแต้มช่องที่ต้องการใช้งาน</Label>
-                                            <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</SubLabel>
+                                            <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</SubLabel>
                                             <TwitchRewardSelector
                                                 value={twitchRewardId}
                                                 onValueChange={setTwitchRewardId}
@@ -247,8 +247,8 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                     onChange={setSuccessMessage}
                                                     placeholder="เพิ่ม {{track_name}} โดย {{track_artist}} เข้าคิวแล้ว!"
                                                     variables={[
-                                                        { variable: "{{track_name}}", description: "ชื่อเพลง", example: "Blinding Lights" },
-                                                        { variable: "{{track_artist}}", description: "ชื่อศิลปิน", example: "The Weeknd" },
+                                                        { variable: "{{track_name}}", title: "ชื่อเพลง", description: "ชื่อเพลงที่คนดูขอ" },
+                                                        { variable: "{{track_artist}}", title: "ชื่อศิลปิน", description: "ชื่อศิลปินของเพลงที่คนดูขอ" },
                                                     ]}
                                                     rows={2}
                                                 />

@@ -65,8 +65,8 @@ interface Props {
 /** Remount per item so the form state always starts from the item being edited. */
 const chatVariables = CHAT_VARIABLES.map((variable) => ({
   variable: variable.token,
+  title: variable.title,
   description: variable.description,
-  example: variable.example,
 }));
 
 export function ItemSheet(props: Props) {

@@ -11,13 +11,13 @@ export const MAX_WEIGHT = 1_000_000;
 export const CHAT_VARIABLES = [
   {
     token: "{{user}}",
+    title: "ชื่อผู้แลก",
     description: "ชื่อคนดูที่แลกแต้มช่อง",
-    example: "NongMint",
   },
   {
     token: "{{item}}",
-    description: "ชื่อของที่สุ่มได้ ถ้ารายการไม่มีชื่อ จะเป็นค่าว่าง",
-    example: "ชานมไข่มุก",
+    title: "ชื่อของที่สุ่มได้",
+    description: "ถ้ารายการไม่มีชื่อ จะเป็นค่าว่าง",
   },
 ] as const;
 

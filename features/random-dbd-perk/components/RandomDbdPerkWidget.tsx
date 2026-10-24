@@ -121,7 +121,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                     items={[
                                         {
                                             step: 1,
-                                            title: "เปิดใช้งาน Widget",
+                                            title: "เปิดใช้งานวิดเจ็ต",
                                             description: <WidgetEnabledBadge />
                                         },
                                         {

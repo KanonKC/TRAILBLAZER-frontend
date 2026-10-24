@@ -6,8 +6,8 @@ import { Field } from "./SectionTitle";
 
 const chatVariables = CHAT_VARIABLES.map((variable) => ({
   variable: variable.token,
+  title: variable.title,
   description: variable.description,
-  example: variable.example,
 }));
 
 export function ChatMessageField({

@@ -130,7 +130,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                     items={[
                                         {
                                             step: 1,
-                                            title: "เปิดใช้งาน Widget",
+                                            title: "เปิดใช้งานวิดเจ็ต",
                                             description: <WidgetEnabledBadge />
                                         },
                                         {
@@ -138,7 +138,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: `เลือกแต้มช่องที่ต้องการใช้งาน`,
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
+                                                    <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</p>
                                                     <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                                 </div>
                                             )
@@ -200,7 +200,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                 <div className="space-y-6">
                                     <div className="space-y-2">
                                         <Label>เชื่อมต่อแต้มช่องบน Twitch</Label>
-                                        <SubLabel>เลือกแต้มช่องที่ต้องการใช้งานกับ Widget นี้ หากคุณไม่เห็นแต้มช่องตรงนี้ ลองเช็คให้มั่นใจว่าคุณได้สร้างแต้มช่องแบบที่ให้คนดูกรอกข้อมูลได้แล้ว</SubLabel>
+                                        <SubLabel>เลือกแต้มช่องที่ต้องการใช้งานกับวิดเจ็ตนี้ หากคุณไม่เห็นแต้มช่องตรงนี้ ลองเช็คให้มั่นใจว่าคุณได้สร้างแต้มช่องแบบที่ให้คนดูกรอกข้อมูลได้แล้ว</SubLabel>
                                         <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
                                     </div>
 

@@ -71,9 +71,9 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
     }
 
     const shoutoutVariables = [
-        { variable: "{{user_name}}", description: "ชื่อที่แสดงผลของผู้ทักทาย", example: "User123" },
-        { variable: "{{viewer_count}}", description: "จำนวนผู้ชมที่มาพร้อม Raid", example: "150" },
-        { variable: "{{channel_link}}", description: "ลิงก์ไปยังช่องของผู้ Raid", example: "https://twitch.tv/user123" }
+        { variable: "{{user_name}}", title: "ชื่อผู้ Raid", description: "ชื่อที่แสดงผลของคนที่ Raid เข้ามา" },
+        { variable: "{{viewer_count}}", title: "จำนวนผู้ชม", description: "จำนวนผู้ชมที่มาพร้อม Raid" },
+        { variable: "{{channel_link}}", title: "ลิงก์ช่อง", description: "ลิงก์ไปยังช่องของคนที่ Raid เข้ามา" }
     ];
 
     return (
@@ -130,7 +130,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                     items={[
                                         {
                                             step: 1,
-                                            title: "เปิดใช้งาน Widget",
+                                            title: "เปิดใช้งานวิดเจ็ต",
                                             description: <WidgetEnabledBadge />
                                         },
                                         {
@@ -230,7 +230,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                         <h3 className="text-lg font-semibold">ข้อความ Shoutout</h3>
                                     </div>
                                     <BotProfileSelector value={botProfile} onValueChange={setBotProfile} />
-                                    <ReplyMessageTextarea value={replyMessage} onChange={handleReplyMessageChange} variant="default" error={replyMessageError} variables={shoutoutVariables} />
+                                    <ReplyMessageTextarea value={replyMessage} onChange={handleReplyMessageChange} error={replyMessageError} variables={shoutoutVariables} />
                                 </div>
 
                                 <div className="space-y-4">

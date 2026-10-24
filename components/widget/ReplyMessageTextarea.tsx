@@ -2,11 +2,11 @@ import { useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ReplyMessageHelp, VariableItem } from "./ReplyMessageHelp";
 import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
 interface ReplyMessageTextareaProps {
     value: string;
     onChange: (value: string) => void;
-    variant?: "default" | "overlay";
     error?: string | null;
     variables?: VariableItem[];
     placeholder?: string;
@@ -16,8 +16,7 @@ interface ReplyMessageTextareaProps {
     name?: string;
 }
 
-export function ReplyMessageTextarea({ value, onChange, variant = "overlay", error, variables=[], placeholder, rows = 3, disabled=false, defaultOpenHelp = false, name }: ReplyMessageTextareaProps) {
-    const isOverlay = variant === "overlay";
+export function ReplyMessageTextarea({ value, onChange, error, variables=[], placeholder, rows = 3, disabled=false, defaultOpenHelp = false, name }: ReplyMessageTextareaProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const handleInsertVariable = (variable: string) => {
@@ -50,25 +49,20 @@ export function ReplyMessageTextarea({ value, onChange, variant = "overlay", err
                     id="qs_reply_message"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    className={cn(
-                        "resize-none",
-                        isOverlay
-                            ? "bg-transparent border-foreground/20 text-foreground placeholder:text-muted-foreground focus-visible:ring-offset-0 focus-visible:ring-foreground/20"
-                            : "bg-background border-input text-foreground"
-                    )}
+                    aria-invalid={error ? true : undefined}
+                    className="resize-none pb-8"
                     rows={rows}
                 />
-                <div className="flex justify-between items-start absolute bottom-0 right-0 mr-2 mb-2">
-                    {error ? (
-                        <p className="text-sm text-destructive font-medium">{error}</p>
-                    ) : (
-                        <div></div>
-                    )}
-                    <span className={cn("text-sm", isOverlay ? "text-muted-foreground" : "text-muted-foreground", value.length > 500 ? "text-destructive" : "")}>
-                        {value.length}/500
-                    </span>
-                </div>
+                <span className={cn("absolute bottom-0 right-0 mr-2 mb-2 font-mono text-sm tabular-nums", error || value.length > 500 ? "text-destructive" : "text-muted-foreground")}>
+                    {value.length}/500
+                </span>
             </div>
+            {error && (
+                <p className="flex items-center gap-1.5 text-sm text-destructive font-medium">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    {error}
+                </p>
+            )}
             { variables.length > 0 && <ReplyMessageHelp onInsertVariable={handleInsertVariable} variables={variables} defaultOpen={defaultOpenHelp} />}
         </div>
     );
