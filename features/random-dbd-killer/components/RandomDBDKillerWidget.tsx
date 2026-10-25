@@ -128,7 +128,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             description: (
                                                 <div className="space-y-3">
                                                     <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</p>
-                                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." userInputRequired={false} />
+                                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} userInputRequired={false} />
                                                 </div>
                                             )
                                         },
@@ -168,7 +168,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">กดบันทึก แล้วลองกดปุ่ม Test ด้านล่างเพื่อดูว่าผลลัพธ์แสดงขึ้นบนหน้าจอสตรีมของคุณถูกต้อง</p>
+                                                    <p className="text-sm text-muted-foreground">กดบันทึก แล้วลองกดปุ่มทดสอบด้านล่างเพื่อดูว่าผลลัพธ์แสดงขึ้นบนหน้าจอสตรีมของคุณถูกต้อง</p>
                                                     <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId && killerPool.length > 0} />
                                                 </div>
                                             )
@@ -202,7 +202,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                     <div className="space-y-2">
                                         <Label>เชื่อมต่อแต้มช่องบน Twitch</Label>
                                         <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</SubLabel>
-                                        <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
+                                        <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} />
                                     </div>
 
                                     <div className="space-y-2">
@@ -231,7 +231,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                             </WidgetSettingsCardContent>
                             <WidgetSettingsCardFooter>
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
-                                <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId && killerPool.length > 0} />
+                                <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} placement="settings" canTest={!!twitchRewardId && killerPool.length > 0} />
                             </WidgetSettingsCardFooter>
                         </WidgetSettingsCard>
                     </TabsContent>
