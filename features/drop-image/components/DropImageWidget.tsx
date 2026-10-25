@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
 import { TestWidgetButton } from "@/components/button/TestWidgetButton";
-import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 
@@ -21,7 +20,7 @@ import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOvervi
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
-import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { WidgetEnableStepContent, WidgetSettingsStepContent, WidgetOverlayStepContent } from "@/components/widget/WidgetSetupStepContent";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
@@ -29,7 +28,6 @@ import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/Widge
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
 import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
-import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
@@ -133,10 +131,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: (<div className="space-y-3">
-                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วส่งรูปภาพขึ้นหน้าจอสตรีมของคุณ</p>
-                                                <WidgetEnabledBadge />
-                                            </div>)
+                                            description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วส่งรูปภาพขึ้นหน้าจอสตรีมของคุณ" />
                                         },
                                         {
                                             step: 2,
@@ -179,18 +174,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                         {
                                             step: 4,
                                             title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
-                                            description: (
-                                                <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้รูปภาพแสดงบนหน้าจอสตรีมของคุณ</p>
-                                                    <SmartOverlayUrlInput
-                                                        url={overlayUrl}
-                                                        slug="drop-image"
-                                                        onSuccess={setConfig}
-                                                        hideLabel
-                                                    />
-                                                    <OBSSetupHelp type="image" defaultOpen />
-                                                </div>
-                                            )
+                                            description: <WidgetOverlayStepContent description="นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้รูปภาพแสดงบนหน้าจอสตรีมของคุณ" url={overlayUrl} slug="drop-image" onSuccess={setConfig} obsType="image" />
                                         },
                                         {
                                             step: 5,
@@ -205,12 +189,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                         {
                                             step: 6,
                                             title: "การตั้งค่าเพิ่มเติม",
-                                            description: (
-                                                <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">เปิดตรวจเนื้อหาไม่เหมาะสม เปลี่ยนระยะเวลาแสดงรูป และแก้ข้อความที่แจ้งเมื่อรูปไม่ผ่านได้ในแท็บตั้งค่า</p>
-                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
-                                                </div>
-                                            )
+                                            description: <WidgetSettingsStepContent description="เปิดตรวจเนื้อหาไม่เหมาะสม เปลี่ยนระยะเวลาแสดงรูป และแก้ข้อความที่แจ้งเมื่อรูปไม่ผ่านได้ในแท็บตั้งค่า" onOpenSettings={() => setActiveTab("settings")} />
                                         }
                                     ]}
                                 />

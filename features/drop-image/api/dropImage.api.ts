@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { buildEventUrl } from "@/lib/event-url";
 import { DropImageConfig } from "../types";
 
 export const getDropImageConfig = async (): Promise<DropImageConfig> => {
@@ -28,10 +29,5 @@ export const testDropImage = async (eventData: any): Promise<void> => {
 };
 
 export const getDropImageEventUrl = (userId: string, key?: string) => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = new URL(`${baseUrl}/api/v1/events/drop-image/${userId}`);
-    if (key) {
-        url.searchParams.append("key", key);
-    }
-    return url.toString();
+    return buildEventUrl("/api/v1/events/drop-image", userId, key);
 };

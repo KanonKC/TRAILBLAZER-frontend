@@ -2,12 +2,10 @@
 
 import { useState } from "react";
 
-import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
-import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -29,7 +27,7 @@ import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayou
 
 import { useClipShoutout } from "../hooks/useClipShoutout";
 import { ClipShoutoutConfig } from "../types";
-import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { WidgetEnableStepContent, WidgetSettingsStepContent, WidgetOverlayStepContent } from "@/components/widget/WidgetSetupStepContent";
 import { WidgetTypeMeta } from "@/services/widget.service";
 
 export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfig: ClipShoutoutConfig | null; widgetType: WidgetTypeMeta }) {
@@ -131,10 +129,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: (<div className="space-y-3">
-                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ระบบเล่นคลิปและส่งข้อความขอบคุณเมื่อมีคน Raid เข้าช่องของคุณ</p>
-                                                <WidgetEnabledBadge />
-                                            </div>)
+                                            description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ระบบเล่นคลิปและส่งข้อความขอบคุณเมื่อมีคน Raid เข้าช่องของคุณ" />
                                         },
                                         {
                                             step: 2,
@@ -155,18 +150,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                         {
                                             step: 3,
                                             title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
-                                            description: (
-                                                <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล</p>
-                                                    <SmartOverlayUrlInput
-                                                        url={overlayUrl}
-                                                        slug="clip-shoutout"
-                                                        onSuccess={setConfig}
-                                                        hideLabel
-                                                    />
-                                                    <OBSSetupHelp defaultOpen />
-                                                </div>
-                                            )
+                                            description: <WidgetOverlayStepContent description="นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล" url={overlayUrl} slug="clip-shoutout" onSuccess={setConfig} />
                                         },
                                         {
                                             step: 4,
@@ -185,12 +169,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                         {
                                             step: 5,
                                             title: "การตั้งค่าเพิ่มเติม",
-                                            description: (
-                                                <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">เลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ในแท็บตั้งค่า</p>
-                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
-                                                </div>
-                                            )
+                                            description: <WidgetSettingsStepContent description="เลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ในแท็บตั้งค่า" onOpenSettings={() => setActiveTab("settings")} />
                                         }
                                     ]}
                                 />

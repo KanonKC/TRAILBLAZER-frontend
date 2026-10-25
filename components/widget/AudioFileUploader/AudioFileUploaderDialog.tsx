@@ -9,10 +9,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { getUploadedFile, getUploadedFiles, getUploadedFilesTotalSize, UploadedFile, uploadFile } from "@/services/uploadedFile.service";
+import { getUploadedFiles, getUploadedFilesTotalSize, UploadedFile, uploadFile } from "@/services/uploadedFile.service";
 import { calculateFileSizeWithUnit } from "@/utils/file";
 import { tbToast } from "@/utils/tbToast";
 import { Check, ChevronLeft, ChevronRight, ExternalLink, Loader2, Play, Search, Square, Upload } from "lucide-react";
+import { useAudioPreview } from "./useAudioPreview";
 import React, { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
@@ -41,11 +42,9 @@ export default function AudioFileUploaderDialog({
     onFileSelect
 }: AudioFileUploaderDialogProps) {
     const uploadInputRef = useRef<HTMLInputElement>(null);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const { playingFileId, loadingFileId: isLoadingAudio, toggle, stop } = useAudioPreview();
     const [isUploading, setIsUploading] = useState(false);
     const [selectedFile, setSelectedFile] = useState<UploadedFile | null>(null);
-    const [playingFileId, setPlayingFileId] = useState<string | null>(null);
-    const [isLoadingAudio, setIsLoadingAudio] = useState<string | null>(null);
 
     // Library state
     const [libraryFiles, setLibraryFiles] = useState<UploadedFile[]>([]);
@@ -112,49 +111,11 @@ export default function AudioFileUploaderDialog({
         onOpenChange(false);
     };
 
-    const stopAudio = () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            audioRef.current = null;
-        }
-        setPlayingFileId(null);
+    const stopAudio = stop;
+    const handlePlayAudio = (event: React.MouseEvent, file: UploadedFile) => {
+        event.stopPropagation();
+        void toggle(file.id);
     };
-
-    const handlePlayAudio = async (e: React.MouseEvent, file: UploadedFile) => {
-        e.stopPropagation();
-
-        if (playingFileId === file.id) {
-            stopAudio();
-            return;
-        }
-
-        stopAudio();
-        setIsLoadingAudio(file.id);
-        try {
-            const fetched = await getUploadedFile(file.id);
-            if (!fetched.url) return;
-
-            const audio = new Audio(fetched.url);
-            audio.volume = 1;
-            audioRef.current = audio;
-            audio.onended = () => setPlayingFileId(null);
-
-            await audio.play();
-            setPlayingFileId(file.id);
-        } catch {
-            setPlayingFileId(null);
-        } finally {
-            setIsLoadingAudio(null);
-        }
-    };
-
-    useEffect(() => {
-        if (!isOpen) {
-            stopAudio();
-            setSelectedFile(null);
-        }
-    }, [isOpen]);
 
     const handleUploadFromDialog = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || !e.target.files[0]) return;

@@ -6,7 +6,6 @@ import Image from "next/image";
 import { ExportVideoHistoryList } from "./ExportVideoHistoryList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -35,7 +34,7 @@ import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOvervi
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
-import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { WidgetEnableStepContent, WidgetSettingsStepContent } from "@/components/widget/WidgetSetupStepContent";
 import SubLabel from "@/components/SubLabel";
 import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
@@ -137,10 +136,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: (<div className="space-y-3">
-                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ระบบส่งออกวิดีโอสตรีมของคุณไปยัง YouTube โดยอัตโนมัติเมื่อสตรีมจบ</p>
-                                                <WidgetEnabledBadge />
-                                            </div>)
+                                            description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ระบบส่งออกวิดีโอสตรีมของคุณไปยัง YouTube โดยอัตโนมัติเมื่อสตรีมจบ" />
                                         },
                                         {
                                             step: 2,
@@ -264,12 +260,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         {
                                             step: 8,
                                             title: "การตั้งค่าเพิ่มเติม",
-                                            description: (
-                                                <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">ตั้งคำอธิบายวิดีโอและแท็กเริ่มต้นสำหรับ YouTube ได้ในแท็บตั้งค่า และดูประวัติการนำออกย้อนหลังได้ในแท็บประวัติการนำออก</p>
-                                                    <GoToSettingsButton onClick={() => controller.setActiveTab("settings")} />
-                                                </div>
-                                            )
+                                            description: <WidgetSettingsStepContent description="ตั้งคำอธิบายวิดีโอและแท็กเริ่มต้นสำหรับ YouTube ได้ในแท็บตั้งค่า และดูประวัติการนำออกย้อนหลังได้ในแท็บประวัติการนำออก" onOpenSettings={() => controller.setActiveTab("settings")} />
                                         }
                                     ]}
                                 />

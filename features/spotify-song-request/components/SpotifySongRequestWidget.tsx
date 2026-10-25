@@ -1,6 +1,5 @@
 "use client"
 
-import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { useSpotifySongRequest } from "../hooks/useSpotifySongRequest";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Music2, ListMusic, MessageSquare, Link2, AlertTriangle } from "lucide-react";
@@ -11,7 +10,7 @@ import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOvervi
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
-import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { WidgetEnableStepContent, WidgetSettingsStepContent } from "@/components/widget/WidgetSetupStepContent";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
@@ -125,10 +124,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                 {
                                                     step: 1,
                                                     title: "เปิดใช้งานวิดเจ็ต",
-                                                    description: (<div className="space-y-3">
-                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วขอเพลง Spotify เข้าคิวเพลงของคุณ</p>
-                                                <WidgetEnabledBadge />
-                                            </div>)
+                                                    description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วขอเพลง Spotify เข้าคิวเพลงของคุณ" />
                                                 },
                                                 {
                                                     step: 2,
@@ -219,12 +215,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                 {
                                                     step: 8,
                                                     title: "การตั้งค่าเพิ่มเติม",
-                                                    description: (
-                                                        <div className="space-y-3">
-                                                            <p className="text-sm text-muted-foreground">แก้ข้อความตอบกลับเมื่อขอเพลงสำเร็จ ไม่พบเพลง หรือไม่มีอุปกรณ์เล่นอยู่ และเปลี่ยนแต้มช่องได้ในแท็บตั้งค่า</p>
-                                                            <GoToSettingsButton onClick={() => setActiveTab("settings")} />
-                                                        </div>
-                                                    )
+                                                    description: <WidgetSettingsStepContent description="แก้ข้อความตอบกลับเมื่อขอเพลงสำเร็จ ไม่พบเพลง หรือไม่มีอุปกรณ์เล่นอยู่ และเปลี่ยนแต้มช่องได้ในแท็บตั้งค่า" onOpenSettings={() => setActiveTab("settings")} />
                                                 }
                                             ]}
                                         />

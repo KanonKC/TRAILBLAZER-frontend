@@ -13,13 +13,12 @@ import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
-import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { WidgetEnableStepContent, WidgetSettingsStepContent } from "@/components/widget/WidgetSetupStepContent";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
@@ -123,10 +122,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: (<div className="space-y-3">
-                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วสุ่ม Perk ขึ้นหน้าจอสตรีมของคุณ</p>
-                                                <WidgetEnabledBadge />
-                                            </div>)
+                                            description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วสุ่ม Perk ขึ้นหน้าจอสตรีมของคุณ" />
                                         },
                                         {
                                             step: 2,
@@ -207,12 +203,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                         {
                                             step: 6,
                                             title: "การตั้งค่าเพิ่มเติม",
-                                            description: (
-                                                <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">ปรับจำนวน Perk ที่จะสุ่มของ Survivor และ Killer แยกกัน และทดลองสุ่มได้ในแท็บตั้งค่า</p>
-                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
-                                                </div>
-                                            )
+                                            description: <WidgetSettingsStepContent description="ปรับจำนวน Perk ที่จะสุ่มของ Survivor และ Killer แยกกัน และทดลองสุ่มได้ในแท็บตั้งค่า" onOpenSettings={() => setActiveTab("settings")} />
                                         }
                                     ]}
                                 />

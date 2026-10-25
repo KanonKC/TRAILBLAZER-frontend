@@ -5,8 +5,9 @@
 // therefore excluded from the overlay queue; wire up the backend event path
 // first, then queue it like the other widgets.
 
-import { useEffect, useRef, useCallback, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
+import { useOverlayEventSource } from "@/hooks/use-overlay-event-source"
 import { getRandomDbdPerkEventUrl } from "@/features/random-dbd-perk/api/randomDbdPerk.api";
 import { Button } from "@/components/ui/button";
 import { RefreshCcw, WifiOff } from "lucide-react";
@@ -23,40 +24,18 @@ interface RandomDbdPerkEvent {
     type: "survivor" | "killer";
 }
 
-const MAX_RETRY_DELAY = 16000 // 16 seconds max
-const INITIAL_RETRY_DELAY = 1000 // 1 second
 
 export default function RandomDbdPerkOverlayPage() {
     const params = useParams()
     const searchParams = useSearchParams()
     const userId = params.userId as string
     const key = searchParams.get("key") ?? undefined
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
-    const eventSourceRef = useRef<EventSource | null>(null)
     const [isConnected, setIsConnected] = useState(false)
     const [perkData, setPerkData] = useState<RandomDbdPerkEvent | null>(null)
     const [isVisible, setIsVisible] = useState(false)
     const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
-    const connect = useCallback(() => {
-        if (!userId) return
-
-        if (eventSourceRef.current) {
-            eventSourceRef.current.close()
-        }
-
-        const url = getRandomDbdPerkEventUrl(userId, key);
-        const eventSource = new EventSource(url)
-        eventSourceRef.current = eventSource
-
-        eventSource.onopen = () => {
-            console.log("Connected to Random DBD Perk events")
-            setIsConnected(true)
-            retryDelayRef.current = INITIAL_RETRY_DELAY
-        }
-
-        eventSource.addEventListener("perks", (event) => {
+    useOverlayEventSource(userId ? getRandomDbdPerkEventUrl(userId, key) : null, "perks", (event) => {
             try {
                 const data = JSON.parse(event.data) as RandomDbdPerkEvent;
                 console.log("Received perks event:", data)
@@ -76,37 +55,11 @@ export default function RandomDbdPerkOverlayPage() {
             } catch (error) {
                 console.error("Failed to parse event data:", error)
             }
-        })
+    }, { resetOnOpen: true, onOpen: () => setIsConnected(true), onError: () => setIsConnected(false) });
 
-        eventSource.onerror = () => {
-            console.log("EventSource error, attempting reconnect...")
-            setIsConnected(false)
-            eventSource.close()
-
-            const delay = retryDelayRef.current
-            retryTimeoutRef.current = setTimeout(() => {
-                connect()
-            }, delay)
-
-            retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY)
-        }
-    }, [userId, key])
-
-    useEffect(() => {
-        connect()
-
-        return () => {
-            if (retryTimeoutRef.current) {
-                clearTimeout(retryTimeoutRef.current)
-            }
-            if (hideTimeoutRef.current) {
-                clearTimeout(hideTimeoutRef.current)
-            }
-            if (eventSourceRef.current) {
-                eventSourceRef.current.close()
-            }
-        }
-    }, [connect])
+    useEffect(() => () => {
+        if (hideTimeoutRef.current) clearTimeout(hideTimeoutRef.current);
+    }, []);
 
     return (
         <div className="w-screen h-screen bg-transparent overflow-hidden pointer-events-none relative flex items-center justify-center p-8">

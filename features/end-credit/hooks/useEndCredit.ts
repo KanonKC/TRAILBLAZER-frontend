@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUser } from "@/components/user-context";
+import { useWidgetLifecycleState } from "@/hooks/use-widget-lifecycle-state";
 import { tbToast } from "@/utils/tbToast";
 import { enableEndCredit, updateEndCreditConfig, testEndCredit } from "../api/endCredit.api";
 import { deleteWidget } from "@/services/widget.service";
@@ -7,7 +8,7 @@ import { EndCreditConfig } from "../types";
 
 export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
-    const [config, setConfig] = useState<EndCreditConfig | null>(initialConfig);
+    const { config, setConfig, isEnabled, setIsEnabled, isSaving, setIsSaving, isTesting, setIsTesting, activeTab, setActiveTab, handleStatusChange, runSaving, runTesting } = useWidgetLifecycleState(initialConfig);
     const [followersHeader, setFollowersHeader] = useState(initialConfig?.followers_header || "ผู้ติดตามใหม่");
     const [subscribesHeader, setSubscribesHeader] = useState(initialConfig?.subscribes_header || "สมาชิกใหม่");
     const [raidsHeader, setRaidsHeader] = useState(initialConfig?.raids_header || "ผู้ที่ Raid เข้ามา");
@@ -22,10 +23,6 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
     const [isShowSubMonths, setIsShowSubMonths] = useState(initialConfig?.is_show_sub_months ?? true);
     const [isShowRaidCount, setIsShowRaidCount] = useState(initialConfig?.is_show_raid_count ?? true);
     const [isShowBitsAmount, setIsShowBitsAmount] = useState(initialConfig?.is_show_bits_amount ?? true);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isTesting, setIsTesting] = useState(false);
-    const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
 
     const overlayUrl = typeof window !== 'undefined' && user
         ? `${window.location.origin}/overlays/end-credit/${user.id}${config?.widget && config.widget.overlay_key ? `?key=${config.widget.overlay_key}` : ''}`
@@ -33,8 +30,7 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
 
     const handleEnable = async () => {
         if (!user) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const data = await enableEndCredit(user.twitchId, user.id);
             if (data) {
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
@@ -56,18 +52,12 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
                 setIsEnabled(data.widget?.enabled ?? false);
                 setActiveTab("quick-start");
             }
-        } catch (error) {
-            console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "เปิดใช้งานไม่สำเร็จ", "Failed to enable");
     };
 
     const handleSave = async () => {
         if (!config) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const updated = await updateEndCreditConfig({
                 followers_header: followersHeader,
                 subscribes_header: subscribesHeader,
@@ -89,32 +79,20 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
                 tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
                 setConfig(updated);
             }
-        } catch (error) {
-            console.error("Failed to update", error);
-            tbToast.error({ title: "บันทึกการตั้งค่าไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "บันทึกการตั้งค่าไม่สำเร็จ", "Failed to update");
     };
 
     const handleTest = async () => {
         if (!user || isTesting) return;
-        setIsTesting(true);
-        try {
+        await runTesting(async () => {
             await testEndCredit();
             tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ", description: "Credit Roll จะเล่นบนโอเวอร์เลย์ที่เปิดอยู่" });
-        } catch (error) {
-            console.error("Test failed:", error);
-            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsTesting(false);
-        }
+        }, "ทดสอบวิดเจ็ตไม่สำเร็จ", "Test failed:");
     };
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const success = await deleteWidget(config.widget.id);
             if (success) {
                 tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
@@ -122,21 +100,9 @@ export const useEndCredit = (initialConfig: EndCreditConfig | null) => {
                 setIsEnabled(false);
                 setActiveTab("overview");
             }
-        } catch (error) {
-            console.error("Failed to delete", error);
-            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "ลบวิดเจ็ตไม่สำเร็จ", "Failed to delete");
     };
 
-    const handleStatusChange = (checked: boolean) => {
-        setIsEnabled(checked);
-        setConfig(prev => prev ? {
-            ...prev,
-            widget: { ...prev.widget, enabled: checked }
-        } : null);
-    };
 
     return {
         user,

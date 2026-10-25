@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/components/user-context";
+import { useWidgetLifecycleState } from "@/hooks/use-widget-lifecycle-state";
 import { tbToast } from "@/utils/tbToast";
 import { z } from "zod";
 import {
@@ -13,17 +14,13 @@ import { ClipShoutoutConfig } from "../types";
 
 export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
-    const [config, setConfig] = useState<ClipShoutoutConfig | null>(initialConfig);
+    const { config, setConfig, isEnabled, setIsEnabled, isSaving, setIsSaving, isTesting, setIsTesting, activeTab, setActiveTab, handleStatusChange, runSaving, runTesting } = useWidgetLifecycleState(initialConfig);
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
     const [delayMs, setDelayMs] = useState(initialConfig?.delay_ms || 0);
     const [replyMessageError, setReplyMessageError] = useState<string | null>(null);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isTesting, setIsTesting] = useState(false);
     const [botProfile, setBotProfile] = useState<string>(initialConfig?.twitch_bot_id || user?.twitchId || "");
     const [enabledClip, setEnabledClip] = useState(initialConfig?.enabled_clip ?? true);
     const [enabledHighlightOnly, setEnabledHighlightOnly] = useState(initialConfig?.enabled_highlight_only ?? false);
-    const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
 
     const replyMessageSchema = z.string().max(500, "ข้อความต้องไม่เกิน 500 ตัวอักษร");
 
@@ -39,8 +36,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
 
     const handleEnable = async () => {
         if (!user) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const data = await enableClipShoutout(user.twitchId, user.id);
             if (data) {
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
@@ -52,12 +48,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
                 setEnabledHighlightOnly(data.enabled_highlight_only ?? false);
                 setActiveTab("quick-start");
             }
-        } catch (error) {
-            console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "เปิดใช้งานไม่สำเร็จ", "Failed to enable");
     };
 
     const handleSave = async () => {
@@ -69,8 +60,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
             return;
         }
 
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const updated = await updateClipShoutoutConfig({
                 reply_message: replyMessage,
                 delay_ms: delayMs,
@@ -83,19 +73,13 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
                 tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
                 setConfig(updated);
             }
-        } catch (error) {
-            console.error("Failed to update", error);
-            tbToast.error({ title: "บันทึกการตั้งค่าไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "บันทึกการตั้งค่าไม่สำเร็จ", "Failed to update");
     };
 
     const handleTest = async () => {
         if (!user || isTesting) return;
 
-        setIsTesting(true);
-        try {
+        await runTesting(async () => {
             const displayName = `TestUser_${Math.random().toString().slice(2, 8)}`;
             const username = displayName.toLowerCase()
             const mockEvent = {
@@ -124,18 +108,12 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
 
             await testClipShoutout(mockEvent);
             tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ" });
-        } catch (error) {
-            console.error("Test failed:", error);
-            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsTesting(false);
-        }
+        }, "ทดสอบวิดเจ็ตไม่สำเร็จ", "Test failed:");
     };
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const success = await deleteWidget(config.widget.id);
             if (success) {
                 tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
@@ -144,12 +122,7 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
                 setIsEnabled(false);
                 setActiveTab("overview");
             }
-        } catch (error) {
-            console.error("Failed to delete", error);
-            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "ลบวิดเจ็ตไม่สำเร็จ", "Failed to delete");
     };
 
     const handleReplyMessageChange = (value: string) => {
@@ -160,13 +133,6 @@ export const useClipShoutout = (initialConfig: ClipShoutoutConfig | null) => {
         }
     };
 
-    const handleStatusChange = (checked: boolean) => {
-        setIsEnabled(checked);
-        setConfig(prev => prev ? {
-            ...prev,
-            widget: { ...prev.widget, enabled: checked }
-        } : null);
-    };
 
     return {
         user,

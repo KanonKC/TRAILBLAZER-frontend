@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { buildEventUrl } from "@/lib/event-url";
 import { FirstWordConfig, FirstWordCustomReply, ListResponse } from "../types";
 
 /**
@@ -75,10 +76,5 @@ export const resetChatters = async (): Promise<boolean> => {
 };
 
 export const getFirstWordEventUrl = (userId: string, key?: string): string => {
-    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = `${BASE_URL}/api/v1/events/first-word/${userId}`;
-    if (key) {
-        return `${url}?key=${key}`;
-    }
-    return url;
+    return buildEventUrl("/api/v1/events/first-word", userId, key);
 };

@@ -1,6 +1,5 @@
 "use client"
 
-import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { useRandomDBDKiller } from "../hooks/useRandomDBDKiller";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Gift, ShieldQuestion } from "lucide-react";
@@ -12,14 +11,13 @@ import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOvervi
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
-import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { WidgetEnableStepContent, WidgetSettingsStepContent, WidgetOverlayStepContent } from "@/components/widget/WidgetSetupStepContent";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
 import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
-import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import SubLabel from "@/components/SubLabel";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
@@ -117,10 +115,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: (<div className="space-y-3">
-                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วสุ่ม Killer ขึ้นหน้าจอสตรีมของคุณ</p>
-                                                <WidgetEnabledBadge />
-                                            </div>)
+                                            description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วสุ่ม Killer ขึ้นหน้าจอสตรีมของคุณ" />
                                         },
                                         {
                                             step: 2,
@@ -150,18 +145,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                         {
                                             step: 4,
                                             title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
-                                            description: (
-                                                <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้ผลการสุ่มแสดงบนหน้าจอสตรีมของคุณ</p>
-                                                    <SmartOverlayUrlInput
-                                                        url={overlayUrl}
-                                                        slug="random-dbd-killer"
-                                                        onSuccess={setConfig}
-                                                        hideLabel
-                                                    />
-                                                    <OBSSetupHelp type="image" defaultOpen />
-                                                </div>
-                                            )
+                                            description: <WidgetOverlayStepContent description="นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้ผลการสุ่มแสดงบนหน้าจอสตรีมของคุณ" url={overlayUrl} slug="random-dbd-killer" onSuccess={setConfig} obsType="image" />
                                         },
                                         {
                                             step: 5,
@@ -176,12 +160,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                         {
                                             step: 6,
                                             title: "การตั้งค่าเพิ่มเติม",
-                                            description: (
-                                                <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">เปลี่ยนแต้มช่อง ปรับกอง Killer ที่จะสุ่ม และเลือกรูปแบบ Animation ตอนสุ่มได้ในแท็บตั้งค่า</p>
-                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
-                                                </div>
-                                            )
+                                            description: <WidgetSettingsStepContent description="เปลี่ยนแต้มช่อง ปรับกอง Killer ที่จะสุ่ม และเลือกรูปแบบ Animation ตอนสุ่มได้ในแท็บตั้งค่า" onOpenSettings={() => setActiveTab("settings")} />
                                         }
                                     ]}
                                 />

@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { buildEventUrl } from "@/lib/event-url";
 import { ClipShoutoutConfig } from "../types";
 
 export const getClipShoutoutConfig = async (): Promise<ClipShoutoutConfig> => {
@@ -29,10 +30,5 @@ export const refreshClipShoutoutOverlayKey = async (): Promise<ClipShoutoutConfi
 };
 
 export const getClipShoutoutEventUrl = (userId: string, key?: string): string => {
-    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = `${BASE_URL}/api/v1/events/clip-shoutout/${userId}`;
-    if (key) {
-        return `${url}?key=${key}`;
-    }
-    return url;
+    return buildEventUrl("/api/v1/events/clip-shoutout", userId, key);
 };
