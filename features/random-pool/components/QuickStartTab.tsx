@@ -10,7 +10,7 @@ import { ConfigSwitcher } from "./ConfigSwitcher";
 import { PoolCreateForm } from "./PoolCreateForm";
 import { PoolItemsEditor } from "./PoolItemsEditor";
 import { OverlayUrlField } from "./OverlayUrlField";
-import { RewardSelect } from "./RewardSelect";
+import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
 import { Label } from "@/components/ui/label";
 import SubLabel from "@/components/SubLabel";
 
@@ -77,7 +77,15 @@ export function QuickStartTab({
                     <SubLabel>
                       เลือกแต้มช่องที่มีอยู่ในช่องของคุณ คนดูแลกแต้มช่องนี้เพื่อสุ่ม
                     </SubLabel>
-                    <RewardSelect controller={controller} />
+                    <ChannelRewardSelector
+                      value={controller.draft.twitch_reward_id || null}
+                      onValueChange={(value) =>
+                        controller.patchDraft({ twitch_reward_id: value ?? "" })
+                      }
+                      rewards={controller.rewards}
+                      allowNone={false}
+                      getRewardDisabledNote={(reward) => controller.rewardUsedNote(reward.id)}
+                    />
                   </div>
                 ),
               },

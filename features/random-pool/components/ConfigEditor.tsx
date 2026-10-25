@@ -47,7 +47,7 @@ import { DrawSection } from "./DrawSection";
 import { OverlayUrlField } from "./OverlayUrlField";
 import { PoolItemsEditor } from "./PoolItemsEditor";
 import { PoolPicker } from "./PoolPicker";
-import { RewardSelect } from "./RewardSelect";
+import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
 import { SectionTitle } from "./SectionTitle";
 import { SoundField } from "./SoundField";
 
@@ -200,7 +200,15 @@ export function ConfigEditor({
               <SubLabel>
                 คนดูแลกแต้มช่องนี้เพื่อสุ่ม 1 แต้มช่อง ผูกกับ 1 กองสุ่ม
               </SubLabel>
-              <RewardSelect controller={controller} />
+              <ChannelRewardSelector
+                value={controller.draft.twitch_reward_id || null}
+                onValueChange={(value) =>
+                  controller.patchDraft({ twitch_reward_id: value ?? "" })
+                }
+                rewards={controller.rewards}
+                allowNone={false}
+                getRewardDisabledNote={(reward) => controller.rewardUsedNote(reward.id)}
+              />
             </div>
             <div className="space-y-2">
               <Label>ลิงก์โอเวอร์เลย์</Label>

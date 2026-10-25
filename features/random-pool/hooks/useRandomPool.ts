@@ -119,6 +119,14 @@ export function useRandomPool(
     widgets: ExtendedWidget[];
   }>({ open: false, widgets: [] });
 
+  /** "ใช้อยู่ใน <config>" when another config already owns this reward, otherwise null. */
+  function rewardUsedNote(rewardId: string) {
+    const takenBy = data.configs.data.find(
+      (other) => other.id !== editingId && other.twitch_reward_id === rewardId,
+    );
+    return takenBy ? `ใช้อยู่ใน ${takenBy.name}` : null;
+  }
+
   const isLoggedIn = initial !== null;
   const isNewConfig = editingId === NEW_CONFIG_ID;
   const savedConfig = data.configs.data.find(
@@ -450,6 +458,7 @@ export function useRandomPool(
     selectedPool,
     poolItems,
     rewards,
+    rewardUsedNote,
     files,
     busy,
     togglingId,
