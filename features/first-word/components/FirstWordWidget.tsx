@@ -10,7 +10,7 @@ import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOvervi
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
-import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
+import { WidgetEnableStepContent, WidgetSettingsStepContent } from "@/components/widget/WidgetSetupStepContent";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
 import { TestWidgetButton } from "@/components/button/TestWidgetButton";
@@ -24,7 +24,6 @@ import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { RefreshCcw, Trash2 } from "lucide-react";
 import {
     AlertDialog,
@@ -112,12 +111,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                             {
                                                 step: 1,
                                                 title: "เปิดใช้งานวิดเจ็ต",
-                                                description: (
-                                                    <div className="space-y-3">
-                                                        <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ระบบทักทายคนดูที่เข้ามาใหม่ในช่องของคุณโดยอัตโนมัติ</p>
-                                                        <WidgetEnabledBadge />
-                                                    </div>
-                                                )
+                                                description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ระบบทักทายคนดูที่เข้ามาใหม่ในช่องของคุณโดยอัตโนมัติ" />
                                             },
                                             {
                                                 step: 2,
@@ -162,12 +156,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                             {
                                                 step: 5,
                                                 title: "การตั้งค่าเพิ่มเติม",
-                                                description: (
-                                                    <div className="space-y-3">
-                                                        <p className="text-sm text-muted-foreground">ปรับเสียงเอฟเฟกต์ เลือกบัญชีที่ใช้ส่งข้อความ หรือรีเซ็ตรายชื่อคนดูเพื่อเริ่มทักทายใหม่ได้ในแท็บตั้งค่า (ข้อความเฉพาะคนอยู่ในแท็บข้อความเฉพาะคน)</p>
-                                                        <GoToSettingsButton onClick={() => controller.setActiveTab("settings")} />
-                                                    </div>
-                                                )
+                                                description: <WidgetSettingsStepContent description="ปรับเสียงเอฟเฟกต์ เลือกบัญชีที่ใช้ส่งข้อความ หรือรีเซ็ตรายชื่อคนดูเพื่อเริ่มทักทายใหม่ได้ในแท็บตั้งค่า (ข้อความเฉพาะคนอยู่ในแท็บข้อความเฉพาะคน)" onOpenSettings={() => controller.setActiveTab("settings")} />
                                             }
                                         ]}
                                     />

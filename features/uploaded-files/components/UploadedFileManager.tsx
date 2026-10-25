@@ -7,7 +7,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
     deleteUploadedFile,
-    getUploadedFile,
     getUploadedFiles,
     getUploadedFilesTotalSize,
     UploadedFile,
@@ -37,6 +36,7 @@ import {
     Upload,
     X
 } from "lucide-react";
+import { useAudioPreview } from "@/components/widget/AudioFileUploader/useAudioPreview";
 import React, { useEffect, useRef, useState } from "react";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // Increased to 10MB for general management
@@ -44,10 +44,8 @@ const ACCEPTED_FILE_TYPES = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp3"
 
 export default function UploadedFileManager() {
     const uploadInputRef = useRef<HTMLInputElement>(null);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const { playingFileId, loadingFileId: isLoadingAudio, toggle, stop } = useAudioPreview();
     const [isUploading, setIsUploading] = useState(false);
-    const [playingFileId, setPlayingFileId] = useState<string | null>(null);
-    const [isLoadingAudio, setIsLoadingAudio] = useState<string | null>(null);
 
     // Selection state
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -113,41 +111,10 @@ export default function UploadedFileManager() {
         }
     };
 
-    const stopAudio = () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            audioRef.current = null;
-        }
-        setPlayingFileId(null);
-    };
-
-    const handlePlayAudio = async (e: React.MouseEvent, file: UploadedFile) => {
-        e.stopPropagation();
-
-        if (playingFileId === file.id) {
-            stopAudio();
-            return;
-        }
-
-        stopAudio();
-        setIsLoadingAudio(file.id);
-        try {
-            const fetched = await getUploadedFile(file.id);
-            if (!fetched.url) return;
-
-            const audio = new Audio(fetched.url);
-            audio.volume = 1;
-            audioRef.current = audio;
-            audio.onended = () => setPlayingFileId(null);
-
-            await audio.play();
-            setPlayingFileId(file.id);
-        } catch {
-            setPlayingFileId(null);
-        } finally {
-            setIsLoadingAudio(null);
-        }
+    const stopAudio = stop;
+    const handlePlayAudio = (event: React.MouseEvent, file: UploadedFile) => {
+        event.stopPropagation();
+        void toggle(file.id);
     };
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

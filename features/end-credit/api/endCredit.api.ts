@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { buildEventUrl } from "@/lib/event-url";
 import { EndCreditConfig, EndCreditViewerRecord } from "../types";
 
 export const getEndCreditConfig = async (): Promise<EndCreditConfig> => {
@@ -29,21 +30,14 @@ export const testEndCredit = async (): Promise<void> => {
 };
 
 export const getEndCreditRecordsUrl = (userId: string, key?: string): string => {
-    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = `${BASE_URL}/api/v1/end-credit/${encodeURIComponent(userId)}/records`;
-    if (key) {
-        return `${url}?key=${encodeURIComponent(key)}`;
-    }
-    return url;
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+    const url = new URL(`${baseUrl.replace(/\/$/, "")}/api/v1/end-credit/${encodeURIComponent(userId)}/records`);
+    if (key) url.searchParams.set("key", key);
+    return url.toString();
 };
 
 export const getEndCreditEventUrl = (userId: string, key?: string): string => {
-    const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = `${BASE_URL}/api/v1/events/end-credit/${encodeURIComponent(userId)}`;
-    if (key) {
-        return `${url}?key=${encodeURIComponent(key)}`;
-    }
-    return url;
+    return buildEventUrl("/api/v1/events/end-credit", userId, key);
 };
 
 export interface EndCreditOverlayData {

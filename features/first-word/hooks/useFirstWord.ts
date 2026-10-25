@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useUser } from "@/components/user-context";
+import { useWidgetLifecycleState } from "@/hooks/use-widget-lifecycle-state";
 import { tbToast } from "@/utils/tbToast";
 import { z } from "zod";
 import * as api from "../api/firstWord.api";
@@ -15,12 +16,10 @@ import { deleteWidget } from "@/services/widget.service";
  */
 export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequiresProPlan: boolean) => {
     const { user, isLoading: isUserLoading } = useUser();
+    const { config, setConfig, isEnabled, setIsEnabled, isSaving, setIsSaving, isTesting, setIsTesting, activeTab, setActiveTab, handleStatusChange, runSaving } = useWidgetLifecycleState(initialConfig);
     
     // Core State
-    const [config, setConfig] = useState<FirstWordConfig | null>(initialConfig);
     const [requiresProPlan, setRequiresProPlan] = useState(initialRequiresProPlan);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
-    const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
     
     // Form State
     const [replyMessage, setReplyMessage] = useState(initialConfig?.reply_message || "");
@@ -31,8 +30,6 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
     
     // Operation State
     const [isLoading, setIsLoading] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isTesting, setIsTesting] = useState(false);
     const [isResettingChatters, setIsResettingChatters] = useState(false);
     const [chattersCount, setChattersCount] = useState<number>(0);
     
@@ -82,8 +79,7 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
 
     const handleEnable = async () => {
         if (!user) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const data = await api.enableFirstWord(user.twitchId, user.id);
             if (data) {
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
@@ -92,12 +88,7 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
                 setIsEnabled(data.widget?.enabled ?? false);
                 setActiveTab("quick-start");
             }
-        } catch (error) {
-            console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "เปิดใช้งานไม่สำเร็จ", "Failed to enable");
     };
 
     const handleSave = async () => {
@@ -188,8 +179,7 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const success = await deleteWidget(config.widget.id);
             if (success) {
                 tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
@@ -199,12 +189,7 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
                 setAudioFile(null);
                 setActiveTab("overview");
             }
-        } catch (error) {
-            console.error("Failed to delete", error);
-            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "ลบวิดเจ็ตไม่สำเร็จ", "Failed to delete");
     };
 
     const handleResetClick = async () => {
@@ -248,17 +233,6 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
                 setReplyMessageError(null);
             }
         }
-    };
-
-    const handleStatusChange = (checked: boolean) => {
-        setIsEnabled(checked);
-        setConfig(prev => prev ? {
-            ...prev,
-            widget: {
-                ...prev.widget,
-                enabled: checked
-            }
-        } : null);
     };
 
 

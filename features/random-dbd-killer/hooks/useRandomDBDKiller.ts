@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/components/user-context";
+import { useWidgetLifecycleState } from "@/hooks/use-widget-lifecycle-state";
 import { tbToast } from "@/utils/tbToast";
 import {
     enableRandomDBDKiller,
@@ -13,11 +14,7 @@ import { DEFAULT_ANIMATION_STYLE } from "../constants";
 
 export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
-    const [config, setConfig] = useState<RandomDBDKillerConfig | null>(initialConfig);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isTesting, setIsTesting] = useState(false);
-    const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
+    const { config, setConfig, isEnabled, setIsEnabled, isSaving, setIsSaving, isTesting, setIsTesting, activeTab, setActiveTab, handleStatusChange, runSaving, runTesting } = useWidgetLifecycleState(initialConfig);
 
     const [twitchRewardId, setTwitchRewardId] = useState<string | null>(initialConfig?.twitch_reward_id || null);
     const [killerPool, setKillerPool] = useState<string[]>(initialConfig?.killer_pool || []);
@@ -42,8 +39,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
 
     const handleEnable = async () => {
         if (!user) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const data = await enableRandomDBDKiller();
             if (data) {
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
@@ -54,18 +50,12 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
                 setAnimationStyle(data.animation_style || DEFAULT_ANIMATION_STYLE);
                 setActiveTab("quick-start");
             }
-        } catch (error) {
-            console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "เปิดใช้งานไม่สำเร็จ", "Failed to enable");
     };
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const success = await deleteWidget(config.widget.id);
             if (success) {
                 tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
@@ -75,18 +65,12 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
                 setKillerPool([]);
                 setActiveTab("overview");
             }
-        } catch (error) {
-            console.error("Failed to delete", error);
-            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "ลบวิดเจ็ตไม่สำเร็จ", "Failed to delete");
     };
 
     const handleSave = async () => {
         if (!config) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const updated = await updateRandomDBDKillerConfig({
                 twitch_reward_id: twitchRewardId ?? undefined,
                 killer_pool: killerPool,
@@ -98,20 +82,14 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
                 setKillerPool(updated.killer_pool || []);
                 setAnimationStyle(updated.animation_style || DEFAULT_ANIMATION_STYLE);
             }
-        } catch (error: any) {
-            console.error("Failed to save", error);
-            tbToast.error({ title: "บันทึกการตั้งค่าไม่สำเร็จ", error: error.response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "บันทึกการตั้งค่าไม่สำเร็จ", "Failed to save");
     };
 
     const handleTest = async () => {
         if (!user || isTesting) return;
         const rewardId = twitchRewardId || "test-reward-id";
 
-        setIsTesting(true);
-        try {
+        await runTesting(async () => {
             const mockEvent = {
                 subscription: { status: "enabled", type: "channel.channel_points_custom_reward_redemption.add" },
                 event: {
@@ -130,18 +108,9 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
             };
             await testRandomDBDKiller(mockEvent);
             tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ" });
-        } catch (error) {
-            console.error("Test failed", error);
-            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsTesting(false);
-        }
+        }, "ทดสอบวิดเจ็ตไม่สำเร็จ", "Test failed");
     };
 
-    const handleStatusChange = (checked: boolean) => {
-        setIsEnabled(checked);
-        setConfig(prev => prev ? { ...prev, widget: { ...prev.widget, enabled: checked } } : null);
-    };
 
     return {
         user,

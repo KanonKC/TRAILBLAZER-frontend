@@ -2,14 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useParams, useSearchParams } from "next/navigation"
+import { useOverlayEventSource } from "@/hooks/use-overlay-event-source"
 import { getEndCreditEventUrl, EndCreditOverlayData } from "@/features/end-credit/api/endCredit.api"
 import { CreditRow } from "@/features/end-credit/components/CreditRow"
 import { describeBadge, topBadgeIndex } from "@/features/end-credit/tiers"
 import { EndCreditRecordType, EndCreditViewerRecord } from "@/features/end-credit/types"
 import { ackOverlayJob } from "@/lib/overlay-queue"
 
-const MAX_RETRY_DELAY = 16000
-const INITIAL_RETRY_DELAY = 1000
 
 /** Fallback pixels-per-second if the widget config hasn't loaded a custom speed yet. */
 const DEFAULT_SCROLL_SPEED = 60
@@ -33,26 +32,9 @@ export default function EndCreditOverlayPage() {
     const [scrollDistance, setScrollDistance] = useState(0)
 
     const contentRef = useRef<HTMLDivElement | null>(null)
-    const eventSourceRef = useRef<EventSource | null>(null)
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
     const endTimerRef = useRef<NodeJS.Timeout | null>(null)
 
-    const connect = useCallback(() => {
-        if (!userId) return
-
-        if (eventSourceRef.current) {
-            eventSourceRef.current.close()
-        }
-
-        const eventSource = new EventSource(getEndCreditEventUrl(userId, key))
-        eventSourceRef.current = eventSource
-
-        eventSource.addEventListener("connected", () => {
-            retryDelayRef.current = INITIAL_RETRY_DELAY
-        })
-
-        eventSource.addEventListener("roll", (event) => {
+    useOverlayEventSource(userId ? getEndCreditEventUrl(userId, key) : null, "roll", (event) => {
             try {
                 const data: EndCreditOverlayData = JSON.parse((event as MessageEvent).data)
                 // The backend queue holds rolls back until the previous one has
@@ -63,24 +45,11 @@ export default function EndCreditOverlayPage() {
             } catch (error) {
                 console.error("Failed to parse roll event:", error)
             }
-        })
+    });
 
-        eventSource.onerror = () => {
-            eventSource.close()
-            const delay = retryDelayRef.current
-            retryTimeoutRef.current = setTimeout(() => connect(), delay)
-            retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY)
-        }
-    }, [userId, key])
-
-    useEffect(() => {
-        connect()
-        return () => {
-            if (retryTimeoutRef.current) clearTimeout(retryTimeoutRef.current)
-            if (eventSourceRef.current) eventSourceRef.current.close()
-            if (endTimerRef.current) clearTimeout(endTimerRef.current)
-        }
-    }, [connect])
+    useEffect(() => () => {
+        if (endTimerRef.current) clearTimeout(endTimerRef.current);
+    }, []);
 
     // Once the roll content is laid out, measure it so the credits travel their full
     // height plus one screen — the last line clears the top before we hide.

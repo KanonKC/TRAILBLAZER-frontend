@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUser } from "@/components/user-context";
+import { useWidgetLifecycleState } from "@/hooks/use-widget-lifecycle-state";
 import { tbToast } from "@/utils/tbToast";
 import { createSpotifySongRequest, updateSpotifySongRequestConfig, testInsertSpotifyTrack } from "../api/spotifySongRequest.api";
 import { deleteWidget } from "@/services/widget.service";
@@ -7,9 +8,7 @@ import { SpotifySongRequestConfig } from "../types";
 
 export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
-    const [config, setConfig] = useState<SpotifySongRequestConfig | null>(initialConfig);
-    const [isSaving, setIsSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
+    const { config, setConfig, isSaving, setIsSaving, activeTab, setActiveTab, handleStatusChange, runSaving } = useWidgetLifecycleState(initialConfig);
 
     // Form fields
     const [twitchRewardId, setTwitchRewardId] = useState<string | null>(initialConfig?.twitch_reward_id ?? null);
@@ -21,8 +20,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
 
     const handleEnable = async () => {
         if (!user) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const data = await createSpotifySongRequest(user.twitchId, user.id);
             tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
             setConfig(data);
@@ -32,18 +30,12 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             setSuccessMessage(data.success_message ?? "");
             setNoActiveMessage(data.no_active_message ?? "");
             setActiveTab("quick-start");
-        } catch (error) {
-            console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "เปิดใช้งานไม่สำเร็จ", "Failed to enable");
     };
 
     const handleSave = async () => {
         if (!config) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const updated = await updateSpotifySongRequestConfig({
                 twitch_reward_id: twitchRewardId,
                 twitch_bot_id: twitchBotId || null,
@@ -53,18 +45,12 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             });
             tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
             setConfig(updated);
-        } catch (error) {
-            console.error("Failed to save", error);
-            tbToast.error({ title: "บันทึกการตั้งค่าไม่สำเร็จ", error: (error as { response?: { data?: unknown } }).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "บันทึกการตั้งค่าไม่สำเร็จ", "Failed to save");
     };
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const success = await deleteWidget(config.widget.id);
             if (success) {
                 tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
@@ -76,12 +62,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
                 setNoActiveMessage("");
                 setActiveTab("overview");
             }
-        } catch (error) {
-            console.error("Failed to delete", error);
-            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "ลบวิดเจ็ตไม่สำเร็จ", "Failed to delete");
     };
 
     const handleTestInsert = async () => {
@@ -97,9 +78,6 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
         }
     };
 
-    const handleStatusChange = (checked: boolean) => {
-        setConfig(prev => prev ? { ...prev, widget: { ...prev.widget, enabled: checked } } : null);
-    };
 
     return {
         user,

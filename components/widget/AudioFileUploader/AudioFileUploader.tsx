@@ -1,13 +1,14 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { AudioWaveform, Play, Square, Trash2, Volume2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
-import { UploadedFile, getUploadedFile } from "@/services/uploadedFile.service";
+import { UploadedFile } from "@/services/uploadedFile.service";
 import AudioFileUploaderDialog from "./AudioFileUploaderDialog";
+import { useAudioPreview } from "./useAudioPreview";
 
 interface AudioFileUploaderProps {
     currentFileName?: string | null;
@@ -36,47 +37,12 @@ export function AudioFileUploader({
     hideLabel = false
 }: AudioFileUploaderProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
-
-    useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = (audioVolume ?? 100) / 100;
-        }
-    }, [audioVolume]);
+    const { playingFileId, loadingFileId, toggle, stop } = useAudioPreview(audioVolume);
 
     const isUploadedFile = selectedFile && !(selectedFile instanceof File) && !!(selectedFile as UploadedFile).id;
 
-    const handlePlayStop = async () => {
-        if (isPlaying && audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            setIsPlaying(false);
-            return;
-        }
-
-        if (!isUploadedFile) return;
-
-        setIsLoading(true);
-        try {
-            const file = await getUploadedFile((selectedFile as UploadedFile).id);
-            if (!file.url) return;
-
-            const audio = new Audio(file.url);
-            audio.volume = (audioVolume ?? 100) / 100;
-            audioRef.current = audio;
-
-            audio.onended = () => setIsPlaying(false);
-
-            await audio.play();
-            setIsPlaying(true);
-        } catch {
-            setIsPlaying(false);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    const selectedFileId = isUploadedFile ? (selectedFile as UploadedFile).id : null;
+    const handlePlayStop = () => selectedFileId ? toggle(selectedFileId) : undefined;
 
     return (
         <div className={cn("space-y-4", className)}>
@@ -112,10 +78,10 @@ export function AudioFileUploader({
                                 variant="outline"
                                 size="icon"
                                 onClick={handlePlayStop}
-                                disabled={disabled || isLoading}
+                                disabled={disabled || loadingFileId !== null}
                                 className="h-8 w-8 shrink-0"
                             >
-                                {isPlaying ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                                {playingFileId === selectedFileId ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                             </Button>
                         )}
                         {currentFileName && onClear && (
@@ -124,8 +90,7 @@ export function AudioFileUploader({
                                 size="icon"
                                 aria-label="นำเสียงออก"
                                 onClick={() => {
-                                    audioRef.current?.pause();
-                                    setIsPlaying(false);
+                                    stop();
                                     onClear();
                                 }}
                                 disabled={disabled}
