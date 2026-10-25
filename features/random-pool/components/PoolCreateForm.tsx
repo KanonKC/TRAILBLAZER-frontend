@@ -14,7 +14,9 @@ interface Props {
   busy: boolean;
   upload: UploadHandler;
   submitLabel: string;
-  usageLabel: string;
+  usageLabel?: string;
+  /** Only the name input and the submit button, without labels or usage text. */
+  minimal?: boolean;
   onCancel?: () => void;
   /** Hide the optional cover image picker (name-only form). Defaults to true. */
   withCover?: boolean;
@@ -30,6 +32,7 @@ export function PoolCreateForm({
   upload,
   submitLabel,
   usageLabel,
+  minimal = false,
   onCancel,
   withCover = true,
   onCreate,
@@ -63,10 +66,15 @@ export function PoolCreateForm({
   return (
     <div className="grid gap-6">
       <div className="space-y-2">
-        <Label htmlFor="new-pool-name">ชื่อกองสุ่ม</Label>
-        <SubLabel>ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายกองสุ่ม</SubLabel>
+        {!minimal && (
+          <>
+            <Label htmlFor="new-pool-name">ชื่อกองสุ่ม</Label>
+            <SubLabel>ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายกองสุ่ม</SubLabel>
+          </>
+        )}
         <Input
           id="new-pool-name"
+          aria-label={minimal ? "ชื่อกองสุ่ม" : undefined}
           maxLength={100}
           placeholder="เช่น ของรางวัลสตรีม"
           value={name}
@@ -133,7 +141,7 @@ export function PoolCreateForm({
         </div>
       )}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <SubLabel>{usageLabel}</SubLabel>
+        {minimal ? <span /> : <SubLabel>{usageLabel}</SubLabel>}
         <div className="flex gap-2">
           {onCancel && (
             <Button

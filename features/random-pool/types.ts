@@ -25,7 +25,8 @@ export interface Config {
   pool_id: string;
   pool: Pool;
   pool_state: "READY" | "DELETED" | "EMPTY" | "HIDDEN";
-  twitch_reward_id: string;
+  /** Null until the streamer picks a channel reward. */
+  twitch_reward_id: string | null;
   /** Account that announces the result in chat: the streamer's own Twitch id, or null for the default bot. */
   twitch_bot_id?: string | null;
   mode: "UNIFORM" | "WEIGHTED";
@@ -36,7 +37,10 @@ export interface Config {
   items: ItemSetting[];
   widget: { id: string; enabled: boolean; overlay_key: string };
 }
-export type ConfigDraft = Omit<Config, "id" | "pool" | "pool_state" | "widget">;
+export type ConfigDraft = Omit<
+  Config,
+  "id" | "pool" | "pool_state" | "widget" | "twitch_reward_id"
+> & { twitch_reward_id: string };
 export type PoolDraft = Pick<
   Pool,
   "name" | "cover_key" | "visibility" | "items" | "cover_url"

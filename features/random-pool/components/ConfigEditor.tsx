@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  ArrowLeft,
   Boxes,
   Dices,
   Import,
@@ -97,18 +96,6 @@ export function ConfigEditor({
 
   return (
     <div className="grid gap-4">
-      <button
-        type="button"
-        onClick={controller.backToList}
-        className={cn(
-          "text-muted-foreground hover:text-foreground flex w-fit items-center gap-2 rounded-md text-sm font-medium",
-          FOCUS_RING,
-        )}
-      >
-        <ArrowLeft className="size-4" />
-        การตั้งค่าทั้งหมด
-      </button>
-
       <div className="relative z-10">
         <ConfigSwitcher controller={controller} />
       </div>

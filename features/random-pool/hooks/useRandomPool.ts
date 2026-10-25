@@ -26,7 +26,6 @@ import { WidgetQuota, getWidgetQuota } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 
 export type RandomPoolTab = "overview" | "quick-start" | "settings";
-export type SettingsView = "list" | "edit";
 export type UploadHandler = (
   file: File,
   kind: "image" | "audio",
@@ -86,10 +85,7 @@ export function useRandomPool(
     start.configId === NEW_CONFIG_ID && initialConfigs.length < MAX_CONFIGS;
   const startingConfig = requestedConfig ?? initialConfigs[0];
   const [activeTab, setActiveTab] = useState<RandomPoolTab>(
-    initial ? (start.tab ?? "overview") : "overview",
-  );
-  const [settingsView, setSettingsView] = useState<SettingsView>(
-    requestedConfig || openNew ? "edit" : "list",
+    initialConfigs.length > 0 ? (start.tab ?? "overview") : "overview",
   );
   const [editingId, setEditingId] = useState<string>(
     openNew ? NEW_CONFIG_ID : (startingConfig?.id ?? NEW_CONFIG_ID),
@@ -187,28 +183,36 @@ export function useRandomPool(
 
   /* ---------- navigation between configs ---------- */
 
-  function selectConfig(id: string, nextView: SettingsView = "edit") {
+  function selectConfig(id: string) {
     const target = data.configs.data.find((config) => config.id === id);
     if (!target) return;
     setEditingId(id);
     setDraft(draftFromConfig(target));
-    setSettingsView(nextView);
   }
 
   function startNewConfig() {
     if (data.configs.data.length >= MAX_CONFIGS) return;
     setEditingId(NEW_CONFIG_ID);
-    setDraft(
-      emptyConfigDraft(
+    setDraft({
+      ...emptyConfigDraft(
         `การตั้งค่าใหม่ ${data.configs.data.length + 1}`,
         ownTwitchId,
       ),
-    );
-    setSettingsView("edit");
+      pool_id: data.pools.data[0]?.id ?? "",
+    });
   }
 
-  function backToList() {
-    setSettingsView("list");
+  /** First-time enable: the server creates the default config and its empty pool. */
+  function enable() {
+    return run(async () => {
+      const created = await randomPoolApi.enable();
+      await refresh();
+      setEditingId(created.id);
+      setDraft(draftFromConfig(created));
+      setActiveTab("quick-start");
+      tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
+      void refreshQuota();
+    }, "เปิดใช้งานไม่สำเร็จ");
   }
 
   /* ---------- draft editing ---------- */
@@ -292,12 +296,8 @@ export function useRandomPool(
 
   function deleteConfig() {
     return run(async () => {
-      if (isNewConfig) {
-        setSettingsView("list");
-        return;
-      }
-      await randomPoolApi.deleteConfig(editingId);
-      const latest = await refresh();
+      if (!isNewConfig) await randomPoolApi.deleteConfig(editingId);
+      const latest = isNewConfig ? data : await refresh();
       const next = latest.configs.data[0];
       setEditingId(next?.id ?? NEW_CONFIG_ID);
       setDraft(
@@ -305,8 +305,10 @@ export function useRandomPool(
           ? draftFromConfig(next)
           : emptyConfigDraft("Random Pool", ownTwitchId),
       );
-      setSettingsView("list");
-      tbToast.success({ title: "ลบการตั้งค่าสำเร็จ" });
+      if (!next) setActiveTab("overview");
+      tbToast.success({
+        title: isNewConfig ? "ยกเลิกการสร้างแล้ว" : "ลบการตั้งค่าสำเร็จ",
+      });
       void refreshQuota();
     }, "ลบการตั้งค่าไม่สำเร็จ");
   }
@@ -423,9 +425,10 @@ export function useRandomPool(
   return {
     data,
     isLoggedIn,
+    hasConfig: data.configs.data.length > 0,
+    enable,
     activeTab,
     setActiveTab,
-    settingsView,
     editingId,
     isNewConfig,
     draft,
@@ -456,7 +459,6 @@ export function useRandomPool(
     canSave,
     selectConfig,
     startNewConfig,
-    backToList,
     selectPool,
     changeMode,
     updateItemSetting,

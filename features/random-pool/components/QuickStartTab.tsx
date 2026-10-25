@@ -1,13 +1,12 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
+import WidgetEnabledBadge from "@/components/widget/WidgetEnabledBadge";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import { RandomPoolController } from "../hooks/useRandomPool";
-import { ConfigSwitcher } from "./ConfigSwitcher";
-import { PoolCreateForm } from "./PoolCreateForm";
 import { PoolItemsEditor } from "./PoolItemsEditor";
 import { OverlayUrlField } from "./OverlayUrlField";
 import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
@@ -19,8 +18,7 @@ export function QuickStartTab({
 }: {
   controller: RandomPoolController;
 }) {
-  const { draft, savedConfig, selectedPool, data, busy } = controller;
-  const pools = data.pools.data;
+  const { savedConfig, selectedPool, busy } = controller;
 
   return (
     <WidgetQuickStartCard>
@@ -30,40 +28,30 @@ export function QuickStartTab({
             items={[
               {
                 step: 1,
-                title: "สร้างกองสุ่ม",
+                title: "เปิดใช้งานวิดเจ็ต",
                 description: (
-                  <div className="grid gap-3">
+                  <div className="space-y-3">
                     <p className="text-muted-foreground text-sm">
-                      ตั้งชื่อและสร้างกองสุ่มของคุณ จากนั้นเพิ่มรายการที่อยากให้คนดูสุ่มได้ในขั้นตอนถัดไป
+                      เปิดวิดเจ็ตนี้เพื่อให้คนดูแลกแต้มช่องแล้วสุ่มของรางวัลขึ้นหน้าจอสตรีมของคุณ
                     </p>
-                    <PoolCreateForm
-                      busy={busy}
-                      upload={controller.upload}
-                      withCover={false}
-                      submitLabel="สร้างกองสุ่ม"
-                      usageLabel={`สร้างแล้ว ${pools.length} จาก ${data.pools.limit} กองสุ่ม`}
-                      onCreate={controller.createPool}
-                    />
+                    <WidgetEnabledBadge />
                   </div>
                 ),
               },
               {
                 step: 2,
-                title: "ตั้งค่ากองสุ่ม",
+                title: "เพิ่มรายการในกองสุ่ม",
                 description: selectedPool ? (
                   <div className="grid gap-3">
                     <p className="text-muted-foreground text-sm">
-                      เพิ่มรายการลงในกองสุ่มที่สร้างไว้ด้านบน
+                      เพิ่มรายการที่อยากให้คนดูสุ่มได้ลงในกองสุ่มของคุณ
                       แต่ละรายการใส่แค่รูปและชื่อ
                     </p>
-                    <PoolItemsEditor
-                      controller={controller}
-                      simple
-                    />
+                    <PoolItemsEditor controller={controller} simple />
                   </div>
                 ) : (
                   <p className="text-muted-foreground text-sm">
-                    สร้างกองสุ่มในขั้นตอนที่ 1 ก่อน แล้วกลับมาเพิ่มรายการที่นี่
+                    ยังไม่มีกองสุ่ม สร้างกองสุ่มได้ที่แท็บตั้งค่า
                   </p>
                 ),
               },
@@ -104,23 +92,8 @@ export function QuickStartTab({
                 description: (
                   <div className="grid gap-3">
                     <p className="text-muted-foreground text-sm">
-                      {savedConfig
-                        ? "กดบันทึกก่อน แล้วลองแลกแต้มช่องในช่องของคุณเพื่อดูผลบนสตรีม"
-                        : "ตั้งชื่อ แล้วกดบันทึกเพื่อสร้างการตั้งค่าและรับ Overlay URL"}
+                      กดบันทึก แล้วลองกดปุ่มทดสอบหรือแลกแต้มช่องในช่องของคุณ เพื่อดูผลบนสตรีม
                     </p>
-                    {!savedConfig && (
-                      <div className="space-y-2">
-                        <Label htmlFor="quick-config-name">ชื่อการตั้งค่า</Label>
-                        <Input
-                          id="quick-config-name"
-                          maxLength={100}
-                          value={draft.name}
-                          onChange={(event) =>
-                            controller.patchDraft({ name: event.target.value })
-                          }
-                        />
-                      </div>
-                    )}
                     <WidgetTestControl
                       isSaving={busy}
                       isTesting={false}
@@ -128,6 +101,20 @@ export function QuickStartTab({
                       onTest={controller.requestTestSpin}
                       canTest={controller.poolItems.length > 0}
                       canSave={controller.canSave}
+                    />
+                  </div>
+                ),
+              },
+              {
+                step: 6,
+                title: "การตั้งค่าเพิ่มเติม",
+                description: (
+                  <div className="space-y-3">
+                    <p className="text-muted-foreground text-sm">
+                      ปรับวิธีสุ่ม Animation ข้อความแชท เสียง และสร้างการตั้งค่าเพิ่มได้ในแท็บตั้งค่า
+                    </p>
+                    <GoToSettingsButton
+                      onClick={() => controller.setActiveTab("settings")}
                     />
                   </div>
                 ),

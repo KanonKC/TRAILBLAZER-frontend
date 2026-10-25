@@ -2,6 +2,7 @@
 
 import type { ComponentType } from "react";
 import { Boxes, MessageSquare, Scale, Shuffle } from "lucide-react";
+import { RandomPoolController } from "../hooks/useRandomPool";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 
 const features: {
@@ -39,9 +40,18 @@ const features: {
   },
 ];
 
-export function OverviewTab({ isLoggedIn }: { isLoggedIn: boolean }) {
+export function OverviewTab({
+  controller,
+}: {
+  controller: RandomPoolController;
+}) {
   return (
-    <WidgetOverviewCard showLoginButton={!isLoggedIn}>
+    <WidgetOverviewCard
+      showLoginButton={!controller.isLoggedIn}
+      showEnableButton={controller.isLoggedIn && !controller.hasConfig}
+      onClickEnable={() => void controller.enable()}
+      isLoading={controller.busy}
+    >
       <p className="text-base leading-relaxed text-foreground">
         อยากให้คนดูแลก Channel Points แล้วลุ้นของแบบมีลูกเล่นไหม Random Pool
         ให้คุณสร้างกองของรางวัลของตัวเองจากรูปและชื่อ

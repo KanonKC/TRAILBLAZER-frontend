@@ -67,7 +67,7 @@ export function draftFromConfig(config: Config): ConfigDraft {
   return {
     name: config.name,
     pool_id: config.pool_id,
-    twitch_reward_id: config.twitch_reward_id,
+    twitch_reward_id: config.twitch_reward_id ?? "",
     twitch_bot_id: config.twitch_bot_id ?? null,
     mode: config.mode,
     visualization: config.visualization,

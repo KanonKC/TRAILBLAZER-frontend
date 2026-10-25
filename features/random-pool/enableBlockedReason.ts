@@ -8,7 +8,6 @@ export function enableBlockedReason(
 ) {
   if (!config) return "บันทึกการตั้งค่าก่อนจึงเปิดใช้งานได้";
   if (config.widget.enabled) return null;
-  if (config.pool_state === "EMPTY") return "กองสุ่มไม่มีรายการ";
   if (config.pool_state === "DELETED") return "กองสุ่มถูกลบ";
   if (config.pool_state === "HIDDEN") return "กองสุ่มถูกซ่อน";
   if (quota && quota.remaining_quota <= 0)
