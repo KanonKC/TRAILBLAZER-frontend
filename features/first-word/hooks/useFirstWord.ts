@@ -180,7 +180,7 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
             tbToast.success({ title: "ส่งคำสั่งทดสอบสำเร็จ", description: "ส่งอีเวนต์ทดสอบเสียงเรียบร้อยแล้ว" });
         } catch (error) {
             console.error("Test failed:", error);
-            tbToast.error({ title: "ไม่สามารถทดสอบได้", description: "ล้มเหลวในการส่งอีเวนต์ทดสอบ", error: (error as any).response?.data });
+            tbToast.error({ title: "ทดสอบไม่สำเร็จ", description: "ล้มเหลวในการส่งอีเวนต์ทดสอบ", error: (error as any).response?.data });
         } finally {
             setIsTesting(false);
         }
@@ -201,7 +201,7 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
             }
         } catch (error) {
             console.error("Failed to delete", error);
-            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้", error: (error as any).response?.data });
+            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -226,14 +226,14 @@ export const useFirstWord = (initialConfig: FirstWordConfig | null, initialRequi
         try {
             const success = await api.resetChatters();
             if (success) {
-                tbToast.success({ title: "รีเซ็ตรายชื่อผู้ทักทายเรียบร้อยแล้ว" });
+                tbToast.success({ title: "รีเซ็ตรายชื่อคนดูสำเร็จ" });
                 setChattersCount(0);
             } else {
-                tbToast.error({ title: "รีเซ็ตไม่สำเร็จ" });
+                tbToast.error({ title: "รีเซ็ตรายชื่อคนดูไม่สำเร็จ" });
             }
         } catch (error) {
             console.error("Failed to reset chatters", error);
-            tbToast.error({ title: "รีเซ็ตไม่สำเร็จ", error: (error as any).response?.data });
+            tbToast.error({ title: "รีเซ็ตรายชื่อคนดูไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsResettingChatters(false);
             setShowConfirmReset(false);

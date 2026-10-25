@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
+import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
+import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 
 interface WidgetTestControlProps {
     isSaving: boolean;
@@ -7,27 +7,25 @@ interface WidgetTestControlProps {
     onSave: () => void;
     onTest: () => void;
     canTest: boolean;
+    canSave?: boolean;
+    /** quick-start: Save then Test. settings: Test then Save (Save rightmost). */
+    placement?: "quick-start" | "settings";
 }
 
-export function WidgetTestControl({ isSaving, isTesting, onSave, onTest, canTest }: WidgetTestControlProps) {
+export function WidgetTestControl({ isSaving, isTesting, onSave, onTest, canTest, canSave = true, placement = "quick-start" }: WidgetTestControlProps) {
     return (
         <div className="flex flex-wrap gap-2">
-            <Button onClick={onSave} disabled={isSaving}>
-                {isSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
-            </Button>
-            <Button
-                variant="outline"
-                onClick={onTest}
-                disabled={isTesting || !canTest}
-                className="bg-transparent border-white/20 text-white hover:bg-white/10 hover:text-white"
-            >
-                {isTesting ? "กำลังทดสอบ..." : (
-                    <>
-                        <Play className="mr-2 h-4 w-4" />
-                        Test
-                    </>
-                )}
-            </Button>
+            {placement === "settings" ? (
+                <>
+                    <TestWidgetButton onTest={onTest} isLoading={isTesting} disabled={!canTest} />
+                    <SaveWidgetButton onSave={onSave} isLoading={isSaving} disabled={!canSave} />
+                </>
+            ) : (
+                <>
+                    <SaveWidgetButton onSave={onSave} isLoading={isSaving} disabled={!canSave} />
+                    <TestWidgetButton onTest={onTest} isLoading={isTesting} disabled={!canTest} />
+                </>
+            )}
         </div>
     );
 }

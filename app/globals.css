@@ -5,6 +5,16 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-supernova: var(--supernova);
+  --color-violet: var(--violet);
+  --color-teal: var(--teal);
+  --color-scrim: var(--scrim);
+  --color-twitch: var(--twitch);
+  --color-spotify: var(--spotify);
+  --color-discord: var(--discord);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
@@ -27,6 +37,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -91,7 +102,7 @@
   --popover: #121212;
   --popover-foreground: #f8fafc;
   --primary: #FF8C00;
-  --primary-foreground: #FFFFFF;
+  --primary-foreground: #111111;
   --secondary: #1F2937;
   --secondary-foreground: #f8fafc;
   --muted: #1F2937;
@@ -99,6 +110,17 @@
   --accent: #FFD700;
   --accent-foreground: #121212;
   --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: #111111;
+  --success: #4ade80;
+  --warning: #facc15;
+  --info: #60a5fa;
+  --supernova: #ffd700;
+  --violet: #a78bfa;
+  --teal: #2dd4bf;
+  --scrim: #00000080;
+  --twitch: #6441a5;
+  --spotify: #1ed760;
+  --discord: #5865f2;
   --border: color-mix(in srgb, #f8fafc 10%, transparent);
   --input: color-mix(in srgb, #f8fafc 10%, transparent);
   --ring: #FF8C00;
@@ -110,7 +132,7 @@
   --sidebar: #121212;
   --sidebar-foreground: #f8fafc;
   --sidebar-primary: #FF8C00;
-  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-primary-foreground: #111111;
   --sidebar-accent: #2C3E50;
   --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: color-mix(in srgb, #f8fafc 10%, transparent);
@@ -262,14 +284,6 @@
   animation: killer-text-slide-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.bg-discord {
-  background-color: #5865F2;
-}
-
-.text-discord {
-  color: #5865F2;
-}
-
 .trailblazer-gradient {
   background: linear-gradient(135deg, #F97316 0%, #F59E0B 50%, #EAB308 100%);
 }
@@ -310,10 +324,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.spotify {
-  color: #1ED760;
 }
 
 .glass {

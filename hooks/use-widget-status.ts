@@ -52,7 +52,7 @@ export const useWidgetStatus = (onSuccess?: () => void) => {
                 setPendingWidgetId(widgetId)
                 setShowLimitDialog(true)
             } else {
-                tbToast.error({ title: "ไม่สามารถอัปเดตสถานะได้" })
+                tbToast.error({ title: "อัปเดตสถานะไม่สำเร็จ" })
             }
             // Revert status on error
             onStatusChange?.(!checked)
@@ -68,7 +68,7 @@ export const useWidgetStatus = (onSuccess?: () => void) => {
             onSuccess?.()
         } catch (error) {
             console.error("Failed to disable widget", error)
-            tbToast.error({ title: "ไม่สามารถปิดวิดเจ็ตได้" })
+            tbToast.error({ title: "ปิดวิดเจ็ตไม่สำเร็จ" })
         }
     }
 

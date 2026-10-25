@@ -34,7 +34,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             setActiveTab("quick-start");
         } catch (error) {
             console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ" });
+            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -55,7 +55,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             setConfig(updated);
         } catch (error) {
             console.error("Failed to save", error);
-            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้", error: (error as { response?: { data?: unknown } }).response?.data });
+            tbToast.error({ title: "บันทึกการตั้งค่าไม่สำเร็จ", error: (error as { response?: { data?: unknown } }).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -78,7 +78,7 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
             }
         } catch (error) {
             console.error("Failed to delete", error);
-            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้" });
+            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -89,9 +89,9 @@ export const useSpotifySongRequest = (initialConfig: SpotifySongRequestConfig | 
         setIsTestingTrack(true);
         try {
             await testInsertSpotifyTrack();
-            tbToast.success({ title: "ส่งคำขอทดสอบแล้ว ตรวจสอบคิว Spotify ของคุณ" });
+            tbToast.success({ title: "ส่งคำขอทดสอบสำเร็จ", description: "ตรวจสอบคิว Spotify ของคุณ" });
         } catch (error) {
-            tbToast.error({ title: "ไม่สามารถทดสอบได้" });
+            tbToast.error({ title: "ทดสอบไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsTestingTrack(false);
         }

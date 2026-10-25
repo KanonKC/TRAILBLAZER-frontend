@@ -132,7 +132,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
             }
         } catch (error) {
             console.error("Failed to delete", error);
-            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้", error: (error as any).response?.data });
+            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -147,7 +147,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
             }
         } catch (error) {
             console.error("Failed to delete history", error);
-            tbToast.error({ title: "ลบประวัติไม่สำเร็จ" });
+            tbToast.error({ title: "ลบประวัติไม่สำเร็จ", error: (error as any).response?.data });
         }
     };
 

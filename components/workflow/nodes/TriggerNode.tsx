@@ -13,7 +13,7 @@ export function TriggerNode({ id, data }: NodeProps) {
             label={displayLabel}
             sublabel="Trigger"
             icon={Zap}
-            gradientClass="bg-gradient-to-br from-primary to-orange-600"
+            gradientClass="bg-gradient-to-br from-primary to-primary/70"
             borderClass="border border-primary/30"
             sublabelClass="text-primary/20"
             data={data}

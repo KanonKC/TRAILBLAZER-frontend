@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Clock, Cog, ExternalLink, MessageSquare, Video } from "lucide-react";
+import { Clock, Cog, MessageSquare, Video } from "lucide-react";
 import { MSDelaySlider } from "@/components/widget/MSDelaySlider";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
@@ -71,9 +71,9 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
     }
 
     const shoutoutVariables = [
-        { variable: "{{user_name}}", description: "ชื่อที่แสดงผลของผู้ทักทาย", example: "User123" },
-        { variable: "{{viewer_count}}", description: "จำนวนผู้ชมที่มาพร้อม Raid", example: "150" },
-        { variable: "{{channel_link}}", description: "ลิงก์ไปยังช่องของผู้ Raid", example: "https://twitch.tv/user123" }
+        { variable: "{{user_name}}", title: "ชื่อผู้ Raid", description: "ชื่อที่แสดงผลของคนที่ Raid เข้ามา" },
+        { variable: "{{viewer_count}}", title: "จำนวนผู้ชม", description: "จำนวนผู้ชมที่มาพร้อม Raid" },
+        { variable: "{{channel_link}}", title: "ลิงก์ช่อง", description: "ลิงก์ไปยังช่องของคนที่ Raid เข้ามา" }
     ];
 
     return (
@@ -81,11 +81,11 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
-                        <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                        <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                         {config && (
                             <>
-                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
                             </>
                         )}
                     </TabsList>
@@ -100,20 +100,20 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                             }}
                             isLoading={isSaving}
                         >
-                            <p className="text-gray-200 text-base leading-relaxed">
+                            <p className="text-foreground text-base leading-relaxed">
                                 เมื่อมีสตรีมเมอร์ท่านอื่นเข้ามาร่วม Raid ช่องของคุณ วิดเจ็ตนี้ช่วยให้การ Shoutout ดูโปรและน่าสนใจขึ้น!
                                 ระบบจะค้นหาและเล่นคลิปล่าสุดของพวกเขาบนหน้าจอของคุณอัตโนมัติ ทำให้ผู้ชมของคุณได้รู้จักแขกผู้มาเยือนแบบเห็นภาพจริง
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-orange-500/10 text-orange-500 mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
                                         <Video className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Auto Clip Player</h3>
-                                    <p className="text-sm text-muted-foreground">เล่นคลิปล่าสุดของ Raider อัตโนมัติบน Overlay</p>
+                                    <p className="text-sm text-muted-foreground">เล่นคลิปล่าสุดของ Raider อัตโนมัติบนโอเวอร์เลย์</p>
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-blue-500/10 text-blue-500 mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-teal/10 text-teal mb-3">
                                         <MessageSquare className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Custom Shoutout</h3>
@@ -130,16 +130,19 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                     items={[
                                         {
                                             step: 1,
-                                            title: "เปิดใช้งาน Widget",
-                                            description: <WidgetEnabledBadge />
+                                            title: "เปิดใช้งานวิดเจ็ต",
+                                            description: (<div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ระบบเล่นคลิปและส่งข้อความขอบคุณเมื่อมีคน Raid เข้าช่องของคุณ</p>
+                                                <WidgetEnabledBadge />
+                                            </div>)
                                         },
                                         {
                                             step: 2,
                                             title: "ตั้งค่าข้อความ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">ข้อความที่จะส่งในแชทเมื่อมีการ Raid เข้ามา</p>
-                                                    <ReplyMessageTextarea
+                                                    <p className="text-sm text-muted-foreground">ใส่ข้อความที่จะส่งในแชทเมื่อมีคน Raid เข้าช่อง สามารถใช้ตัวแปรด้านล่างเพื่อใส่ชื่อและข้อมูลของคนที่ Raid มาให้อัตโนมัติ</p>
+                                                    <CharacterCountTextarea
                                                         defaultOpenHelp
                                                         value={replyMessage}
                                                         onChange={handleReplyMessageChange}
@@ -151,10 +154,10 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                         },
                                         {
                                             step: 3,
-                                            title: "นำ Overlay ไปใส่ใน OBS",
+                                            title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล</p>
+                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล</p>
                                                     <SmartOverlayUrlInput
                                                         url={overlayUrl}
                                                         slug="clip-shoutout"
@@ -170,8 +173,8 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
-                                                    <ol className="text-sm text-white/70 list-decimal pl-5 space-y-1 mt-2">
+                                                    <p className="text-sm text-muted-foreground">กดบันทึกและทดสอบว่าการทำงานทั้งหมดถูกต้อง ลองกดที่ปุ่ม Test ด้านล่าง</p>
+                                                    <ol className="text-sm text-muted-foreground list-decimal pl-5 space-y-1 mt-2">
                                                         <li>ต้องมีข้อความแสดงขึ้นมาบนช่องแชท Twitch ของคุณ</li>
                                                         <li>ต้องมี Clip ของช่องที่ Raid เข้ามาแสดงขึ้นมาบนหน้าจอของคุณ</li>
                                                     </ol>
@@ -184,12 +187,8 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                             title: "การตั้งค่าเพิ่มเติม",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">เลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ใน Settings</p>
-                                                    <div className="flex justify-start">
-                                                        <Button variant="secondary" onClick={() => setActiveTab("settings")} className="bg-white/10 text-white hover:bg-white/20 border-0 gap-2">
-                                                            ไปที่การตั้งค่า (Settings) <ExternalLink className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
+                                                    <p className="text-sm text-muted-foreground">เลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ในแท็บตั้งค่า</p>
+                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
                                                 </div>
                                             )
                                         }
@@ -208,61 +207,57 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                             onSuccess={triggerRefresh}
                         >
                             <WidgetSettingsCardContent>
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <div className="flex items-center gap-2 border-b pb-2">
-                                        <Clock className="w-5 h-5 text-purple-500" />
-                                        <h3 className="text-lg font-semibold">ดีเลย์ (Delay)</h3>
+                                        <Clock className="w-5 h-5 text-supernova" />
+                                        <h3 className="text-lg font-semibold">ดีเลย์</h3>
                                     </div>
                                     <div className="bg-card space-y-2">
                                         <div className="flex items-center justify-between gap-4">
                                             <div className="space-y-0.5">
-                                                <Label>เวลาดีเลย์ก่อนการ Shoutout</Label>
-                                                <p className="text-sm text-muted-foreground">กำหนดเวลาหน่วงหลังจากมีคนเข้าร่วม Raid เข้ามาก่อนจะส่งข้อความและเล่นคลิป</p>
+                                                <Label>เวลาดีเลย์ก่อนส่งข้อความ</Label>
+                                                <p className="text-sm text-muted-foreground">กำหนดเวลาหน่วงหลังมี Raid เข้ามา ก่อนส่งข้อความและเล่นคลิป</p>
                                             </div>
                                         </div>
                                         <MSDelaySlider value={delayMs} onChange={setDelayMs} />
                                     </div>
                                 </div>
                                 
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <div className="flex items-center gap-2 border-b pb-2">
-                                        <MessageSquare className="w-5 h-5 text-blue-500" />
-                                        <h3 className="text-lg font-semibold">ข้อความ Shoutout</h3>
+                                        <MessageSquare className="w-5 h-5 text-info" />
+                                        <h3 className="text-lg font-semibold">ข้อความขอบคุณ</h3>
                                     </div>
                                     <BotProfileSelector value={botProfile} onValueChange={setBotProfile} />
-                                    <ReplyMessageTextarea value={replyMessage} onChange={handleReplyMessageChange} variant="default" error={replyMessageError} variables={shoutoutVariables} />
+                                    <CharacterCountTextarea value={replyMessage} onChange={handleReplyMessageChange} error={replyMessageError} variables={shoutoutVariables} />
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <div className="flex items-center gap-2 border-b pb-2">
-                                        <Video className="w-5 h-5 text-orange-500" />
-                                        <h3 className="text-lg font-semibold">ตัวเลือกวิดีโอ</h3>
+                                        <Video className="w-5 h-5 text-teal" />
+                                        <h3 className="text-lg font-semibold">คลิป</h3>
                                     </div>
                                     <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
                                         <div className="space-y-0.5">
-                                            <Label>แสดง Clip ของช่องที่ Raid</Label>
-                                            <p className="text-sm text-muted-foreground">แสดง Clip ของช่องที่ Raid ขึ้นมาบนสตรีมของคุณ</p>
+                                            <Label>แสดงคลิปของช่องที่ Raid</Label>
+                                            <p className="text-sm text-muted-foreground">เล่นคลิปของช่องที่ Raid มาบนสตรีมของคุณ</p>
                                         </div>
                                         <Switch checked={enabledClip} onCheckedChange={setEnabledClip} />
                                     </div>
 
-                                    {enabledClip && (
-                                        <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                    <div className={cn("flex items-center justify-between p-4 border rounded-lg bg-card", !enabledClip && "opacity-50")}>
                                             <div className="space-y-0.5 mr-4">
                                                 <Label>เล่นเฉพาะ Highlight</Label>
-                                                <p className="text-sm text-muted-foreground">หากเปิดใช้งาน จะสุ่มเลือกเฉพาะคลิปที่ถูกตั้งเป็นไฮไลท์ขึ้นมาก่อน หากช่องนั้นไม่มีคลิปที่เป็นไฮไลท์ จะสุ่มเลือกคลิปทั่วไปแทน</p>
+                                                <p className="text-sm text-muted-foreground">สุ่มจากคลิป Highlight ก่อน ถ้าไม่มีจะสุ่มจากคลิปทั่วไปแทน</p>
                                             </div>
-                                            <Switch checked={enabledHighlightOnly} onCheckedChange={setEnabledHighlightOnly} />
-                                        </div>
-                                    )}
+                                            <Switch checked={enabledHighlightOnly} onCheckedChange={setEnabledHighlightOnly} disabled={!enabledClip} />
+                                    </div>
 
-                                    {enabledClip && (
-                                        <SmartOverlayUrlInput 
-                                            url={overlayUrl} 
-                                            slug="clip-shoutout"
-                                            onSuccess={setConfig}
-                                        />
-                                    )}
+                                    <SmartOverlayUrlInput 
+                                        url={overlayUrl} 
+                                        slug="clip-shoutout"
+                                        onSuccess={setConfig}
+                                    />
                                 </div>
                             </WidgetSettingsCardContent>
                             <WidgetSettingsCardFooter>

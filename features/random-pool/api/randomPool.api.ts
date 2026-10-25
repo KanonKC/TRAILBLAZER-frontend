@@ -20,6 +20,10 @@ export const randomPoolApi = {
     ]);
     return { pools: pools.data, configs: configs.data };
   },
+  /** Creates the first config (with an empty pool) the first time; returns it as is afterwards. */
+  async enable() {
+    return (await apiClient.post<Config>(`${base}/enable`)).data;
+  },
   async savePool(data: PoolDraft, id?: string) {
     return (
       await apiClient.request<Pool>({
@@ -43,11 +47,6 @@ export const randomPoolApi = {
   },
   async deleteConfig(id: string) {
     await apiClient.delete(`${base}/configs/${id}`);
-  },
-  async enable(id: string, enabled: boolean) {
-    return (
-      await apiClient.put<Config>(`${base}/configs/${id}/enabled`, { enabled })
-    ).data;
   },
   async testSpin(id: string) {
     await apiClient.post(`${base}/configs/${id}/test`);

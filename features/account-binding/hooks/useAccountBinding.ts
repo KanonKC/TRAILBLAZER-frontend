@@ -110,7 +110,7 @@ export const useAccountBinding = (initialAccounts: LinkedAccount[] | null) => {
             tbToast.success({ title: "ยกเลิกการเชื่อมต่อสำเร็จ" });
         } catch (error) {
             console.error("Failed to unbind account", error);
-            tbToast.error({ title: "ไม่สามารถยกเลิกการเชื่อมต่อได้" });
+            tbToast.error({ title: "ยกเลิกการเชื่อมต่อไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setUnbindingPlatform(null);
         }
@@ -125,7 +125,7 @@ export const useAccountBinding = (initialAccounts: LinkedAccount[] | null) => {
             return true;
         } catch (error) {
             console.error("Failed to bind account", error);
-            tbToast.error({ title: "ไม่สามารถเชื่อมต่อบัญชีได้" });
+            tbToast.error({ title: "เชื่อมต่อบัญชีไม่สำเร็จ", error: (error as any).response?.data });
             return false;
         } finally {
             setIsLoading(false);

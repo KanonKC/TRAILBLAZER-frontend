@@ -137,24 +137,24 @@ export function NodeConfigurationModal({
     return createPortal(
         <div className={`fixed inset-0 z-50 flex items-center justify-center ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"} transition-opacity duration-200`}>
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal Content */}
             <div className={`relative w-[90vw] max-w-6xl h-[80vh] glass border border-primary/30 rounded-xl overflow-hidden shadow-2xl flex flex-col transform ${isOpen ? "scale-100" : "scale-95"} transition-transform duration-200`}>
 
                 {/* Header */}
-                <div className="h-16 border-b border-primary/20 flex items-center justify-between px-6 bg-black/20">
+                <div className="h-16 border-b border-primary/20 flex items-center justify-between px-6 bg-background/20">
                     <div className="flex items-center gap-3">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isTrigger ? "bg-primary" : "bg-blue-600"}`}>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isTrigger ? "bg-primary" : "bg-info"}`}>
                             {/* Icon placeholder (can be passed as prop but keeping simple) */}
-                            <span className="font-bold text-white text-lg">{nodeLabel.charAt(0)}</span>
+                            <span className="font-bold text-foreground text-lg">{nodeLabel.charAt(0)}</span>
                         </div>
                         <div>
-                            <h2 className="text-lg font-semibold text-white">{nodeLabel}</h2>
+                            <h2 className="text-lg font-semibold text-foreground">{nodeLabel}</h2>
                             <p className="text-xs text-muted-foreground uppercase tracking-wider">{nodeType}</p>
                         </div>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-white/10">
+                    <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-secondary">
                         <X className="w-5 h-5" />
                     </Button>
                 </div>
@@ -163,7 +163,7 @@ export function NodeConfigurationModal({
                 <div className="flex-1 grid grid-cols-12 min-h-0 divide-x divide-primary/20">
 
                     {/* Left Column: Input Data (Previous Step) */}
-                    <div className="col-span-3 bg-black/10 flex flex-col min-h-0">
+                    <div className="col-span-3 bg-background/10 flex flex-col min-h-0">
                         <div className="p-4 border-b border-primary/10">
                             <h3 className="font-medium text-sm text-primary/80">ข้อมูลขาเข้า</h3>
                             <p className="text-xs text-muted-foreground mt-1">ข้อมูลจากโหนดก่อนหน้า</p>
@@ -182,7 +182,7 @@ export function NodeConfigurationModal({
                                             onValueChange={setSelectedSourceNodeId}
                                             disabled={upstreamNodes.length === 0}
                                         >
-                                            <SelectTrigger className="bg-black/20 border-white/10 h-8 text-xs">
+                                            <SelectTrigger className="bg-background/20 border-border h-8 text-xs">
                                                 <SelectValue placeholder={upstreamNodes.length === 0 ? "No upstream nodes" : "Select node..."} />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -204,20 +204,20 @@ export function NodeConfigurationModal({
                                                         key={key}
                                                         draggable
                                                         onDragStart={(e) => handleDragStart(e, key, (sourceNode as any).slug as string)}
-                                                        className="group flex items-center justify-between p-2 rounded bg-white/5 hover:bg-white/10 border border-transparent hover:border-blue-500/30 cursor-grab active:cursor-grabbing transition-all text-xs"
+                                                        className="group flex items-center justify-between p-2 rounded bg-secondary/40 hover:bg-secondary border border-transparent hover:border-info/30 cursor-grab active:cursor-grabbing transition-all text-xs"
                                                     >
                                                         <div className="flex items-center gap-2 overflow-hidden">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500/50 group-hover:bg-blue-400"></div>
-                                                            <div className="text-gray-300 font-mono truncate">{key}</div>
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-info/50 group-hover:bg-info"></div>
+                                                            <div className="text-muted-foreground font-mono truncate">{key}</div>
                                                         </div>
-                                                        <div className="opacity-0 group-hover:opacity-100 text-[9px] text-muted-foreground bg-black/40 px-1 py-0.5 rounded">
+                                                        <div className="opacity-0 group-hover:opacity-100 text-[9px] text-muted-foreground bg-background/40 px-1 py-0.5 rounded">
                                                             Drag
                                                         </div>
                                                     </div>
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div className="text-center py-4 text-xs text-muted-foreground border border-dashed border-white/10 rounded">
+                                            <div className="text-center py-4 text-xs text-muted-foreground border border-dashed border-border rounded">
                                                 Please select a source node
                                             </div>
                                         )}
@@ -228,7 +228,7 @@ export function NodeConfigurationModal({
                     </div>
 
                     {/* Middle Column: Configuration */}
-                    <div className="col-span-6 bg-black/5 flex flex-col min-h-0">
+                    <div className="col-span-6 bg-background/5 flex flex-col min-h-0">
                         <div className="p-4 border-b border-primary/10">
                             <h3 className="font-medium text-sm text-primary/80">ตั้งค่า</h3>
                             <p className="text-xs text-muted-foreground mt-1">กำหนดค่าสำหรับโหนดนี้</p>
@@ -239,7 +239,7 @@ export function NodeConfigurationModal({
                                     <div className="space-y-2">
                                         <Label className="flex items-center justify-between">
                                             <span>Message Content</span>
-                                            <span className="text-[10px] text-blue-400 font-normal">Supports Variables</span>
+                                            <span className="text-[10px] text-info font-normal">Supports Variables</span>
                                         </Label>
                                         <textarea
                                             value={message}
@@ -291,7 +291,7 @@ export function NodeConfigurationModal({
                                                 e.stopPropagation();
                                                 e.dataTransfer.dropEffect = "copy";
                                             }}
-                                            className="w-full h-40 bg-black/20 border border-white/10 rounded-md p-3 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none font-mono leading-relaxed"
+                                            className="w-full h-40 bg-background/20 border border-border rounded-md p-3 text-sm text-foreground focus:outline-none focus:border-info/50 resize-none font-mono leading-relaxed"
                                             placeholder="Type your message here... Drag variables from the left to insert."
                                         />
                                         <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -324,7 +324,7 @@ export function NodeConfigurationModal({
                     </div>
 
                     {/* Right Column: Output / Result */}
-                    <div className="col-span-3 bg-black/10 flex flex-col min-h-0">
+                    <div className="col-span-3 bg-background/10 flex flex-col min-h-0">
                         <div className="p-4 border-b border-primary/10">
                             <h3 className="font-medium text-sm text-primary/80">ผลลัพธ์ตัวอย่าง</h3>
                             <p className="text-xs text-muted-foreground mt-1">ข้อมูลที่จะถูกส่งต่อไปยังโหนดถัดไป</p>
@@ -337,7 +337,7 @@ export function NodeConfigurationModal({
                             ) : isNewFollower ? (
                                 <div className="space-y-2">
                                     {Object.entries(twitchMockData).map(([key, value]) => (
-                                        <div key={key} className="group font-mono flex items-start justify-between p-2 rounded hover:bg-white/5 transition-colors text-xs border border-transparent hover:border-primary/20">
+                                        <div key={key} className="group font-mono flex items-start justify-between p-2 rounded hover:bg-secondary/40 transition-colors text-xs border border-transparent hover:border-primary/20">
                                             <div className="overflow-hidden">
                                                 <div className="text-primary/80 font-medium truncate" title={key}>{key}</div>
                                                 <div className="text-muted-foreground truncate mt-0.5" title={value as string}>{value}</div>

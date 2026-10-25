@@ -3,21 +3,27 @@
 import { ImagePlus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PoolItem } from "../types";
-import { MAX_POOL_ITEMS } from "../constants";
+import { FOCUS_RING, MAX_POOL_ITEMS } from "../constants";
+import { cn } from "@/lib/utils";
 import { ItemThumb } from "./ItemThumb";
+
+/** Item cards per row: never fewer than 4 and never more than 10, 120px wide when there is room. */
+const ITEMS_PER_ROW = { min: 4, max: 10 };
+const GRID_GAP_PX = 12;
+/** Keeps four cards on one row even when widths round up by a fraction of a pixel. */
+const SUBPIXEL_SAFETY_PX = 4;
+const ITEM_COLUMNS = `repeat(auto-fill, minmax(max(min(120px, calc((100% - ${(ITEMS_PER_ROW.min - 1) * GRID_GAP_PX + SUBPIXEL_SAFETY_PX}px) / ${ITEMS_PER_ROW.min})), calc((100% - ${(ITEMS_PER_ROW.max - 1) * GRID_GAP_PX}px) / ${ITEMS_PER_ROW.max})), 1fr))`;
 
 export function PoolItemsGrid({
   items,
   busy,
   onEdit,
   onAdd,
-  columns = "auto",
 }: {
   items: PoolItem[];
   busy: boolean;
   onEdit: (index: number) => void;
   onAdd: () => void;
-  columns?: "auto" | "five";
 }) {
   const full = items.length >= MAX_POOL_ITEMS;
 
@@ -41,13 +47,7 @@ export function PoolItemsGrid({
 
   return (
     <>
-      <div
-        className={
-          columns === "five"
-            ? "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5"
-            : "grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-3"
-        }
-      >
+      <div className="grid gap-3" style={{ gridTemplateColumns: ITEM_COLUMNS }}>
         {items.map((item, index) => (
           <button
             key={item.id ?? `new-${index}`}
@@ -56,7 +56,10 @@ export function PoolItemsGrid({
               item.name ? `แก้ไขรายการ ${item.name}` : "แก้ไขรายการที่ไม่มีชื่อ"
             }
             onClick={() => onEdit(index)}
-            className="bg-muted/40 hover:border-muted-foreground focus-visible:ring-foreground/40 grid min-w-0 content-start gap-2 rounded-lg border p-2 text-left outline-none focus-visible:ring-2"
+            className={cn(
+              "bg-card hover:bg-secondary grid min-w-0 content-start gap-2 rounded-lg border p-2 text-left",
+              FOCUS_RING,
+            )}
           >
             <ItemThumb
               url={item.image_url}
@@ -66,7 +69,7 @@ export function PoolItemsGrid({
             {item.name ? (
               <span className="truncate text-sm font-medium">{item.name}</span>
             ) : (
-              <span className="text-muted-foreground text-sm italic">
+              <span className="text-muted-foreground truncate text-sm italic">
                 ไม่มีชื่อ
               </span>
             )}
@@ -77,14 +80,17 @@ export function PoolItemsGrid({
           disabled={busy || full}
           onClick={onAdd}
           aria-label="เพิ่มรายการ"
-          className="text-muted-foreground hover:text-foreground focus-visible:ring-foreground/40 grid min-h-28 place-content-center justify-items-center gap-1 rounded-lg border border-dashed p-2 text-sm font-medium outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn(
+            "text-muted-foreground hover:text-foreground grid min-h-28 place-content-center justify-items-center gap-1 rounded-lg border border-dashed p-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50",
+            FOCUS_RING,
+          )}
         >
           <Plus className="size-5" aria-hidden="true" />
           เพิ่มรายการ
         </button>
       </div>
       {full && (
-        <p className="text-sm text-amber-300">
+        <p className="text-sm text-warning">
           กองสุ่มนี้ครบ {MAX_POOL_ITEMS} รายการแล้ว
           ลบรายการเดิมก่อนถึงจะเพิ่มได้
         </p>

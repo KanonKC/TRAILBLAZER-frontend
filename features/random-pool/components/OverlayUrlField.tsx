@@ -7,11 +7,12 @@ import { Config } from "../types";
 
 export function OverlayUrlField({
   config,
-  description,
+  showLabel = false,
   onRefreshed,
 }: {
   config?: Config;
-  description: string;
+  /** Show the shared label and usage hint above the field (Settings). Quick Start hides them because its step text says it. */
+  showLabel?: boolean;
   onRefreshed: () => unknown;
 }) {
   if (!config)
@@ -30,13 +31,9 @@ export function OverlayUrlField({
         url={url}
         slug={`random-pool/configs/${config.id}`}
         onSuccess={() => void onRefreshed()}
-        hideLabel
+        hideLabel={!showLabel}
       />
-      <p className="text-muted-foreground text-sm">{description}</p>
-      <OBSSetupHelp variant="default" className="mt-0" />
-      <p className="text-muted-foreground text-sm">
-        ขนาดแนะนำ 800 × 600 · พื้นหลังโปร่งใส
-      </p>
+      <OBSSetupHelp className="mt-0" />
     </div>
   );
 }

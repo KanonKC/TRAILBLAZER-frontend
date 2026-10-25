@@ -2,15 +2,14 @@
 
 import { useState } from "react";
 import {
-  ArrowLeft,
   Boxes,
   Dices,
+  Import,
+  User,
   MessageSquare,
-  Play,
   Settings2,
   Trash2,
   Volume2,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,29 +23,33 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { RandomPoolController } from "../hooks/useRandomPool";
 import { useActiveSection } from "../hooks/useActiveSection";
-import { POOL_STATE_NOTICE, neutralFocus } from "../constants";
-import { Callout } from "./Callout";
+import { ALERT_TONE, FOCUS_RING, POOL_STATE_NOTICE } from "../constants";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import SubLabel from "@/components/SubLabel";
+import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { ChatMessageField } from "./ChatMessageField";
-import { ComingSoonBadge, OptionCard } from "./OptionCard";
-import { ConfigEnableSwitch, enableBlockedReason } from "./ConfigEnableSwitch";
+import { RadioGroup } from "@/components/ui/radio-group";
+import { OptionCard } from "./OptionCard";
+import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
+import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
+import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
+import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
+import { TestWidgetButton } from "@/components/button/TestWidgetButton";
+import { enableBlockedReason } from "../enableBlockedReason";
 import { ConfigSwitcher } from "./ConfigSwitcher";
 import { DrawSection } from "./DrawSection";
 import { OverlayUrlField } from "./OverlayUrlField";
 import { PoolItemsEditor } from "./PoolItemsEditor";
 import { PoolPicker } from "./PoolPicker";
-import { RewardSelect } from "./RewardSelect";
-import { Field, SectionTitle } from "./SectionTitle";
-import { SoundField } from "./SoundField";
+import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
+import { SectionTitle } from "./SectionTitle";
+import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
+import type { UploadedFile } from "@/services/uploadedFile.service";
 
 const sections = [
   { id: "sec-general", label: "ทั่วไป" },
@@ -56,23 +59,9 @@ const sections = [
   { id: "sec-sound", label: "เสียง" },
 ];
 
-function Section({
-  id,
-  first,
-  children,
-}: {
-  id: string;
-  first?: boolean;
-  children: React.ReactNode;
-}) {
+function Section({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <section
-      id={id}
-      className={cn(
-        "grid scroll-mt-20 gap-6 py-8",
-        first ? "pt-2" : "border-t",
-      )}
-    >
+    <section id={id} className="grid scroll-mt-20 gap-6">
       {children}
     </section>
   );
@@ -83,34 +72,32 @@ export function ConfigEditor({
 }: {
   controller: RandomPoolController;
 }) {
-  const { draft, savedConfig, selectedPool, isNewConfig, busy, quota } =
-    controller;
+  const { draft, savedConfig, selectedPool, isNewConfig, busy } = controller;
   const [confirmDelete, setConfirmDelete] = useState(false);
   const activeSection = useActiveSection(sections.map((section) => section.id));
   const poolNotice =
     savedConfig && savedConfig.pool_state !== "READY"
       ? POOL_STATE_NOTICE[savedConfig.pool_state]
       : null;
-  const blockedReason = enableBlockedReason(savedConfig, controller);
-  const pointsNote =
-    !savedConfig?.widget.enabled && quota && quota.remaining_quota <= 0
-      ? `เปิดใช้งานการตั้งค่านี้ไม่ได้ เพราะ Widget Points ครบ ${quota.used_quota} / ${quota.total_quota} ปิดการตั้งค่าอื่นเพื่อคืนพอยท์`
-      : ``;
+  const blockedReason = enableBlockedReason(savedConfig, controller.quota);
+
+  const soundFile = (key?: string | null) =>
+    controller.files.find((file) => file.key === key) ?? null;
+  const soundName = (key?: string | null) =>
+    soundFile(key)?.name ?? (key ? "ตั้งค่าเสียงแล้ว" : null);
+  function pickSound(
+    file: File | UploadedFile | null,
+    key: string | null,
+    field: "spin_sound_key" | "default_result_sound_key",
+  ) {
+    if (file && !(file instanceof File)) controller.rememberFile(file);
+    controller.patchDraft({ [field]: key });
+  }
 
   return (
     <div className="grid gap-4">
-      <button
-        type="button"
-        onClick={controller.backToList}
-        className="text-muted-foreground hover:text-foreground flex w-fit items-center gap-2 text-sm font-medium"
-      >
-        <ArrowLeft className="size-4" />
-        การตั้งค่าทั้งหมด
-      </button>
-
-      <div className="relative z-10 grid gap-2">
+      <div className="relative z-10">
         <ConfigSwitcher controller={controller} />
-        <p className="text-muted-foreground text-sm">{pointsNote}</p>
       </div>
 
       <nav
@@ -124,6 +111,7 @@ export function ConfigEditor({
             aria-current={activeSection === section.id ? "true" : undefined}
             className={cn(
               "text-muted-foreground hover:text-foreground shrink-0 rounded-md px-3 py-1.5 text-sm font-medium",
+              FOCUS_RING,
               activeSection === section.id && "bg-secondary text-foreground",
             )}
           >
@@ -132,163 +120,213 @@ export function ConfigEditor({
         ))}
       </nav>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between gap-2">
-            <span className="flex items-center gap-2">
-              <Settings2 className="size-5 text-blue-500" />
-              ตั้งค่า
-            </span>
-            <span className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-sm font-medium text-amber-500">
-                <Zap className="size-3" />1 พอยท์
-              </span>
-              <ConfigEnableSwitch
-                config={savedConfig}
-                controller={controller}
-              />
-            </span>
-          </CardTitle>
-          <CardDescription>
+      <WidgetSettingsCard
+        widgetId={savedConfig?.widget.id}
+        isEnabled={savedConfig?.widget.enabled}
+        cost={1}
+        description={
+          <>
             ปรับแต่งการตั้งค่านี้ทั้งหมดในหน้าเดียว ดูตัวอย่างได้ที่แผงตัวอย่าง
             {blockedReason && ` · ${blockedReason}`}
-          </CardDescription>
-        </CardHeader>
-
-        <div className="grid px-6">
+          </>
+        }
+        statusDisabled={!!blockedReason && !savedConfig?.widget.enabled}
+        statusAriaLabel={
+          savedConfig ? `เปิดใช้งาน ${savedConfig.name}` : undefined
+        }
+        onSuccess={() => void controller.afterStatusChange()}
+      >
+        <WidgetSettingsCardContent>
           {poolNotice && (
-            <Callout
-              tone={poolNotice.tone}
-              title={poolNotice.title}
-              className="mb-6"
-              actions={
-                <Button size="sm" variant="outline" asChild>
-                  <a href="#sec-pool">เลือกกองสุ่มใหม่</a>
-                </Button>
-              }
-            >
-              {poolNotice.description}
-            </Callout>
+            <Alert className={ALERT_TONE[poolNotice.tone].box}>
+              {(() => {
+                const ToneIcon = ALERT_TONE[poolNotice.tone].Icon;
+                return (
+                  <ToneIcon className={ALERT_TONE[poolNotice.tone].text} />
+                );
+              })()}
+              <AlertTitle className={ALERT_TONE[poolNotice.tone].text}>
+                {poolNotice.title}
+              </AlertTitle>
+              <AlertDescription className="text-foreground">
+                {poolNotice.description}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" asChild>
+                    <a href="#sec-pool">เลือกกองสุ่มใหม่</a>
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
           )}
 
-          <Section id="sec-general" first>
+          <Section id="sec-general">
             <SectionTitle icon={Settings2}>ทั่วไป</SectionTitle>
-            <Field
-              label="ชื่อการตั้งค่า"
-              htmlFor="config-name"
-              help="ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายการตั้งค่า"
-            >
+            <div className="space-y-2">
+              <Label htmlFor="config-name">ชื่อการตั้งค่า</Label>
+              <SubLabel>
+                ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายการตั้งค่า
+              </SubLabel>
               <Input
                 id="config-name"
-                className={neutralFocus}
                 maxLength={100}
                 value={draft.name}
                 onChange={(event) =>
                   controller.patchDraft({ name: event.target.value })
                 }
               />
-            </Field>
-            <Field
-              label="แต้มช่อง"
-              help="คนดูแลกแต้มช่องนี้เพื่อสุ่ม 1 แต้มช่อง ผูกกับ 1 กองสุ่ม"
-            >
-              <RewardSelect controller={controller} />
-            </Field>
-            <Field label="Overlay URL สำหรับ OBS">
-              <OverlayUrlField
-                config={savedConfig}
-                onRefreshed={controller.reload}
-                description="แต่ละการตั้งค่ามี URL ของตัวเอง เก็บเป็นความลับเหมือนรหัสผ่าน"
+            </div>
+            <div className="space-y-2">
+              <Label>แต้มช่อง</Label>
+              <SubLabel>
+                คนดูแลกแต้มช่องนี้เพื่อสุ่ม 1 แต้มช่อง ผูกกับ 1 กองสุ่ม
+              </SubLabel>
+              <ChannelRewardSelector
+                value={controller.draft.twitch_reward_id || null}
+                onValueChange={(value) =>
+                  controller.patchDraft({ twitch_reward_id: value ?? "" })
+                }
+                rewards={controller.rewards}
+                allowNone={false}
+                getRewardDisabledNote={(reward) =>
+                  controller.rewardUsedNote(reward.id)
+                }
               />
-            </Field>
+            </div>
+            <OverlayUrlField
+              showLabel
+              config={savedConfig}
+              onRefreshed={controller.reload}
+            />
           </Section>
 
           <Section id="sec-pool">
-            <SectionTitle icon={Boxes}>กองสุ่มและรายการ</SectionTitle>
-            <div
-              role="radiogroup"
-              aria-label="ที่มาของกองสุ่ม"
-              className="grid gap-2"
-            >
-              <span className="text-sm leading-none font-medium">
-                ที่มาของกองสุ่ม
-              </span>
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
+            <SectionTitle icon={Boxes} tone="teal">
+              กองสุ่มและรายการ
+            </SectionTitle>
+            <div className="space-y-2">
+              <Label>ที่มาของกองสุ่ม</Label>
+              <SubLabel>
+                เลือกว่าจะใช้กองสุ่มที่คุณสร้างเอง
+                หรือนำกองสุ่มสาธารณะของสตรีมเมอร์คนอื่นมาใช้
+              </SubLabel>
+              <RadioGroup
+                value="own"
+                aria-label="ที่มาของกองสุ่ม"
+                className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3"
+              >
                 <OptionCard
-                  icon={Boxes}
+                  id="pool-source-own"
+                  value="own"
+                  icon={User}
                   title="กองสุ่มของตัวเอง"
                   description="แก้ไขรายการและตั้งค่าได้เต็มที่"
                   checked
                 />
                 <OptionCard
-                  icon={Boxes}
+                  id="pool-source-import"
+                  value="import"
+                  icon={Import}
                   title="Import กองสุ่มของคนอื่น"
                   description="ใช้กองสุ่มสาธารณะของสตรีมเมอร์คนอื่น"
                   checked={false}
                   disabled
-                  badge={<ComingSoonBadge />}
+                  badge={<Badge variant="outline">เร็วๆ นี้</Badge>}
                 />
-              </div>
+              </RadioGroup>
             </div>
-            <Field
-              label="กองสุ่มที่ใช้สุ่ม"
-              help="การแก้รายการที่นี่คือแก้กองสุ่มตัวจริง ข้อมูลชุดเดียวกับทุกการตั้งค่าที่ใช้กองสุ่มนี้"
-            >
+            <div className="space-y-2">
+              <Label>กองสุ่มที่ใช้สุ่ม</Label>
+              <SubLabel>
+                การแก้รายการที่นี่คือแก้กองสุ่มตัวจริง
+                ข้อมูลชุดเดียวกับทุกการตั้งค่าที่ใช้กองสุ่มนี้
+              </SubLabel>
               <PoolPicker controller={controller} />
-            </Field>
+            </div>
             {selectedPool && <PoolItemsEditor controller={controller} />}
           </Section>
 
           <Section id="sec-draw">
-            <SectionTitle icon={Dices}>การสุ่ม</SectionTitle>
+            <SectionTitle icon={Dices} tone="violet">
+              การสุ่ม
+            </SectionTitle>
             <DrawSection controller={controller} />
           </Section>
 
           <Section id="sec-chat">
-            <SectionTitle icon={MessageSquare}>ข้อความแชท</SectionTitle>
+            <SectionTitle icon={MessageSquare} tone="info">
+              ข้อความแชท
+            </SectionTitle>
+            <div className="space-y-2">
+              <Label>บัญชีที่ใช้ส่งข้อความ</Label>
+              <SubLabel>เลือกบัญชีที่จะประกาศผลการสุ่มลงห้องแชทของคุณ</SubLabel>
+              <BotProfileSelector
+                hideLabel
+                value={draft.twitch_bot_id ?? "default"}
+                onValueChange={(value) =>
+                  controller.patchDraft({
+                    twitch_bot_id: value === "default" ? null : value,
+                  })
+                }
+              />
+            </div>
             <ChatMessageField
               value={draft.default_chat_message ?? ""}
               onChange={(value) =>
                 controller.patchDraft({ default_chat_message: value })
               }
             />
-            <Field
-              label="ข้อความเฉพาะรายการ"
-              help={`ตั้งในหน้าต่างแก้ไขของแต่ละรายการ ระบบใช้ข้อความของรายการก่อน ถ้าไม่มีจึงใช้ข้อความเริ่มต้นด้านบน ตอนนี้ตั้งแล้ว ${
-                draft.items.filter((setting) => setting.chat_message).length
-              } จาก ${controller.poolItems.length} รายการ`}
-            />
+            <div className="space-y-2">
+              <Label>ข้อความเฉพาะรายการ</Label>
+              <SubLabel>
+                {`ตั้งในหน้าต่างแก้ไขของแต่ละรายการ ระบบใช้ข้อความของรายการก่อน ถ้าไม่มีจึงใช้ข้อความเริ่มต้นด้านบน ตอนนี้ตั้งแล้ว ${
+                  draft.items.filter((setting) => setting.chat_message).length
+                } จาก ${controller.poolItems.length} รายการ`}
+              </SubLabel>
+            </div>
           </Section>
 
           <Section id="sec-sound">
-            <SectionTitle icon={Volume2}>เสียง</SectionTitle>
-            <p className="text-muted-foreground text-sm">
-              รองรับไฟล์ mp3, ogg และ wav ขนาดไม่เกิน 2 MB ยาวไม่เกิน 15 วินาที
-            </p>
-            <SoundField
-              label="เสียงตอนกำลังสุ่ม"
-              help="เล่นระหว่างที่รูปกำลังหมุนหรือเลื่อน"
-              value={draft.spin_sound_key}
-              files={controller.files}
-              busy={busy}
-              upload={controller.upload}
-              onChange={(key) => controller.patchDraft({ spin_sound_key: key })}
-            />
-            <SoundField
-              label="เสียงตอนของออก"
-              help="เล่นตอนผลลัพธ์ปรากฏ รายการที่ไม่ได้ตั้งเสียงเฉพาะจะเล่นเสียงนี้ ตั้งเสียงเฉพาะรายการได้ในหน้าต่างแก้ไขรายการ"
-              value={draft.default_result_sound_key}
-              files={controller.files}
-              busy={busy}
-              upload={controller.upload}
-              onChange={(key) =>
-                controller.patchDraft({ default_result_sound_key: key })
-              }
-            />
+            <SectionTitle icon={Volume2} tone="supernova">
+              เสียง
+            </SectionTitle>
+            <SubLabel>รองรับไฟล์ MP3, WAV, OGG ขนาดไม่เกิน 2.5 MB</SubLabel>
+            <div className="space-y-2">
+              <Label>เสียงตอนกำลังสุ่ม</Label>
+              <SubLabel>เล่นระหว่างที่รูปกำลังหมุนหรือเลื่อน</SubLabel>
+              <AudioFileUploader
+                hideLabel
+                currentFileName={soundName(draft.spin_sound_key)}
+                selectedFile={soundFile(draft.spin_sound_key)}
+                onFileSelect={(file, key) =>
+                  pickSound(file, key, "spin_sound_key")
+                }
+                onClear={() => controller.patchDraft({ spin_sound_key: null })}
+                disabled={busy}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>เสียงตอนของออก</Label>
+              <SubLabel>
+                เล่นตอนผลลัพธ์ปรากฏ รายการที่ไม่ได้ตั้งเสียงเฉพาะจะเล่นเสียงนี้
+                ตั้งเสียงเฉพาะรายการได้ในหน้าต่างแก้ไขรายการ
+              </SubLabel>
+              <AudioFileUploader
+                hideLabel
+                currentFileName={soundName(draft.default_result_sound_key)}
+                selectedFile={soundFile(draft.default_result_sound_key)}
+                onFileSelect={(file, key) =>
+                  pickSound(file, key, "default_result_sound_key")
+                }
+                onClear={() =>
+                  controller.patchDraft({ default_result_sound_key: null })
+                }
+                disabled={busy}
+              />
+            </div>
           </Section>
-        </div>
+        </WidgetSettingsCardContent>
 
-        <CardFooter className="flex flex-wrap justify-between gap-3 border-t px-6 py-4">
+        <WidgetSettingsCardFooter>
           <Button
             type="button"
             variant="destructive"
@@ -299,25 +337,19 @@ export function ConfigEditor({
             {isNewConfig ? "ยกเลิกการสร้าง" : "ลบการตั้งค่า"}
           </Button>
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
+            <TestWidgetButton
+              onTest={controller.requestTestSpin}
+              isLoading={false}
               disabled={controller.poolItems.length === 0}
-              onClick={controller.requestTestSpin}
-            >
-              <Play />
-              ทดสอบ
-            </Button>
-            <Button
-              type="button"
+            />
+            <SaveWidgetButton
+              onSave={() => void controller.saveConfig()}
+              isLoading={busy}
               disabled={!controller.canSave}
-              onClick={() => void controller.saveConfig()}
-            >
-              {busy ? "กำลังบันทึก…" : "บันทึกการเปลี่ยนแปลง"}
-            </Button>
+            />
           </div>
-        </CardFooter>
-      </Card>
+        </WidgetSettingsCardFooter>
+      </WidgetSettingsCard>
 
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>

@@ -56,7 +56,7 @@ export function Hero() {
                     <Link href="/dashboard/widgets">
                         <Button
                             size="lg"
-                            className="trailblazer-gradient text-white font-semibold px-8 py-6 text-lg hover:opacity-90 transition-opacity"
+                            className="trailblazer-gradient text-primary-foreground font-semibold px-8 py-6 text-lg hover:opacity-90 transition-opacity"
                         >
                             เริ่มต้นใช้งาน
                         </Button>

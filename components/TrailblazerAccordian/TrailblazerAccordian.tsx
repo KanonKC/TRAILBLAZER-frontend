@@ -14,7 +14,7 @@ const TrailblazerAccordian = ({ className, variant = "overlay", defaultOpen = fa
     const isOverlay = variant === "overlay";
 
     return (
-        <Accordion type="single" collapsible defaultValue={!!defaultOpen ? "obs-setup" : undefined} className={cn("w-full border rounded-lg mt-3", isOverlay ? "bg-white/5 border-white/10" : "bg-card border-border", className)}>
+        <Accordion type="single" collapsible defaultValue={!!defaultOpen ? "obs-setup" : undefined} className={cn("w-full border rounded-lg mt-3", isOverlay ? "bg-secondary/40 border-border" : "bg-card border-border", className)}>
             <AccordionItem value="obs-setup" className="border-none">
                 {children}
             </AccordionItem>

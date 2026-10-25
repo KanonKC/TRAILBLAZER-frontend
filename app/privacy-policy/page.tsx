@@ -48,7 +48,7 @@ export default function PrivacyPolicyPage() {
       {/* Background Decorative Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/10 blur-[120px] rounded-full" />
-        <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] bg-blue-500/10 blur-[100px] rounded-full" />
+        <div className="absolute top-[20%] -right-[10%] w-[30%] h-[30%] bg-info/10 blur-[100px] rounded-full" />
       </div>
 
       <div className="container relative mx-auto px-4 sm:px-6">
@@ -57,14 +57,14 @@ export default function PrivacyPolicyPage() {
           {/* Sticky Sidebar - Table of Contents */}
           <aside className="hidden lg:block w-72 shrink-0">
             <div className="sticky top-28 space-y-4">
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+              <div className="p-4 rounded-2xl bg-secondary/40 border border-border backdrop-blur-md">
                 <h3 className="font-kanit font-bold text-lg mb-4 text-primary">สารบัญ</h3>
                 <nav className="space-y-1">
                   {sections.map((section) => (
                     <a
                       key={section.id}
                       href={`#${section.id}`}
-                      className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground hover:text-white hover:bg-white/5 rounded-lg transition-all group"
+                      className="flex items-center gap-3 px-3 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/40 rounded-lg transition-all group"
                     >
                       <section.icon className="w-4 h-4 group-hover:text-primary transition-colors" />
                       <span className="line-clamp-1">{section.title}</span>
@@ -73,7 +73,7 @@ export default function PrivacyPolicyPage() {
                   ))}
                 </nav>
               </div>
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-blue-600/20 border border-white/10 backdrop-blur-md">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/20 to-info/20 border border-border backdrop-blur-md">
                 <p className="text-sm font-medium">ต้องการความช่วยเหลือ?</p>
                 <p className="text-xs text-muted-foreground mt-1">ติดต่อเราได้ที่ kanonkce@gmail.com</p>
               </div>
@@ -87,7 +87,7 @@ export default function PrivacyPolicyPage() {
                 <Shield className="w-4 h-4" />
                 <span>Privacy & Protection</span>
               </div>
-              <h1 className="font-kanit font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight mb-6 bg-gradient-to-r from-white via-white to-white/50 bg-clip-text text-transparent">
+              <h1 className="font-kanit font-extrabold text-4xl sm:text-5xl md:text-6xl tracking-tight mb-6 bg-gradient-to-r from-foreground via-foreground to-foreground/50 bg-clip-text text-transparent">
                 นโยบายความเป็นส่วนตัว
               </h1>
               <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
@@ -102,7 +102,7 @@ export default function PrivacyPolicyPage() {
 
             <section className="prose prose-invert max-w-none mb-12">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                แอปพลิเคชัน <strong className="text-white">TRAILBLAZER</strong> ("เรา" "แพลตฟอร์ม") ให้ความสำคัญและเคารพต่อความเป็นส่วนตัวของผู้ใช้งาน ("คุณ") 
+                แอปพลิเคชัน <strong className="text-foreground">TRAILBLAZER</strong> ("เรา" "แพลตฟอร์ม") ให้ความสำคัญและเคารพต่อความเป็นส่วนตัวของผู้ใช้งาน ("คุณ") 
                 นโยบายความเป็นส่วนตัวฉบับนี้จัดทำขึ้นเพื่อให้สอดคล้องกับพระราชบัญญัติคุ้มครองข้อมูลส่วนบุคคล พ.ศ. 2562 (PDPA) 
                 เพื่ออธิบายให้คุณทราบถึงวิธีการที่เราเก็บรวบรวม ใช้ เปิดเผย และรักษาข้อมูลส่วนบุคคลของคุณ รวมถึงสิทธิต่างๆ ที่คุณมีในฐานะเจ้าของข้อมูล
               </p>
@@ -128,8 +128,8 @@ export default function PrivacyPolicyPage() {
                       { title: "ข้อมูลการตั้งค่า", desc: "วิดเจ็ต (First Word, Clips, Drops), Media Files, Workflows" },
                       { title: "ข้อมูลทางเทคนิค", desc: "IP Address, Browser Type, Cookies (สำหรับจัดการ Session)" }
                     ].map((item, i) => (
-                      <li key={i} className="p-4 rounded-xl bg-white/5 border border-white/10 hover:border-primary/30 transition-colors">
-                        <span className="block font-bold text-white mb-1">{item.title}</span>
+                      <li key={i} className="p-4 rounded-xl bg-secondary/40 border border-border hover:border-primary/30 transition-colors">
+                        <span className="block font-bold text-foreground mb-1">{item.title}</span>
                         <span className="text-sm text-muted-foreground leading-relaxed">{item.desc}</span>
                       </li>
                     ))}
@@ -147,9 +147,9 @@ export default function PrivacyPolicyPage() {
                   </div>
                   <h2 className="font-kanit font-bold text-2xl md:text-3xl">2. ฐานทางกฎหมายในการประมวลผลข้อมูล</h2>
                 </div>
-                <Card className="bg-white/5 border-white/10 overflow-hidden">
+                <Card className="bg-secondary/40 border-border overflow-hidden">
                   <Table>
-                    <TableHeader className="bg-white/5">
+                    <TableHeader className="bg-secondary/40">
                       <TableRow>
                         <TableHead className="w-[30%]">ประเภทข้อมูล</TableHead>
                         <TableHead className="w-[30%]">ฐานทางกฎหมาย</TableHead>
@@ -165,7 +165,7 @@ export default function PrivacyPolicyPage() {
                         { type: "การวิเคราะห์ปรับปรุง", basis: "ประโยชน์ชอบธรรม", desc: "เพื่อพัฒนาคุณภาพการให้บริการ" },
                       ].map((row, i) => (
                         <TableRow key={i}>
-                          <TableCell className="font-medium text-white">{row.type}</TableCell>
+                          <TableCell className="font-medium text-foreground">{row.type}</TableCell>
                           <TableCell className="text-primary font-medium">{row.basis}</TableCell>
                           <TableCell className="text-muted-foreground">{row.desc}</TableCell>
                         </TableRow>
@@ -193,11 +193,11 @@ export default function PrivacyPolicyPage() {
                     "เพื่อการรักษาความปลอดภัย ป้องกันและระงับเหตุการณ์ที่อาจก่อให้เกิดความเสี่ยง",
                     "เพื่อการติดต่อสื่อสาร แจ้งข้อมูลข่าวสารที่สำคัญเกี่ยวกับการอัปเดตระบบ"
                   ].map((text, i) => (
-                    <div key={i} className="flex gap-4 items-start p-4 rounded-2xl bg-white/5 border border-white/10 group">
+                    <div key={i} className="flex gap-4 items-start p-4 rounded-2xl bg-secondary/40 border border-border group">
                       <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center shrink-0 mt-1 group-hover:bg-primary transition-colors">
-                        <span className="text-xs font-bold text-white">{i + 1}</span>
+                        <span className="text-xs font-bold text-foreground">{i + 1}</span>
                       </div>
-                      <p className="text-muted-foreground group-hover:text-white transition-colors">{text}</p>
+                      <p className="text-muted-foreground group-hover:text-foreground transition-colors">{text}</p>
                     </div>
                   ))}
                 </div>
@@ -220,9 +220,9 @@ export default function PrivacyPolicyPage() {
                     { title: "แพลตฟอร์มที่คุณเชื่อมต่อ", desc: "ส่งข้อมูลไปยัง API ของ Twitch, YouTube, Discord เพื่อให้ฟีเจอร์ทำงานตามที่คุณอนุญาต" },
                     { title: "เมื่อกฎหมายบังคับ", desc: "เปิดเผยตามความจำเป็นเพื่อให้เป็นไปตามกฎหมาย หรือตามคำสั่งของหน่วยงานรัฐที่มีอำนาจ" }
                   ].map((item, i) => (
-                    <Card key={i} className="bg-white/5 border-white/10">
+                    <Card key={i} className="bg-secondary/40 border-border">
                       <CardContent className="p-5">
-                        <h4 className="font-bold text-white mb-2">{item.title}</h4>
+                        <h4 className="font-bold text-foreground mb-2">{item.title}</h4>
                         <p className="text-muted-foreground">{item.desc}</p>
                       </CardContent>
                     </Card>
@@ -240,9 +240,9 @@ export default function PrivacyPolicyPage() {
                   </div>
                   <h2 className="font-kanit font-bold text-2xl md:text-3xl">5. การโอนข้อมูลระหว่างประเทศ</h2>
                 </div>
-                <div className="p-6 rounded-2xl bg-gradient-to-br from-white/10 to-transparent border border-white/10">
+                <div className="p-6 rounded-2xl bg-gradient-to-br from-foreground/10 to-transparent border border-border">
                   <p className="text-muted-foreground leading-relaxed mb-6">
-                    เราใช้โครงสร้างพื้นฐานที่ตั้งอยู่ทั้งในไทยและต่างประเทศ โดยเฉพาะ <strong className="text-white">สหรัฐอเมริกา</strong> 
+                    เราใช้โครงสร้างพื้นฐานที่ตั้งอยู่ทั้งในไทยและต่างประเทศ โดยเฉพาะ <strong className="text-foreground">สหรัฐอเมริกา</strong> 
                     (เช่น Cloudflare) ซึ่งข้อมูลอาจถูกโอนหรือประมวลผลนอกราชอาณาจักร 
                     โดยเรามีมาตรการรักษาความปลอดภัยดังนี้:
                   </p>
@@ -272,9 +272,9 @@ export default function PrivacyPolicyPage() {
                   <h2 className="font-kanit font-bold text-2xl md:text-3xl">6. นโยบายคุกกี้</h2>
                 </div>
                 <div className="space-y-6">
-                  <Card className="bg-white/5 border-white/10 overflow-hidden">
+                  <Card className="bg-secondary/40 border-border overflow-hidden">
                     <Table>
-                      <TableHeader className="bg-white/5">
+                      <TableHeader className="bg-secondary/40">
                         <TableRow>
                           <TableHead className="w-[40%]">ประเภทคุกกี้</TableHead>
                           <TableHead>วัตถุประสงค์</TableHead>
@@ -283,12 +283,12 @@ export default function PrivacyPolicyPage() {
                       </TableHeader>
                       <TableBody>
                         <TableRow>
-                          <TableCell className="font-medium text-white">คุกกี้จำเป็น (Strictly Necessary)</TableCell>
+                          <TableCell className="font-medium text-foreground">คุกกี้จำเป็น (Strictly Necessary)</TableCell>
                           <TableCell className="text-muted-foreground">จัดการ Session การเข้าสู่ระบบ และรักษาสถานะการใช้งาน</TableCell>
                           <TableCell className="text-center">✅</TableCell>
                         </TableRow>
                         <TableRow>
-                          <TableCell className="font-medium text-white">คุกกี้การทำงาน (Functional)</TableCell>
+                          <TableCell className="font-medium text-foreground">คุกกี้การทำงาน (Functional)</TableCell>
                           <TableCell className="text-muted-foreground">จดจำการตั้งค่าและ Preferences ของคุณ</TableCell>
                           <TableCell className="text-center">⚙️</TableCell>
                         </TableRow>
@@ -311,9 +311,9 @@ export default function PrivacyPolicyPage() {
                   </div>
                   <h2 className="font-kanit font-bold text-2xl md:text-3xl">7. ระยะเวลาการเก็บรักษาข้อมูล</h2>
                 </div>
-                <Card className="bg-white/5 border-white/10 overflow-hidden mb-6">
+                <Card className="bg-secondary/40 border-border overflow-hidden mb-6">
                   <Table>
-                    <TableHeader className="bg-white/5">
+                    <TableHeader className="bg-secondary/40">
                       <TableRow>
                         <TableHead className="w-[40%]">ประเภทข้อมูล</TableHead>
                         <TableHead>ระยะเวลาเก็บรักษา</TableHead>
@@ -326,19 +326,19 @@ export default function PrivacyPolicyPage() {
                         { type: "ข้อมูล Session และ Cookies", time: "จนกว่า Session จะสิ้นสุดหรือคุกกี้หมดอายุ" },
                       ].map((row, i) => (
                         <TableRow key={i}>
-                          <TableCell className="font-medium text-white">{row.type}</TableCell>
+                          <TableCell className="font-medium text-foreground">{row.type}</TableCell>
                           <TableCell className="text-muted-foreground">{row.time}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </Card>
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                  <div className="flex items-center gap-2 text-red-400 font-bold mb-1">
+                <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20">
+                  <div className="flex items-center gap-2 text-destructive font-bold mb-1">
                     <Lock className="w-4 h-4" />
                     <span>ข้อมูลทั้งหมดหลังปิดบัญชี</span>
                   </div>
-                  <p className="text-red-400/80 text-sm">เราจะดำเนินการลบทันทีเมื่อคุณลบบัญชีผู้ใช้งาน รวมถึงลบออกจาก Backup ภายในระยะเวลาอันสมควร</p>
+                  <p className="text-destructive/80 text-sm">เราจะดำเนินการลบทันทีเมื่อคุณลบบัญชีผู้ใช้งาน รวมถึงลบออกจาก Backup ภายในระยะเวลาอันสมควร</p>
                 </div>
               </section>
 
@@ -358,8 +358,8 @@ export default function PrivacyPolicyPage() {
                     { title: "Safe Storage", desc: "จัดเก็บโทเค็นในฐานข้อมูลที่มีระบบรักษาความปลอดภัยสูง" },
                     { title: "Access Control", desc: "จำกัดสิทธิ์การเข้าถึงข้อมูลเฉพาะเจ้าหน้าที่ที่จำเป็น" }
                   ].map((item, i) => (
-                    <div key={i} className="p-5 rounded-2xl bg-white/5 border border-white/10">
-                      <h4 className="font-bold text-white mb-2">{item.title}</h4>
+                    <div key={i} className="p-5 rounded-2xl bg-secondary/40 border border-border">
+                      <h4 className="font-bold text-foreground mb-2">{item.title}</h4>
                       <p className="text-sm text-muted-foreground">{item.desc}</p>
                     </div>
                   ))}
@@ -386,8 +386,8 @@ export default function PrivacyPolicyPage() {
                     { title: "สิทธิคัดค้าน", desc: "คัดค้านการประมวลผลตามประโยชน์ชอบธรรม" },
                     { title: "สิทธิถอนความยินยอม", desc: "ยกเลิกสิทธิ์เชื่อมต่อได้ตลอดเวลา" }
                   ].map((item, i) => (
-                    <div key={i} className="p-4 rounded-xl bg-white/5 border border-white/10 flex flex-col">
-                      <span className="font-bold text-white mb-1">{item.title}</span>
+                    <div key={i} className="p-4 rounded-xl bg-secondary/40 border border-border flex flex-col">
+                      <span className="font-bold text-foreground mb-1">{item.title}</span>
                       <span className="text-sm text-muted-foreground">{item.desc}</span>
                     </div>
                   ))}
@@ -411,7 +411,7 @@ export default function PrivacyPolicyPage() {
                   <p className="text-muted-foreground mb-6">หากคุณมีคำถาม ข้อเสนอแนะ หรือต้องการใช้สิทธิตามนโยบายนี้ กรุณาติดต่อเราได้ที่:</p>
                   <a 
                     href="mailto:kanonkce@gmail.com" 
-                    className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-white font-bold text-lg hover:scale-105 transition-transform shadow-lg shadow-primary/30"
+                    className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg hover:scale-105 transition-transform shadow-lg shadow-primary/30"
                   >
                     <Mail className="w-5 h-5" />
                     kanonkce@gmail.com

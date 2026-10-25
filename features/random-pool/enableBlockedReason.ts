@@ -1,0 +1,16 @@
+import type { WidgetQuota } from "@/services/widget.service";
+import type { Config } from "./types";
+
+/** Why a config cannot be switched on right now, or null when it can. */
+export function enableBlockedReason(
+  config: Config | undefined,
+  quota: WidgetQuota | null,
+) {
+  if (!config) return "บันทึกการตั้งค่าก่อนจึงเปิดใช้งานได้";
+  if (config.widget.enabled) return null;
+  if (config.pool_state === "DELETED") return "กองสุ่มถูกลบ";
+  if (config.pool_state === "HIDDEN") return "กองสุ่มถูกซ่อน";
+  if (quota && quota.remaining_quota <= 0)
+    return `เปิดใช้งานไม่ได้ เพราะพอยท์วิดเจ็ตครบ ${quota.used_quota} / ${quota.total_quota} ปิดการตั้งค่าอื่นเพื่อคืนพอยท์`;
+  return null;
+}

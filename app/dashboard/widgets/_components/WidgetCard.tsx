@@ -30,7 +30,7 @@ export const WidgetCard = ({
     return (
         <Card className="h-full transition-all hover:border-primary/50 hover:shadow-md group relative overflow-hidden">
             {!isActive && (
-                <div className="absolute inset-0 bg-black/40 z-10 rounded-[inherit]" />
+                <div className="absolute inset-0 bg-background/40 z-10 rounded-[inherit]" />
             )}
             <CardHeader>
                 <div className="flex items-center gap-4 mb-2 justify-between">
@@ -72,7 +72,7 @@ export const WidgetCard = ({
                 </CardDescription>
                 {(hasMultipleConfigs || apiWidget?.widget_type?.cost !== undefined) && (
                     <div className="flex items-center gap-1 mt-1">
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-sm font-medium text-amber-600">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-supernova/10 px-2 py-0.5 text-sm font-medium text-supernova">
                             <Zap className="h-3 w-3" />
                             {hasMultipleConfigs ? "1 พอยท์ต่อ Config ที่เปิดใช้" : `${apiWidget?.widget_type?.cost} พอยท์`}
                         </span>
@@ -127,7 +127,7 @@ export const WidgetCard = ({
                 </CardContent>
             )}
             {!isActive && (
-                <div className="relative z-20 mx-4 rounded-lg bg-amber-500/20 border border-amber-500/40 px-3 py-2 text-sm text-amber-400 text-center">
+                <div className="relative z-20 mx-4 rounded-lg bg-warning/20 border border-warning/40 px-3 py-2 text-sm text-warning text-center">
                     วิดเจ็ตนี้ถูกปิดใช้งานชั่วคราว
                 </div>
             )}

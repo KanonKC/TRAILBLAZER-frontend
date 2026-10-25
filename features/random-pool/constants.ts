@@ -1,3 +1,4 @@
+import { AlertTriangle, Info, OctagonAlert } from "lucide-react";
 import { Config, ConfigDraft } from "./types";
 
 export const MAX_CONFIGS = 50;
@@ -11,13 +12,13 @@ export const MAX_WEIGHT = 1_000_000;
 export const CHAT_VARIABLES = [
   {
     token: "{{user}}",
+    title: "ชื่อผู้แลก",
     description: "ชื่อคนดูที่แลกแต้มช่อง",
-    example: "NongMint",
   },
   {
     token: "{{item}}",
-    description: "ชื่อของที่สุ่มได้ ถ้ารายการไม่มีชื่อ จะเป็นค่าว่าง",
-    example: "ชานมไข่มุก",
+    title: "ชื่อของที่สุ่มได้",
+    description: "ถ้ารายการไม่มีชื่อ จะเป็นค่าว่าง",
   },
 ] as const;
 
@@ -44,11 +45,15 @@ export const POOL_STATE_NOTICE: Record<
   },
 };
 
-export function emptyConfigDraft(name: string): ConfigDraft {
+export function emptyConfigDraft(
+  name: string,
+  twitchBotId: string | null = null,
+): ConfigDraft {
   return {
     name,
     pool_id: "",
     twitch_reward_id: "",
+    twitch_bot_id: twitchBotId,
     mode: "UNIFORM",
     visualization: "SHUFFLE",
     default_chat_message: "",
@@ -62,7 +67,8 @@ export function draftFromConfig(config: Config): ConfigDraft {
   return {
     name: config.name,
     pool_id: config.pool_id,
-    twitch_reward_id: config.twitch_reward_id,
+    twitch_reward_id: config.twitch_reward_id ?? "",
+    twitch_bot_id: config.twitch_bot_id ?? null,
     mode: config.mode,
     visualization: config.visualization,
     default_chat_message: config.default_chat_message ?? "",
@@ -72,6 +78,25 @@ export function draftFromConfig(config: Config): ConfigDraft {
   };
 }
 
-/** Focus styles for inputs: neutral, never the primary brand color. */
-export const neutralFocus =
-  "focus-visible:border-foreground/40 focus-visible:ring-foreground/20";
+/** Status tones for `Alert`: border + tint, the status text color and its icon. */
+export const ALERT_TONE = {
+  danger: {
+    box: "border-destructive/50 bg-destructive/10",
+    text: "text-destructive",
+    Icon: OctagonAlert,
+  },
+  warning: {
+    box: "border-warning/50 bg-warning/10",
+    text: "text-warning",
+    Icon: AlertTriangle,
+  },
+  info: {
+    box: "border-info/50 bg-info/10",
+    text: "text-info",
+    Icon: Info,
+  },
+} as const;
+
+/** The design system focus ring: 2px `ring` with a 2px offset on every interactive element. */
+export const FOCUS_RING =
+  "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";

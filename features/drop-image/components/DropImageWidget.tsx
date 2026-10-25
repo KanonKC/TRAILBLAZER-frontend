@@ -6,12 +6,14 @@ import {
     ImageIcon,
     Gift,
     ShieldCheck,
-    Play
+    MessageSquare
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import { TestWidgetButton } from "@/components/button/TestWidgetButton";
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 
@@ -30,7 +32,7 @@ import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { DropImageConfig } from "../types";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 import SubLabel from "@/components/SubLabel";
@@ -82,11 +84,11 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
-                        <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                        <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                         {config && (
                             <>
-                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
                             </>
                         )}
                     </TabsList>
@@ -101,19 +103,19 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                             }}
                             isLoading={isSaving}
                         >
-                            <p className="text-gray-200 text-base leading-relaxed">
+                            <p className="text-foreground text-base leading-relaxed">
                                 วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณและส่ง URL ของรูปภาพ โดยมีระบบตรวจสอบความถูกต้องและคัดกรองเนื้อหาที่ไม่เหมาะสม ก่อนปล่อยตกบนสตรีม
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-purple-500/10 text-purple-500 mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-teal/10 text-teal mb-3">
                                         <Gift className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Channel Points</h3>
                                     <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch และรับ URL ของภาพจากผู้ใช้ได้อย่างสะดวก</p>
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-500 mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-supernova/10 text-supernova mb-3">
                                         <ShieldCheck className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Image Moderation</h3>
@@ -130,16 +132,19 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                     items={[
                                         {
                                             step: 1,
-                                            title: "เปิดใช้งาน Widget",
-                                            description: <WidgetEnabledBadge />
+                                            title: "เปิดใช้งานวิดเจ็ต",
+                                            description: (<div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วส่งรูปภาพขึ้นหน้าจอสตรีมของคุณ</p>
+                                                <WidgetEnabledBadge />
+                                            </div>)
                                         },
                                         {
                                             step: 2,
                                             title: `เลือกแต้มช่องที่ต้องการใช้งาน`,
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">เลือก Channel Points Reward บน Twitch เพื่อใช้กับ Widget นี้</p>
-                                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
+                                                    <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</p>
+                                                    <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} />
                                                 </div>
                                             )
                                         },
@@ -149,19 +154,34 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             description: (
                                                 <div className="space-y-4">
                                                     <p className="text-sm text-muted-foreground">ตั้งเวลาให้รูปภาพแสดงค้างไว้กี่วินาที</p>
-                                                    <div className="flex items-center gap-3">
-                                                        <Slider value={[displayDuration]} onValueChange={([v]) => setDisplayDuration(v)} min={1} max={20} className="flex-1" />
-                                                        <span className="text-sm tabular-nums w-16 text-right text-muted-foreground">{displayDuration} วินาที</span>
+                                                    <div className="flex items-center gap-4">
+                                                        <Slider value={[displayDuration]} onValueChange={([value]) => setDisplayDuration(value)} min={1} max={20} className="flex-1" />
+                                                        <div className="w-32">
+                                                            <InputGroup>
+                                                                <InputGroupInput
+                                                                    type="number"
+                                                                    value={displayDuration}
+                                                                    min={1}
+                                                                    max={20}
+                                                                    className="font-mono tabular-nums"
+                                                                    onChange={(event) => {
+                                                                        const parsed = Number(event.target.value);
+                                                                        setDisplayDuration(Number.isFinite(parsed) ? Math.min(20, Math.max(1, Math.round(parsed))) : 1);
+                                                                    }}
+                                                                />
+                                                                <InputGroupAddon align="inline-end">วินาที</InputGroupAddon>
+                                                            </InputGroup>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             )
                                         },
                                         {
                                             step: 4,
-                                            title: "นำ Overlay ไปใส่ใน OBS",
+                                            title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
+                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้รูปภาพแสดงบนหน้าจอสตรีมของคุณ</p>
                                                     <SmartOverlayUrlInput
                                                         url={overlayUrl}
                                                         slug="drop-image"
@@ -177,8 +197,18 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-white/70">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
+                                                    <p className="text-sm text-muted-foreground">กดบันทึก แล้วลองกดปุ่ม Test ด้านล่างเพื่อดูว่าผลลัพธ์แสดงขึ้นบนหน้าจอสตรีมของคุณถูกต้อง</p>
                                                     <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId} />
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            step: 6,
+                                            title: "การตั้งค่าเพิ่มเติม",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-muted-foreground">เปิดตรวจเนื้อหาไม่เหมาะสม เปลี่ยนระยะเวลาแสดงรูป และแก้ข้อความที่แจ้งเมื่อรูปไม่ผ่านได้ในแท็บตั้งค่า</p>
+                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
                                                 </div>
                                             )
                                         }
@@ -197,39 +227,54 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                             onSuccess={triggerRefresh}
                         >
                             <WidgetSettingsCardContent>
-                                <div className="space-y-6">
-                                    <div className="space-y-2">
-                                        <Label>เชื่อมต่อแต้มช่องบน Twitch</Label>
-                                        <SubLabel>เลือกแต้มช่องที่ต้องการใช้งานกับ Widget นี้ หากคุณไม่เห็นแต้มช่องตรงนี้ ลองเช็คให้มั่นใจว่าคุณได้สร้างแต้มช่องแบบที่ให้คนดูกรอกข้อมูลได้แล้ว</SubLabel>
-                                        <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label>ระยะเวลาการแสดงผลรูปภาพ (วินาที)</Label>
-                                        <div className="flex items-center gap-3">
-                                            <Slider value={[displayDuration]} onValueChange={([v]) => setDisplayDuration(v)} min={1} max={20} className="flex-1" />
-                                            <span className="text-sm tabular-nums w-16 text-right text-muted-foreground">{displayDuration} วินาที</span>
+                                <div className="space-y-8">
+                                    <div className="space-y-6">
+                                        <div className="space-y-2">
+                                            <Label>เชื่อมต่อแต้มช่องบน Twitch</Label>
+                                            <SubLabel>เลือกแต้มช่องที่ใช้กับวิดเจ็ตนี้ (ต้องเป็นแบบที่ให้คนดูกรอกข้อความได้)</SubLabel>
+                                            <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} />
                                         </div>
+
+                                        <div className="space-y-2">
+                                            <Label>ระยะเวลาการแสดงผลรูปภาพ</Label>
+                                            <SubLabel>รูปภาพจะแสดงค้างบนหน้าจอตามเวลาที่ตั้งไว้</SubLabel>
+                                            <div className="flex items-center gap-4">
+                                                <Slider value={[displayDuration]} onValueChange={([value]) => setDisplayDuration(value)} min={1} max={20} className="flex-1" />
+                                                <div className="w-32">
+                                                    <InputGroup>
+                                                        <InputGroupInput
+                                                            type="number"
+                                                            value={displayDuration}
+                                                            min={1}
+                                                            max={20}
+                                                            className="font-mono tabular-nums"
+                                                            onChange={(event) => {
+                                                                const parsed = Number(event.target.value);
+                                                                setDisplayDuration(Number.isFinite(parsed) ? Math.min(20, Math.max(1, Math.round(parsed))) : 1);
+                                                            }}
+                                                        />
+                                                        <InputGroupAddon align="inline-end">วินาที</InputGroupAddon>
+                                                    </InputGroup>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <SmartOverlayUrlInput
+                                            url={overlayUrl}
+                                            slug="drop-image"
+                                            onSuccess={setConfig}
+                                        />
                                     </div>
 
-                                    <SmartOverlayUrlInput
-                                        url={overlayUrl}
-                                        slug="drop-image"
-                                        onSuccess={setConfig}
-                                    />
-
-                                    {/* Content Moderation */}
-                                    <div className="space-y-4">
+                                    <div className="space-y-6">
                                         <div className="flex items-center gap-2 border-b pb-2">
-                                            <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                                            <h3 className="text-lg font-semibold">Content Moderation</h3>
+                                            <ShieldCheck className="w-5 h-5 text-violet" />
+                                            <h3 className="text-lg font-semibold">ตรวจสอบเนื้อหา</h3>
                                         </div>
                                         <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
                                             <div className="space-y-2 mr-2">
-                                                <Label>เปิดใช้งานการตรวจสอบเนื้อหาด้วย<a href="https://sightengine.com/" target="_blank" rel="noopener noreferrer" className="text-cyan-500 hover:underline">Sightengine</a></Label>
-                                                <p className="text-sm text-muted-foreground">
-                                                    หากเปิดใช้งาน จะทำการตรวจสอบรูปภาพที่ส่งมาว่ามีเนื้อหาไม่เหมาะสมหรือไม่ (NSFW / Gore) และป้องกันการแสดงรูปภาพเหล่านั้นขึ้นบนหน้าจอ
-                                                </p>
+                                                <Label>เปิดใช้งานการตรวจสอบเนื้อหา<a href="https://sightengine.com/" target="_blank" rel="noopener noreferrer" className=" inline-block align-middle rounded-md border bg-foreground px-2 py-1 hover:bg-foreground/90"><img src="/sightengine-logo.svg" alt="Sightengine" className="h-4 w-auto" /></a></Label>
+                                                <SubLabel>ตรวจรูปที่ส่งมาว่ามีเนื้อหาไม่เหมาะสม (NSFW / Gore) และไม่แสดงรูปนั้นบนหน้าจอ</SubLabel>
                                             </div>
                                             <Switch
                                                 checked={enabledModeration}
@@ -238,20 +283,22 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4">
+                                    <div className="space-y-6">
+                                        <div className="flex items-center gap-2 border-b pb-2">
+                                            <MessageSquare className="w-5 h-5 text-info" />
+                                            <h3 className="text-lg font-semibold">ข้อความตอบกลับ</h3>
+                                        </div>
                                         <BotProfileSelector value={botProfile} onValueChange={setBotProfile} />
-                                        <div className="space-y-2"><Label>ข้อความเมื่อ URL ไม่ถูกต้อง</Label><ReplyMessageTextarea value={invalidMessage} onChange={setInvalidMessage} rows={2} /></div>
-                                        <div className="space-y-2"><Label>ข้อความเมื่อไม่ใช่รูปภาพ</Label><ReplyMessageTextarea value={notImageMessage} onChange={setNotImageMessage} rows={2} /></div>
-                                        <div className="space-y-2"><Label>ข้อความเมื่อเนื้อหาไม่เหมาะสม</Label><ReplyMessageTextarea value={containMatureMessage} onChange={setContainMatureMessage} rows={2} disabled={!enabledModeration} /></div>
+                                        <div className="space-y-2"><Label>ข้อความเมื่อ URL ไม่ถูกต้อง</Label><CharacterCountTextarea value={invalidMessage} onChange={setInvalidMessage} rows={2} /></div>
+                                        <div className="space-y-2"><Label>ข้อความเมื่อไม่ใช่รูปภาพ</Label><CharacterCountTextarea value={notImageMessage} onChange={setNotImageMessage} rows={2} /></div>
+                                        <div className="space-y-2"><Label>ข้อความเมื่อเนื้อหาไม่เหมาะสม</Label><CharacterCountTextarea value={containMatureMessage} onChange={setContainMatureMessage} rows={2} disabled={!enabledModeration} /></div>
                                     </div>
                                 </div>
                             </WidgetSettingsCardContent>
                             <WidgetSettingsCardFooter>
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
                                 <div className="flex gap-2">
-                                    <Button variant="outline" disabled={isTesting} onClick={handleTest}>
-                                        {isTesting ? "Testing..." : <><Play className="mr-2 h-4 w-4" /> Test</>}
-                                    </Button>
+                                    <TestWidgetButton onTest={handleTest} isLoading={isTesting} />
                                     <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
                                 </div>
                             </WidgetSettingsCardFooter>

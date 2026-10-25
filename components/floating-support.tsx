@@ -32,7 +32,7 @@ export function FloatingSupport() {
                                 size="icon" 
                                 className="h-14 w-14 rounded-full shadow-lg trailblazer-gradient hover:scale-110 transition-transform duration-200"
                             >
-                                <MessageSquare className="h-6 w-6 text-white" />
+                                <MessageSquare className="h-6 w-6 text-foreground" />
                             </Button>
                         </a>
                     </TooltipTrigger>

@@ -1,12 +1,12 @@
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ReplyMessageHelp, VariableItem } from "./ReplyMessageHelp";
 import { cn } from "@/lib/utils";
+import { AlertCircle } from "lucide-react";
 
-interface ReplyMessageTextareaProps {
+interface CharacterCountTextareaProps {
     value: string;
     onChange: (value: string) => void;
-    variant?: "default" | "overlay";
     error?: string | null;
     variables?: VariableItem[];
     placeholder?: string;
@@ -14,10 +14,11 @@ interface ReplyMessageTextareaProps {
     disabled?: boolean;
     defaultOpenHelp?: boolean;
     name?: string;
+    maxLength?: number;
 }
 
-export function ReplyMessageTextarea({ value, onChange, variant = "overlay", error, variables=[], placeholder, rows = 3, disabled=false, defaultOpenHelp = false, name }: ReplyMessageTextareaProps) {
-    const isOverlay = variant === "overlay";
+export function CharacterCountTextarea({ value, onChange, error, variables=[], placeholder, rows = 3, disabled=false, defaultOpenHelp = false, name, maxLength = 500 }: CharacterCountTextareaProps) {
+    const textareaId = useId();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const handleInsertVariable = (variable: string) => {
@@ -47,28 +48,23 @@ export function ReplyMessageTextarea({ value, onChange, variant = "overlay", err
                     disabled={disabled}
                     placeholder={placeholder}
                     ref={textareaRef}
-                    id="qs_reply_message"
+                    id={textareaId}
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    className={cn(
-                        "resize-none",
-                        isOverlay
-                            ? "bg-transparent border-white/20 text-white placeholder:text-white/40 focus-visible:ring-offset-0 focus-visible:ring-white/20"
-                            : "bg-background border-input text-foreground"
-                    )}
+                    aria-invalid={error ? true : undefined}
+                    className="resize-none pb-8"
                     rows={rows}
                 />
-                <div className="flex justify-between items-start absolute bottom-0 right-0 mr-2 mb-2">
-                    {error ? (
-                        <p className="text-sm text-red-500 font-medium">{error}</p>
-                    ) : (
-                        <div></div>
-                    )}
-                    <span className={cn("text-sm", isOverlay ? "text-white/50" : "text-muted-foreground", value.length > 500 ? "text-red-500" : "")}>
-                        {value.length}/500
-                    </span>
-                </div>
+                <span className={cn("absolute bottom-0 right-0 mr-2 mb-2 font-mono text-xs tabular-nums", error || value.length > maxLength ? "text-destructive" : "text-muted-foreground")}>
+                    {value.length}/{maxLength}
+                </span>
             </div>
+            {error && (
+                <p className="flex items-center gap-1.5 text-sm text-destructive font-medium">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    {error}
+                </p>
+            )}
             { variables.length > 0 && <ReplyMessageHelp onInsertVariable={handleInsertVariable} variables={variables} defaultOpen={defaultOpenHelp} />}
         </div>
     );

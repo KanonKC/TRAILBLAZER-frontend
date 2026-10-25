@@ -53,8 +53,8 @@ export default function ConsentPage() {
                 <span className="size-1.5 rounded-full bg-current" />
                 <span className="size-1.5 rounded-full bg-current" />
               </div>
-              <div className="flex size-16 items-center justify-center rounded-full bg-[#6441a5] shadow-lg">
-                <Twitch className="size-8 text-white" />
+              <div className="flex size-16 items-center justify-center rounded-full bg-twitch shadow-lg">
+                <Twitch className="size-8 text-foreground" />
               </div>
             </div>
 
@@ -115,7 +115,7 @@ export default function ConsentPage() {
               <Button
                 disabled={!accepted}
                 onClick={handleConfirm}
-                className="trailblazer-gradient text-white font-semibold hover:opacity-90 disabled:opacity-50"
+                className="trailblazer-gradient text-primary-foreground font-semibold hover:opacity-90 disabled:opacity-50"
               >
                 ยืนยันและดำเนินการต่อ
               </Button>

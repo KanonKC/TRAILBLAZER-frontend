@@ -9,7 +9,8 @@ interface TBToastProps {
 function generateParameters(props: TBToastProps): [string, { description?: string }] {
     const { title, description, error } = props;
     if (error && typeof error === "object" && "error_code" in error) {
-        return [title, { description: `${description} (code: ${error.error_code})` }];
+        const errorCodeLabel = `(code: ${String(error.error_code)})`;
+        return [title, { description: description ? `${description} ${errorCodeLabel}` : errorCodeLabel }];
     }
     return [title, { description }];
 }

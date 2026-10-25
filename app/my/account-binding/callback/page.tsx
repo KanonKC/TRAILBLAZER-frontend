@@ -54,7 +54,7 @@ function CallbackHandler() {
             } catch (error) {
                 console.error("Failed to bind account", error);
                 setStatus("error");
-                tbToast.error({ title: "ไม่สามารถเชื่อมต่อบัญชีได้" });
+                tbToast.error({ title: "เชื่อมต่อบัญชีไม่สำเร็จ", error: (error as any).response?.data });
             } finally {
                 // Clean up sessionStorage
                 sessionStorage.removeItem("oauth_state");
@@ -80,14 +80,14 @@ function CallbackHandler() {
             {status === "success" && (
                 <>
                     <div className="text-4xl">✅</div>
-                    <p className="text-emerald-400 font-medium">เชื่อมต่อบัญชีสำเร็จ!</p>
+                    <p className="text-success font-medium">เชื่อมต่อบัญชีสำเร็จ!</p>
                     <p className="text-sm text-muted-foreground">กำลังนำคุณกลับ...</p>
                 </>
             )}
             {status === "error" && (
                 <>
                     <div className="text-4xl">❌</div>
-                    <p className="text-red-400 font-medium">เชื่อมต่อบัญชีไม่สำเร็จ</p>
+                    <p className="text-destructive font-medium">เชื่อมต่อบัญชีไม่สำเร็จ</p>
                     <p className="text-sm text-muted-foreground">กำลังนำคุณกลับ...</p>
                 </>
             )}

@@ -13,9 +13,9 @@ export function ConditionNode({ id, data }: NodeProps) {
             label={displayLabel}
             sublabel="Condition"
             icon={Filter}
-            gradientClass="bg-gradient-to-br from-amber-600 to-amber-800"
-            borderClass="border border-amber-400/30"
-            sublabelClass="text-amber-200"
+            gradientClass="bg-gradient-to-br from-warning to-warning/60"
+            borderClass="border border-warning/30"
+            sublabelClass="text-warning"
             data={data}
         />
     );

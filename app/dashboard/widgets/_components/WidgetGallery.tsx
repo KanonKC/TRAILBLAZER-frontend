@@ -25,7 +25,7 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes, isAuthenticated
             setQuotaRefreshKey(prev => prev + 1);
         } catch (error) {
             console.error("Failed to fetch widgets", error);
-            tbToast.error({ title: "ไม่สามารถดึงข้อมูลวิดเจ็ตได้" });
+            tbToast.error({ title: "ดึงข้อมูลวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsLoading(false);
         }
@@ -45,7 +45,7 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes, isAuthenticated
         <div>
             <div className="flex flex-row items-start justify-between gap-2 mb-8">
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-3xl font-bold tracking-tight">Widget Gallery</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">แกลเลอรีวิดเจ็ต</h1>
                     <p className="text-muted-foreground">
                         เลือกวิดเจ็ตที่คุณต้องการใช้งานเพื่อเสริมประสบการณ์การสตรีมของคุณ
                     </p>

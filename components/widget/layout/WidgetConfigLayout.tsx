@@ -11,13 +11,16 @@ interface WidgetConfigLayoutProps {
     wide?: boolean
     /** Bump this from the page to re-fetch the quota meter. */
     quotaRefreshKey?: number
+    /** Shown under the quota meter in the right-hand column from lg up (e.g. a live preview). */
+    aside?: ReactNode
 }
 
 export function WidgetConfigLayout({
     children,
     widgetType,
     wide = false,
-    quotaRefreshKey = 0
+    quotaRefreshKey = 0,
+    aside
 }: WidgetConfigLayoutProps) {
     const [refreshKey, setRefreshKey] = useState(0)
     const { display_name: title, description, icon_url, theme_color } = widgetType
@@ -29,11 +32,17 @@ export function WidgetConfigLayout({
     return (
         <div className="container relative mx-auto px-4 py-10 flex flex-col items-center">
             {/* Quota Meter at the top */}
-            <div className="flex items-center w-full mb-4 lg:mb-0 lg:w-auto lg:self-end lg:absolute lg:right-4">
+            <div className={aside ? "flex items-center w-full mb-4 lg:hidden" : "flex items-center w-full mb-4 lg:mb-0 lg:w-auto lg:self-end lg:absolute lg:right-4"}>
                 <div className="w-full lg:w-[250px]">
                     <QuotaMeter refreshKey={refreshKey + quotaRefreshKey} />
                 </div>
             </div>
+            {aside && (
+                <div className="hidden lg:flex absolute right-4 top-10 bottom-10 w-[250px] flex-col gap-4">
+                    <QuotaMeter refreshKey={refreshKey + quotaRefreshKey} />
+                    <div className="sticky top-4">{aside}</div>
+                </div>
+            )}
 
             {/* Header */}
             <div className={wide ? "w-full max-w-[1016px] mb-8" : "w-full max-w-2xl mb-8"}>

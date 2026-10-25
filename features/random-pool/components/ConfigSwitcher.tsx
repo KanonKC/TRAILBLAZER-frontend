@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { RandomPoolController } from "../hooks/useRandomPool";
-import { MAX_CONFIGS } from "../constants";
+import { FOCUS_RING, MAX_CONFIGS } from "../constants";
 
 /** Dropdown at the top of the edit view for jumping between configs. */
 export function ConfigSwitcher({
@@ -38,7 +38,7 @@ export function ConfigSwitcher({
           <button
             type="button"
             aria-label="เลือกการตั้งค่า"
-            className="border-input hover:bg-muted/40 focus-visible:ring-foreground/30 flex h-9 w-full items-center justify-between gap-2 rounded-md border px-3 text-left text-sm outline-none focus-visible:ring-[3px]"
+            className={cn("border-input hover:bg-secondary flex h-9 w-full items-center justify-between gap-2 rounded-md border px-3 text-left text-sm", FOCUS_RING)}
           >
             <span className="truncate">
               {draft.name || "การตั้งค่าใหม่"}
@@ -89,7 +89,7 @@ export function ConfigSwitcher({
                   className={cn(
                     "text-sm",
                     config.widget.enabled
-                      ? "text-emerald-400"
+                      ? "text-success"
                       : "text-muted-foreground",
                   )}
                 >
