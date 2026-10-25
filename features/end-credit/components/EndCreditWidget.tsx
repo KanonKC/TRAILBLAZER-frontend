@@ -1,5 +1,6 @@
 "use client"
 
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -297,6 +298,16 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                                         <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
                                                         <TestWidgetButton onTest={handleTest} isLoading={isTesting} />
                                                     </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            step: 5,
+                                            title: "การตั้งค่าเพิ่มเติม",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-muted-foreground">เลือกว่าจะแสดงใครบ้างใน Credit Roll เปิดรูปโปรไฟล์ แก้หัวข้อ และปรับความเร็วการเลื่อนได้ในแท็บตั้งค่า</p>
+                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
                                                 </div>
                                             )
                                         }

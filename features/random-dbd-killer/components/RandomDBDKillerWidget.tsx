@@ -1,5 +1,6 @@
 "use client"
 
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { useRandomDBDKiller } from "../hooks/useRandomDBDKiller";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Gift, ShieldQuestion } from "lucide-react";
@@ -151,7 +152,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
+                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้ผลการสุ่มแสดงบนหน้าจอสตรีมของคุณ</p>
                                                     <SmartOverlayUrlInput
                                                         url={overlayUrl}
                                                         slug="random-dbd-killer"
@@ -167,8 +168,18 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
+                                                    <p className="text-sm text-muted-foreground">กดบันทึก แล้วลองกดปุ่ม Test ด้านล่างเพื่อดูว่าผลลัพธ์แสดงขึ้นบนหน้าจอสตรีมของคุณถูกต้อง</p>
                                                     <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId && killerPool.length > 0} />
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            step: 6,
+                                            title: "การตั้งค่าเพิ่มเติม",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-muted-foreground">เปลี่ยนแต้มช่อง ปรับกอง Killer ที่จะสุ่ม และเลือกรูปแบบ Animation ตอนสุ่มได้ในแท็บตั้งค่า</p>
+                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
                                                 </div>
                                             )
                                         }

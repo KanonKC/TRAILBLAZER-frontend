@@ -1,5 +1,6 @@
 "use client"
 
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { useSpotifySongRequest } from "../hooks/useSpotifySongRequest";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Music2, ListMusic, MessageSquare, Link2, AlertTriangle } from "lucide-react";
@@ -215,6 +216,16 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                         </div>
                                                     )
                                                 },
+                                                {
+                                                    step: 8,
+                                                    title: "การตั้งค่าเพิ่มเติม",
+                                                    description: (
+                                                        <div className="space-y-3">
+                                                            <p className="text-sm text-muted-foreground">แก้ข้อความตอบกลับเมื่อขอเพลงสำเร็จ ไม่พบเพลง หรือไม่มีอุปกรณ์เล่นอยู่ และเปลี่ยนแต้มช่องได้ในแท็บตั้งค่า</p>
+                                                            <GoToSettingsButton onClick={() => setActiveTab("settings")} />
+                                                        </div>
+                                                    )
+                                                }
                                             ]}
                                         />
                                     </WidgetStepper>

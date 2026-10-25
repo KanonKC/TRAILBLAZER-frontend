@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
@@ -13,7 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { Clock, Cog, ExternalLink, MessageSquare, Video } from "lucide-react";
+import { Clock, Cog, MessageSquare, Video } from "lucide-react";
 import { MSDelaySlider } from "@/components/widget/MSDelaySlider";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
@@ -141,7 +141,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                             title: "ตั้งค่าข้อความ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">ข้อความที่จะส่งในแชทเมื่อมีการ Raid เข้ามา</p>
+                                                    <p className="text-sm text-muted-foreground">ใส่ข้อความที่จะส่งในแชทเมื่อมีคน Raid เข้าช่อง สามารถใช้ตัวแปรด้านล่างเพื่อใส่ชื่อและข้อมูลของคนที่ Raid มาให้อัตโนมัติ</p>
                                                     <ReplyMessageTextarea
                                                         defaultOpenHelp
                                                         value={replyMessage}
@@ -187,12 +187,8 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                             title: "การตั้งค่าเพิ่มเติม",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">เลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ใน Settings</p>
-                                                    <div className="flex justify-start">
-                                                        <Button variant="secondary" onClick={() => setActiveTab("settings")} className="bg-secondary text-foreground hover:bg-secondary/80 border-0 gap-2">
-                                                            ไปที่การตั้งค่า (Settings) <ExternalLink className="h-4 w-4" />
-                                                        </Button>
-                                                    </div>
+                                                    <p className="text-sm text-muted-foreground">เลือกเปิด/ปิดการเล่นคลิป หรือกำหนดให้เล่นเฉพาะ Highlight ได้ในแท็บตั้งค่า</p>
+                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
                                                 </div>
                                             )
                                         }
@@ -211,61 +207,57 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                             onSuccess={triggerRefresh}
                         >
                             <WidgetSettingsCardContent>
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <div className="flex items-center gap-2 border-b pb-2">
-                                        <Clock className="w-5 h-5 text-primary" />
-                                        <h3 className="text-lg font-semibold">ดีเลย์ (Delay)</h3>
+                                        <Clock className="w-5 h-5 text-supernova" />
+                                        <h3 className="text-lg font-semibold">ดีเลย์</h3>
                                     </div>
                                     <div className="bg-card space-y-2">
                                         <div className="flex items-center justify-between gap-4">
                                             <div className="space-y-0.5">
-                                                <Label>เวลาดีเลย์ก่อนการ Shoutout</Label>
-                                                <p className="text-sm text-muted-foreground">กำหนดเวลาหน่วงหลังจากมีคนเข้าร่วม Raid เข้ามาก่อนจะส่งข้อความและเล่นคลิป</p>
+                                                <Label>เวลาดีเลย์ก่อนส่งข้อความ</Label>
+                                                <p className="text-sm text-muted-foreground">กำหนดเวลาหน่วงหลังมี Raid เข้ามา ก่อนส่งข้อความและเล่นคลิป</p>
                                             </div>
                                         </div>
                                         <MSDelaySlider value={delayMs} onChange={setDelayMs} />
                                     </div>
                                 </div>
                                 
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <div className="flex items-center gap-2 border-b pb-2">
                                         <MessageSquare className="w-5 h-5 text-info" />
-                                        <h3 className="text-lg font-semibold">ข้อความ Shoutout</h3>
+                                        <h3 className="text-lg font-semibold">ข้อความขอบคุณ</h3>
                                     </div>
                                     <BotProfileSelector value={botProfile} onValueChange={setBotProfile} />
                                     <ReplyMessageTextarea value={replyMessage} onChange={handleReplyMessageChange} error={replyMessageError} variables={shoutoutVariables} />
                                 </div>
 
-                                <div className="space-y-4">
+                                <div className="space-y-6">
                                     <div className="flex items-center gap-2 border-b pb-2">
-                                        <Video className="w-5 h-5 text-primary" />
-                                        <h3 className="text-lg font-semibold">ตัวเลือกวิดีโอ</h3>
+                                        <Video className="w-5 h-5 text-teal" />
+                                        <h3 className="text-lg font-semibold">คลิป</h3>
                                     </div>
                                     <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
                                         <div className="space-y-0.5">
-                                            <Label>แสดง Clip ของช่องที่ Raid</Label>
-                                            <p className="text-sm text-muted-foreground">แสดง Clip ของช่องที่ Raid ขึ้นมาบนสตรีมของคุณ</p>
+                                            <Label>แสดงคลิปของช่องที่ Raid</Label>
+                                            <p className="text-sm text-muted-foreground">เล่นคลิปของช่องที่ Raid มาบนสตรีมของคุณ</p>
                                         </div>
                                         <Switch checked={enabledClip} onCheckedChange={setEnabledClip} />
                                     </div>
 
-                                    {enabledClip && (
-                                        <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                                    <div className={cn("flex items-center justify-between p-4 border rounded-lg bg-card", !enabledClip && "opacity-50")}>
                                             <div className="space-y-0.5 mr-4">
                                                 <Label>เล่นเฉพาะ Highlight</Label>
-                                                <p className="text-sm text-muted-foreground">หากเปิดใช้งาน จะสุ่มเลือกเฉพาะคลิปที่ถูกตั้งเป็นไฮไลท์ขึ้นมาก่อน หากช่องนั้นไม่มีคลิปที่เป็นไฮไลท์ จะสุ่มเลือกคลิปทั่วไปแทน</p>
+                                                <p className="text-sm text-muted-foreground">สุ่มจากคลิป Highlight ก่อน ถ้าไม่มีจะสุ่มจากคลิปทั่วไปแทน</p>
                                             </div>
-                                            <Switch checked={enabledHighlightOnly} onCheckedChange={setEnabledHighlightOnly} />
-                                        </div>
-                                    )}
+                                            <Switch checked={enabledHighlightOnly} onCheckedChange={setEnabledHighlightOnly} disabled={!enabledClip} />
+                                    </div>
 
-                                    {enabledClip && (
-                                        <SmartOverlayUrlInput 
-                                            url={overlayUrl} 
-                                            slug="clip-shoutout"
-                                            onSuccess={setConfig}
-                                        />
-                                    )}
+                                    <SmartOverlayUrlInput 
+                                        url={overlayUrl} 
+                                        slug="clip-shoutout"
+                                        onSuccess={setConfig}
+                                    />
                                 </div>
                             </WidgetSettingsCardContent>
                             <WidgetSettingsCardFooter>

@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 
@@ -164,7 +165,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
+                                                    <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้รูปภาพแสดงบนหน้าจอสตรีมของคุณ</p>
                                                     <SmartOverlayUrlInput
                                                         url={overlayUrl}
                                                         slug="drop-image"
@@ -180,8 +181,18 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">กดบันทึกและทดสอบ ลองกดปุ่ม Test ด้านล่าง</p>
+                                                    <p className="text-sm text-muted-foreground">กดบันทึก แล้วลองกดปุ่ม Test ด้านล่างเพื่อดูว่าผลลัพธ์แสดงขึ้นบนหน้าจอสตรีมของคุณถูกต้อง</p>
                                                     <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={handleTest} canTest={!!twitchRewardId} />
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            step: 6,
+                                            title: "การตั้งค่าเพิ่มเติม",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-muted-foreground">เปิดตรวจเนื้อหาไม่เหมาะสม เปลี่ยนระยะเวลาแสดงรูป และแก้ข้อความที่แจ้งเมื่อรูปไม่ผ่านได้ในแท็บตั้งค่า</p>
+                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
                                                 </div>
                                             )
                                         }

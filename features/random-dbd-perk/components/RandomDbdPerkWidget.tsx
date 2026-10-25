@@ -6,13 +6,14 @@ import {
     Dices, 
     Gift, 
     Play, 
-    ChevronDown 
+    ChevronDown
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
@@ -131,10 +132,13 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                             step: 2,
                                             title: "เลือกประเภท Perk",
                                             description: (
+                                                <div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เลือกว่าจะตั้งค่าการสุ่ม Perk ของฝั่งไหนก่อน แต่ละฝั่งตั้งค่าแต้มช่องและจำนวน Perk แยกกัน</p>
                                                 <RadioGroup value={wizardType} onValueChange={(val) => setWizardType(val as "survivor" | "killer")} className="flex gap-4">
                                                     <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "survivor" ? "bg-info/10 border-info/50" : "bg-transparent border-border")}><RadioGroupItem value="survivor" id="r-survivor" /><Label htmlFor="r-survivor" className="flex-1 text-info">Survivor</Label></div>
                                                     <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "killer" ? "bg-violet/10 border-violet/50" : "bg-transparent border-border")}><RadioGroupItem value="killer" id="r-killer" /><Label htmlFor="r-killer" className="flex-1 text-violet">Killer</Label></div>
                                                 </RadioGroup>
+                                                </div>
                                             )
                                         },
                                         {
@@ -142,7 +146,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                             title: "เลือกแต้มช่อง",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">ช่องเชื่อมต่อแต้มช่อง</p>
+                                                    <p className="text-sm text-muted-foreground">เลือก Channel Points Reward บน Twitch ที่ผู้ชมจะแลกเพื่อสุ่ม Perk ของฝั่งที่เลือกไว้</p>
                                                     <TwitchRewardSelector
                                                         value={perkClasses.find(c => c.type === wizardType)?.twitch_reward_id || null}
                                                         onValueChange={(val) => {
@@ -159,6 +163,8 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                             step: 4,
                                             title: "กำหนดจำนวน Perk",
                                             description: (
+                                                <div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">กำหนดว่าผู้ชมแต่ละคนจะสุ่มได้สูงสุดกี่ Perk ต่อครั้ง สามารถนับเป็นจำนวน Perk หรือเป็นหน้าได้</p>
                                                 <div className="border p-4 rounded-xl bg-muted/20">
                                                     {(() => {
                                                         const currentLimitClass = perkClasses.find(c => c.type === wizardType);
@@ -184,6 +190,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                                         );
                                                     })()}
                                                 </div>
+</div>
                                             )
                                         },
                                         {
@@ -191,8 +198,19 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
+                                                    <p className="text-sm text-muted-foreground">กดบันทึก แล้วลองกดปุ่ม Test เพื่อดูตัวอย่างผลการสุ่ม Perk บนหน้าจอสตรีมของคุณ</p>
                                                     <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={() => handleTest(wizardType)} canTest={!!perkClasses.find(c => c.type === wizardType)?.twitch_reward_id} />
                                                     <RandomFormatInfo />
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            step: 6,
+                                            title: "การตั้งค่าเพิ่มเติม",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-muted-foreground">ปรับจำนวน Perk ที่จะสุ่มของ Survivor และ Killer แยกกัน และทดลองสุ่มได้ในแท็บตั้งค่า</p>
+                                                    <GoToSettingsButton onClick={() => setActiveTab("settings")} />
                                                 </div>
                                             )
                                         }

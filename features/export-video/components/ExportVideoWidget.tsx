@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ExportVideoHistoryList } from "./ExportVideoHistoryList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -256,6 +257,16 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                                             </>
                                                         )}
                                                     </Button>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            step: 8,
+                                            title: "การตั้งค่าเพิ่มเติม",
+                                            description: (
+                                                <div className="space-y-3">
+                                                    <p className="text-sm text-muted-foreground">ตั้งคำอธิบายวิดีโอและแท็กเริ่มต้นสำหรับ YouTube ได้ในแท็บตั้งค่า และดูประวัติการนำออกย้อนหลังได้ในแท็บประวัติการนำออก</p>
+                                                    <GoToSettingsButton onClick={() => controller.setActiveTab("settings")} />
                                                 </div>
                                             )
                                         }

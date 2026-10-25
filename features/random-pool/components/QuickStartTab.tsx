@@ -36,6 +36,9 @@ export function QuickStartTab({
                 title: "สร้างกองสุ่ม",
                 description: (
                   <div className="grid gap-3">
+                    <p className="text-muted-foreground text-sm">
+                      ตั้งชื่อและสร้างกองสุ่มของคุณ จากนั้นเพิ่มรายการที่อยากให้คนดูสุ่มได้ในขั้นตอนถัดไป
+                    </p>
                     <PoolCreateForm
                       busy={busy}
                       upload={controller.upload}

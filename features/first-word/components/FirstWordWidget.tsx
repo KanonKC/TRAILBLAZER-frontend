@@ -24,6 +24,7 @@ import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
 import { RefreshCcw, Trash2 } from "lucide-react";
 import {
     AlertDialog,
@@ -155,6 +156,16 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                                             <SaveWidgetButton onSave={controller.handleSave} isLoading={controller.isSaving} />
                                                             <TestWidgetButton onTest={controller.handleTestAudio} isLoading={controller.isTesting} />
                                                         </div>
+                                                    </div>
+                                                )
+                                            },
+                                            {
+                                                step: 5,
+                                                title: "การตั้งค่าเพิ่มเติม",
+                                                description: (
+                                                    <div className="space-y-3">
+                                                        <p className="text-sm text-muted-foreground">ปรับเสียงเอฟเฟกต์ เลือกบัญชีที่ใช้ส่งข้อความ หรือรีเซ็ตรายชื่อคนดูเพื่อเริ่มทักทายใหม่ได้ในแท็บตั้งค่า (ข้อความเฉพาะคนอยู่ในแท็บข้อความเฉพาะคน)</p>
+                                                        <GoToSettingsButton onClick={() => controller.setActiveTab("settings")} />
                                                     </div>
                                                 )
                                             }
