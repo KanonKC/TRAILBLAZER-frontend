@@ -12,6 +12,6 @@ export function enableBlockedReason(
   if (config.pool_state === "DELETED") return "กองสุ่มถูกลบ";
   if (config.pool_state === "HIDDEN") return "กองสุ่มถูกซ่อน";
   if (quota && quota.remaining_quota <= 0)
-    return `เปิดใช้งานไม่ได้ เพราะพอยท์ครบ ${quota.used_quota} / ${quota.total_quota}`;
+    return `เปิดใช้งานไม่ได้ เพราะพอยท์วิดเจ็ตครบ ${quota.used_quota} / ${quota.total_quota} ปิดการตั้งค่าอื่นเพื่อคืนพอยท์`;
   return null;
 }

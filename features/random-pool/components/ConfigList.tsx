@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { RandomPoolController } from "../hooks/useRandomPool";
-import { MAX_CONFIGS, POOL_STATE_NOTICE } from "../constants";
+import { FOCUS_RING, MAX_CONFIGS, POOL_STATE_NOTICE } from "../constants";
+import SubLabel from "@/components/SubLabel";
 import { Config } from "../types";
 import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
 import { enableBlockedReason } from "../enableBlockedReason";
@@ -66,7 +67,7 @@ function ConfigRow({
   return (
     <div
       className={cn(
-        "bg-secondary/40 hover:border-muted-foreground flex flex-wrap items-center gap-4 rounded-lg border p-4",
+        "bg-card hover:bg-secondary flex flex-wrap items-center gap-4 rounded-lg border p-4",
         !enabled && "opacity-90",
       )}
     >
@@ -74,7 +75,7 @@ function ConfigRow({
         type="button"
         aria-label={`แก้ไข ${config.name}`}
         onClick={() => controller.selectConfig(config.id)}
-        className="focus-visible:ring-foreground/40 flex min-w-0 flex-1 items-center gap-4 rounded-md text-left outline-none focus-visible:ring-2"
+        className={cn("flex min-w-0 flex-1 items-center gap-4 rounded-md text-left", FOCUS_RING)}
       >
         <ItemThumb
           url={thumb}
@@ -154,24 +155,22 @@ export function ConfigList({
       <CardHeader>
         <CardTitle className="flex flex-wrap items-center justify-between gap-2">
           <span className="flex items-center gap-2">
-            <Layers className="size-5 text-info" />
+            <Layers className="size-5 text-violet" />
             การตั้งค่าทั้งหมด
           </span>
           <span className="flex items-center gap-3">
             <span className="text-muted-foreground text-sm font-normal tabular-nums">
               สร้างแล้ว {configs.length} / {MAX_CONFIGS}
             </span>
-            {configs.length > 0 && (
-              <Button
-                type="button"
-                size="sm"
-                disabled={full}
-                onClick={controller.startNewConfig}
-              >
-                <Plus />
-                สร้างการตั้งค่าใหม่
-              </Button>
-            )}
+            <Button
+              type="button"
+              size="sm"
+              disabled={full}
+              onClick={controller.startNewConfig}
+            >
+              <Plus />
+              สร้างการตั้งค่าใหม่
+            </Button>
           </span>
         </CardTitle>
         <CardDescription>
@@ -181,19 +180,9 @@ export function ConfigList({
       </CardHeader>
       <CardContent className="grid gap-3">
         {configs.length === 0 ? (
-          <div className="text-muted-foreground grid place-items-center gap-2 rounded-lg border border-dashed px-4 py-10 text-center">
-            <Layers className="size-6" aria-hidden="true" />
-            <span className="text-foreground text-sm font-medium">
-              ยังไม่มีการตั้งค่า
-            </span>
-            <span className="text-sm">
-              สร้างการตั้งค่าแรก เลือกแต้มช่องและกองสุ่ม แล้วเปิดใช้งาน
-            </span>
-            <Button type="button" onClick={controller.startNewConfig}>
-              <Plus />
-              สร้างการตั้งค่าแรก
-            </Button>
-          </div>
+          <p className="text-muted-foreground py-6 text-center text-sm">
+            ไม่พบข้อมูล
+          </p>
         ) : (
           configs.map((config) => (
             <ConfigRow
@@ -203,11 +192,11 @@ export function ConfigList({
             />
           ))
         )}
-        <p className="text-muted-foreground text-sm">
+        <SubLabel>
           สร้างได้สูงสุด {MAX_CONFIGS} การตั้งค่า แต่เปิดใช้งานพร้อมกันได้ตาม
           พอยท์วิดเจ็ต ที่เหลือ เปิด 1 การตั้งค่าใช้ 1 พอยท์
           {quota ? ` (ใช้อยู่ ${quota.used_quota} / ${quota.total_quota})` : ""}
-        </p>
+        </SubLabel>
       </CardContent>
     </Card>
   );

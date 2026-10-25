@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { isAxiosError } from "axios";
 import { randomPoolApi } from "../api/randomPool.api";
 import {
-  Config,
   ConfigDraft,
   InitialData,
   ItemSetting,

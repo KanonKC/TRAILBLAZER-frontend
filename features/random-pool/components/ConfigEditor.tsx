@@ -6,11 +6,9 @@ import {
   Boxes,
   Dices,
   MessageSquare,
-  Play,
   Settings2,
   Trash2,
   Volume2,
-  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,24 +22,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { RandomPoolController } from "../hooks/useRandomPool";
 import { useActiveSection } from "../hooks/useActiveSection";
-import { ALERT_TONE, POOL_STATE_NOTICE } from "../constants";
+import { ALERT_TONE, FOCUS_RING, POOL_STATE_NOTICE } from "../constants";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import SubLabel from "@/components/SubLabel";
 import { ChatMessageField } from "./ChatMessageField";
 import { OptionCard } from "./OptionCard";
-import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
+import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
+import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
+import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
+import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
+import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 import { enableBlockedReason } from "../enableBlockedReason";
 import { ConfigSwitcher } from "./ConfigSwitcher";
 import { DrawSection } from "./DrawSection";
@@ -63,21 +58,13 @@ const sections = [
 
 function Section({
   id,
-  first,
   children,
 }: {
   id: string;
-  first?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      className={cn(
-        "grid scroll-mt-20 gap-6 py-8",
-        first ? "pt-2" : "border-t",
-      )}
-    >
+    <section id={id} className="grid scroll-mt-20 gap-6">
       {children}
     </section>
   );
@@ -88,8 +75,7 @@ export function ConfigEditor({
 }: {
   controller: RandomPoolController;
 }) {
-  const { draft, savedConfig, selectedPool, isNewConfig, busy, quota } =
-    controller;
+  const { draft, savedConfig, selectedPool, isNewConfig, busy } = controller;
   const [confirmDelete, setConfirmDelete] = useState(false);
   const activeSection = useActiveSection(sections.map((section) => section.id));
   const poolNotice =
@@ -110,25 +96,20 @@ export function ConfigEditor({
     if (file && !(file instanceof File)) controller.rememberFile(file);
     controller.patchDraft({ [field]: key });
   }
-  const pointsNote =
-    !savedConfig?.widget.enabled && quota && quota.remaining_quota <= 0
-      ? `เปิดใช้งานการตั้งค่านี้ไม่ได้ เพราะ พอยท์วิดเจ็ต ครบ ${quota.used_quota} / ${quota.total_quota} ปิดการตั้งค่าอื่นเพื่อคืนพอยท์`
-      : ``;
 
   return (
     <div className="grid gap-4">
       <button
         type="button"
         onClick={controller.backToList}
-        className="text-muted-foreground hover:text-foreground flex w-fit items-center gap-2 text-sm font-medium"
+        className={cn("text-muted-foreground hover:text-foreground flex w-fit items-center gap-2 rounded-md text-sm font-medium", FOCUS_RING)}
       >
         <ArrowLeft className="size-4" />
         การตั้งค่าทั้งหมด
       </button>
 
-      <div className="relative z-10 grid gap-2">
+      <div className="relative z-10">
         <ConfigSwitcher controller={controller} />
-        <p className="text-muted-foreground text-sm">{pointsNote}</p>
       </div>
 
       <nav
@@ -142,6 +123,7 @@ export function ConfigEditor({
             aria-current={activeSection === section.id ? "true" : undefined}
             className={cn(
               "text-muted-foreground hover:text-foreground shrink-0 rounded-md px-3 py-1.5 text-sm font-medium",
+              FOCUS_RING,
               activeSection === section.id && "bg-secondary text-foreground",
             )}
           >
@@ -150,38 +132,26 @@ export function ConfigEditor({
         ))}
       </nav>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between gap-2">
-            <span className="flex items-center gap-2">
-              <Settings2 className="size-5 text-info" />
-              ตั้งค่า
-            </span>
-            <span className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1 rounded-full bg-supernova/10 px-2 py-0.5 text-sm font-medium text-supernova">
-                <Zap className="size-3" />1 พอยท์
-              </span>
-              {savedConfig && (
-                <WidgetStatusSwitch
-                  widgetId={savedConfig.widget.id}
-                  isEnabled={savedConfig.widget.enabled}
-                  disabled={!!blockedReason && !savedConfig.widget.enabled}
-                  ariaLabel={`เปิดใช้งาน ${savedConfig.name}`}
-                  onSuccess={() => void controller.afterStatusChange()}
-                />
-              )}
-            </span>
-          </CardTitle>
-          <CardDescription>
+      <WidgetSettingsCard
+        widgetId={savedConfig?.widget.id}
+        isEnabled={savedConfig?.widget.enabled}
+        cost={1}
+        description={
+          <>
             ปรับแต่งการตั้งค่านี้ทั้งหมดในหน้าเดียว ดูตัวอย่างได้ที่แผงตัวอย่าง
             {blockedReason && ` · ${blockedReason}`}
-          </CardDescription>
-        </CardHeader>
-
-        <div className="grid px-6">
+          </>
+        }
+        statusDisabled={!!blockedReason && !savedConfig?.widget.enabled}
+        statusAriaLabel={
+          savedConfig ? `เปิดใช้งาน ${savedConfig.name}` : undefined
+        }
+        onSuccess={() => void controller.afterStatusChange()}
+      >
+        <WidgetSettingsCardContent>
           {poolNotice && (
             <Alert
-              className={cn("mb-6", ALERT_TONE[poolNotice.tone].box)}
+              className={ALERT_TONE[poolNotice.tone].box}
             >
               {(() => {
                 const ToneIcon = ALERT_TONE[poolNotice.tone].Icon;
@@ -201,7 +171,7 @@ export function ConfigEditor({
             </Alert>
           )}
 
-          <Section id="sec-general" first>
+          <Section id="sec-general">
             <SectionTitle icon={Settings2}>ทั่วไป</SectionTitle>
             <div className="space-y-2">
               <Label htmlFor="config-name">ชื่อการตั้งค่า</Label>
@@ -281,7 +251,7 @@ export function ConfigEditor({
           </Section>
 
           <Section id="sec-chat">
-            <SectionTitle icon={MessageSquare}>ข้อความแชท</SectionTitle>
+            <SectionTitle icon={MessageSquare} tone="info">ข้อความแชท</SectionTitle>
             <ChatMessageField
               value={draft.default_chat_message ?? ""}
               onChange={(value) =>
@@ -334,9 +304,9 @@ export function ConfigEditor({
               />
             </div>
           </Section>
-        </div>
+        </WidgetSettingsCardContent>
 
-        <CardFooter className="flex flex-wrap justify-between gap-3 border-t px-6 py-4">
+        <WidgetSettingsCardFooter>
           <Button
             type="button"
             variant="destructive"
@@ -347,25 +317,19 @@ export function ConfigEditor({
             {isNewConfig ? "ยกเลิกการสร้าง" : "ลบการตั้งค่า"}
           </Button>
           <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="outline"
+            <TestWidgetButton
+              onTest={controller.requestTestSpin}
+              isLoading={false}
               disabled={controller.poolItems.length === 0}
-              onClick={controller.requestTestSpin}
-            >
-              <Play />
-              ทดสอบ
-            </Button>
-            <Button
-              type="button"
+            />
+            <SaveWidgetButton
+              onSave={() => void controller.saveConfig()}
+              isLoading={busy}
               disabled={!controller.canSave}
-              onClick={() => void controller.saveConfig()}
-            >
-              {busy ? "กำลังบันทึก…" : "บันทึกการเปลี่ยนแปลง"}
-            </Button>
+            />
           </div>
-        </CardFooter>
-      </Card>
+        </WidgetSettingsCardFooter>
+      </WidgetSettingsCard>
 
       <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
         <AlertDialogContent>

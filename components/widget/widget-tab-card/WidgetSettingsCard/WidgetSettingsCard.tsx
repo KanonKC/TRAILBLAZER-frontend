@@ -10,9 +10,15 @@ interface WidgetSettingsCardProps {
     cost?: number
     onStatusChange?: (checked: boolean) => void
     onSuccess?: () => void
+    /** Replaces the default description under the title. */
+    description?: React.ReactNode
+    /** Disables the status switch, for example when the widget cannot be enabled yet. */
+    statusDisabled?: boolean
+    /** Accessible name of the status switch. */
+    statusAriaLabel?: string
 }
 
-const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, cost, onStatusChange, onSuccess }: WidgetSettingsCardProps) => {
+const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, cost, onStatusChange, onSuccess, description, statusDisabled, statusAriaLabel }: WidgetSettingsCardProps) => {
     return (
         <Card>
             <CardHeader>
@@ -34,12 +40,14 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, cost, onSta
                                 isEnabled={isEnabled}
                                 onStatusChange={onStatusChange}
                                 onSuccess={onSuccess}
+                                disabled={statusDisabled}
+                                ariaLabel={statusAriaLabel}
                             />
                         )}
                     </div>
                 </CardTitle>
                 <CardDescription>
-                    ปรับแต่งการตั้งค่าสำหรับวิดเจ็ต
+                    {description ?? 'ปรับแต่งการตั้งค่าสำหรับวิดเจ็ต'}
                 </CardDescription>
             </CardHeader>
             {children}

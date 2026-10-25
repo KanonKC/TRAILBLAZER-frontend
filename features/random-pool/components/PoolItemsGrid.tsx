@@ -3,7 +3,8 @@
 import { ImagePlus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PoolItem } from "../types";
-import { MAX_POOL_ITEMS } from "../constants";
+import { FOCUS_RING, MAX_POOL_ITEMS } from "../constants";
+import { cn } from "@/lib/utils";
 import { ItemThumb } from "./ItemThumb";
 
 export function PoolItemsGrid({
@@ -56,7 +57,7 @@ export function PoolItemsGrid({
               item.name ? `แก้ไขรายการ ${item.name}` : "แก้ไขรายการที่ไม่มีชื่อ"
             }
             onClick={() => onEdit(index)}
-            className="bg-muted/40 hover:border-muted-foreground focus-visible:ring-foreground/40 grid min-w-0 content-start gap-2 rounded-lg border p-2 text-left outline-none focus-visible:ring-2"
+            className={cn("bg-card hover:bg-secondary grid min-w-0 content-start gap-2 rounded-lg border p-2 text-left", FOCUS_RING)}
           >
             <ItemThumb
               url={item.image_url}
@@ -77,7 +78,7 @@ export function PoolItemsGrid({
           disabled={busy || full}
           onClick={onAdd}
           aria-label="เพิ่มรายการ"
-          className="text-muted-foreground hover:text-foreground focus-visible:ring-foreground/40 grid min-h-28 place-content-center justify-items-center gap-1 rounded-lg border border-dashed p-2 text-sm font-medium outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className={cn("text-muted-foreground hover:text-foreground grid min-h-28 place-content-center justify-items-center gap-1 rounded-lg border border-dashed p-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50", FOCUS_RING)}
         >
           <Plus className="size-5" aria-hidden="true" />
           เพิ่มรายการ

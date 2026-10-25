@@ -1,6 +1,7 @@
 import type { ComponentType, ReactNode } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { FOCUS_RING } from "../constants";
 
 /** Radio-style card used for mode and animation choices. */
 export function OptionCard({
@@ -29,18 +30,21 @@ export function OptionCard({
         disabled={disabled}
         onClick={onSelect}
         className={cn(
-          "bg-muted/40 focus-visible:ring-foreground/40 grid min-h-19 content-start gap-1 rounded-lg border px-4 py-3 text-left outline-none focus-visible:ring-2",
+          "grid min-h-19 content-start gap-1 rounded-lg border px-4 py-3 text-left",
+          FOCUS_RING,
           checked
-            ? "border-foreground ring-foreground ring-1"
-            : "hover:border-muted-foreground",
-          disabled && "cursor-not-allowed opacity-50 hover:border-border",
+            ? "border-primary bg-primary/10"
+            : "bg-card hover:bg-secondary",
+          disabled && "cursor-not-allowed opacity-50 hover:bg-card",
           badge && "pr-28",
         )}
       >
         <span className="flex items-center gap-2 text-sm font-semibold">
           <Icon className="size-4" />
           {title}
-          {checked && <Check className="ml-auto size-4" aria-hidden="true" />}
+          {checked && (
+            <Check className="text-primary ml-auto size-4" aria-hidden="true" />
+          )}
         </span>
         <span className="text-muted-foreground text-sm">{description}</span>
       </button>
