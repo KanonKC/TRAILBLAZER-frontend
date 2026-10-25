@@ -23,11 +23,8 @@ import {
 } from "../constants";
 import { UploadedFile } from "@/services/uploadedFile.service";
 import {
-  ExtendedWidget,
   WidgetQuota,
   getWidgetQuota,
-  listWidgets,
-  updateWidgetEnabled,
 } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 
@@ -111,13 +108,8 @@ export function useRandomPool(
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [busy, setBusy] = useState(false);
   const [testSpinKey] = useState(0);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [quota, setQuota] = useState<WidgetQuota | null>(null);
   const [quotaVersion, setQuotaVersion] = useState(0);
-  const [limitDialog, setLimitDialog] = useState<{
-    open: boolean;
-    widgets: ExtendedWidget[];
-  }>({ open: false, widgets: [] });
 
   /** "ใช้อยู่ใน <config>" when another config already owns this reward, otherwise null. */
   function rewardUsedNote(rewardId: string) {
@@ -308,46 +300,19 @@ export function useRandomPool(
     }, "ลบการตั้งค่าไม่สำเร็จ");
   }
 
-  async function toggleConfig(target: Config, enabled: boolean) {
-    setTogglingId(target.id);
-    try {
-      await randomPoolApi.enable(target.id, enabled);
-      await refresh();
-      tbToast.success({
-        title: enabled ? "เปิดใช้งานการตั้งค่าสำเร็จ" : "ปิดใช้งานการตั้งค่าสำเร็จ",
-      });
-      void refreshQuota();
-    } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 402) {
-        try {
-          const response = await listWidgets({ enabled: true });
-          setLimitDialog({ open: true, widgets: response.data });
-        } catch {
-          setLimitDialog({ open: true, widgets: [] });
-        }
-      } else {
-        tbToast.error({
-          title: "อัปเดตสถานะไม่สำเร็จ",
-          description: errorMessage(error),
-        });
-      }
-    } finally {
-      setTogglingId(null);
-    }
+  /** After the shared status switch changed a widget: reload configs and the quota meter. */
+  async function afterStatusChange() {
+    await refresh();
+    void refreshQuota();
   }
 
-  async function disableOtherWidget(widgetId: string) {
-    try {
-      await updateWidgetEnabled(widgetId, false);
-      setLimitDialog((previous) => ({
-        ...previous,
-        widgets: previous.widgets.filter((widget) => widget.id !== widgetId),
-      }));
-      await refresh();
-      void refreshQuota();
-    } catch (error) {
-      tbToast.error({ title: "ปิดวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
-    }
+  /** Remember a file picked from the audio library so its name and player are available. */
+  function rememberFile(file: UploadedFile) {
+    setFiles((previous) =>
+      previous.some((candidate) => candidate.id === file.id)
+        ? previous
+        : [...previous, file],
+    );
   }
 
   /* ---------- pools and items ---------- */
@@ -461,7 +426,6 @@ export function useRandomPool(
     rewardUsedNote,
     files,
     busy,
-    togglingId,
     testSpinKey,
     requestTestSpin: () => {
       if (!savedConfig) {
@@ -478,8 +442,6 @@ export function useRandomPool(
     },
     quota,
     quotaVersion,
-    limitDialog,
-    setLimitDialog,
     canSave,
     selectConfig,
     startNewConfig,
@@ -492,8 +454,8 @@ export function useRandomPool(
     saveConfig,
     deleteConfig,
     reload: refresh,
-    toggleConfig,
-    disableOtherWidget,
+    afterStatusChange,
+    rememberFile,
     upload,
     createPool,
     deletePool,

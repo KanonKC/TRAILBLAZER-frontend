@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
-import { WidgetQuotaDialog } from "@/components/widget/WidgetQuotaDialog";
 import { WidgetTypeMeta } from "@/services/widget.service";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -137,14 +136,6 @@ export function RandomPoolWidget({
             </SheetContent>
           </Sheet>
 
-          <WidgetQuotaDialog
-            open={controller.limitDialog.open}
-            onOpenChange={(open) =>
-              controller.setLimitDialog((previous) => ({ ...previous, open }))
-            }
-            enabledWidgets={controller.limitDialog.widgets}
-            onDisableWidget={controller.disableOtherWidget}
-          />
         </div>
       )}
     </WidgetConfigLayout>

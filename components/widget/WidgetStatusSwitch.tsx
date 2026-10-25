@@ -10,6 +10,8 @@ interface WidgetStatusSwitchProps {
     onStatusChange?: (checked: boolean) => void;
     onSuccess?: () => void;
     disabled?: boolean;
+    /** Accessible name; set it when one page shows several switches. */
+    ariaLabel?: string;
 }
 
 /**
@@ -21,7 +23,8 @@ export const WidgetStatusSwitch = ({
     isEnabled,
     onStatusChange,
     onSuccess,
-    disabled
+    disabled,
+    ariaLabel = "สถานะวิดเจ็ต"
 }: WidgetStatusSwitchProps) => {
     const {
         isUpdating,
@@ -40,7 +43,7 @@ export const WidgetStatusSwitch = ({
         <>
             <Switch
                 checked={isEnabled}
-                aria-label="สถานะวิดเจ็ต"
+                aria-label={ariaLabel}
                 onCheckedChange={onToggle}
                 disabled={disabled || !!isUpdating}
             />

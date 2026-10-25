@@ -41,7 +41,8 @@ import { Label } from "@/components/ui/label";
 import SubLabel from "@/components/SubLabel";
 import { ChatMessageField } from "./ChatMessageField";
 import { OptionCard } from "./OptionCard";
-import { ConfigEnableSwitch, enableBlockedReason } from "./ConfigEnableSwitch";
+import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
+import { enableBlockedReason } from "../enableBlockedReason";
 import { ConfigSwitcher } from "./ConfigSwitcher";
 import { DrawSection } from "./DrawSection";
 import { OverlayUrlField } from "./OverlayUrlField";
@@ -49,7 +50,8 @@ import { PoolItemsEditor } from "./PoolItemsEditor";
 import { PoolPicker } from "./PoolPicker";
 import { ChannelRewardSelector } from "@/components/widget/ChannelRewardSelector";
 import { SectionTitle } from "./SectionTitle";
-import { SoundField } from "./SoundField";
+import { AudioFileUploader } from "@/components/widget/AudioFileUploader/AudioFileUploader";
+import type { UploadedFile } from "@/services/uploadedFile.service";
 
 const sections = [
   { id: "sec-general", label: "ทั่วไป" },
@@ -94,7 +96,20 @@ export function ConfigEditor({
     savedConfig && savedConfig.pool_state !== "READY"
       ? POOL_STATE_NOTICE[savedConfig.pool_state]
       : null;
-  const blockedReason = enableBlockedReason(savedConfig, controller);
+  const blockedReason = enableBlockedReason(savedConfig, controller.quota);
+
+  const soundFile = (key?: string | null) =>
+    controller.files.find((file) => file.key === key) ?? null;
+  const soundName = (key?: string | null) =>
+    soundFile(key)?.name ?? (key ? "ตั้งค่าเสียงแล้ว" : null);
+  function pickSound(
+    file: File | UploadedFile | null,
+    key: string | null,
+    field: "spin_sound_key" | "default_result_sound_key",
+  ) {
+    if (file && !(file instanceof File)) controller.rememberFile(file);
+    controller.patchDraft({ [field]: key });
+  }
   const pointsNote =
     !savedConfig?.widget.enabled && quota && quota.remaining_quota <= 0
       ? `เปิดใช้งานการตั้งค่านี้ไม่ได้ เพราะ พอยท์วิดเจ็ต ครบ ${quota.used_quota} / ${quota.total_quota} ปิดการตั้งค่าอื่นเพื่อคืนพอยท์`
@@ -146,10 +161,15 @@ export function ConfigEditor({
               <span className="inline-flex items-center gap-1 rounded-full bg-supernova/10 px-2 py-0.5 text-sm font-medium text-supernova">
                 <Zap className="size-3" />1 พอยท์
               </span>
-              <ConfigEnableSwitch
-                config={savedConfig}
-                controller={controller}
-              />
+              {savedConfig && (
+                <WidgetStatusSwitch
+                  widgetId={savedConfig.widget.id}
+                  isEnabled={savedConfig.widget.enabled}
+                  disabled={!!blockedReason && !savedConfig.widget.enabled}
+                  ariaLabel={`เปิดใช้งาน ${savedConfig.name}`}
+                  onSuccess={() => void controller.afterStatusChange()}
+                />
+              )}
             </span>
           </CardTitle>
           <CardDescription>
@@ -280,29 +300,39 @@ export function ConfigEditor({
 
           <Section id="sec-sound">
             <SectionTitle icon={Volume2}>เสียง</SectionTitle>
-            <p className="text-muted-foreground text-sm">
-              รองรับไฟล์ mp3, ogg และ wav ขนาดไม่เกิน 2 MB ยาวไม่เกิน 15 วินาที
-            </p>
-            <SoundField
-              label="เสียงตอนกำลังสุ่ม"
-              help="เล่นระหว่างที่รูปกำลังหมุนหรือเลื่อน"
-              value={draft.spin_sound_key}
-              files={controller.files}
-              busy={busy}
-              upload={controller.upload}
-              onChange={(key) => controller.patchDraft({ spin_sound_key: key })}
-            />
-            <SoundField
-              label="เสียงตอนของออก"
-              help="เล่นตอนผลลัพธ์ปรากฏ รายการที่ไม่ได้ตั้งเสียงเฉพาะจะเล่นเสียงนี้ ตั้งเสียงเฉพาะรายการได้ในหน้าต่างแก้ไขรายการ"
-              value={draft.default_result_sound_key}
-              files={controller.files}
-              busy={busy}
-              upload={controller.upload}
-              onChange={(key) =>
-                controller.patchDraft({ default_result_sound_key: key })
-              }
-            />
+            <SubLabel>รองรับไฟล์ MP3, WAV, OGG ขนาดไม่เกิน 2.5 MB</SubLabel>
+            <div className="space-y-2">
+              <Label>เสียงตอนกำลังสุ่ม</Label>
+              <SubLabel>เล่นระหว่างที่รูปกำลังหมุนหรือเลื่อน</SubLabel>
+              <AudioFileUploader
+                hideLabel
+                currentFileName={soundName(draft.spin_sound_key)}
+                selectedFile={soundFile(draft.spin_sound_key)}
+                onFileSelect={(file, key) =>
+                  pickSound(file, key, "spin_sound_key")
+                }
+                onClear={() => controller.patchDraft({ spin_sound_key: null })}
+                disabled={busy}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>เสียงตอนของออก</Label>
+              <SubLabel>
+                เล่นตอนผลลัพธ์ปรากฏ รายการที่ไม่ได้ตั้งเสียงเฉพาะจะเล่นเสียงนี้ ตั้งเสียงเฉพาะรายการได้ในหน้าต่างแก้ไขรายการ
+              </SubLabel>
+              <AudioFileUploader
+                hideLabel
+                currentFileName={soundName(draft.default_result_sound_key)}
+                selectedFile={soundFile(draft.default_result_sound_key)}
+                onFileSelect={(file, key) =>
+                  pickSound(file, key, "default_result_sound_key")
+                }
+                onClear={() =>
+                  controller.patchDraft({ default_result_sound_key: null })
+                }
+                disabled={busy}
+              />
+            </div>
           </Section>
         </div>
 

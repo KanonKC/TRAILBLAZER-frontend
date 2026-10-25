@@ -20,7 +20,8 @@ import { cn } from "@/lib/utils";
 import { RandomPoolController } from "../hooks/useRandomPool";
 import { MAX_CONFIGS, POOL_STATE_NOTICE } from "../constants";
 import { Config } from "../types";
-import { ConfigEnableSwitch } from "./ConfigEnableSwitch";
+import { WidgetStatusSwitch } from "@/components/widget/WidgetStatusSwitch";
+import { enableBlockedReason } from "../enableBlockedReason";
 import { ItemThumb } from "./ItemThumb";
 import { RewardLabel } from "./RewardLabel";
 
@@ -127,7 +128,13 @@ function ConfigRow({
         >
           {enabled ? "เปิดอยู่" : "ปิดอยู่"}
         </span>
-        <ConfigEnableSwitch config={config} controller={controller} />
+        <WidgetStatusSwitch
+          widgetId={config.widget.id}
+          isEnabled={config.widget.enabled}
+          disabled={!!enableBlockedReason(config, controller.quota)}
+          ariaLabel={`เปิดใช้งาน ${config.name}`}
+          onSuccess={() => void controller.afterStatusChange()}
+        />
       </div>
     </div>
   );

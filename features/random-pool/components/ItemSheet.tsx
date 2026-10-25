@@ -35,7 +35,7 @@ import {
 import { Label } from "@/components/ui/label";
 import SubLabel from "@/components/SubLabel";
 import { ItemThumb } from "./ItemThumb";
-import { SoundField } from "./SoundField";
+import { CompactAudioFileUploader } from "@/components/widget/AudioFileUploader/CompactAudioFileUploader";
 
 export interface EditingItem {
   /** `null` while adding a new item to the pool. */
@@ -53,6 +53,7 @@ interface Props {
   files: UploadedFile[];
   busy: boolean;
   upload: UploadHandler;
+  onRememberFile: (file: UploadedFile) => void;
   onClose: () => void;
   onSave: (
     index: number | null,
@@ -92,6 +93,7 @@ function ItemSheetBody({
   files,
   busy,
   upload,
+  onRememberFile,
   onClose,
   onSave,
   onDelete,
@@ -277,15 +279,23 @@ function ItemSheetBody({
 
         {!simple && (
           <div className="border-t pt-6">
-            <SoundField
-              label="เสียงตอนของออก (เฉพาะรายการ)"
-              help="ถ้าไม่ตั้ง ระบบใช้เสียงตอนของออกจากส่วนเสียงหลัก mp3, ogg, wav ไม่เกิน 2 MB ยาวไม่เกิน 15 วินาที"
-              value={soundKey}
-              files={files}
-              busy={busy}
-              upload={upload}
-              onChange={setSoundKey}
-            />
+            <div className="space-y-2">
+              <Label>เสียงตอนของออก (เฉพาะรายการ)</Label>
+              <SubLabel>ถ้าไม่ตั้ง ระบบใช้เสียงตอนของออกเริ่มต้นของการตั้งค่า</SubLabel>
+              <CompactAudioFileUploader
+                currentFileName={
+                  files.find((file) => file.key === soundKey)?.name ??
+                  (soundKey ? "ตั้งค่าเสียงแล้ว" : null)
+                }
+                selectedFile={files.find((file) => file.key === soundKey) ?? null}
+                onFileSelect={(file, key) => {
+                  if (file && !(file instanceof File)) onRememberFile(file);
+                  setSoundKey(key);
+                }}
+                onClear={() => setSoundKey(null)}
+                disabled={busy}
+              />
+            </div>
           </div>
         )}
       </div>

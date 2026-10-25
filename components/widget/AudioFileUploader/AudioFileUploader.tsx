@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react";
-import { AudioWaveform, Play, Square, Volume2 } from "lucide-react";
+import { AudioWaveform, Play, Square, Trash2, Volume2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -16,6 +16,8 @@ interface AudioFileUploaderProps {
     audioVolume?: number;
     onAudioVolumeChange?: (volume: number) => void;
     disabled?: boolean;
+    /** Shows a remove button when a file is set. Leave out when the sound is required. */
+    onClear?: () => void;
     className?: string;
     inputClassName?: string;
     hideLabel?: boolean;
@@ -28,6 +30,7 @@ export function AudioFileUploader({
     audioVolume,
     onAudioVolumeChange,
     disabled = false,
+    onClear,
     className,
     inputClassName,
     hideLabel = false
@@ -113,6 +116,22 @@ export function AudioFileUploader({
                                 className="h-8 w-8 shrink-0"
                             >
                                 {isPlaying ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                            </Button>
+                        )}
+                        {currentFileName && onClear && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                aria-label="นำเสียงออก"
+                                onClick={() => {
+                                    audioRef.current?.pause();
+                                    setIsPlaying(false);
+                                    onClear();
+                                }}
+                                disabled={disabled}
+                                className="h-8 w-8 shrink-0"
+                            >
+                                <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                         )}
                         <Button

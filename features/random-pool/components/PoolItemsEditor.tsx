@@ -90,6 +90,7 @@ export function PoolItemsEditor({
         files={controller.files}
         busy={busy}
         upload={controller.upload}
+        onRememberFile={controller.rememberFile}
         onClose={() => setEditing(null)}
         onSave={controller.saveItem}
         onDelete={(item) =>

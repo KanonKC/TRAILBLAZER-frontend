@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react";
-import { AudioWaveform, Play, Square, Volume2 } from "lucide-react";
+import { AudioWaveform, Play, Square, Trash2, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,8 @@ interface CompactAudioFileUploaderProps {
     audioVolume?: number;
     onAudioVolumeChange?: (volume: number) => void;
     disabled?: boolean;
+    /** Shows a remove button when a file is set. Leave out when the sound is required. */
+    onClear?: () => void;
     className?: string;
 }
 
@@ -25,6 +27,7 @@ export function CompactAudioFileUploader({
     audioVolume,
     onAudioVolumeChange,
     disabled = false,
+    onClear,
     className,
 }: CompactAudioFileUploaderProps) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -95,6 +98,23 @@ export function CompactAudioFileUploader({
                         className="h-9 w-9 shrink-0"
                     >
                         {isPlaying ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                    </Button>
+                )}
+
+                {currentFileName && onClear && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="นำเสียงออก"
+                        onClick={() => {
+                            audioRef.current?.pause();
+                            setIsPlaying(false);
+                            onClear();
+                        }}
+                        disabled={disabled}
+                        className="h-9 w-9 shrink-0"
+                    >
+                        <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                 )}
 

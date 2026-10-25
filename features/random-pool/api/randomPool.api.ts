@@ -44,11 +44,6 @@ export const randomPoolApi = {
   async deleteConfig(id: string) {
     await apiClient.delete(`${base}/configs/${id}`);
   },
-  async enable(id: string, enabled: boolean) {
-    return (
-      await apiClient.put<Config>(`${base}/configs/${id}/enabled`, { enabled })
-    ).data;
-  },
   async testSpin(id: string) {
     await apiClient.post(`${base}/configs/${id}/test`);
   },
