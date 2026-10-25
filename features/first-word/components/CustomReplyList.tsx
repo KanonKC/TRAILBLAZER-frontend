@@ -34,7 +34,7 @@ import { AudioWaveform, Loader2, Pencil, Plus, Search, Trash2 } from "lucide-rea
 import { useEffect, useState } from "react";
 import { tbToast } from "@/utils/tbToast";
 import { getTwitchUser } from "@/services/twitch.service";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { CompactAudioFileUploader } from "@/components/widget/AudioFileUploader/CompactAudioFileUploader";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -166,11 +166,11 @@ export function CustomReplyList() {
                 setIsDialogOpen(false);
                 fetchReplies(searchTerm);
             } else {
-                tbToast.error({ title: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" });
+                tbToast.error({ title: "บันทึกข้อมูลไม่สำเร็จ" });
             }
         } catch (error) {
             console.error(error);
-            tbToast.error({ title: "เกิดข้อผิดพลาดในการบันทึกข้อมูล", error: (error as any).response?.data });
+            tbToast.error({ title: "บันทึกข้อมูลไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -185,11 +185,11 @@ export function CustomReplyList() {
                 tbToast.success({ title: "ลบข้อมูลสำเร็จ" });
                 fetchReplies(searchTerm);
             } else {
-                tbToast.error({ title: "ไม่สามารถลบข้อมูลได้" });
+                tbToast.error({ title: "ลบข้อมูลไม่สำเร็จ" });
             }
         } catch (error) {
             console.error(error);
-            tbToast.error({ title: "เกิดข้อผิดพลาดในการลบข้อมูล", error: (error as any).response?.data });
+            tbToast.error({ title: "ลบข้อมูลไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsDeleting(false);
             setDeleteId(null);
@@ -230,7 +230,7 @@ export function CustomReplyList() {
                         placeholder="ค้นหา Twitch ID..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-9 bg-black/20 border-white/20 text-white placeholder:text-white/50"
+                        className="pl-9 bg-background/20 border-foreground/20 text-foreground placeholder:text-muted-foreground"
                     />
                 </div>
                 <Button onClick={handleOpenCreate} >
@@ -238,8 +238,8 @@ export function CustomReplyList() {
                 </Button>
             </div>
 
-            <div className="rounded-md border border-white/10 bg-black/20">
-                <div className="grid grid-cols-12 gap-4 p-4 font-medium text-sm text-white/70 border-b border-white/10">
+            <div className="rounded-md border border-border bg-background/20">
+                <div className="grid grid-cols-12 gap-4 p-4 font-medium text-sm text-muted-foreground border-b border-border">
                     <div className="col-span-3">คนดูบน Twitch</div>
                     <div className="col-span-4">ข้อความตอบกลับ</div>
                     <div className="col-span-4">เสียง</div>
@@ -249,16 +249,16 @@ export function CustomReplyList() {
                 <ScrollArea className="h-[400px]">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-32">
-                            <Loader2 className="w-6 h-6 animate-spin text-white/50" />
+                            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
                         </div>
                     ) : replies.length === 0 ? (
-                        <div className="text-center py-10 text-white/50 text-sm">
+                        <div className="text-center py-10 text-muted-foreground text-sm">
                             ไม่พบข้อมูล
                         </div>
                     ) : (
                         <div className="divide-y divide-white/5">
                             {replies.map((reply) => (
-                                <div key={reply.id} className="grid grid-cols-12 gap-4 p-4 items-center text-sm text-white hover:bg-white/5 transition-colors">
+                                <div key={reply.id} className="grid grid-cols-12 gap-4 p-4 items-center text-sm text-foreground hover:bg-secondary/40 transition-colors">
                                     <div className="col-span-3 font-medium truncate flex items-center gap-2">
                                         <Avatar size="sm">
                                             <AvatarImage src={reply.twitch_chatter_avatar_url} />
@@ -266,8 +266,8 @@ export function CustomReplyList() {
                                         </Avatar>
                                         {reply.twitch_chatter_username}
                                     </div>
-                                    <div className="col-span-4 truncate text-white/70">
-                                        {reply.reply_message || <span className="text-white/30 italic">ไม่มีข้อความ</span>}
+                                    <div className="col-span-4 truncate text-muted-foreground">
+                                        {reply.reply_message || <span className="text-muted-foreground italic">ไม่มีข้อความ</span>}
                                     </div>
                                     <div className="col-span-4">
                                         {reply.audio ? (
@@ -276,14 +276,14 @@ export function CustomReplyList() {
                                                 <span className="truncate max-w-[100px]">{reply.audio.name}</span>
                                             </div>
                                         ) : (
-                                            <span className="text-white/30 italic text-xs">ไม่มีเสียง</span>
+                                            <span className="text-muted-foreground italic text-xs">ไม่มีเสียง</span>
                                         )}
                                     </div>
                                     <div className="col-span-1 flex justify-end gap-1">
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-white/70 hover:text-white" onClick={() => handleOpenEdit(reply)}>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" onClick={() => handleOpenEdit(reply)}>
                                             <Pencil className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-400/10" onClick={() => setDeleteId(reply.id)}>
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => setDeleteId(reply.id)}>
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
@@ -296,13 +296,13 @@ export function CustomReplyList() {
 
             {/* Create/Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] bg-[#1A1A1A] border-white/10 text-white">
+                <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>{editingId ? "แก้ไขข้อมูล" : "เพิ่มผู้ใช้ใหม่"}</DialogTitle>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="twitchId" className="text-white/80">Twitch Username</Label>
+                            <Label htmlFor="twitchId" className="text-foreground">Twitch Username</Label>
                             <Input
                                 id="twitchId"
                                 value={twitchChatterId}
@@ -313,20 +313,20 @@ export function CustomReplyList() {
                                 }}
                                 onBlur={(e) => checkTwitchUser(e.target.value)}
                                 placeholder="เช่น user123"
-                                className={`bg-black/40 border-white/10 ${userCheckError ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                                className={`bg-background/40 border-border ${userCheckError ? "border-destructive focus-visible:ring-destructive" : ""}`}
                                 disabled={!!editingId}
                             />
-                            {isCheckingUser && <p className="text-white/50 text-xs">กำลังตรวจสอบ...</p>}
-                            {userCheckError && <p className="text-red-400 text-xs">{userCheckError}</p>}
+                            {isCheckingUser && <p className="text-muted-foreground text-xs">กำลังตรวจสอบ...</p>}
+                            {userCheckError && <p className="text-destructive text-xs">{userCheckError}</p>}
                             {resolvedTwitchUser && (
-                                <div className="flex items-center gap-2 mt-1 p-2 bg-white/5 rounded-md border border-white/10">
+                                <div className="flex items-center gap-2 mt-1 p-2 bg-secondary/40 rounded-md border border-border">
                                     <img src={resolvedTwitchUser.avatar} alt={resolvedTwitchUser.name} className="w-6 h-6 rounded-full" />
-                                    <span className="text-sm text-white">{resolvedTwitchUser.name}</span>
+                                    <span className="text-sm text-foreground">{resolvedTwitchUser.name}</span>
                                 </div>
                             )}
                         </div>
                         <div className="grid gap-2">
-                            <ReplyMessageTextarea
+                            <CharacterCountTextarea
                                 value={replyMessage}
                                 onChange={(e) => setReplyMessage(e)}
                                 variables={FirstWordVariableMap}
@@ -334,7 +334,7 @@ export function CustomReplyList() {
                             />
                         </div>
                         <div className="grid gap-2">
-                            <Label className="text-white/80">ไฟล์เสียง</Label>
+                            <Label className="text-foreground">ไฟล์เสียง</Label>
                             <CompactAudioFileUploader
                                 currentFileName={audioFile?.name || null}
                                 selectedFile={audioFile}
@@ -342,12 +342,12 @@ export function CustomReplyList() {
                                 audioVolume={audioVolume}
                                 onAudioVolumeChange={setAudioVolume}
                                 disabled={isSaving}
-                                className="text-white"
+                                className="text-foreground"
                             />
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setIsDialogOpen(false)} disabled={isSaving} className="text-white/70 hover:text-white">
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isSaving}>
                             ยกเลิก
                         </Button>
                         <Button onClick={handleSave} disabled={isSaving || !twitchChatterId.trim() || !!userCheckError || isCheckingUser}>
@@ -360,16 +360,16 @@ export function CustomReplyList() {
 
             {/* Delete Confirmation */}
             <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
-                <AlertDialogContent className="bg-[#1A1A1A] border-white/10 text-white">
+                <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>ยืนยันการลบ</AlertDialogTitle>
-                        <AlertDialogDescription className="text-white/70">
+                        <AlertDialogDescription>
                             คุณต้องการลบข้อความทักทายของผู้ใช้นี้ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/5 text-white">ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-red-500 hover:bg-red-600 text-white">
+                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                             {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                             ลบข้อมูล
                         </AlertDialogAction>

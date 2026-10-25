@@ -1,19 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, X } from "lucide-react";
+import { AlertCircle, Loader2, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UploadHandler } from "../hooks/useRandomPool";
-import { neutralFocus } from "../constants";
-import { Field } from "./SectionTitle";
+import { Label } from "@/components/ui/label";
+import SubLabel from "@/components/SubLabel";
+import { cn } from "@/lib/utils";
 import { ItemThumb } from "./ItemThumb";
 
 interface Props {
   busy: boolean;
   upload: UploadHandler;
   submitLabel: string;
-  usageLabel: string;
+  usageLabel?: string;
+  /** Only the name input and the submit button, without labels or usage text. */
+  minimal?: boolean;
   onCancel?: () => void;
   /** Hide the optional cover image picker (name-only form). Defaults to true. */
   withCover?: boolean;
@@ -29,6 +32,7 @@ export function PoolCreateForm({
   upload,
   submitLabel,
   usageLabel,
+  minimal = false,
   onCancel,
   withCover = true,
   onCreate,
@@ -60,29 +64,27 @@ export function PoolCreateForm({
   }
 
   return (
-    <div className="grid gap-4">
-      <p className="text-muted-foreground text-sm">
-                      กองสุ่มคือชุดของสิ่งที่ต้องการสุ่ม โดยคุณสามารถสร้างกองสุ่มได้หลายอัน เพื่อสำหรับการสุ่มที่แตกต่่างกันไป
-                    </p>
-      <Field label="ชื่อกองสุ่ม" htmlFor="new-pool-name">
-        
+    <div className="grid gap-6">
+      <div className="space-y-2">
+        {!minimal && (
+          <>
+            <Label htmlFor="new-pool-name">ชื่อกองสุ่ม</Label>
+            <SubLabel>ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายกองสุ่ม</SubLabel>
+          </>
+        )}
         <Input
           id="new-pool-name"
-          className={neutralFocus}
+          aria-label={minimal ? "ชื่อกองสุ่ม" : undefined}
           maxLength={100}
           placeholder="เช่น ของรางวัลสตรีม"
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
-      </Field>
+      </div>
       {withCover && (
-        <div className="grid gap-2">
-          <span className="text-sm leading-none font-medium">
-            รูปปก{" "}
-            <span className="text-muted-foreground font-normal">
-              (ไม่บังคับ)
-            </span>
-          </span>
+        <div className="space-y-2">
+          <Label>รูปปก</Label>
+          <SubLabel>ไม่บังคับ ขนาดไม่เกิน 2 MB</SubLabel>
           <div className="flex items-center gap-3">
             {cover && (
               <ItemThumb
@@ -91,21 +93,30 @@ export function PoolCreateForm({
                 className="size-16"
               />
             )}
-            <label className="border-input hover:bg-muted inline-flex h-8 cursor-pointer items-center gap-2 rounded-md border px-3 text-sm font-medium">
-              <Upload className="size-4" />
-              {cover ? "เปลี่ยนรูปปก" : "เลือกรูปปก"}
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/gif,image/webp,image/avif"
-                className="sr-only"
-                disabled={busy}
-                onChange={(event) => {
-                  const selected = event.target.files?.[0];
-                  event.target.value = "";
-                  if (selected) chooseCover(selected);
-                }}
-              />
-            </label>
+            <Button
+              asChild
+              variant="outline"
+              className={cn(
+                "bg-secondary text-foreground border-border hover:bg-secondary hover:text-primary has-[:focus-visible]:ring-ring has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-background",
+                busy && "pointer-events-none opacity-50",
+              )}
+            >
+              <label>
+                <Upload />
+                {cover ? "เปลี่ยนรูปปก" : "เลือกรูปปก"}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/gif,image/webp,image/avif"
+                  className="sr-only"
+                  disabled={busy}
+                  onChange={(event) => {
+                    const selected = event.target.files?.[0];
+                    event.target.value = "";
+                    if (selected) chooseCover(selected);
+                  }}
+                />
+              </label>
+            </Button>
             {cover && (
               <Button
                 type="button"
@@ -118,18 +129,28 @@ export function PoolCreateForm({
               </Button>
             )}
           </div>
-          <p className="text-muted-foreground text-sm">ขนาดไม่เกิน 2 MB</p>
           {coverError && (
-            <p role="alert" className="text-sm text-red-300">
+            <p
+              role="alert"
+              className="flex items-center gap-1.5 text-sm font-medium text-destructive"
+            >
+              <AlertCircle className="size-4 shrink-0" aria-hidden="true" />
               {coverError}
             </p>
           )}
         </div>
       )}
-      <div className="flex flex-wrap items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {minimal ? <span /> : <SubLabel>{usageLabel}</SubLabel>}
         <div className="flex gap-2">
           {onCancel && (
-            <Button type="button" variant="ghost" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="outline"
+              className="bg-secondary text-foreground border-border hover:bg-secondary hover:text-primary"
+              disabled={busy}
+              onClick={onCancel}
+            >
               ยกเลิก
             </Button>
           )}
@@ -138,7 +159,13 @@ export function PoolCreateForm({
             disabled={busy || !name.trim()}
             onClick={() => void submit()}
           >
-            {busy ? "กำลังสร้าง…" : submitLabel}
+            {busy ? (
+              <>
+                <Loader2 className="animate-spin" /> กำลังสร้าง...
+              </>
+            ) : (
+              submitLabel
+            )}
           </Button>
         </div>
       </div>

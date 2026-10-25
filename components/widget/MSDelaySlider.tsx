@@ -33,7 +33,13 @@ export function MSDelaySlider({
                     <InputGroupInput 
                         type="number" 
                         value={value} 
-                        onChange={(e) => onChange(Number(e.target.value))}
+                        min={0}
+                        max={max}
+                        className="font-mono tabular-nums"
+                        onChange={(e) => {
+                            const parsed = Number(e.target.value);
+                            onChange(Number.isFinite(parsed) ? Math.min(max, Math.max(0, Math.round(parsed))) : 0);
+                        }}
                     />
                     <InputGroupAddon align="inline-end">ms</InputGroupAddon>
                 </InputGroup>

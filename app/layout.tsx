@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Anuphan, Kanit } from "next/font/google";
+import { Anuphan, Kanit, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 const anuphan = Anuphan({
@@ -9,8 +9,13 @@ const anuphan = Anuphan({
 
 const kanit = Kanit({
   subsets: ['latin'],
-  weight: ['400', '700', '800'],
+  weight: ['300', '400', '700', '800'],
   variable: '--font-kanit',
+});
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-geist-mono',
 });
 
 export const metadata: Metadata = {
@@ -33,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${anuphan.variable} ${kanit.variable} dark`}>
+    <html lang="th" className={`${anuphan.variable} ${kanit.variable} ${geistMono.variable} dark`}>
       <body
         className={`font-sans antialiased min-h-screen flex flex-col`}
       >

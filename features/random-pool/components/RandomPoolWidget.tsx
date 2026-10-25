@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
-import { WidgetQuotaDialog } from "@/components/widget/WidgetQuotaDialog";
 import { WidgetTypeMeta } from "@/services/widget.service";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -37,25 +36,28 @@ export function RandomPoolWidget({
   const base = useRandomPool(initial, start);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [spinOnOpen, setSpinOnOpen] = useState(false);
-  const showAside =
-    base.activeTab === "settings" && base.settingsView === "edit";
   // The side panel is hidden below lg and absent outside the editor, so the
   // test spin runs in the bottom sheet there.
   const controller = {
     ...base,
   };
-  const showPreview =
-    controller.activeTab === "settings" && controller.settingsView === "edit";
+  const showPreview = controller.activeTab === "settings";
 
   return (
     <WidgetConfigLayout
       widgetType={widgetType}
-      wide={showPreview}
       quotaRefreshKey={controller.quotaVersion}
+      aside={
+        showPreview ? (
+          <aside aria-label="ตัวอย่าง">
+            <PreviewPanel controller={controller} />
+          </aside>
+        ) : undefined
+      }
     >
       {() => (
-        <div className="flex items-start gap-6">
-          <div className="w-full max-w-2xl min-w-0 flex-1">
+        <div>
+          <div className="w-full min-w-0">
             <Tabs
               value={controller.activeTab}
               onValueChange={(value) =>
@@ -66,13 +68,13 @@ export function RandomPoolWidget({
               <TabsList
                 className={cn(
                   "mb-4 grid w-full",
-                  controller.isLoggedIn ? "grid-cols-3" : "grid-cols-1",
+                  controller.hasConfig ? "grid-cols-3" : "grid-cols-1",
                 )}
               >
                 <TabsTrigger value="overview" className="cursor-pointer">
                   ภาพรวม
                 </TabsTrigger>
-                {controller.isLoggedIn && (
+                {controller.hasConfig && (
                   <>
                     <TabsTrigger value="quick-start" className="cursor-pointer">
                       เริ่มต้นใช้งาน
@@ -85,9 +87,9 @@ export function RandomPoolWidget({
               </TabsList>
 
               <TabsContent value="overview">
-                <OverviewTab isLoggedIn={controller.isLoggedIn} />
+                <OverviewTab controller={controller} />
               </TabsContent>
-              {controller.isLoggedIn && (
+              {controller.hasConfig && (
                 <>
                   <TabsContent value="quick-start">
                     <QuickStartTab controller={controller} />
@@ -99,15 +101,6 @@ export function RandomPoolWidget({
               )}
             </Tabs>
           </div>
-
-          {showPreview && (
-            <aside
-              aria-label="ตัวอย่าง"
-              className="sticky top-4 hidden w-80 shrink-0 lg:block"
-            >
-              <PreviewPanel controller={controller} />
-            </aside>
-          )}
 
           {showPreview && (
             <Button
@@ -137,14 +130,6 @@ export function RandomPoolWidget({
             </SheetContent>
           </Sheet>
 
-          <WidgetQuotaDialog
-            open={controller.limitDialog.open}
-            onOpenChange={(open) =>
-              controller.setLimitDialog((previous) => ({ ...previous, open }))
-            }
-            enabledWidgets={controller.limitDialog.widgets}
-            onDisableWidget={controller.disableOtherWidget}
-          />
         </div>
       )}
     </WidgetConfigLayout>

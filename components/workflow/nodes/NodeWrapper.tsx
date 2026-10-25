@@ -78,7 +78,7 @@ export function NodeWrapper({
                 >
                     <button
                         onClick={() => setShowModal(true)}
-                        className="p-1.5 rounded bg-background/90 border border-blue-500/30 hover:bg-blue-500/20 text-blue-400 transition-colors cursor-pointer"
+                        className="p-1.5 rounded bg-background/90 border border-info/30 hover:bg-info/20 text-info transition-colors cursor-pointer"
                         title="ตั้งค่า"
                     >
                         <Pencil className="w-3 h-3" />
@@ -100,7 +100,7 @@ export function NodeWrapper({
                     </button>
                     <button
                         onClick={() => actions?.deleteNode(id)}
-                        className="p-1.5 rounded bg-background/90 border border-red-500/30 hover:bg-red-500/20 text-red-400 transition-colors cursor-pointer"
+                        className="p-1.5 rounded bg-background/90 border border-destructive/30 hover:bg-destructive/20 text-destructive transition-colors cursor-pointer"
                         title="ลบ"
                     >
                         <Trash2 className="w-3 h-3" />
@@ -109,7 +109,7 @@ export function NodeWrapper({
 
                 <Handle type="target" position={Position.Left} className="!bg-primary !w-3 !h-3 !border-2 !border-background" />
 
-                <div className={`px-4 py-3 rounded-lg ${gradientClass} text-white shadow-lg ${borderClass} min-w-[150px] ${className || ""}`}>
+                <div className={`px-4 py-3 rounded-lg ${gradientClass} text-foreground shadow-lg ${borderClass} min-w-[150px] ${className || ""}`}>
                     <div className="flex items-center gap-2">
                         <Icon className="w-4 h-4 flex-shrink-0" />
                         {isEditing ? (
@@ -120,12 +120,12 @@ export function NodeWrapper({
                                     onChange={(e) => setEditValue(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     autoFocus
-                                    className="bg-white/20 rounded px-1 py-0.5 text-sm font-medium w-24 outline-none"
+                                    className="bg-secondary/80 rounded px-1 py-0.5 text-sm font-medium w-24 outline-none"
                                 />
-                                <button onClick={handleSaveEdit} className="p-0.5 hover:bg-white/20 rounded cursor-pointer">
+                                <button onClick={handleSaveEdit} className="p-0.5 hover:bg-secondary/80 rounded cursor-pointer">
                                     <Check className="w-3 h-3" />
                                 </button>
-                                <button onClick={handleCancelEdit} className="p-0.5 hover:bg-white/20 rounded cursor-pointer">
+                                <button onClick={handleCancelEdit} className="p-0.5 hover:bg-secondary/80 rounded cursor-pointer">
                                     <X className="w-3 h-3" />
                                 </button>
                             </div>

@@ -1,4 +1,5 @@
 import { apiClient } from "@/lib/api-client";
+import { buildEventUrl } from "@/lib/event-url";
 import { RandomDBDKillerConfig, DBDKillerMaster, RandomDBDKillerAnimationStyle } from "../types";
 
 export const getRandomDBDKillerConfig = async (): Promise<RandomDBDKillerConfig> => {
@@ -31,10 +32,5 @@ export const getRandomDBDKillerEventUrl = (userId: string, key?: string) => {
     if (!process.env.NEXT_PUBLIC_API_URL) {
         console.error("NEXT_PUBLIC_API_URL is not set; falling back to localhost, which will not work outside local dev.");
     }
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    const url = new URL(`${baseUrl}/api/v1/events/random-dbd-killer/${userId}`);
-    if (key) {
-        url.searchParams.append("key", key);
-    }
-    return url.toString();
+    return buildEventUrl("/api/v1/events/random-dbd-killer", userId, key);
 };

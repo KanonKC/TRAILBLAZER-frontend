@@ -51,7 +51,7 @@ export function SmartAudioFileUploader({
             }
         } catch (error) {
             console.error("Failed to update audio file:", error);
-            tbToast.error({ title: "ไม่สามารถอัปโหลดไฟล์เสียงได้" });
+            tbToast.error({ title: "อัปโหลดไฟล์เสียงไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsUpdating(false);
         }

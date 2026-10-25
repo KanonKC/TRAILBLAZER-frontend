@@ -1,16 +1,48 @@
 
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox";
 import { cn } from "@/lib/utils";
-import { type TwitchCustomReward } from "@/services/twitch.service";
+import { Gift, Loader2 } from "lucide-react";
 import { useState } from "react";
+
+/** The reward fields the selector reads; `TwitchCustomReward` and the random-pool `Reward` both fit. */
+export interface SelectableReward {
+    id: string;
+    title: string;
+    cost: number;
+    background_color?: string;
+    image?: { url_1x: string } | null;
+    default_image?: { url_1x: string } | null;
+}
+
+/** Twitch reward icon on the reward's own background color, with a gift glyph when Twitch has no image. */
+export function RewardIcon({ reward, className }: { reward?: SelectableReward | null; className?: string }) {
+    const imageUrl = reward?.image?.url_1x || reward?.default_image?.url_1x;
+    return (
+        <span
+            className={cn("bg-secondary inline-flex size-6 shrink-0 items-center justify-center rounded-sm", className)}
+            style={reward?.background_color ? { backgroundColor: reward.background_color } : undefined}
+        >
+            {imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={imageUrl} alt="" className="size-[70%] object-contain" />
+            ) : (
+                <Gift className="size-3 text-muted-foreground" aria-hidden="true" />
+            )}
+        </span>
+    );
+}
 
 interface ChannelRewardSelectorProps {
     value: string | null;
     onValueChange: (value: string | null) => void;
-    rewards: TwitchCustomReward[];
+    rewards: SelectableReward[];
     isLoading?: boolean;
     placeholder?: string;
     disabled?: boolean;
+    /** Show a "None" entry that clears the value. Turn off when a reward is required. */
+    allowNone?: boolean;
+    /** A reason a reward cannot be picked (for example it is used elsewhere); the item is disabled and shows the note. */
+    getRewardDisabledNote?: (reward: SelectableReward) => string | null | undefined;
 }
 
 export function ChannelRewardSelector({
@@ -18,11 +50,12 @@ export function ChannelRewardSelector({
     onValueChange,
     rewards,
     isLoading,
-    placeholder = "Select a reward",
-    disabled
+    placeholder = "เลือกแต้มช่อง",
+    disabled,
+    allowNone = true,
+    getRewardDisabledNote
 }: ChannelRewardSelectorProps) {
     const selectedReward = rewards.find(r => r.id === value);
-    const selectedIcon = selectedReward?.image?.url_1x || selectedReward?.default_image?.url_1x;
     const [isOpen, setIsOpen] = useState(false);
     const [searchInput, setSearchInput] = useState("");
 
@@ -45,53 +78,55 @@ export function ChannelRewardSelector({
             }}
         >
             <div className="relative">
-                {selectedIcon && (
-                    <img
-                        src={selectedIcon}
-                        alt="Selected reward icon"
-                        className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 object-contain pointer-events-none z-10"
+                {isLoading && (
+                    <Loader2 className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 animate-spin text-muted-foreground pointer-events-none z-10" />
+                )}
+                {!isLoading && selectedReward && !isOpen && (
+                    <RewardIcon
+                        reward={selectedReward}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 size-5 pointer-events-none z-10"
                     />
                 )}
                 <ComboboxInput
-                    placeholder={isLoading ? "Loading rewards..." : placeholder}
-                    className={cn("w-full transition-all", selectedIcon && "pl-9")}
+                    placeholder={isLoading ? "กำลังโหลดแต้มช่อง..." : placeholder}
+                    className={cn("w-full transition-all", (isLoading || (selectedReward && !isOpen)) && "[&_input]:pl-9")}
                     disabled={isLoading || disabled}
                 />
             </div>
             <ComboboxContent>
                 <ComboboxList>
-                    <ComboboxItem className="cursor-pointer" value={null} textValue="None">None</ComboboxItem>
+                    {allowNone && <ComboboxItem value={null} textValue="None">None</ComboboxItem>}
                     {isLoading ? (
-                        <div className="p-2 text-sm text-muted-foreground text-center">Loading rewards...</div>
+                        <div className="p-2 text-sm text-muted-foreground text-center flex items-center justify-center gap-2"><Loader2 className="size-4 animate-spin" />กำลังโหลดแต้มช่อง...</div>
                     ) : (
                         <>
-                            {rewards.filter(reward => reward.title.toLowerCase().includes(searchInput.toLowerCase())).map((reward) => (
+                            {rewards.filter(reward => reward.title.toLowerCase().includes(searchInput.toLowerCase())).map((reward) => {
+                                const disabledNote = getRewardDisabledNote?.(reward);
+                                return (
                                 <ComboboxItem
-                                    className="cursor-pointer"
                                     key={reward.id}
                                     value={reward.id}
                                     textValue={reward.title}
+                                    disabled={!!disabledNote}
                                 >
                                     <div className="flex items-center justify-between gap-2 w-full">
-                                        <div className="flex items-center justify-start gap-2 max-w-[200px]">
-                                            {(reward.image?.url_1x || reward.default_image?.url_1x) && (
-                                                <img
-                                                    src={reward.image?.url_1x || reward.default_image?.url_1x}
-                                                    alt={reward.title}
-                                                    className="w-4 h-4 object-contain shrink-0"
-                                                />
-                                            )}
-                                            <span className="truncate">{reward.title}</span>
+                                        <div className="flex items-center justify-start gap-2 min-w-0">
+                                            <RewardIcon reward={reward} />
+                                            <span className="grid min-w-0">
+                                                <span className="truncate">{reward.title}</span>
+                                                {disabledNote && <span className="truncate text-xs text-muted-foreground">{disabledNote}</span>}
+                                            </span>
                                         </div>
-                                        <span className="text-muted-foreground text-xs shrink-0">{reward.cost}</span>
+                                        <span className="text-muted-foreground text-xs tabular-nums shrink-0">{reward.cost.toLocaleString()}</span>
                                     </div>
                                 </ComboboxItem>
-                            ))}
+                                );
+                            })}
                         </>
                     )}
                 </ComboboxList>
                 {!isLoading && rewards.length === 0 && (
-                    <ComboboxEmpty>No rewards found</ComboboxEmpty>
+                    <ComboboxEmpty>ไม่พบแต้มช่อง</ComboboxEmpty>
                 )}
             </ComboboxContent>
         </Combobox >

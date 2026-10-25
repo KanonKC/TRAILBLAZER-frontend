@@ -7,7 +7,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
     deleteUploadedFile,
-    getUploadedFile,
     getUploadedFiles,
     getUploadedFilesTotalSize,
     UploadedFile,
@@ -37,6 +36,7 @@ import {
     Upload,
     X
 } from "lucide-react";
+import { useAudioPreview } from "@/components/widget/AudioFileUploader/useAudioPreview";
 import React, { useEffect, useRef, useState } from "react";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // Increased to 10MB for general management
@@ -44,10 +44,8 @@ const ACCEPTED_FILE_TYPES = ["audio/mpeg", "audio/wav", "audio/ogg", "audio/mp3"
 
 export default function UploadedFileManager() {
     const uploadInputRef = useRef<HTMLInputElement>(null);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const { playingFileId, loadingFileId: isLoadingAudio, toggle, stop } = useAudioPreview();
     const [isUploading, setIsUploading] = useState(false);
-    const [playingFileId, setPlayingFileId] = useState<string | null>(null);
-    const [isLoadingAudio, setIsLoadingAudio] = useState<string | null>(null);
 
     // Selection state
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -113,41 +111,10 @@ export default function UploadedFileManager() {
         }
     };
 
-    const stopAudio = () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-            audioRef.current = null;
-        }
-        setPlayingFileId(null);
-    };
-
-    const handlePlayAudio = async (e: React.MouseEvent, file: UploadedFile) => {
-        e.stopPropagation();
-
-        if (playingFileId === file.id) {
-            stopAudio();
-            return;
-        }
-
-        stopAudio();
-        setIsLoadingAudio(file.id);
-        try {
-            const fetched = await getUploadedFile(file.id);
-            if (!fetched.url) return;
-
-            const audio = new Audio(fetched.url);
-            audio.volume = 1;
-            audioRef.current = audio;
-            audio.onended = () => setPlayingFileId(null);
-
-            await audio.play();
-            setPlayingFileId(file.id);
-        } catch {
-            setPlayingFileId(null);
-        } finally {
-            setIsLoadingAudio(null);
-        }
+    const stopAudio = stop;
+    const handlePlayAudio = (event: React.MouseEvent, file: UploadedFile) => {
+        event.stopPropagation();
+        void toggle(file.id);
     };
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -187,7 +154,7 @@ export default function UploadedFileManager() {
             fetchTotalSize();
             fetchLibraryFiles(currentPage, searchQuery);
         } catch (err) {
-            tbToast.error({ title: "ลบไฟล์บางส่วนหรือทั้งหมดไม่สำเร็จ" });
+            tbToast.error({ title: "ลบไฟล์บางส่วนหรือทั้งหมดไม่สำเร็จ", error: (err as any).response?.data });
         } finally {
             setIsDeletingBulk(false);
         }
@@ -227,7 +194,7 @@ export default function UploadedFileManager() {
             setLibraryFiles(prev => prev.map(f => f.id === editingId ? { ...f, name: editValue.trim() } : f));
             setEditingId(null);
         } catch (err) {
-            tbToast.error({ title: "เปลี่ยนชื่อไฟล์ไม่สำเร็จ" });
+            tbToast.error({ title: "เปลี่ยนชื่อไฟล์ไม่สำเร็จ", error: (err as any).response?.data });
         } finally {
             setIsUpdating(false);
         }
@@ -303,7 +270,7 @@ export default function UploadedFileManager() {
                             <div
                                 className={cn(
                                     "h-full transition-all duration-500 ease-out",
-                                    (totalSizeKb / maxStorageKb) > 0.9 ? "bg-red-500" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-yellow-500" : "bg-primary"
+                                    (totalSizeKb / maxStorageKb) > 0.9 ? "bg-destructive" : (totalSizeKb / maxStorageKb) > 0.7 ? "bg-warning" : "bg-primary"
                                 )}
                                 style={{ width: `${Math.min((totalSizeKb / maxStorageKb) * 100, 100)}%` }}
                             />
@@ -368,9 +335,9 @@ export default function UploadedFileManager() {
                                                         {isLoadingAudio === file.id ? (
                                                             <Loader2 className="w-4 h-4 animate-spin text-primary" />
                                                         ) : playingFileId === file.id ? (
-                                                            <Square className="w-4 h-4 text-red-500 fill-red-500" />
+                                                            <Square className="w-4 h-4 text-destructive fill-destructive" />
                                                         ) : (
-                                                            <Play className="w-4 h-4 text-emerald-500 fill-emerald-500" />
+                                                            <Play className="w-4 h-4 text-success fill-success" />
                                                         )}
                                                     </Button>
                                                 )}
@@ -389,10 +356,10 @@ export default function UploadedFileManager() {
                                                                 }}
                                                             />
                                                             <div className="flex gap-0.5">
-                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" onClick={handleRename} disabled={isUpdating}>
+                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-success hover:text-success hover:bg-success" onClick={handleRename} disabled={isUpdating}>
                                                                     {isUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
                                                                 </Button>
-                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-rose-600 hover:text-rose-700 hover:bg-rose-50" onClick={cancelEditing} disabled={isUpdating}>
+                                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={cancelEditing} disabled={isUpdating}>
                                                                     <X className="h-4 w-4" />
                                                                 </Button>
                                                             </div>
@@ -433,7 +400,7 @@ export default function UploadedFileManager() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="h-8 w-8 text-muted-foreground/30 group-hover:text-rose-600 hover:bg-rose-50 transition-all rounded-lg"
+                                                    className="h-8 w-8 text-muted-foreground/30 group-hover:text-destructive hover:bg-destructive/10 transition-all rounded-lg"
                                                     onClick={() => setFileToDelete(file)}
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -521,8 +488,8 @@ export default function UploadedFileManager() {
                                     setFileToDelete(null);
                                     fetchTotalSize();
                                     fetchLibraryFiles(currentPage, searchQuery);
-                                } catch {
-                                    tbToast.error({ title: "ลบไฟล์ไม่สำเร็จ" });
+                                } catch (error) {
+                                    tbToast.error({ title: "ลบไฟล์ไม่สำเร็จ", error: (error as any).response?.data });
                                 }
                             }}
                         >

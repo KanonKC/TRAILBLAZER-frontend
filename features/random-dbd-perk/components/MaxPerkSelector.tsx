@@ -50,7 +50,7 @@ export function MaxPerkSelector({
                             if (val < 0) val = 0;
                             onCountChange(val);
                         }}
-                        className="w-16 h-8 text-sm text-center bg-transparent border rounded-md focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="w-16 h-8 text-sm text-center bg-transparent border rounded-md focus:outline-none focus:ring-1 focus:ring-success"
                     />
                     <Select value={unit} onValueChange={(val: "perk" | "page") => onUnitChange(val)}>
                         <SelectTrigger className="h-8 w-[80px]">

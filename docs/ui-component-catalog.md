@@ -79,7 +79,7 @@
 | Media | `AudioFileUploader/*` (3), `SmartAudioFileUploader` | ช่องอัปโหลดเสียงแบบเต็ม, dialog และแบบ compact; ใช้ในฟอร์ม widget |
 | Integrations | `BotProfileSelector`, `ChannelRewardSelector`, `TwitchRewardSelector` | ตัวเลือกที่ผูกข้อมูล Twitch/bot |
 | Overlay | `OverlayUrlInput`, `SmartOverlayUrlInput`, `OBSSetupHelp` | แสดง URL overlay และคำแนะนำ OBS, เน้น copy/นำไปใช้งาน |
-| Settings | `MSDelaySlider`, `ReplyMessageHelp`, `ReplyMessageTextarea`, `QuotaMeter` | slider เวลา, input ข้อความตอบ และแสดง quota |
+| Settings | `MSDelaySlider`, `ReplyMessageHelp`, `CharacterCountTextarea`, `QuotaMeter` | slider เวลา, input ข้อความตอบ และแสดง quota |
 | Status / testing | `WidgetEnabledBadge`, `WidgetQuotaDialog`, `WidgetStatusControl`, `WidgetStatusSwitch`, `WidgetTestControl`, `WidgetTypeLoadError` | สถานะเปิดใช้งาน, quota, ทดสอบ และข้อผิดพลาด |
 | Layout / stepper | `layout/WidgetConfigLayout`, `WidgetStepper/*` (4) | โครงหน้า config และขั้นตอนการตั้งค่า |
 | Tab cards | `widget-tab-card/WidgetOverviewCard`, `WidgetQuickStartCard`, `WidgetSettingsCard/*` (3) | การ์ด Overview / Quick Start / Settings และส่วน Content/Footer |

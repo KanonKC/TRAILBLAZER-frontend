@@ -24,18 +24,18 @@ import {
 } from "@/components/ui/sheet";
 import { UploadedFile } from "@/services/uploadedFile.service";
 import { ItemSetting, PoolItem } from "../types";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { UploadHandler } from "../hooks/useRandomPool";
 import {
   CHAT_VARIABLES,
   MAX_CHAT_MESSAGE_LENGTH,
   MAX_ITEM_NAME_LENGTH,
   MIN_WEIGHT,
-  neutralFocus,
 } from "../constants";
-import { Field } from "./SectionTitle";
+import { Label } from "@/components/ui/label";
+import SubLabel from "@/components/SubLabel";
 import { ItemThumb } from "./ItemThumb";
-import { SoundField } from "./SoundField";
+import { CompactAudioFileUploader } from "@/components/widget/AudioFileUploader/CompactAudioFileUploader";
 
 export interface EditingItem {
   /** `null` while adding a new item to the pool. */
@@ -53,6 +53,7 @@ interface Props {
   files: UploadedFile[];
   busy: boolean;
   upload: UploadHandler;
+  onRememberFile: (file: UploadedFile) => void;
   onClose: () => void;
   onSave: (
     index: number | null,
@@ -65,8 +66,8 @@ interface Props {
 /** Remount per item so the form state always starts from the item being edited. */
 const chatVariables = CHAT_VARIABLES.map((variable) => ({
   variable: variable.token,
+  title: variable.title,
   description: variable.description,
-  example: variable.example,
 }));
 
 export function ItemSheet(props: Props) {
@@ -92,6 +93,7 @@ function ItemSheetBody({
   files,
   busy,
   upload,
+  onRememberFile,
   onClose,
   onSave,
   onDelete,
@@ -195,28 +197,26 @@ function ItemSheetBody({
             </div>
           </div>
           {imageError && (
-            <p role="alert" className="text-sm text-red-300">
+            <p role="alert" className="text-sm text-destructive">
               {imageError}
             </p>
           )}
-          <Field
-            label="ชื่อรายการ"
-            htmlFor="item-name"
-            aside={
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor="item-name">ชื่อรายการ</Label>
               <span
                 className={
                   nameLength > MAX_ITEM_NAME_LENGTH
-                    ? "text-sm text-red-300"
+                    ? "text-sm text-destructive"
                     : "text-muted-foreground text-sm"
                 }
               >
                 {nameLength}/{MAX_ITEM_NAME_LENGTH}
               </span>
-            }
-          >
+            </div>
+            <SubLabel>ใส่รูปหรือชื่ออย่างน้อยหนึ่งอย่าง</SubLabel>
             <Input
               id="item-name"
-              className={neutralFocus}
               value={item.name ?? ""}
               aria-invalid={nameLength > MAX_ITEM_NAME_LENGTH}
               onChange={(event) =>
@@ -227,12 +227,9 @@ function ItemSheetBody({
               }
             />
             {nameLength > MAX_ITEM_NAME_LENGTH && (
-              <p className="text-sm text-red-300">ชื่อยาวเกิน 32 ตัวอักษร</p>
+              <p className="text-sm text-destructive">ชื่อยาวเกิน 32 ตัวอักษร</p>
             )}
-            <p className="text-muted-foreground text-sm">
-              ใส่รูปหรือชื่ออย่างน้อยหนึ่งอย่าง
-            </p>
-          </Field>
+          </div>
         </div>
 
         {!simple && weighted && (
@@ -246,7 +243,7 @@ function ItemSheetBody({
                 type="number"
                 min={MIN_WEIGHT}
                 step="any"
-                className={`${neutralFocus} w-28 text-right font-mono`}
+                className="w-28 text-right font-mono"
                 value={weight}
                 onChange={(event) =>
                   setWeight(Math.max(MIN_WEIGHT, Number(event.target.value)))
@@ -263,16 +260,9 @@ function ItemSheetBody({
 
         {!simple && (
           <div className="grid gap-2 border-t pt-6">
-            <Field
-              label="ข้อความแชทเฉพาะรายการ"
-              htmlFor="item-chat"
-              aside={
-                <span className="text-muted-foreground text-sm">
-                  {chatMessage.length}/{MAX_CHAT_MESSAGE_LENGTH}
-                </span>
-              }
-            >
-              <ReplyMessageTextarea
+            <div className="space-y-2">
+              <Label>ข้อความแชทเฉพาะรายการ</Label>
+              <CharacterCountTextarea
                 placeholder="ว่างไว้เพื่อใช้ข้อความเริ่มต้น"
                 value={chatMessage}
                 onChange={setChatMessage}
@@ -283,21 +273,29 @@ function ItemSheetBody({
                     : null
                 }
               />
-            </Field>
+            </div>
           </div>
         )}
 
         {!simple && (
           <div className="border-t pt-6">
-            <SoundField
-              label="เสียงตอนของออก (เฉพาะรายการ)"
-              help="ถ้าไม่ตั้ง ระบบใช้เสียงตอนของออกจากส่วนเสียงหลัก mp3, ogg, wav ไม่เกิน 2 MB ยาวไม่เกิน 15 วินาที"
-              value={soundKey}
-              files={files}
-              busy={busy}
-              upload={upload}
-              onChange={setSoundKey}
-            />
+            <div className="space-y-2">
+              <Label>เสียงตอนของออก (เฉพาะรายการ)</Label>
+              <SubLabel>ถ้าไม่ตั้ง ระบบใช้เสียงตอนของออกเริ่มต้นของการตั้งค่า</SubLabel>
+              <CompactAudioFileUploader
+                currentFileName={
+                  files.find((file) => file.key === soundKey)?.name ??
+                  (soundKey ? "ตั้งค่าเสียงแล้ว" : null)
+                }
+                selectedFile={files.find((file) => file.key === soundKey) ?? null}
+                onFileSelect={(file, key) => {
+                  if (file && !(file instanceof File)) onRememberFile(file);
+                  setSoundKey(key);
+                }}
+                onClear={() => setSoundKey(null)}
+                disabled={busy}
+              />
+            </div>
           </div>
         )}
       </div>
@@ -309,7 +307,7 @@ function ItemSheetBody({
           <Button
             type="button"
             variant="ghost"
-            className="text-red-300 hover:bg-red-400/10 hover:text-red-300"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
             disabled={busy}
             onClick={() => setConfirmDelete(true)}
           >

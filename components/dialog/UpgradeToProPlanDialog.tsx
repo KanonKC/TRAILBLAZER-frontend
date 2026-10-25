@@ -18,7 +18,7 @@ const UpgradeToProPlanDialog = ({ open, onOpenChange }: { open: boolean; onOpenC
                     <div className="bg-muted p-4 rounded-md space-y-2 text-left">
                         <h4 className="font-semibold text-foreground">สิ่งที่จะได้รับ</h4>
                         <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                            <li>สามารถใช้งาน Widget พิเศษทั้งหมดได้อย่างไร้ขีดจำกัด</li>
+                            <li>สามารถใช้งานวิดเจ็ตพิเศษทั้งหมดได้อย่างไร้ขีดจำกัด</li>
                         </ul>
                     </div>
                     <div className="pt-2 text-foreground text-sm space-y-2">
@@ -49,7 +49,7 @@ const UpgradeToProPlanDialog = ({ open, onOpenChange }: { open: boolean; onOpenC
                         </Button>
                         <Button
                             asChild
-                            className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold"
+                            className="trailblazer-gradient hover:brightness-110 text-primary-foreground font-semibold"
                         >
                             <a href="https://www.twitch.tv/kanonkc" target="_blank" rel="noopener noreferrer">
                                 อัปเกรดเป็น Pro

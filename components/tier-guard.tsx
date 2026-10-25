@@ -33,11 +33,11 @@ export function TierGuard({ requiredTier, children, featureName = "This feature"
 
     return (
         <div className="w-full h-[60vh] flex flex-col items-center justify-center p-4">
-            <Card className="max-w-md w-full border-amber-500/20 shadow-lg shadow-amber-500/5 overflow-hidden">
-                <div className="h-2 w-full bg-gradient-to-r from-amber-400 to-orange-500" />
+            <Card className="max-w-md w-full border-warning/20 shadow-lg shadow-primary/5 overflow-hidden">
+                <div className="h-2 w-full trailblazer-gradient" />
                 <CardHeader className="text-center pt-8">
-                    <div className="mx-auto w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-4">
-                        <Lock className="w-8 h-8 text-amber-500" />
+                    <div className="mx-auto w-16 h-16 bg-warning/10 rounded-full flex items-center justify-center mb-4">
+                        <Lock className="w-8 h-8 text-warning" />
                     </div>
                     <CardTitle className="text-2xl font-bold">Premium Feature</CardTitle>
                     <CardDescription className="text-base mt-2">
@@ -49,14 +49,14 @@ export function TierGuard({ requiredTier, children, featureName = "This feature"
                     <ul className="space-y-3 mt-4">
                         {['Access to all premium widgets', 'Priority support', 'Custom widget styles', 'Higher usage limits'].map((benefit, i) => (
                             <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
-                                <Sparkles className="w-4 h-4 text-amber-500" />
+                                <Sparkles className="w-4 h-4 text-warning" />
                                 <span>{benefit}</span>
                             </li>
                         ))}
                     </ul>
                 </CardContent>
                 <CardFooter className="bg-muted/50 p-6 flex-col gap-3">
-                    <Button asChild className="w-full bg-amber-500 hover:bg-amber-600 text-white border-0">
+                    <Button asChild className="w-full bg-warning hover:bg-warning text-foreground border-0">
                         <Link href="/dashboard/billing">
                             Upgrade to Pro
                         </Link>

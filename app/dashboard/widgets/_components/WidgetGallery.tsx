@@ -9,10 +9,11 @@ import { QuotaMeter } from "@/components/widget/QuotaMeter";
 interface WidgetGalleryProps {
     initialData: { data: ExtendedWidget[], pagination: any } | null;
     initialWidgetTypes: WidgetTypeMeta[];
+    isAuthenticated: boolean;
     isWhitelisted: boolean;
 }
 
-export const WidgetGallery = ({ initialData, initialWidgetTypes, isWhitelisted }: WidgetGalleryProps) => {
+export const WidgetGallery = ({ initialData, initialWidgetTypes, isAuthenticated, isWhitelisted }: WidgetGalleryProps) => {
     const [apiWidgets, setApiWidgets] = useState<ExtendedWidget[]>(initialData?.data || []);
     const [isLoading, setIsLoading] = useState(false);
     const [quotaRefreshKey, setQuotaRefreshKey] = useState(0);
@@ -24,7 +25,7 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes, isWhitelisted }
             setQuotaRefreshKey(prev => prev + 1);
         } catch (error) {
             console.error("Failed to fetch widgets", error);
-            tbToast.error({ title: "ไม่สามารถดึงข้อมูลวิดเจ็ตได้" });
+            tbToast.error({ title: "ดึงข้อมูลวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsLoading(false);
         }
@@ -44,14 +45,12 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes, isWhitelisted }
         <div>
             <div className="flex flex-row items-start justify-between gap-2 mb-8">
                 <div className="flex flex-col gap-2">
-                    <h1 className="text-3xl font-bold tracking-tight">Widget Gallery</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">แกลเลอรีวิดเจ็ต</h1>
                     <p className="text-muted-foreground">
                         เลือกวิดเจ็ตที่คุณต้องการใช้งานเพื่อเสริมประสบการณ์การสตรีมของคุณ
                     </p>
                 </div>
-                <div className="w-[410px]">
-                    <QuotaMeter refreshKey={quotaRefreshKey} />
-                </div>
+                {isAuthenticated && <div className="w-[410px]"><QuotaMeter refreshKey={quotaRefreshKey} /></div>}
             </div>
             <div className="flex flex-col gap-6 relative">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -61,6 +60,7 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes, isWhitelisted }
                             <WidgetCard
                                 key={widgetType.slug}
                                 widgetType={widgetType}
+                                isAuthenticated={isAuthenticated}
                                 isWhitelisted={isWhitelisted}
                                 apiWidget={apiWidget}
                                 onSuccess={fetchWidgets}

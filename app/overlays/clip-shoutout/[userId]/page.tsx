@@ -6,9 +6,8 @@ import { getClipShoutoutEventUrl } from "@/features/clip-shoutout/api/clipShouto
 import { Button } from "@/components/ui/button";
 import { RefreshCcw } from "lucide-react";
 import { ackOverlayJob } from "@/lib/overlay-queue";
+import { useOverlayEventSource } from "@/hooks/use-overlay-event-source";
 
-const MAX_RETRY_DELAY = 16000 // 16 seconds max
-const INITIAL_RETRY_DELAY = 1000 // 1 second
 
 export default function ClipShoutoutOverlayPage() {
     const params = useParams()
@@ -19,9 +18,6 @@ export default function ClipShoutoutOverlayPage() {
     const [url, setUrl] = useState<string | null>(null);
     const [isVisible, setIsVisible] = useState(false);
 
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-    const retryDelayRef = useRef(INITIAL_RETRY_DELAY)
-    const eventSourceRef = useRef<EventSource | null>(null)
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const jobIdRef = useRef<string | null>(null);
 
@@ -35,28 +31,7 @@ export default function ClipShoutoutOverlayPage() {
         ackOverlayJob("clip-shoutout", userId, jobId ?? undefined, key);
     }, [userId, key])
 
-    const connect = useCallback(() => {
-        if (!userId) return
-
-        // Clean up existing connection
-        if (eventSourceRef.current) {
-            eventSourceRef.current.close()
-        }
-
-        const eventSource = new EventSource(getClipShoutoutEventUrl(userId, key))
-        eventSourceRef.current = eventSource
-
-        eventSource.onopen = () => {
-            console.log("EventSource connected")
-        }
-
-        eventSource.addEventListener("connected", (event) => {
-            console.log("Received connected event")
-            // Reset retry delay on successful logical connection
-            retryDelayRef.current = INITIAL_RETRY_DELAY
-        })
-
-        eventSource.addEventListener("clip", (event) => {
+    useOverlayEventSource(userId ? getClipShoutoutEventUrl(userId, key) : null, "clip", (event) => {
             try {
                 const data = JSON.parse(event.data)
                 console.log("Received clip event:", data)
@@ -75,41 +50,11 @@ export default function ClipShoutoutOverlayPage() {
             } catch (error) {
                 console.error("Failed to parse event data:", error)
             }
-        })
+    });
 
-        eventSource.onerror = () => {
-            console.log("EventSource error, attempting reconnect...")
-            eventSource.close()
-
-            // Schedule retry with exponential backoff
-            const delay = retryDelayRef.current
-            console.log(`Reconnecting in ${delay / 1000}s...`)
-
-            retryTimeoutRef.current = setTimeout(() => {
-                connect()
-            }, delay)
-
-            // Increase delay for next retry (exponential backoff with cap)
-            retryDelayRef.current = Math.min(retryDelayRef.current * 2, MAX_RETRY_DELAY)
-        }
-    }, [userId, key, finishCurrent])
-
-    useEffect(() => {
-        connect()
-
-        return () => {
-            // Clean up on unmount
-            if (retryTimeoutRef.current) {
-                clearTimeout(retryTimeoutRef.current)
-            }
-            if (eventSourceRef.current) {
-                eventSourceRef.current.close()
-            }
-            if (timerRef.current) {
-                clearTimeout(timerRef.current);
-            }
-        }
-    }, [connect])
+    useEffect(() => () => {
+        if (timerRef.current) clearTimeout(timerRef.current);
+    }, []);
 
     // Get parent domain for Twitch embed
     const parentDomain = typeof window !== 'undefined' ? window.location.hostname : 'localhost';

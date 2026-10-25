@@ -75,7 +75,7 @@ export function PlatformCard({
                                 </Badge>
                             )}
                             {isConnected && platform.canUnbind && (
-                                <Badge variant="outline" className="text-sm gap-1 border-emerald-500/30 text-emerald-400">
+                                <Badge variant="outline" className="text-sm gap-1 border-success/30 text-success">
                                     เชื่อมต่อแล้ว
                                 </Badge>
                             )}
@@ -103,7 +103,7 @@ export function PlatformCard({
                             onClick={onBind}
                             disabled={isBindLoading}
                             variant="outline"
-                            className="gap-2 hover:border-white/30 transition-all duration-200"
+                            className="gap-2 hover:border-foreground/30 transition-all duration-200"
                         >
                             <Link2 className="h-4 w-4" />
                             เชื่อมต่อ
@@ -116,7 +116,7 @@ export function PlatformCard({
                                 <Button
                                     variant="outline"
                                     disabled={isUnbinding}
-                                    className="gap-2 text-red-400 border-red-500/30 hover:bg-red-500/10 hover:text-red-300 transition-all duration-200"
+                                    className="gap-2 text-destructive border-destructive/30 hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
                                 >
                                     <Unlink className="h-4 w-4" />
                                     {isUnbinding ? "กำลังยกเลิก..." : "ยกเลิกการเชื่อมต่อ"}
@@ -136,7 +136,7 @@ export function PlatformCard({
                                     <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={onUnbind}
-                                        className="bg-red-600 hover:bg-red-700"
+                                        className="bg-destructive hover:bg-destructive"
                                     >
                                         ยืนยันยกเลิกการเชื่อมต่อ
                                     </AlertDialogAction>

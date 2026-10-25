@@ -29,13 +29,13 @@ export const PricingTwitchDialog = ({
             <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
 
-                    <AlertDialogTitle className="flex items-center gap-2">วิธีการสมัคร Pro Plan ด้วย <span className="text-[#6441a5] font-bold">Twitch Subscription</span></AlertDialogTitle>
+                    <AlertDialogTitle className="flex items-center gap-2">วิธีการสมัคร Pro Plan ด้วย <span className="text-twitch font-bold">Twitch Subscription</span></AlertDialogTitle>
                     <AlertDialogDescription className="space-y-4 pt-2">
                         <p className="text-base">
-                            การอัปเกรดเป็น <span className="text-amber-600 font-bold">Pro Plan</span> จะใช้วิธีการผ่านการกด Subscribe บน Twitch ของเจ้าของแอปพลิเคชัน
+                            การอัปเกรดเป็น <span className="text-warning font-bold">Pro Plan</span> จะใช้วิธีการผ่านการกด Subscribe บน Twitch ของเจ้าของแอปพลิเคชัน
                         </p>
                         <p className="text-base">
-                            หลังจากกด Subscribe แล้ว หากด้านข้างโปรไฟล์ของคุณยังเป็น FREE อยู่ ให้กดปุ่ม <span className="text-white">"อัปเดตข้อมูลการสมัครสมาชิก"</span>
+                            หลังจากกด Subscribe แล้ว หากด้านข้างโปรไฟล์ของคุณยังเป็น FREE อยู่ ให้กดปุ่ม <span className="text-foreground">"อัปเดตข้อมูลการสมัครสมาชิก"</span>
                         </p>
                         <div className="rounded-lg overflow-hidden border shadow-sm">
                             <Image

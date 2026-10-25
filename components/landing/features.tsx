@@ -58,7 +58,7 @@ export function Features() {
                         >
                             <CardHeader>
                                 <div className="w-12 h-12 rounded-xl trailblazer-gradient flex items-center justify-center mb-4">
-                                    <feature.icon className="w-6 h-6 text-white" />
+                                    <feature.icon className="w-6 h-6 text-foreground" />
                                 </div>
                                 <CardTitle className="text-xl">{feature.title}</CardTitle>
                             </CardHeader>

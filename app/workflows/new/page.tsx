@@ -110,7 +110,7 @@ function Sidebar() {
     const categories = [...new Set(paletteItems.map((item) => item.category))];
 
     return (
-        <div className="w-64 glass border-r border-purple-500/20 p-4 overflow-y-auto">
+        <div className="w-64 glass border-r border-primary/20 p-4 overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4 trailblazer-gradient-text">โหนด</h3>
             {categories.map((category) => (
                 <div key={category} className="mb-4">
@@ -121,11 +121,11 @@ function Sidebar() {
                             .map((item, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center gap-2 p-2 rounded-lg glass border border-purple-500/20 cursor-grab hover:border-purple-500/40 transition-colors"
+                                    className="flex items-center gap-2 p-2 rounded-lg glass border border-primary/20 cursor-grab hover:border-primary/40 transition-colors"
                                     draggable
                                     onDragStart={(e) => onDragStart(e, item.type, item.label)}
                                 >
-                                    <item.icon className="w-4 h-4 text-purple-400" />
+                                    <item.icon className="w-4 h-4 text-primary" />
                                     <span className="text-sm">{item.label}</span>
                                 </div>
                             ))}
@@ -226,9 +226,9 @@ function Flow() {
                     fitView
                     className="bg-background"
                 >
-                    <Controls className="!bg-background/80 !border-purple-500/20" />
+                    <Controls className="!bg-background/80 !border-primary/20" />
                     <MiniMap
-                        className="!bg-background/80 !border-purple-500/20"
+                        className="!bg-background/80 !border-primary/20"
                         nodeColor={(node) => {
                             const type = node.type || "";
                             if (type.startsWith("trigger")) return "#9333ea";
@@ -259,10 +259,10 @@ function WorkflowBuilderContent() {
     return (
         <main className="h-screen flex flex-col">
             {/* Header */}
-            <header className="h-16 glass border-b border-purple-500/20 flex items-center justify-between px-4">
+            <header className="h-16 glass border-b border-primary/20 flex items-center justify-between px-4">
                 <div className="flex items-center gap-4">
                     <Link href="/workflows">
-                        <Button variant="outline" size="icon" className="glass border-purple-500/20">
+                        <Button variant="outline" size="icon" className="glass border-primary/20">
                             <ArrowLeft className="w-4 h-4" />
                         </Button>
                     </Link>
@@ -274,11 +274,11 @@ function WorkflowBuilderContent() {
                     />
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" className="glass border-purple-500/20" onClick={handleSaveDraft}>
+                    <Button variant="outline" className="glass border-primary/20" onClick={handleSaveDraft}>
                         <Save className="w-4 h-4 mr-2" />
                         บันทึกแบบร่าง
                     </Button>
-                    <Button className="trailblazer-gradient text-white font-semibold">
+                    <Button className="trailblazer-gradient text-primary-foreground font-semibold">
                         เผยแพร่
                     </Button>
                 </div>

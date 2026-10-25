@@ -57,7 +57,7 @@ export function OverlayUrlInput({
             {
                 !hideLabel && (
                     <>
-                        <Label>Overlay URL</Label>
+                        <Label>ลิงก์โอเวอร์เลย์</Label>
                         <p className="text-sm text-muted-foreground">
                             คลิกที่ช่องเพื่อคัดลอก URL แล้วนำไปใส่ใน Browser Source ของโปรแกรมสตรีม (OBS/Streamlabs)
                         </p>
@@ -71,13 +71,14 @@ export function OverlayUrlInput({
                     readOnly
                     onClick={handleCopyUrl}
                     disabled={disabled}
-                    className={cn("pr-30 cursor-pointer font-mono text-sm", inputClassName)}
+                    className={cn("pr-30 cursor-pointer font-mono text-xs md:text-xs", inputClassName)}
                 />
                 <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
                     <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 hover:bg-transparent"
+                        aria-label={showUrl ? "ซ่อน URL" : "แสดง URL"}
                         onClick={() => {
                             if (disabled) return;
                             if (showUrl) {
@@ -99,6 +100,7 @@ export function OverlayUrlInput({
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 hover:bg-transparent"
+                            aria-label="รีเซ็ต Key"
                             onClick={onRefresh}
                             disabled={disabled}
                         >
@@ -110,11 +112,12 @@ export function OverlayUrlInput({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 hover:bg-transparent"
+                        aria-label="คัดลอก URL"
                         onClick={handleCopyUrl}
                         disabled={disabled}
                     >
                         {copied ? (
-                            <Check className="h-4 w-4 text-green-500" />
+                            <Check className="h-4 w-4 text-success" />
                         ) : (
                             <Copy className="h-4 w-4 text-muted-foreground" />
                         )}
@@ -125,9 +128,9 @@ export function OverlayUrlInput({
             <AlertDialog open={showConfirmReveal} onOpenChange={setShowConfirmReveal}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>คุณต้องการแสดง Overlay URL หรือไม่?</AlertDialogTitle>
+                        <AlertDialogTitle>คุณต้องการแสดงลิงก์โอเวอร์เลย์หรือไม่?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Overlay URL เปรียบเสมือนรหัสผ่านสำหรับสตรีมของคุณ หากหลุดออกไป ผู้อื่นอาจสามารถส่งข้อความขี้นหน้าจอสตรีมของคุณได้โดยไม่ได้รับอนุญาต
+                            ลิงก์โอเวอร์เลย์เปรียบเสมือนรหัสผ่านสำหรับสตรีมของคุณ หากหลุดออกไป ผู้อื่นอาจสามารถส่งข้อความขึ้นหน้าจอสตรีมของคุณได้โดยไม่ได้รับอนุญาต
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

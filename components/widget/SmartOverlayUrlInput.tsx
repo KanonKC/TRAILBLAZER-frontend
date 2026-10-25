@@ -49,7 +49,7 @@ export function SmartOverlayUrlInput({
             }
         } catch (error) {
             console.error("Failed to refresh overlay key:", error);
-            tbToast.error({ title: "ไม่สามารถรีเซ็ตคีย์ได้" });
+            tbToast.error({ title: "รีเซ็ตคีย์ไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsRefreshing(false);
             setShowConfirmRefresh(false);

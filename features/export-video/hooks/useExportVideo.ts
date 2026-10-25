@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useUser } from "@/components/user-context";
+import { useWidgetLifecycleState } from "@/hooks/use-widget-lifecycle-state";
 import { tbToast } from "@/utils/tbToast";
 import { z } from "zod";
 import * as api from "../api/exportVideo.api";
@@ -19,12 +20,10 @@ const exportVideoSchema = z.object({
  */
 export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialRequiresProPlan: boolean) => {
     const { user, isLoading: isUserLoading } = useUser();
+    const { config, setConfig, isEnabled, setIsEnabled, isSaving, setIsSaving, isTesting, setIsTesting, activeTab, setActiveTab, runSaving } = useWidgetLifecycleState(initialConfig);
 
     // Core State
-    const [config, setConfig] = useState<ExportVideoConfig | null>(initialConfig);
     const [requiresProPlan, setRequiresProPlan] = useState(initialRequiresProPlan);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
-    const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
 
     // History State
     const [history, setHistory] = useState<ExportVideoHistory[]>([]);
@@ -41,8 +40,6 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
 
     // Operation State
     const [isLoading, setIsLoading] = useState(false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isTesting, setIsTesting] = useState(false);
 
     // Handlers
     const fetchHistory = useCallback(async (page = 1, limit = 10) => {
@@ -63,8 +60,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
 
     const handleEnable = async () => {
         if (!user) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const data = await api.enableExportVideo(user.twitchId, user.id);
             if (data) {
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
@@ -75,12 +71,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
                 setDescription(data.description || "");
                 setActiveTab("quick-start");
             }
-        } catch (error) {
-            console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "เปิดใช้งานไม่สำเร็จ", "Failed to enable");
     };
 
     const handleSave = async () => {
@@ -97,8 +88,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
             return;
         }
 
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const updated = await api.updateExportVideoConfig({
                 enabled: isEnabled,
                 privacy_status: privacyStatus,
@@ -111,18 +101,12 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
                 setDescription(updated.description || "");
                 tbToast.success({ title: "บันทึกสำเร็จ" });
             }
-        } catch (error) {
-            console.error("Failed to save", error);
-            tbToast.error({ title: "บันทึกไม่สำเร็จ", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "บันทึกไม่สำเร็จ", "Failed to save");
     };
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const success = await deleteWidget(config.widget.id);
             if (success) {
                 tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
@@ -130,12 +114,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
                 setIsEnabled(false);
                 setActiveTab("overview");
             }
-        } catch (error) {
-            console.error("Failed to delete", error);
-            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้", error: (error as any).response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "ลบวิดเจ็ตไม่สำเร็จ", "Failed to delete");
     };
 
     const handleDeleteHistory = async (id: number) => {
@@ -147,7 +126,7 @@ export const useExportVideo = (initialConfig: ExportVideoConfig | null, initialR
             }
         } catch (error) {
             console.error("Failed to delete history", error);
-            tbToast.error({ title: "ลบประวัติไม่สำเร็จ" });
+            tbToast.error({ title: "ลบประวัติไม่สำเร็จ", error: (error as any).response?.data });
         }
     };
 

@@ -38,8 +38,8 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
             setStatus(data);
         } catch (error) {
             tbToast.error({
-                title: "เกิดข้อผิดพลาด",
-                description: "ไม่สามารถดึงข้อมูลการแนะนำเพื่อนได้",
+                title: "ดึงข้อมูลการแนะนำเพื่อนไม่สำเร็จ",
+                error: (error as any).response?.data,
             });
             console.error("Failed to fetch referral status", error);
         } finally {
@@ -53,13 +53,13 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
         navigator.clipboard.writeText(url);
         setCopied(true);
         tbToast.success({
-            title: "คัดลอกลิงก์แล้ว!",
+            title: "คัดลอกลิงก์สำเร็จ",
         });
         setTimeout(() => setCopied(false), 2000);
     };
 
     const translateReward = (reward: string) => {
-        if (reward.includes("Widget Quota")) return "โควตา Widget +1";
+        if (reward.includes("Widget Quota")) return "โควตาวิดเจ็ต +1";
         if (reward.includes("Storage")) return "พื้นที่เก็บข้อมูล +15 MB";
         return reward;
     };
@@ -68,7 +68,7 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2 text-white">
+                    <DialogTitle className="flex items-center gap-2 text-foreground">
                         <Gift className="w-5 h-5 text-primary" />
                         ชวนเพื่อน
                     </DialogTitle>
@@ -79,7 +79,7 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
 
                 <div className="space-y-6 py-4">
                     <div className="space-y-2">
-                        <p className="text-sm font-medium text-white">ลิงก์แนะนำของคุณ</p>
+                        <p className="text-sm font-medium text-foreground">ลิงก์แนะนำของคุณ</p>
                         <div className="flex gap-2">
                             <Input
                                 readOnly
@@ -87,14 +87,14 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
                                 className="bg-muted text-sm"
                             />
                             <Button size="icon" variant="outline" onClick={copyLink} disabled={!status}>
-                                {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                                {copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
                             </Button>
                         </div>
                     </div>
 
                     <div className="space-y-4">
                         <div className="flex items-center justify-between">
-                            <p className="text-sm font-medium flex items-center gap-2 text-white">
+                            <p className="text-sm font-medium flex items-center gap-2 text-foreground">
                                 <Users className="w-4 h-4" />
                                 ความคืบหน้าของคุณ
                             </p>
@@ -109,7 +109,7 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
                                         }`}
                                 >
                                     <div className="flex flex-col">
-                                        <span className="text-sm font-bold text-white">แนะนำเพื่อนคนที่ {milestone.count}</span>
+                                        <span className="text-sm font-bold text-foreground">แนะนำเพื่อนคนที่ {milestone.count}</span>
                                         <span className="text-sm text-muted-foreground">{translateReward(milestone.reward)}</span>
                                     </div>
                                     {milestone.reached ? (
@@ -126,7 +126,7 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
 
                     <div className="p-4 bg-primary/5 rounded-lg border border-primary/10">
                         <p className="text-sm text-muted-foreground text-center">
-                            เพื่อนของคุณจะได้รับ <span className="text-white font-bold">โควตา Widget +1</span> ทันทีหลังจากสมัครใช้งาน!
+                            เพื่อนของคุณจะได้รับ <span className="text-foreground font-bold">โควตาวิดเจ็ต +1</span> ทันทีหลังจากสมัครใช้งาน!
                         </p>
                     </div>
                 </div>

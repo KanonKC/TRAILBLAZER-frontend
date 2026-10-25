@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { isAxiosError } from "axios";
 import { randomPoolApi } from "../api/randomPool.api";
 import {
-  Config,
   ConfigDraft,
   InitialData,
   ItemSetting,
@@ -21,18 +20,12 @@ import {
   draftFromConfig,
   emptyConfigDraft,
 } from "../constants";
+import { useUser } from "@/components/user-context";
 import { UploadedFile } from "@/services/uploadedFile.service";
-import {
-  ExtendedWidget,
-  WidgetQuota,
-  getWidgetQuota,
-  listWidgets,
-  updateWidgetEnabled,
-} from "@/services/widget.service";
+import { WidgetQuota, getWidgetQuota } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 
 export type RandomPoolTab = "overview" | "quick-start" | "settings";
-export type SettingsView = "list" | "edit";
 export type UploadHandler = (
   file: File,
   kind: "image" | "audio",
@@ -81,6 +74,8 @@ export function useRandomPool(
   initial: InitialData | null,
   start: RandomPoolStartOptions = {},
 ) {
+  const { user } = useUser();
+  const ownTwitchId = user?.twitchId ?? null;
   const [data, setData] = useState<InitialData>(initial ?? emptyInitialData);
   const initialConfigs = initial?.configs.data ?? [];
   const requestedConfig = initialConfigs.find(
@@ -90,10 +85,7 @@ export function useRandomPool(
     start.configId === NEW_CONFIG_ID && initialConfigs.length < MAX_CONFIGS;
   const startingConfig = requestedConfig ?? initialConfigs[0];
   const [activeTab, setActiveTab] = useState<RandomPoolTab>(
-    initial ? (start.tab ?? "overview") : "overview",
-  );
-  const [settingsView, setSettingsView] = useState<SettingsView>(
-    requestedConfig || openNew ? "edit" : "list",
+    initialConfigs.length > 0 ? (start.tab ?? "overview") : "overview",
   );
   const [editingId, setEditingId] = useState<string>(
     openNew ? NEW_CONFIG_ID : (startingConfig?.id ?? NEW_CONFIG_ID),
@@ -105,19 +97,23 @@ export function useRandomPool(
           openNew
             ? `การตั้งค่าใหม่ ${initialConfigs.length + 1}`
             : "Random Pool",
+          ownTwitchId,
         ),
   );
   const [rewards, setRewards] = useState<Reward[]>([]);
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [busy, setBusy] = useState(false);
   const [testSpinKey] = useState(0);
-  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [quota, setQuota] = useState<WidgetQuota | null>(null);
   const [quotaVersion, setQuotaVersion] = useState(0);
-  const [limitDialog, setLimitDialog] = useState<{
-    open: boolean;
-    widgets: ExtendedWidget[];
-  }>({ open: false, widgets: [] });
+
+  /** "ใช้อยู่ใน <config>" when another config already owns this reward, otherwise null. */
+  function rewardUsedNote(rewardId: string) {
+    const takenBy = data.configs.data.find(
+      (other) => other.id !== editingId && other.twitch_reward_id === rewardId,
+    );
+    return takenBy ? `ใช้อยู่ใน ${takenBy.name}` : null;
+  }
 
   const isLoggedIn = initial !== null;
   const isNewConfig = editingId === NEW_CONFIG_ID;
@@ -168,7 +164,11 @@ export function useRandomPool(
       await action();
       return true;
     } catch (error) {
-      tbToast.error({ title: failureTitle, description: errorMessage(error) });
+      tbToast.error({
+        title: failureTitle,
+        description: errorMessage(error),
+        error: (error as any).response?.data,
+      });
       return false;
     } finally {
       setBusy(false);
@@ -183,25 +183,36 @@ export function useRandomPool(
 
   /* ---------- navigation between configs ---------- */
 
-  function selectConfig(id: string, nextView: SettingsView = "edit") {
+  function selectConfig(id: string) {
     const target = data.configs.data.find((config) => config.id === id);
     if (!target) return;
     setEditingId(id);
     setDraft(draftFromConfig(target));
-    setSettingsView(nextView);
   }
 
   function startNewConfig() {
     if (data.configs.data.length >= MAX_CONFIGS) return;
     setEditingId(NEW_CONFIG_ID);
-    setDraft(
-      emptyConfigDraft(`การตั้งค่าใหม่ ${data.configs.data.length + 1}`),
-    );
-    setSettingsView("edit");
+    setDraft({
+      ...emptyConfigDraft(
+        `การตั้งค่าใหม่ ${data.configs.data.length + 1}`,
+        ownTwitchId,
+      ),
+      pool_id: data.pools.data[0]?.id ?? "",
+    });
   }
 
-  function backToList() {
-    setSettingsView("list");
+  /** First-time enable: the server creates the default config and its empty pool. */
+  function enable() {
+    return run(async () => {
+      const created = await randomPoolApi.enable();
+      await refresh();
+      setEditingId(created.id);
+      setDraft(draftFromConfig(created));
+      setActiveTab("quick-start");
+      tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
+      void refreshQuota();
+    }, "เปิดใช้งานไม่สำเร็จ");
   }
 
   /* ---------- draft editing ---------- */
@@ -278,68 +289,43 @@ export function useRandomPool(
         latest.configs.data.find((config) => config.id === saved.id) ?? saved;
       setEditingId(fresh.id);
       setDraft(draftFromConfig(fresh));
-      tbToast.success({ title: "บันทึกการตั้งค่าแล้ว" });
+      tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
       void refreshQuota();
     }, "บันทึกการตั้งค่าไม่สำเร็จ");
   }
 
   function deleteConfig() {
     return run(async () => {
-      if (isNewConfig) {
-        setSettingsView("list");
-        return;
-      }
-      await randomPoolApi.deleteConfig(editingId);
-      const latest = await refresh();
+      if (!isNewConfig) await randomPoolApi.deleteConfig(editingId);
+      const latest = isNewConfig ? data : await refresh();
       const next = latest.configs.data[0];
       setEditingId(next?.id ?? NEW_CONFIG_ID);
-      setDraft(next ? draftFromConfig(next) : emptyConfigDraft("Random Pool"));
-      setSettingsView("list");
-      tbToast.success({ title: "ลบการตั้งค่าแล้ว" });
+      setDraft(
+        next
+          ? draftFromConfig(next)
+          : emptyConfigDraft("Random Pool", ownTwitchId),
+      );
+      if (!next) setActiveTab("overview");
+      tbToast.success({
+        title: isNewConfig ? "ยกเลิกการสร้างแล้ว" : "ลบการตั้งค่าสำเร็จ",
+      });
       void refreshQuota();
     }, "ลบการตั้งค่าไม่สำเร็จ");
   }
 
-  async function toggleConfig(target: Config, enabled: boolean) {
-    setTogglingId(target.id);
-    try {
-      await randomPoolApi.enable(target.id, enabled);
-      await refresh();
-      tbToast.success({
-        title: enabled ? "เปิดใช้งานการตั้งค่าแล้ว" : "ปิดใช้งานการตั้งค่าแล้ว",
-      });
-      void refreshQuota();
-    } catch (error) {
-      if (isAxiosError(error) && error.response?.status === 402) {
-        try {
-          const response = await listWidgets({ enabled: true });
-          setLimitDialog({ open: true, widgets: response.data });
-        } catch {
-          setLimitDialog({ open: true, widgets: [] });
-        }
-      } else {
-        tbToast.error({
-          title: "อัปเดตสถานะไม่สำเร็จ",
-          description: errorMessage(error),
-        });
-      }
-    } finally {
-      setTogglingId(null);
-    }
+  /** After the shared status switch changed a widget: reload configs and the quota meter. */
+  async function afterStatusChange() {
+    await refresh();
+    void refreshQuota();
   }
 
-  async function disableOtherWidget(widgetId: string) {
-    try {
-      await updateWidgetEnabled(widgetId, false);
-      setLimitDialog((previous) => ({
-        ...previous,
-        widgets: previous.widgets.filter((widget) => widget.id !== widgetId),
-      }));
-      await refresh();
-      void refreshQuota();
-    } catch {
-      tbToast.error({ title: "ไม่สามารถปิดวิดเจ็ตได้" });
-    }
+  /** Remember a file picked from the audio library so its name and player are available. */
+  function rememberFile(file: UploadedFile) {
+    setFiles((previous) =>
+      previous.some((candidate) => candidate.id === file.id)
+        ? previous
+        : [...previous, file],
+    );
   }
 
   /* ---------- pools and items ---------- */
@@ -367,7 +353,7 @@ export function useRandomPool(
       });
       await refresh();
       setDraft((previous) => ({ ...previous, pool_id: saved.id, items: [] }));
-      tbToast.success({ title: "สร้างกองสุ่มแล้ว" });
+      tbToast.success({ title: "สร้างกองสุ่มสำเร็จ" });
     }, "สร้างกองสุ่มไม่สำเร็จ");
   }
 
@@ -380,7 +366,7 @@ export function useRandomPool(
           ? { ...previous, pool_id: "", items: [] }
           : previous,
       );
-      tbToast.success({ title: "ลบกองสุ่มแล้ว" });
+      tbToast.success({ title: "ลบกองสุ่มสำเร็จ" });
       void refreshQuota();
     }, "ลบกองสุ่มไม่สำเร็จ");
   }
@@ -413,7 +399,7 @@ export function useRandomPool(
       await refresh();
       const savedItem = saved.items[targetIndex];
       if (savedItem?.id) updateItemSetting(savedItem.id, setting);
-      tbToast.success({ title: "บันทึกรายการแล้ว" });
+      tbToast.success({ title: "บันทึกรายการสำเร็จ" });
     }, "บันทึกรายการไม่สำเร็จ");
   }
 
@@ -432,16 +418,17 @@ export function useRandomPool(
         ...previous,
         items: previous.items.filter((setting) => setting.item_id !== itemId),
       }));
-      tbToast.success({ title: "ลบรายการแล้ว" });
+      tbToast.success({ title: "ลบรายการสำเร็จ" });
     }, "ลบรายการไม่สำเร็จ");
   }
 
   return {
     data,
     isLoggedIn,
+    hasConfig: data.configs.data.length > 0,
+    enable,
     activeTab,
     setActiveTab,
-    settingsView,
     editingId,
     isNewConfig,
     draft,
@@ -450,9 +437,9 @@ export function useRandomPool(
     selectedPool,
     poolItems,
     rewards,
+    rewardUsedNote,
     files,
     busy,
-    togglingId,
     testSpinKey,
     requestTestSpin: () => {
       if (!savedConfig) {
@@ -462,19 +449,16 @@ export function useRandomPool(
       void run(async () => {
         await randomPoolApi.testSpin(savedConfig.id);
         tbToast.success({
-          title: "ส่งการทดสอบไปที่ overlay แล้ว",
-          description: "ใช้ค่าที่บันทึกไว้ล่าสุด",
+          title: "ส่งการทดสอบสำเร็จ",
+          description: "ส่งไปที่โอเวอร์เลย์ด้วยค่าที่บันทึกไว้ล่าสุด",
         });
       }, "ทดสอบไม่สำเร็จ");
     },
     quota,
     quotaVersion,
-    limitDialog,
-    setLimitDialog,
     canSave,
     selectConfig,
     startNewConfig,
-    backToList,
     selectPool,
     changeMode,
     updateItemSetting,
@@ -483,8 +467,8 @@ export function useRandomPool(
     saveConfig,
     deleteConfig,
     reload: refresh,
-    toggleConfig,
-    disableOtherWidget,
+    afterStatusChange,
+    rememberFile,
     upload,
     createPool,
     deletePool,

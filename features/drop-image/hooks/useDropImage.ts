@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@/components/user-context";
+import { useWidgetLifecycleState } from "@/hooks/use-widget-lifecycle-state";
 import { tbToast } from "@/utils/tbToast";
 import { 
     enableDropImage, 
@@ -13,11 +14,7 @@ import { useTwitchRewards } from "@/hooks/use-twitch-rewards";
 
 export const useDropImage = (initialConfig: DropImageConfig | null) => {
     const { user, isLoading: isUserLoading } = useUser();
-    const [config, setConfig] = useState<DropImageConfig | null>(initialConfig);
-    const [isEnabled, setIsEnabled] = useState(initialConfig?.widget?.enabled ?? false);
-    const [isSaving, setIsSaving] = useState(false);
-    const [isTesting, setIsTesting] = useState(false);
-    const [activeTab, setActiveTab] = useState(initialConfig ? "settings" : "overview");
+    const { config, setConfig, isEnabled, setIsEnabled, isSaving, setIsSaving, isTesting, setIsTesting, activeTab, setActiveTab, handleStatusChange, runSaving, runTesting } = useWidgetLifecycleState(initialConfig);
 
     // Form states
     const [twitchRewardId, setTwitchRewardId] = useState<string | null>(initialConfig?.twitch_reward_id || null);
@@ -40,8 +37,7 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
 
     const handleEnable = async () => {
         if (!user) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const data = await enableDropImage(true);
             if (data) {
                 tbToast.success({ title: "เปิดใช้งานสำเร็จ" });
@@ -56,18 +52,12 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
                 setContainMatureMessage(data.contain_mature_message || "");
                 setActiveTab("quick-start");
             }
-        } catch (error) {
-            console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ" });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "เปิดใช้งานไม่สำเร็จ", "Failed to enable");
     };
 
     const handleDelete = async () => {
         if (!config?.widget?.id) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const success = await deleteWidget(config.widget.id);
             if (success) {
                 tbToast.success({ title: "ลบวิดเจ็ตสำเร็จ" });
@@ -82,18 +72,12 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
                 setContainMatureMessage("");
                 setActiveTab("overview");
             }
-        } catch (error) {
-            console.error("Failed to delete", error);
-            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้" });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "ลบวิดเจ็ตไม่สำเร็จ", "Failed to delete");
     };
 
     const handleSave = async () => {
         if (!config) return;
-        setIsSaving(true);
-        try {
+        await runSaving(async () => {
             const updated = await updateDropImageConfig({
                 twitch_reward_id: twitchRewardId,
                 display_duration: displayDuration,
@@ -108,12 +92,7 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
                 tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
                 setConfig(updated);
             }
-        } catch (error: any) {
-            console.error("Failed to update config", error);
-            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้", error: error.response?.data });
-        } finally {
-            setIsSaving(false);
-        }
+        }, "บันทึกการตั้งค่าไม่สำเร็จ", "Failed to update config");
     };
 
     const handleTest = async () => {
@@ -121,8 +100,7 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
 
         let rewardId = twitchRewardId || "test-reward-id";
 
-        setIsTesting(true);
-        try {
+        await runTesting(async () => {
             const mockEvent = {
                 subscription: { status: "enabled", type: "channel.chat.message" },
                 event: {
@@ -159,21 +137,9 @@ export const useDropImage = (initialConfig: DropImageConfig | null) => {
 
             await testDropImage(mockEvent);
             tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ" });
-        } catch (error) {
-            console.error("Test failed:", error);
-            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ" });
-        } finally {
-            setIsTesting(false);
-        }
+        }, "ทดสอบวิดเจ็ตไม่สำเร็จ", "Test failed:");
     };
 
-    const handleStatusChange = (checked: boolean) => {
-        setIsEnabled(checked);
-        setConfig(prev => prev ? {
-            ...prev,
-            widget: { ...prev.widget, enabled: checked }
-        } : null);
-    };
 
     return {
         user,

@@ -20,8 +20,8 @@ const WidgetOverviewCard = ({ children, showLoginButton, showEnableButton, showU
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <Info className="w-5 h-5 text-blue-500" />
-                    Overview
+                    <Info className="w-5 h-5 text-info" />
+                    ภาพรวม
                 </CardTitle>
                 <CardDescription>
                     อธิบายความสามารถและการทำงานของวิดเจ็ตตัวนี้
@@ -36,13 +36,13 @@ const WidgetOverviewCard = ({ children, showLoginButton, showEnableButton, showU
                 )}
                 {showEnableButton && (
                     <Button onClick={onClickEnable} disabled={isLoading} className="w-full">
-                        {isLoading ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน Widget"}
+                        {isLoading ? "กำลังเปิดใช้งาน..." : "เปิดใช้งานวิดเจ็ต"}
                     </Button>
                 )}
                 {showUpgradeButton && (
                     <Button
                         onClick={() => setOpenUpgradeDialog(true)}
-                        className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold"
+                        className="w-full trailblazer-gradient hover:brightness-110 text-primary-foreground font-semibold"
                     >
                         <Crown className="w-4 h-4 mr-2" />
                         อัปเกรดเป็น Pro
