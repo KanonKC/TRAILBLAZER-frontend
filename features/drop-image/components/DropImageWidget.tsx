@@ -32,7 +32,7 @@ import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { DropImageConfig } from "../types";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 import SubLabel from "@/components/SubLabel";
@@ -289,9 +289,9 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                             <h3 className="text-lg font-semibold">ข้อความตอบกลับ</h3>
                                         </div>
                                         <BotProfileSelector value={botProfile} onValueChange={setBotProfile} />
-                                        <div className="space-y-2"><Label>ข้อความเมื่อ URL ไม่ถูกต้อง</Label><ReplyMessageTextarea value={invalidMessage} onChange={setInvalidMessage} rows={2} /></div>
-                                        <div className="space-y-2"><Label>ข้อความเมื่อไม่ใช่รูปภาพ</Label><ReplyMessageTextarea value={notImageMessage} onChange={setNotImageMessage} rows={2} /></div>
-                                        <div className="space-y-2"><Label>ข้อความเมื่อเนื้อหาไม่เหมาะสม</Label><ReplyMessageTextarea value={containMatureMessage} onChange={setContainMatureMessage} rows={2} disabled={!enabledModeration} /></div>
+                                        <div className="space-y-2"><Label>ข้อความเมื่อ URL ไม่ถูกต้อง</Label><CharacterCountTextarea value={invalidMessage} onChange={setInvalidMessage} rows={2} /></div>
+                                        <div className="space-y-2"><Label>ข้อความเมื่อไม่ใช่รูปภาพ</Label><CharacterCountTextarea value={notImageMessage} onChange={setNotImageMessage} rows={2} /></div>
+                                        <div className="space-y-2"><Label>ข้อความเมื่อเนื้อหาไม่เหมาะสม</Label><CharacterCountTextarea value={containMatureMessage} onChange={setContainMatureMessage} rows={2} disabled={!enabledModeration} /></div>
                                     </div>
                                 </div>
                             </WidgetSettingsCardContent>

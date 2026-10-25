@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import { UploadedFile } from "@/services/uploadedFile.service";
 import { ItemSetting, PoolItem } from "../types";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { UploadHandler } from "../hooks/useRandomPool";
 import {
   CHAT_VARIABLES,
@@ -272,7 +272,7 @@ function ItemSheetBody({
                 </span>
               }
             >
-              <ReplyMessageTextarea
+              <CharacterCountTextarea
                 placeholder="ว่างไว้เพื่อใช้ข้อความเริ่มต้น"
                 value={chatMessage}
                 onChange={setChatMessage}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import GoToSettingsButton from "@/components/widget/GoToSettingsButton";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
@@ -142,7 +142,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                             description: (
                                                 <div className="space-y-3">
                                                     <p className="text-sm text-muted-foreground">ใส่ข้อความที่จะส่งในแชทเมื่อมีคน Raid เข้าช่อง สามารถใช้ตัวแปรด้านล่างเพื่อใส่ชื่อและข้อมูลของคนที่ Raid มาให้อัตโนมัติ</p>
-                                                    <ReplyMessageTextarea
+                                                    <CharacterCountTextarea
                                                         defaultOpenHelp
                                                         value={replyMessage}
                                                         onChange={handleReplyMessageChange}
@@ -229,7 +229,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                         <h3 className="text-lg font-semibold">ข้อความขอบคุณ</h3>
                                     </div>
                                     <BotProfileSelector value={botProfile} onValueChange={setBotProfile} />
-                                    <ReplyMessageTextarea value={replyMessage} onChange={handleReplyMessageChange} error={replyMessageError} variables={shoutoutVariables} />
+                                    <CharacterCountTextarea value={replyMessage} onChange={handleReplyMessageChange} error={replyMessageError} variables={shoutoutVariables} />
                                 </div>
 
                                 <div className="space-y-6">

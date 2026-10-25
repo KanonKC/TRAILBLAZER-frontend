@@ -17,7 +17,7 @@ import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/Widge
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
 import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { SaveWidgetButton } from "@/components/button/SaveWidgetButton";
 import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 import { DeleteWidgetButton } from "@/components/button/DeleteWidgetButton";
@@ -157,7 +157,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                     description: (
                                                         <div className="space-y-3">
                                                             <SubLabel>เลือก Channel Points Reward บน Twitch เพื่อใช้กับวิดเจ็ตนี้</SubLabel>
-                                                            <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} placeholder="เลือก Reward..." />
+                                                            <TwitchRewardSelector value={twitchRewardId} onValueChange={setTwitchRewardId} />
                                                         </div>
                                                     )
                                                 },
@@ -256,7 +256,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                             <div className="space-y-2">
                                                 <Label>ข้อความเมื่อสำเร็จ</Label>
                                                 <SubLabel>ข้อความที่จะตอบกลับผู้ใช้งาน เมื่อมีการใส่เพลงสำเร็จ</SubLabel>
-                                                <ReplyMessageTextarea
+                                                <CharacterCountTextarea
                                                     value={successMessage}
                                                     onChange={setSuccessMessage}
                                                     placeholder="เพิ่ม {{track_name}} โดย {{track_artist}} เข้าคิวแล้ว!"
@@ -270,7 +270,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                             <div className="space-y-2">
                                                 <Label>ข้อความเมื่อไม่พบเพลง</Label>
                                                 <SubLabel>ข้อความที่จะตอบกลับผู้ใช้งาน เมื่อไม่พบเพลงหรือมีการทำงานผิดพลาด</SubLabel>
-                                                <ReplyMessageTextarea
+                                                <CharacterCountTextarea
                                                     value={invalidMessage}
                                                     onChange={setInvalidMessage}
                                                     placeholder="ไม่พบเพลงที่ต้องการ กรุณาลองใหม่อีกครั้ง"
@@ -281,7 +281,7 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                 <Label>ข้อความเมื่อไม่มีอุปกรณ์ที่กำลังเล่นอยู่</Label>
                                                 <SubLabel>ข้อความที่จะตอบกลับผู้ใช้งาน เมื่อคุณยังไม่ได้เล่นเพลงบน Spotify</SubLabel>
 
-                                                <ReplyMessageTextarea
+                                                <CharacterCountTextarea
                                                     value={noActiveMessage}
                                                     onChange={setNoActiveMessage}
                                                     placeholder="ลืมเปิดเครื่อง"

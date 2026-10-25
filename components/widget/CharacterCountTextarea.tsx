@@ -1,10 +1,10 @@
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ReplyMessageHelp, VariableItem } from "./ReplyMessageHelp";
 import { cn } from "@/lib/utils";
 import { AlertCircle } from "lucide-react";
 
-interface ReplyMessageTextareaProps {
+interface CharacterCountTextareaProps {
     value: string;
     onChange: (value: string) => void;
     error?: string | null;
@@ -14,9 +14,11 @@ interface ReplyMessageTextareaProps {
     disabled?: boolean;
     defaultOpenHelp?: boolean;
     name?: string;
+    maxLength?: number;
 }
 
-export function ReplyMessageTextarea({ value, onChange, error, variables=[], placeholder, rows = 3, disabled=false, defaultOpenHelp = false, name }: ReplyMessageTextareaProps) {
+export function CharacterCountTextarea({ value, onChange, error, variables=[], placeholder, rows = 3, disabled=false, defaultOpenHelp = false, name, maxLength = 500 }: CharacterCountTextareaProps) {
+    const textareaId = useId();
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const handleInsertVariable = (variable: string) => {
@@ -46,15 +48,15 @@ export function ReplyMessageTextarea({ value, onChange, error, variables=[], pla
                     disabled={disabled}
                     placeholder={placeholder}
                     ref={textareaRef}
-                    id="qs_reply_message"
+                    id={textareaId}
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     aria-invalid={error ? true : undefined}
                     className="resize-none pb-8"
                     rows={rows}
                 />
-                <span className={cn("absolute bottom-0 right-0 mr-2 mb-2 font-mono text-sm tabular-nums", error || value.length > 500 ? "text-destructive" : "text-muted-foreground")}>
-                    {value.length}/500
+                <span className={cn("absolute bottom-0 right-0 mr-2 mb-2 font-mono text-xs tabular-nums", error || value.length > maxLength ? "text-destructive" : "text-muted-foreground")}>
+                    {value.length}/{maxLength}
                 </span>
             </div>
             {error && (

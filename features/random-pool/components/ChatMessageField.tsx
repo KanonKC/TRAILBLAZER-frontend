@@ -1,6 +1,6 @@
 "use client";
 
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { CHAT_VARIABLES, MAX_CHAT_MESSAGE_LENGTH } from "../constants";
 import { Field } from "./SectionTitle";
 
@@ -23,7 +23,7 @@ export function ChatMessageField({
       label="ข้อความประกาศผลเริ่มต้น"
       help="บอทพิมพ์ข้อความนี้ลงแชทหลังสุ่มเสร็จ ถ้าไม่ใส่ บอทจะไม่พิมพ์อะไร"
     >
-      <ReplyMessageTextarea
+      <CharacterCountTextarea
         defaultOpenHelp
         value={value}
         onChange={onChange}

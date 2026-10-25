@@ -17,7 +17,7 @@ import { TestWidgetButton } from "@/components/button/TestWidgetButton";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
 import WidgetSettingsCardFooter from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardFooter";
-import { ReplyMessageTextarea } from "@/components/widget/ReplyMessageTextarea";
+import { CharacterCountTextarea } from "@/components/widget/CharacterCountTextarea";
 import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
@@ -125,7 +125,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                                 description: (
                                                     <div className="space-y-3">
                                                         <p className="text-sm text-muted-foreground">ใส่ข้อความเพื่อทักทายคนดูที่เข้ามาใหม่บน Twitch โดยคุณสามารถใช้ตัวแปรที่กำหนดให้ใส่เข้าไปในกล่องข้อความด้วย เพื่อให้เมื่อข้อความแสดงขึ้นมาแล้ว มันจะเปลี่ยนไปตามคนดูที่เข้ามา เช่น ชื่อของคนดูที่เข้ามาใหม่</p>
-                                                        <ReplyMessageTextarea
+                                                        <CharacterCountTextarea
                                                             defaultOpenHelp
                                                             value={controller.replyMessage}
                                                             onChange={controller.handleReplyMessageChange}
@@ -197,7 +197,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
 
                                         <div className="space-y-2">
                                             <Label>ข้อความตอบกลับ</Label>
-                                            <ReplyMessageTextarea
+                                            <CharacterCountTextarea
                                                 value={controller.replyMessage}
                                                 onChange={controller.handleReplyMessageChange}
                                                 error={controller.replyMessageError}
