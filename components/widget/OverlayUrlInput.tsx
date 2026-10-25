@@ -71,7 +71,7 @@ export function OverlayUrlInput({
                     readOnly
                     onClick={handleCopyUrl}
                     disabled={disabled}
-                    className={cn("pr-30 cursor-pointer font-mono text-xs", inputClassName)}
+                    className={cn("pr-30 cursor-pointer font-mono text-xs md:text-xs", inputClassName)}
                 />
                 <div className="absolute right-0 top-0 h-full flex items-center pr-2 gap-1">
                     <Button
