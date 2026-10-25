@@ -19,7 +19,7 @@ const features: {
   },
   {
     icon: Scale,
-    color: "bg-success/10 text-success",
+    color: "bg-violet/10 text-violet",
     title: "สุ่มเท่ากันหรือถ่วงน้ำหนัก",
     description:
       "ให้ทุกรายการมีโอกาสเท่ากัน หรือตั้งน้ำหนักให้ของหายากออกยากขึ้น",
@@ -33,7 +33,7 @@ const features: {
   },
   {
     icon: MessageSquare,
-    color: "bg-primary/10 text-primary",
+    color: "bg-teal/10 text-teal",
     title: "ข้อความแชทพร้อมตัวแปร",
     description: "ประกาศผลลงแชท ใส่ชื่อคนแลกและชื่อของที่ได้ด้วยตัวแปร",
   },
@@ -52,7 +52,7 @@ export function OverviewTab({ isLoggedIn }: { isLoggedIn: boolean }) {
         {features.map(({ icon: Icon, color, title, description }) => (
           <div
             key={title}
-            className="bg-card hover:bg-accent/5 rounded-xl border p-4 transition-colors"
+            className="bg-card rounded-xl border p-4"
           >
             <div className={`mb-3 w-fit rounded-lg p-2 ${color}`}>
               <Icon className="size-5" />

@@ -32,8 +32,8 @@ export function OverlayUrlField({
         onSuccess={() => void onRefreshed()}
         hideLabel
       />
-      <p className="text-muted-foreground text-sm">{description}</p>
       <OBSSetupHelp className="mt-0" />
+      <p className="text-muted-foreground text-sm">{description}</p>
       <p className="text-muted-foreground text-sm">
         ขนาดแนะนำ 800 × 600 · พื้นหลังโปร่งใส
       </p>

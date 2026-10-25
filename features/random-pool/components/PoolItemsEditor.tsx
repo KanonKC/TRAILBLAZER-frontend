@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { RandomPoolController } from "../hooks/useRandomPool";
 import { MAX_POOL_ITEMS } from "../constants";
-import { Callout } from "./Callout";
+import { ALERT_TONE } from "../constants";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { EditingItem, ItemSheet } from "./ItemSheet";
 import { PoolItemsGrid } from "./PoolItemsGrid";
 
@@ -54,9 +55,15 @@ export function PoolItemsEditor({
         </span>
       </div>
       {!poolItems.length && (
-        <Callout tone="warning" title="กองสุ่มนี้ยังไม่มีรายการ">
-          เพิ่มอย่างน้อย 1 รายการก่อน ถึงจะเปิดใช้การตั้งค่านี้ได้
-        </Callout>
+        <Alert className={ALERT_TONE.warning.box}>
+          <ALERT_TONE.warning.Icon className={ALERT_TONE.warning.text} />
+          <AlertTitle className={ALERT_TONE.warning.text}>
+            กองสุ่มนี้ยังไม่มีรายการ
+          </AlertTitle>
+          <AlertDescription className="text-foreground">
+            เพิ่มอย่างน้อย 1 รายการก่อน ถึงจะเปิดใช้การตั้งค่านี้ได้
+          </AlertDescription>
+        </Alert>
       )}
       <PoolItemsGrid
         items={poolItems}

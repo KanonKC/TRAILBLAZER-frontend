@@ -5,8 +5,7 @@ import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UploadHandler } from "../hooks/useRandomPool";
-import { neutralFocus } from "../constants";
-import { Field } from "./SectionTitle";
+import { Label } from "@/components/ui/label";
 import { ItemThumb } from "./ItemThumb";
 
 interface Props {
@@ -64,17 +63,16 @@ export function PoolCreateForm({
       <p className="text-muted-foreground text-sm">
                       กองสุ่มคือชุดของสิ่งที่ต้องการสุ่ม โดยคุณสามารถสร้างกองสุ่มได้หลายอัน เพื่อสำหรับการสุ่มที่แตกต่่างกันไป
                     </p>
-      <Field label="ชื่อกองสุ่ม" htmlFor="new-pool-name">
-        
+      <div className="space-y-2">
+        <Label htmlFor="new-pool-name">ชื่อกองสุ่ม</Label>
         <Input
           id="new-pool-name"
-          className={neutralFocus}
           maxLength={100}
           placeholder="เช่น ของรางวัลสตรีม"
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
-      </Field>
+      </div>
       {withCover && (
         <div className="grid gap-2">
           <span className="text-sm leading-none font-medium">

@@ -34,10 +34,13 @@ import {
 import { cn } from "@/lib/utils";
 import { RandomPoolController } from "../hooks/useRandomPool";
 import { useActiveSection } from "../hooks/useActiveSection";
-import { POOL_STATE_NOTICE, neutralFocus } from "../constants";
-import { Callout } from "./Callout";
+import { ALERT_TONE, POOL_STATE_NOTICE } from "../constants";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import SubLabel from "@/components/SubLabel";
 import { ChatMessageField } from "./ChatMessageField";
-import { ComingSoonBadge, OptionCard } from "./OptionCard";
+import { OptionCard } from "./OptionCard";
 import { ConfigEnableSwitch, enableBlockedReason } from "./ConfigEnableSwitch";
 import { ConfigSwitcher } from "./ConfigSwitcher";
 import { DrawSection } from "./DrawSection";
@@ -45,7 +48,7 @@ import { OverlayUrlField } from "./OverlayUrlField";
 import { PoolItemsEditor } from "./PoolItemsEditor";
 import { PoolPicker } from "./PoolPicker";
 import { RewardSelect } from "./RewardSelect";
-import { Field, SectionTitle } from "./SectionTitle";
+import { SectionTitle } from "./SectionTitle";
 import { SoundField } from "./SoundField";
 
 const sections = [
@@ -157,50 +160,56 @@ export function ConfigEditor({
 
         <div className="grid px-6">
           {poolNotice && (
-            <Callout
-              tone={poolNotice.tone}
-              title={poolNotice.title}
-              className="mb-6"
-              actions={
-                <Button size="sm" variant="outline" asChild>
-                  <a href="#sec-pool">เลือกกองสุ่มใหม่</a>
-                </Button>
-              }
+            <Alert
+              className={cn("mb-6", ALERT_TONE[poolNotice.tone].box)}
             >
-              {poolNotice.description}
-            </Callout>
+              {(() => {
+                const ToneIcon = ALERT_TONE[poolNotice.tone].Icon;
+                return <ToneIcon className={ALERT_TONE[poolNotice.tone].text} />;
+              })()}
+              <AlertTitle className={ALERT_TONE[poolNotice.tone].text}>
+                {poolNotice.title}
+              </AlertTitle>
+              <AlertDescription className="text-foreground">
+                {poolNotice.description}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <Button size="sm" variant="outline" asChild>
+                    <a href="#sec-pool">เลือกกองสุ่มใหม่</a>
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
           )}
 
           <Section id="sec-general" first>
             <SectionTitle icon={Settings2}>ทั่วไป</SectionTitle>
-            <Field
-              label="ชื่อการตั้งค่า"
-              htmlFor="config-name"
-              help="ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายการตั้งค่า"
-            >
+            <div className="space-y-2">
+              <Label htmlFor="config-name">ชื่อการตั้งค่า</Label>
+              <SubLabel>ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายการตั้งค่า</SubLabel>
               <Input
                 id="config-name"
-                className={neutralFocus}
                 maxLength={100}
                 value={draft.name}
                 onChange={(event) =>
                   controller.patchDraft({ name: event.target.value })
                 }
               />
-            </Field>
-            <Field
-              label="แต้มช่อง"
-              help="คนดูแลกแต้มช่องนี้เพื่อสุ่ม 1 แต้มช่อง ผูกกับ 1 กองสุ่ม"
-            >
+            </div>
+            <div className="space-y-2">
+              <Label>แต้มช่อง</Label>
+              <SubLabel>
+                คนดูแลกแต้มช่องนี้เพื่อสุ่ม 1 แต้มช่อง ผูกกับ 1 กองสุ่ม
+              </SubLabel>
               <RewardSelect controller={controller} />
-            </Field>
-            <Field label="Overlay URL สำหรับ OBS">
+            </div>
+            <div className="space-y-2">
+              <Label>ลิงก์โอเวอร์เลย์</Label>
               <OverlayUrlField
                 config={savedConfig}
                 onRefreshed={controller.reload}
                 description="แต่ละการตั้งค่ามี URL ของตัวเอง เก็บเป็นความลับเหมือนรหัสผ่าน"
               />
-            </Field>
+            </div>
           </Section>
 
           <Section id="sec-pool">
@@ -210,9 +219,7 @@ export function ConfigEditor({
               aria-label="ที่มาของกองสุ่ม"
               className="grid gap-2"
             >
-              <span className="text-sm leading-none font-medium">
-                ที่มาของกองสุ่ม
-              </span>
+              <Label>ที่มาของกองสุ่ม</Label>
               <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
                 <OptionCard
                   icon={Boxes}
@@ -226,16 +233,17 @@ export function ConfigEditor({
                   description="ใช้กองสุ่มสาธารณะของสตรีมเมอร์คนอื่น"
                   checked={false}
                   disabled
-                  badge={<ComingSoonBadge />}
+                  badge={<Badge variant="outline">เร็วๆ นี้</Badge>}
                 />
               </div>
             </div>
-            <Field
-              label="กองสุ่มที่ใช้สุ่ม"
-              help="การแก้รายการที่นี่คือแก้กองสุ่มตัวจริง ข้อมูลชุดเดียวกับทุกการตั้งค่าที่ใช้กองสุ่มนี้"
-            >
+            <div className="space-y-2">
+              <Label>กองสุ่มที่ใช้สุ่ม</Label>
+              <SubLabel>
+                การแก้รายการที่นี่คือแก้กองสุ่มตัวจริง ข้อมูลชุดเดียวกับทุกการตั้งค่าที่ใช้กองสุ่มนี้
+              </SubLabel>
               <PoolPicker controller={controller} />
-            </Field>
+            </div>
             {selectedPool && <PoolItemsEditor controller={controller} />}
           </Section>
 
@@ -252,12 +260,14 @@ export function ConfigEditor({
                 controller.patchDraft({ default_chat_message: value })
               }
             />
-            <Field
-              label="ข้อความเฉพาะรายการ"
-              help={`ตั้งในหน้าต่างแก้ไขของแต่ละรายการ ระบบใช้ข้อความของรายการก่อน ถ้าไม่มีจึงใช้ข้อความเริ่มต้นด้านบน ตอนนี้ตั้งแล้ว ${
-                draft.items.filter((setting) => setting.chat_message).length
-              } จาก ${controller.poolItems.length} รายการ`}
-            />
+            <div className="space-y-2">
+              <Label>ข้อความเฉพาะรายการ</Label>
+              <SubLabel>
+                {`ตั้งในหน้าต่างแก้ไขของแต่ละรายการ ระบบใช้ข้อความของรายการก่อน ถ้าไม่มีจึงใช้ข้อความเริ่มต้นด้านบน ตอนนี้ตั้งแล้ว ${
+                  draft.items.filter((setting) => setting.chat_message).length
+                } จาก ${controller.poolItems.length} รายการ`}
+              </SubLabel>
+            </div>
           </Section>
 
           <Section id="sec-sound">

@@ -9,11 +9,12 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { RandomPoolController } from "../hooks/useRandomPool";
-import { MAX_WEIGHT, MIN_WEIGHT, neutralFocus } from "../constants";
-import { Callout } from "./Callout";
+import { ALERT_TONE, MAX_WEIGHT, MIN_WEIGHT } from "../constants";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ItemThumb } from "./ItemThumb";
 import { OptionCard } from "./OptionCard";
-import { Field } from "./SectionTitle";
+import { Label } from "@/components/ui/label";
+import SubLabel from "@/components/SubLabel";
 
 export function DrawSection({
   controller,
@@ -91,14 +92,21 @@ export function DrawSection({
       </div>
 
       {weighted && (
-        <Field
-          label="น้ำหนักของแต่ละรายการ"
-          help="รายการที่ได้น้ำหนักมากออกบ่อยกว่า โอกาสออกคำนวณจากน้ำหนักของรายการหารด้วยน้ำหนักรวม รายการใหม่เริ่มที่ 1"
-        >
+        <div className="space-y-2">
+          <Label>น้ำหนักของแต่ละรายการ</Label>
+          <SubLabel>
+            รายการที่ได้น้ำหนักมากออกบ่อยกว่า โอกาสออกคำนวณจากน้ำหนักของรายการหารด้วยน้ำหนักรวม รายการใหม่เริ่มที่ 1
+          </SubLabel>
           {poolItems.length === 0 ? (
-            <Callout tone="warning" title="ยังไม่มีรายการ">
-              เพิ่มรายการในกองสุ่มก่อนถึงจะตั้งน้ำหนักได้
-            </Callout>
+            <Alert className={ALERT_TONE.warning.box}>
+              <ALERT_TONE.warning.Icon className={ALERT_TONE.warning.text} />
+              <AlertTitle className={ALERT_TONE.warning.text}>
+                ยังไม่มีรายการ
+              </AlertTitle>
+              <AlertDescription className="text-foreground">
+                เพิ่มรายการในกองสุ่มก่อนถึงจะตั้งน้ำหนักได้
+              </AlertDescription>
+            </Alert>
           ) : (
             <div className="overflow-hidden rounded-lg border">
               <div className="bg-card text-muted-foreground grid grid-cols-[40px_minmax(0,1fr)_96px_72px] items-center gap-3 border-b px-3 py-2 text-sm font-medium">
@@ -127,7 +135,7 @@ export function DrawSection({
                       max={MAX_WEIGHT}
                       step="any"
                       aria-label={`น้ำหนักของ ${label}`}
-                      className={`${neutralFocus} text-right font-mono`}
+                      className="text-right font-mono"
                       value={weight}
                       onChange={(event) =>
                         item.id &&
@@ -151,7 +159,7 @@ export function DrawSection({
               </div>
             </div>
           )}
-        </Field>
+        </div>
       )}
     </>
   );

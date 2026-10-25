@@ -48,11 +48,3 @@ export function OptionCard({
     </div>
   );
 }
-
-export function ComingSoonBadge() {
-  return (
-    <span className="bg-muted inline-flex h-6 items-center rounded-full border px-2 text-sm font-medium whitespace-nowrap">
-      Coming soon
-    </span>
-  );
-}

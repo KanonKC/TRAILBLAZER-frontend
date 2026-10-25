@@ -31,9 +31,9 @@ import {
   MAX_CHAT_MESSAGE_LENGTH,
   MAX_ITEM_NAME_LENGTH,
   MIN_WEIGHT,
-  neutralFocus,
 } from "../constants";
-import { Field } from "./SectionTitle";
+import { Label } from "@/components/ui/label";
+import SubLabel from "@/components/SubLabel";
 import { ItemThumb } from "./ItemThumb";
 import { SoundField } from "./SoundField";
 
@@ -199,10 +199,9 @@ function ItemSheetBody({
               {imageError}
             </p>
           )}
-          <Field
-            label="ชื่อรายการ"
-            htmlFor="item-name"
-            aside={
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <Label htmlFor="item-name">ชื่อรายการ</Label>
               <span
                 className={
                   nameLength > MAX_ITEM_NAME_LENGTH
@@ -212,11 +211,10 @@ function ItemSheetBody({
               >
                 {nameLength}/{MAX_ITEM_NAME_LENGTH}
               </span>
-            }
-          >
+            </div>
+            <SubLabel>ใส่รูปหรือชื่ออย่างน้อยหนึ่งอย่าง</SubLabel>
             <Input
               id="item-name"
-              className={neutralFocus}
               value={item.name ?? ""}
               aria-invalid={nameLength > MAX_ITEM_NAME_LENGTH}
               onChange={(event) =>
@@ -229,10 +227,7 @@ function ItemSheetBody({
             {nameLength > MAX_ITEM_NAME_LENGTH && (
               <p className="text-sm text-destructive">ชื่อยาวเกิน 32 ตัวอักษร</p>
             )}
-            <p className="text-muted-foreground text-sm">
-              ใส่รูปหรือชื่ออย่างน้อยหนึ่งอย่าง
-            </p>
-          </Field>
+          </div>
         </div>
 
         {!simple && weighted && (
@@ -246,7 +241,7 @@ function ItemSheetBody({
                 type="number"
                 min={MIN_WEIGHT}
                 step="any"
-                className={`${neutralFocus} w-28 text-right font-mono`}
+                className="w-28 text-right font-mono"
                 value={weight}
                 onChange={(event) =>
                   setWeight(Math.max(MIN_WEIGHT, Number(event.target.value)))
@@ -263,15 +258,8 @@ function ItemSheetBody({
 
         {!simple && (
           <div className="grid gap-2 border-t pt-6">
-            <Field
-              label="ข้อความแชทเฉพาะรายการ"
-              htmlFor="item-chat"
-              aside={
-                <span className="text-muted-foreground text-sm">
-                  {chatMessage.length}/{MAX_CHAT_MESSAGE_LENGTH}
-                </span>
-              }
-            >
+            <div className="space-y-2">
+              <Label>ข้อความแชทเฉพาะรายการ</Label>
               <CharacterCountTextarea
                 placeholder="ว่างไว้เพื่อใช้ข้อความเริ่มต้น"
                 value={chatMessage}
@@ -283,7 +271,7 @@ function ItemSheetBody({
                     : null
                 }
               />
-            </Field>
+            </div>
           </div>
         )}
 

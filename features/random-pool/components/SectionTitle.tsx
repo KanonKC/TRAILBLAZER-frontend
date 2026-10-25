@@ -16,30 +16,3 @@ export function SectionTitle({
     </h3>
   );
 }
-
-export function Field({
-  label,
-  htmlFor,
-  help,
-  aside,
-  children,
-}: {
-  label: string;
-  htmlFor?: string;
-  help?: ReactNode;
-  aside?: ReactNode;
-  children?: ReactNode;
-}) {
-  return (
-    <div className="grid gap-2">
-      <div className="flex items-center justify-between gap-2">
-        <label htmlFor={htmlFor} className="text-sm leading-none font-medium">
-          {label}
-        </label>
-        {aside}
-      </div>
-      {help && <p className="text-muted-foreground text-sm">{help}</p>}
-      {children}
-    </div>
-  );
-}

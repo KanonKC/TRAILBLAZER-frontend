@@ -1,3 +1,4 @@
+import { AlertTriangle, Info, OctagonAlert } from "lucide-react";
 import { Config, ConfigDraft } from "./types";
 
 export const MAX_CONFIGS = 50;
@@ -73,5 +74,22 @@ export function draftFromConfig(config: Config): ConfigDraft {
 }
 
 /** Focus styles for inputs: neutral, never the primary brand color. */
-export const neutralFocus =
-  "focus-visible:border-foreground/40 focus-visible:ring-foreground/20";
+
+/** Status tones for `Alert`: border + tint, the status text color and its icon. */
+export const ALERT_TONE = {
+  danger: {
+    box: "border-destructive/50 bg-destructive/10",
+    text: "text-destructive",
+    Icon: OctagonAlert,
+  },
+  warning: {
+    box: "border-warning/50 bg-warning/10",
+    text: "text-warning",
+    Icon: AlertTriangle,
+  },
+  info: {
+    box: "border-info/50 bg-info/10",
+    text: "text-info",
+    Icon: Info,
+  },
+} as const;

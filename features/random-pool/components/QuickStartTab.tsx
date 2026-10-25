@@ -1,21 +1,18 @@
 "use client";
 
-import { Play } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
-import { OBSSetupHelp } from "@/components/widget/OBSSetupHelp";
-import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
-import { overlayPath } from "../api/randomPool.api";
+import { WidgetTestControl } from "@/components/widget/WidgetTestControl";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import { RandomPoolController } from "../hooks/useRandomPool";
-import { neutralFocus } from "../constants";
 import { ConfigSwitcher } from "./ConfigSwitcher";
 import { PoolCreateForm } from "./PoolCreateForm";
 import { PoolItemsEditor } from "./PoolItemsEditor";
+import { OverlayUrlField } from "./OverlayUrlField";
 import { RewardSelect } from "./RewardSelect";
-import { Field } from "./SectionTitle";
+import { Label } from "@/components/ui/label";
+import SubLabel from "@/components/SubLabel";
 
 export function QuickStartTab({
   controller,
@@ -75,39 +72,24 @@ export function QuickStartTab({
                 step: 3,
                 title: "เลือกแต้มช่องที่คนดูจะแลก",
                 description: (
-                  <Field
-                    label="แต้มช่อง"
-                    help="เลือกแต้มช่องที่มีอยู่ในช่องของคุณ คนดูแลกแต้มช่องนี้เพื่อสุ่ม"
-                  >
+                  <div className="space-y-2">
+                    <Label>แต้มช่อง</Label>
+                    <SubLabel>
+                      เลือกแต้มช่องที่มีอยู่ในช่องของคุณ คนดูแลกแต้มช่องนี้เพื่อสุ่ม
+                    </SubLabel>
                     <RewardSelect controller={controller} />
-                  </Field>
+                  </div>
                 ),
               },
               {
                 step: 4,
                 title: "นำ Overlay ไปใส่ใน OBS",
                 description: (
-                  savedConfig ? (
-                    <div className="grid gap-2">
-                      <SmartOverlayUrlInput
-                        url={`${window.location.origin}${overlayPath(savedConfig)}`}
-                        slug={`random-pool/configs/${savedConfig.id}`}
-                        onSuccess={() => void controller.reload()}
-                        hideLabel
-                      />
-                      <p className="text-muted-foreground text-sm">
-                        URL นี้เหมือนรหัสผ่านสตรีมของคุณ เก็บเป็นความลับ
-                      </p>
-                      <OBSSetupHelp className="mt-0" />
-                      <p className="text-muted-foreground text-sm">
-                        ขนาดแนะนำ 800 × 600 · พื้นหลังโปร่งใส
-                      </p>
-                    </div>
-                  ) : (
-                    <p className="text-muted-foreground text-sm">
-                      บันทึกการตั้งค่าก่อน แล้ว Overlay URL ของการตั้งค่านี้จะแสดงที่นี่
-                    </p>
-                  )
+                  <OverlayUrlField
+                    config={savedConfig}
+                    description="URL นี้เหมือนรหัสผ่านสตรีมของคุณ เก็บเป็นความลับ"
+                    onRefreshed={controller.reload}
+                  />
                 ),
               },
               {
@@ -121,36 +103,26 @@ export function QuickStartTab({
                         : "ตั้งชื่อ แล้วกดบันทึกเพื่อสร้างการตั้งค่าและรับ Overlay URL"}
                     </p>
                     {!savedConfig && (
-                      <Field label="ชื่อการตั้งค่า" htmlFor="quick-config-name">
+                      <div className="space-y-2">
+                        <Label htmlFor="quick-config-name">ชื่อการตั้งค่า</Label>
                         <Input
                           id="quick-config-name"
-                          className={neutralFocus}
                           maxLength={100}
                           value={draft.name}
                           onChange={(event) =>
                             controller.patchDraft({ name: event.target.value })
                           }
                         />
-                      </Field>
+                      </div>
                     )}
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button
-                        type="button"
-                        disabled={!controller.canSave}
-                        onClick={() => void controller.saveConfig()}
-                      >
-                        {busy ? "กำลังบันทึก…" : "บันทึกการเปลี่ยนแปลง"}
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        disabled={controller.poolItems.length === 0}
-                        onClick={controller.requestTestSpin}
-                      >
-                        <Play />
-                        ทดสอบ
-                      </Button>
-                    </div>
+                    <WidgetTestControl
+                      isSaving={busy}
+                      isTesting={false}
+                      onSave={() => void controller.saveConfig()}
+                      onTest={controller.requestTestSpin}
+                      canTest={controller.poolItems.length > 0}
+                      canSave={controller.canSave}
+                    />
                   </div>
                 ),
               },
