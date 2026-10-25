@@ -168,7 +168,7 @@ export function useRandomPool(
       await action();
       return true;
     } catch (error) {
-      tbToast.error({ title: failureTitle, description: errorMessage(error) });
+      tbToast.error({ title: failureTitle, description: errorMessage(error), error: (error as any).response?.data });
       return false;
     } finally {
       setBusy(false);
@@ -278,7 +278,7 @@ export function useRandomPool(
         latest.configs.data.find((config) => config.id === saved.id) ?? saved;
       setEditingId(fresh.id);
       setDraft(draftFromConfig(fresh));
-      tbToast.success({ title: "บันทึกการตั้งค่าแล้ว" });
+      tbToast.success({ title: "บันทึกการตั้งค่าสำเร็จ" });
       void refreshQuota();
     }, "บันทึกการตั้งค่าไม่สำเร็จ");
   }
@@ -295,7 +295,7 @@ export function useRandomPool(
       setEditingId(next?.id ?? NEW_CONFIG_ID);
       setDraft(next ? draftFromConfig(next) : emptyConfigDraft("Random Pool"));
       setSettingsView("list");
-      tbToast.success({ title: "ลบการตั้งค่าแล้ว" });
+      tbToast.success({ title: "ลบการตั้งค่าสำเร็จ" });
       void refreshQuota();
     }, "ลบการตั้งค่าไม่สำเร็จ");
   }
@@ -306,7 +306,7 @@ export function useRandomPool(
       await randomPoolApi.enable(target.id, enabled);
       await refresh();
       tbToast.success({
-        title: enabled ? "เปิดใช้งานการตั้งค่าแล้ว" : "ปิดใช้งานการตั้งค่าแล้ว",
+        title: enabled ? "เปิดใช้งานการตั้งค่าสำเร็จ" : "ปิดใช้งานการตั้งค่าสำเร็จ",
       });
       void refreshQuota();
     } catch (error) {
@@ -337,8 +337,8 @@ export function useRandomPool(
       }));
       await refresh();
       void refreshQuota();
-    } catch {
-      tbToast.error({ title: "ไม่สามารถปิดวิดเจ็ตได้" });
+    } catch (error) {
+      tbToast.error({ title: "ปิดวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
     }
   }
 
@@ -367,7 +367,7 @@ export function useRandomPool(
       });
       await refresh();
       setDraft((previous) => ({ ...previous, pool_id: saved.id, items: [] }));
-      tbToast.success({ title: "สร้างกองสุ่มแล้ว" });
+      tbToast.success({ title: "สร้างกองสุ่มสำเร็จ" });
     }, "สร้างกองสุ่มไม่สำเร็จ");
   }
 
@@ -380,7 +380,7 @@ export function useRandomPool(
           ? { ...previous, pool_id: "", items: [] }
           : previous,
       );
-      tbToast.success({ title: "ลบกองสุ่มแล้ว" });
+      tbToast.success({ title: "ลบกองสุ่มสำเร็จ" });
       void refreshQuota();
     }, "ลบกองสุ่มไม่สำเร็จ");
   }
@@ -413,7 +413,7 @@ export function useRandomPool(
       await refresh();
       const savedItem = saved.items[targetIndex];
       if (savedItem?.id) updateItemSetting(savedItem.id, setting);
-      tbToast.success({ title: "บันทึกรายการแล้ว" });
+      tbToast.success({ title: "บันทึกรายการสำเร็จ" });
     }, "บันทึกรายการไม่สำเร็จ");
   }
 
@@ -432,7 +432,7 @@ export function useRandomPool(
         ...previous,
         items: previous.items.filter((setting) => setting.item_id !== itemId),
       }));
-      tbToast.success({ title: "ลบรายการแล้ว" });
+      tbToast.success({ title: "ลบรายการสำเร็จ" });
     }, "ลบรายการไม่สำเร็จ");
   }
 
@@ -462,8 +462,8 @@ export function useRandomPool(
       void run(async () => {
         await randomPoolApi.testSpin(savedConfig.id);
         tbToast.success({
-          title: "ส่งการทดสอบไปที่ overlay แล้ว",
-          description: "ใช้ค่าที่บันทึกไว้ล่าสุด",
+          title: "ส่งการทดสอบสำเร็จ",
+          description: "ส่งไปที่โอเวอร์เลย์ด้วยค่าที่บันทึกไว้ล่าสุด",
         });
       }, "ทดสอบไม่สำเร็จ");
     },

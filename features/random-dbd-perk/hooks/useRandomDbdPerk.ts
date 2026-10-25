@@ -46,7 +46,7 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
             }
         } catch (error) {
             console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ" });
+            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -66,7 +66,7 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
             }
         } catch (error) {
             console.error("Failed to delete", error);
-            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้" });
+            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -84,7 +84,7 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
             }
         } catch (error) {
             console.error("Failed to save", error);
-            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้" });
+            tbToast.error({ title: "บันทึกการตั้งค่าไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -124,7 +124,7 @@ export const useRandomDbdPerk = (initialConfig: RandomDbdPerkConfig | null) => {
             tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ" });
         } catch (error) {
             console.error("Test failed", error);
-            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ" });
+            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsTesting(false);
         }

@@ -23,8 +23,8 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
                 }
                 console.error("Failed to fetch quota", e);
                 tbToast.error({
-                    title: "เกิดข้อผิดพลาด",
-                    description: "ไม่สามารถดึงข้อมูลโควต้าได้",
+                    title: "ดึงข้อมูลโควต้าไม่สำเร็จ",
+                    error: e.response?.data,
                 });
             });
     }, [refreshKey]);

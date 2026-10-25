@@ -56,7 +56,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
             }
         } catch (error) {
             console.error("Failed to enable", error);
-            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ" });
+            tbToast.error({ title: "เปิดใช้งานไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -77,7 +77,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
             }
         } catch (error) {
             console.error("Failed to delete", error);
-            tbToast.error({ title: "ไม่สามารถลบวิดเจ็ตได้" });
+            tbToast.error({ title: "ลบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -100,7 +100,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
             }
         } catch (error: any) {
             console.error("Failed to save", error);
-            tbToast.error({ title: "ไม่สามารถบันทึกการตั้งค่าได้", error: error.response?.data });
+            tbToast.error({ title: "บันทึกการตั้งค่าไม่สำเร็จ", error: error.response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -132,7 +132,7 @@ export const useRandomDBDKiller = (initialConfig: RandomDBDKillerConfig | null) 
             tbToast.success({ title: "ทดสอบวิดเจ็ตสำเร็จ" });
         } catch (error) {
             console.error("Test failed", error);
-            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ" });
+            tbToast.error({ title: "ทดสอบวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsTesting(false);
         }

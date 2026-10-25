@@ -38,8 +38,8 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
             setStatus(data);
         } catch (error) {
             tbToast.error({
-                title: "เกิดข้อผิดพลาด",
-                description: "ไม่สามารถดึงข้อมูลการแนะนำเพื่อนได้",
+                title: "ดึงข้อมูลการแนะนำเพื่อนไม่สำเร็จ",
+                error: (error as any).response?.data,
             });
             console.error("Failed to fetch referral status", error);
         } finally {
@@ -53,7 +53,7 @@ export function ReferralDialog({ open, onOpenChange }: ReferralDialogProps) {
         navigator.clipboard.writeText(url);
         setCopied(true);
         tbToast.success({
-            title: "คัดลอกลิงก์แล้ว!",
+            title: "คัดลอกลิงก์สำเร็จ",
         });
         setTimeout(() => setCopied(false), 2000);
     };

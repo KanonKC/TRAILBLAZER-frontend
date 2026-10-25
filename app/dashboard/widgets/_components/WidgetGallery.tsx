@@ -25,7 +25,7 @@ export const WidgetGallery = ({ initialData, initialWidgetTypes, isAuthenticated
             setQuotaRefreshKey(prev => prev + 1);
         } catch (error) {
             console.error("Failed to fetch widgets", error);
-            tbToast.error({ title: "ไม่สามารถดึงข้อมูลวิดเจ็ตได้" });
+            tbToast.error({ title: "ดึงข้อมูลวิดเจ็ตไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsLoading(false);
         }
