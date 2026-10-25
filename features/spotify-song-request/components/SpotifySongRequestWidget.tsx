@@ -76,11 +76,11 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
             {() => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
-                        <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                        <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                         {config && (
                             <>
-                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
                             </>
                         )}
                     </TabsList>
@@ -96,15 +96,15 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                 วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณเพื่อขอเพลง Spotify บอทจะเพิ่มเพลงเข้าคิวอัตโนมัติและตอบกลับในแชท
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-teal/10 text-teal mb-3">
                                         <Music2 className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Song Request</h3>
                                     <p className="text-sm text-muted-foreground">ผู้ชมส่ง URL หรือชื่อเพลง Spotify เพื่อเพิ่มเข้าคิวเพลงของคุณได้ทันที</p>
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
                                         <ListMusic className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Queue Management</h3>
@@ -124,7 +124,10 @@ export function SpotifySongRequestWidget({ initialConfig, widgetType }: { initia
                                                 {
                                                     step: 1,
                                                     title: "เปิดใช้งานวิดเจ็ต",
-                                                    description: <WidgetEnabledBadge />
+                                                    description: (<div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วขอเพลง Spotify เข้าคิวเพลงของคุณ</p>
+                                                <WidgetEnabledBadge />
+                                            </div>)
                                                 },
                                                 {
                                                     step: 2,

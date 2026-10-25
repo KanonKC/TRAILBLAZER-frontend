@@ -66,12 +66,12 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={controller.activeTab} onValueChange={controller.setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", controller.config ? "grid-cols-4" : "grid-cols-1")}>
-                        <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                        <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                         {controller.config && (
                             <>
-                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
-                                <TabsTrigger value="history" className="cursor-pointer">Export History</TabsTrigger>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
+                                <TabsTrigger value="history" className="cursor-pointer">ประวัติการนำออก</TabsTrigger>
                             </>
                         )}
                     </TabsList>
@@ -91,15 +91,15 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                 อยากเก็บวิดีโอสตรีมย้อนหลังทุกอันของคุณไว้ดูนานๆ หรือเอาไปลง YouTube แต่ขี้เกียจโหลดแล้วอัปโหลดใหม่เองทุกครั้งใช่ไหม? วิดเจ็ตนี้จะทำการส่งออก วิดีโอสตรีมล่าสุดของคุณไปยัง YouTube โดยอัตโนมัติทันทีที่คุณจบการสตรีม
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-destructive/10 text-destructive mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-violet/10 text-violet mb-3">
                                         <Zap className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Auto Export</h3>
                                     <p className="text-sm text-muted-foreground">ทำงานอัตโนมัติเมื่อคุณลงสตรีม</p>
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-teal/10 text-teal mb-3">
                                         <Shield className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Privacy Control</h3>
@@ -123,7 +123,10 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: <WidgetEnabledBadge />
+                                            description: (<div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ระบบส่งออกวิดีโอสตรีมของคุณไปยัง YouTube โดยอัตโนมัติเมื่อสตรีมจบ</p>
+                                                <WidgetEnabledBadge />
+                                            </div>)
                                         },
                                         {
                                             step: 2,
@@ -303,7 +306,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
 
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 border-b border-border pb-2">
-                                            <YouTube className="w-5 h-5 text-destructive" />
+                                            <YouTube className="w-5 h-5 text-primary" />
                                             <h3 className="text-lg font-semibold">YouTube Settings</h3>
                                         </div>
                                         <div className="space-y-2">
@@ -318,7 +321,7 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
 
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 border-b border-border pb-2">
-                                            <Tags className="w-5 h-5 text-warning" />
+                                            <Tags className="w-5 h-5 text-teal" />
                                             <h3 className="text-lg font-semibold">Tags & Metadata</h3>
                                         </div>
                                         <div className="space-y-2">
@@ -395,8 +398,8 @@ export function ExportVideoWidget({ initialConfig, initialRequiresProPlan = fals
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Clock className="w-5 h-5 text-destructive" />
-                                    Export History
+                                    <Clock className="w-5 h-5 text-violet" />
+                                    ประวัติการนำออก
                                 </CardTitle>
                                 <CardDescription>
                                     รายการวิดีโอที่ถูกส่งออกไปยัง YouTube ล่าสุดของคุณ

@@ -93,7 +93,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                         <p className="text-sm text-muted-foreground">ต้อนรับผู้ชมใหม่โดยอัตโนมัติเมื่อพวกเขาพิมพ์ข้อความแรก</p>
                                     </div>
                                     <div className="p-4 border rounded-xl bg-card">
-                                        <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3">
+                                        <div className="p-2 w-fit rounded-lg bg-violet/10 text-violet mb-3">
                                             <Music className="w-5 h-5" />
                                         </div>
                                         <h3 className="font-semibold mb-1">Sound Alerts</h3>
@@ -139,7 +139,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                                 title: "เชื่อมต่อกับ OBS",
                                                 description: (
                                                     <div className="space-y-3">
-                                                        <p className="text-sm text-muted-foreground">นำ Overlay URL ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้เสียงเอฟเฟกต์ทำงาน</p>
+                                                        <p className="text-sm text-muted-foreground">นำลิงก์โอเวอร์เลย์ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้เสียงเอฟเฟกต์ทำงาน</p>
                                                         <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} hideLabel />
                                                         <OBSSetupHelp />
                                                     </div>
@@ -178,6 +178,7 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                             <Label>ส่งข้อความผ่านบัญชี</Label>
                                             <p className="text-sm text-muted-foreground">เลือกบัญชีที่จะใช้ส่งข้อความตอบกลับในแชท</p>
                                             <BotProfileSelector
+                                                hideLabel
                                                 value={controller.botProfile}
                                                 onValueChange={controller.setBotProfile}
                                             />
@@ -195,7 +196,9 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
 
                                         <div className="space-y-2">
                                             <Label>เสียงเอฟเฟกต์</Label>
+                                            <p className="text-sm text-muted-foreground">อัปโหลดไฟล์เสียงที่จะเล่นเมื่อมีผู้ชมใหม่เข้ามาพิมพ์ข้อความแรก (รองรับไฟล์ MP3, WAV, OGG)</p>
                                             <AudioFileUploader
+                                                hideLabel
                                                 currentFileName={controller.audioFile?.name || null}
                                                 selectedFile={controller.audioFile}
                                                 onFileSelect={(file) => controller.setAudioFile(file)}
@@ -206,26 +209,25 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label>URL ของวิดเจ็ต (สำหรับ OBS)</Label>
-                                            <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} hideLabel />
+                                            <SmartOverlayUrlInput url={controller.overlayUrl} slug={"first-word"} />
                                         </div>
 
                                         <div className="pt-4 border-t border-border space-y-4">
                                             <div className="flex flex-col gap-1">
                                                 <h3 className="text-sm font-medium text-foreground">รีเซ็ตรายชื่อคนดู</h3>
-                                                <p className="text-xs text-muted-foreground leading-relaxed">
+                                                <p className="text-sm text-muted-foreground leading-relaxed">
                                                     ระบบจะจำว่าใครที่ทักทายไปแล้วบ้างเพื่อป้องกันการส่งซ้ำ หากคุณต้องการเริ่มนับใหม่ (เช่น เริ่มสตรีมใหม่) คุณสามารถกดรีเซ็ตที่นี่ได้
                                                 </p>
                                             </div>
                                             <Button
-                                                variant="outline"
+                                                variant="destructive"
                                                 size="sm"
                                                 className="w-fit"
                                                 onClick={controller.handleResetClick}
                                                 disabled={controller.isResettingChatters}
                                             >
                                                 <RefreshCcw className={cn("mr-2 h-4 w-4", controller.isResettingChatters && "animate-spin")} />
-                                                รีเซ็ตรายชื่อผู้มาเยือน
+                                                รีเซ็ตรายชื่อคนดู
                                             </Button>
                                         </div>
                                     </div>
@@ -247,18 +249,18 @@ export function FirstWordWidget({ initialConfig, initialRequiresProPlan = false,
 
                     {/* Reset Confirmation Dialog */}
                     <AlertDialog open={controller.showConfirmReset} onOpenChange={controller.setShowConfirmReset}>
-                        <AlertDialogContent className="bg-popover border-border text-foreground">
+                        <AlertDialogContent>
                             <AlertDialogHeader>
                                 <AlertDialogTitle>ยืนยันการรีเซ็ต?</AlertDialogTitle>
-                                <AlertDialogDescription className="text-muted-foreground">
+                                <AlertDialogDescription>
                                     คุณมีรายชื่อคนดูที่ทักทายไปแล้วทั้งหมด {controller.chattersCount} คน การรีเซ็ตจะทำให้ทุกคนที่พิมพ์แชทเข้ามาใหม่ถูกทักทายอีกครั้งเหมือนเป็นคนดูใหม่
                                 </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                                <AlertDialogCancel className="bg-transparent border-border hover:bg-secondary/40 text-foreground">ยกเลิก</AlertDialogCancel>
+                                <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
                                 <AlertDialogAction
                                     onClick={controller.handleConfirmReset}
-                                    className="bg-destructive hover:bg-destructive text-foreground"
+                                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                 >
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     ยืนยันการรีเซ็ต

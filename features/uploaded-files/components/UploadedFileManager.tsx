@@ -187,7 +187,7 @@ export default function UploadedFileManager() {
             fetchTotalSize();
             fetchLibraryFiles(currentPage, searchQuery);
         } catch (err) {
-            tbToast.error({ title: "ลบไฟล์บางส่วนหรือทั้งหมดไม่สำเร็จ" });
+            tbToast.error({ title: "ลบไฟล์บางส่วนหรือทั้งหมดไม่สำเร็จ", error: (err as any).response?.data });
         } finally {
             setIsDeletingBulk(false);
         }
@@ -227,7 +227,7 @@ export default function UploadedFileManager() {
             setLibraryFiles(prev => prev.map(f => f.id === editingId ? { ...f, name: editValue.trim() } : f));
             setEditingId(null);
         } catch (err) {
-            tbToast.error({ title: "เปลี่ยนชื่อไฟล์ไม่สำเร็จ" });
+            tbToast.error({ title: "เปลี่ยนชื่อไฟล์ไม่สำเร็จ", error: (err as any).response?.data });
         } finally {
             setIsUpdating(false);
         }
@@ -521,8 +521,8 @@ export default function UploadedFileManager() {
                                     setFileToDelete(null);
                                     fetchTotalSize();
                                     fetchLibraryFiles(currentPage, searchQuery);
-                                } catch {
-                                    tbToast.error({ title: "ลบไฟล์ไม่สำเร็จ" });
+                                } catch (error) {
+                                    tbToast.error({ title: "ลบไฟล์ไม่สำเร็จ", error: (error as any).response?.data });
                                 }
                             }}
                         >

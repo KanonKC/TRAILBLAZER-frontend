@@ -171,13 +171,13 @@ export function ExportVideoHistoryList({ history, isLoading, pagination, onFetch
             </div>
 
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                <DialogContent className="sm:max-w-[500px] bg-card/90 backdrop-blur-xl border-border shadow-2xl">
+                <DialogContent className="sm:max-w-[500px]">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2 text-xl font-bold">
                             <Info className="w-5 h-5 text-info" />
                             รายละเอียดการส่งออก
                         </DialogTitle>
-                        <DialogDescription className="text-muted-foreground">
+                        <DialogDescription>
                             ข้อมูลรายละเอียดเกี่ยวกับการส่งออกวิดีโอไปยัง YouTube
                         </DialogDescription>
                     </DialogHeader>

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Check, Play } from "lucide-react";
+import { Loader2, Play } from "lucide-react";
+import WidgetEnabledBadge from "./WidgetEnabledBadge";
 
 interface WidgetStatusControlProps {
     isEnabled: boolean;
@@ -12,14 +13,11 @@ export function WidgetStatusControl({ isEnabled, isSaving, onEnable }: WidgetSta
         <div className="space-y-2">
             <p className="text-sm text-muted-foreground">กดปุ่มเพื่อเปิดใช้งาน</p>
             {isEnabled ? (
-                <div className="flex items-center gap-2 text-success bg-success/10 px-3 py-2 rounded-md border border-success/20 w-fit">
-                    <Check className="w-4 h-4" />
-                    <span className="text-sm font-medium">เปิดใช้งานแล้ว</span>
-                </div>
+                <WidgetEnabledBadge />
             ) : (
                 <Button onClick={onEnable} disabled={isSaving} size="sm" className="gap-2">
-                    <Play className="w-4 h-4" />
-                    เปิดใช้งาน
+                    {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                    {isSaving ? "กำลังเปิดใช้งาน..." : "เปิดใช้งาน"}
                 </Button>
             )}
         </div>

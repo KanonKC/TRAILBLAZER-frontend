@@ -40,6 +40,7 @@ export const WidgetStatusSwitch = ({
         <>
             <Switch
                 checked={isEnabled}
+                aria-label="สถานะวิดเจ็ต"
                 onCheckedChange={onToggle}
                 disabled={disabled || !!isUpdating}
             />

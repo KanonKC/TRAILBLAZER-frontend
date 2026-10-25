@@ -166,11 +166,11 @@ export function CustomReplyList() {
                 setIsDialogOpen(false);
                 fetchReplies(searchTerm);
             } else {
-                tbToast.error({ title: "เกิดข้อผิดพลาดในการบันทึกข้อมูล" });
+                tbToast.error({ title: "บันทึกข้อมูลไม่สำเร็จ" });
             }
         } catch (error) {
             console.error(error);
-            tbToast.error({ title: "เกิดข้อผิดพลาดในการบันทึกข้อมูล", error: (error as any).response?.data });
+            tbToast.error({ title: "บันทึกข้อมูลไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsSaving(false);
         }
@@ -185,11 +185,11 @@ export function CustomReplyList() {
                 tbToast.success({ title: "ลบข้อมูลสำเร็จ" });
                 fetchReplies(searchTerm);
             } else {
-                tbToast.error({ title: "ไม่สามารถลบข้อมูลได้" });
+                tbToast.error({ title: "ลบข้อมูลไม่สำเร็จ" });
             }
         } catch (error) {
             console.error(error);
-            tbToast.error({ title: "เกิดข้อผิดพลาดในการลบข้อมูล", error: (error as any).response?.data });
+            tbToast.error({ title: "ลบข้อมูลไม่สำเร็จ", error: (error as any).response?.data });
         } finally {
             setIsDeleting(false);
             setDeleteId(null);
@@ -296,7 +296,7 @@ export function CustomReplyList() {
 
             {/* Create/Edit Dialog */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] bg-popover border-border text-foreground">
+                <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
                         <DialogTitle>{editingId ? "แก้ไขข้อมูล" : "เพิ่มผู้ใช้ใหม่"}</DialogTitle>
                     </DialogHeader>
@@ -347,7 +347,7 @@ export function CustomReplyList() {
                         </div>
                     </div>
                     <DialogFooter>
-                        <Button variant="ghost" onClick={() => setIsDialogOpen(false)} disabled={isSaving} className="text-muted-foreground hover:text-foreground">
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isSaving}>
                             ยกเลิก
                         </Button>
                         <Button onClick={handleSave} disabled={isSaving || !twitchChatterId.trim() || !!userCheckError || isCheckingUser}>
@@ -360,16 +360,16 @@ export function CustomReplyList() {
 
             {/* Delete Confirmation */}
             <AlertDialog open={!!deleteId} onOpenChange={(open) => !open && setDeleteId(null)}>
-                <AlertDialogContent className="bg-popover border-border text-foreground">
+                <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>ยืนยันการลบ</AlertDialogTitle>
-                        <AlertDialogDescription className="text-muted-foreground">
+                        <AlertDialogDescription>
                             คุณต้องการลบข้อความทักทายของผู้ใช้นี้ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel className="bg-transparent border-border hover:bg-secondary/40 text-foreground">ยกเลิก</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive text-foreground">
+                        <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                             {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
                             ลบข้อมูล
                         </AlertDialogAction>

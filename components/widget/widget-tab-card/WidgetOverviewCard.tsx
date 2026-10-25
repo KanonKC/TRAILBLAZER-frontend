@@ -20,7 +20,7 @@ const WidgetOverviewCard = ({ children, showLoginButton, showEnableButton, showU
         <Card>
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                    <Info className="w-5 h-5 text-primary" />
+                    <Info className="w-5 h-5 text-info" />
                     ภาพรวม
                 </CardTitle>
                 <CardDescription>

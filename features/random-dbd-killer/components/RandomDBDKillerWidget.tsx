@@ -67,11 +67,11 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
-                        <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                        <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                         {config && (
                             <>
-                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
                             </>
                         )}
                     </TabsList>
@@ -90,15 +90,15 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                 วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณเพื่อสุ่มตัว Killer จาก Dead by Daylight ที่คุณเลือกไว้ล่วงหน้า แล้วแสดงผลลัพธ์บนหน้าจอสตรีมทันที
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-destructive/10 text-destructive mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
                                         <Gift className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Channel Points</h3>
                                     <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch เพื่อสุ่ม Killer ทันทีที่มีการแลกแต้ม</p>
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-violet/10 text-violet mb-3">
                                         <ShieldQuestion className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">กำหนด Killer Pool เอง</h3>
@@ -116,7 +116,10 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: <WidgetEnabledBadge />
+                                            description: (<div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วสุ่ม Killer ขึ้นหน้าจอสตรีมของคุณ</p>
+                                                <WidgetEnabledBadge />
+                                            </div>)
                                         },
                                         {
                                             step: 2,
@@ -145,7 +148,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
                                         },
                                         {
                                             step: 4,
-                                            title: "นำ Overlay ไปใส่ใน OBS",
+                                            title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
                                                     <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
@@ -204,7 +207,7 @@ export function RandomDBDKillerWidget({ initialConfig, widgetType }: { initialCo
 
                                     <div className="space-y-2">
                                         <Label>รูปแบบ Animation ตอนสุ่ม</Label>
-                                        <SubLabel>เลือกรูปแบบการแสดงผลตอนสุ่ม Killer บนหน้า Overlay</SubLabel>
+                                        <SubLabel>เลือกรูปแบบการแสดงผลตอนสุ่ม Killer บนหน้าโอเวอร์เลย์</SubLabel>
                                         <AnimationStyleSelect value={animationStyle} onValueChange={setAnimationStyle} />
                                     </div>
 

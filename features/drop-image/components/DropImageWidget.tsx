@@ -82,11 +82,11 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
-                        <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                        <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                         {config && (
                             <>
-                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
                             </>
                         )}
                     </TabsList>
@@ -105,15 +105,15 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                 วิดเจ็ตนี้ช่วยให้ผู้ชมแลกแต้มช่องของคุณและส่ง URL ของรูปภาพ โดยมีระบบตรวจสอบความถูกต้องและคัดกรองเนื้อหาที่ไม่เหมาะสม ก่อนปล่อยตกบนสตรีม
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-teal/10 text-teal mb-3">
                                         <Gift className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Channel Points</h3>
                                     <p className="text-sm text-muted-foreground">เชื่อมต่อกับแต้มช่องของ Twitch และรับ URL ของภาพจากผู้ใช้ได้อย่างสะดวก</p>
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-success/10 text-success mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-supernova/10 text-supernova mb-3">
                                         <ShieldCheck className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Image Moderation</h3>
@@ -131,7 +131,10 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: <WidgetEnabledBadge />
+                                            description: (<div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วส่งรูปภาพขึ้นหน้าจอสตรีมของคุณ</p>
+                                                <WidgetEnabledBadge />
+                                            </div>)
                                         },
                                         {
                                             step: 2,
@@ -158,7 +161,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                         },
                                         {
                                             step: 4,
-                                            title: "นำ Overlay ไปใส่ใน OBS",
+                                            title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
                                                     <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS</p>
@@ -221,7 +224,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                     {/* Content Moderation */}
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 border-b pb-2">
-                                            <ShieldCheck className="w-5 h-5 text-success" />
+                                            <ShieldCheck className="w-5 h-5 text-violet" />
                                             <h3 className="text-lg font-semibold">Content Moderation</h3>
                                         </div>
                                         <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
@@ -250,7 +253,7 @@ export function DropImageWidget({ initialConfig, widgetType }: { initialConfig: 
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
                                 <div className="flex gap-2">
                                     <Button variant="outline" disabled={isTesting} onClick={handleTest}>
-                                        {isTesting ? "Testing..." : <><Play className="mr-2 h-4 w-4" /> Test</>}
+                                        {isTesting ? "กำลังทดสอบ..." : <><Play className="mr-2 h-4 w-4" /> ทดสอบ</>}
                                     </Button>
                                     <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
                                 </div>

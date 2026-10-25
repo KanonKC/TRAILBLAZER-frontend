@@ -81,11 +81,11 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
             {({ triggerRefresh, refreshKey }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
-                        <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                        <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                         {config && (
                             <>
-                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
                             </>
                         )}
                     </TabsList>
@@ -105,15 +105,15 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                 ระบบจะค้นหาและเล่นคลิปล่าสุดของพวกเขาบนหน้าจอของคุณอัตโนมัติ ทำให้ผู้ชมของคุณได้รู้จักแขกผู้มาเยือนแบบเห็นภาพจริง
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
                                         <Video className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Auto Clip Player</h3>
-                                    <p className="text-sm text-muted-foreground">เล่นคลิปล่าสุดของ Raider อัตโนมัติบน Overlay</p>
+                                    <p className="text-sm text-muted-foreground">เล่นคลิปล่าสุดของ Raider อัตโนมัติบนโอเวอร์เลย์</p>
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-teal/10 text-teal mb-3">
                                         <MessageSquare className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">Custom Shoutout</h3>
@@ -131,7 +131,10 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: <WidgetEnabledBadge />
+                                            description: (<div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ระบบเล่นคลิปและส่งข้อความขอบคุณเมื่อมีคน Raid เข้าช่องของคุณ</p>
+                                                <WidgetEnabledBadge />
+                                            </div>)
                                         },
                                         {
                                             step: 2,
@@ -151,7 +154,7 @@ export function ClipShoutoutWidget({ initialConfig, widgetType }: { initialConfi
                                         },
                                         {
                                             step: 3,
-                                            title: "นำ Overlay ไปใส่ใน OBS",
+                                            title: "นำโอเวอร์เลย์ไปใส่ใน OBS",
                                             description: (
                                                 <div className="space-y-3">
                                                     <p className="text-sm text-muted-foreground">นำ URL นี้ไปใส่ใน Browser Source ของ OBS เพื่อให้คลิปแสดงผล</p>

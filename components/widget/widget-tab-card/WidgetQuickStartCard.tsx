@@ -11,7 +11,7 @@ const WidgetQuickStartCard = ({ children }: WidgetQuickStartCardProps) => {
         <Card className="bg-transparent border-none shadow-none">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-foreground">
-                    <Play className="w-5 h-5 text-primary" />
+                    <Play className="w-5 h-5 text-success" />
                     เริ่มต้นใช้งาน
                 </CardTitle>
                 <CardDescription className="text-muted-foreground">

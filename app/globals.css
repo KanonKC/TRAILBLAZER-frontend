@@ -9,6 +9,9 @@
   --color-warning: var(--warning);
   --color-info: var(--info);
   --color-supernova: var(--supernova);
+  --color-violet: var(--violet);
+  --color-teal: var(--teal);
+  --color-scrim: var(--scrim);
   --color-twitch: var(--twitch);
   --color-spotify: var(--spotify);
   --color-discord: var(--discord);
@@ -112,6 +115,9 @@
   --warning: #facc15;
   --info: #60a5fa;
   --supernova: #ffd700;
+  --violet: #a78bfa;
+  --teal: #2dd4bf;
+  --scrim: #00000080;
   --twitch: #6441a5;
   --spotify: #1ed760;
   --discord: #5865f2;

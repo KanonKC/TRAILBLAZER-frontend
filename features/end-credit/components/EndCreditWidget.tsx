@@ -179,11 +179,11 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
             {({ triggerRefresh }) => (
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                     <TabsList className={cn("grid w-full mb-4", config ? "grid-cols-3" : "grid-cols-1")}>
-                        <TabsTrigger value="overview" className="cursor-pointer">Overview</TabsTrigger>
+                        <TabsTrigger value="overview" className="cursor-pointer">ภาพรวม</TabsTrigger>
                         {config && (
                             <>
-                                <TabsTrigger value="quick-start" className="cursor-pointer">Quick Start</TabsTrigger>
-                                <TabsTrigger value="settings" className="cursor-pointer">Settings</TabsTrigger>
+                                <TabsTrigger value="quick-start" className="cursor-pointer">เริ่มต้นใช้งาน</TabsTrigger>
+                                <TabsTrigger value="settings" className="cursor-pointer">ตั้งค่า</TabsTrigger>
                             </>
                         )}
                     </TabsList>
@@ -199,19 +199,19 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                             isLoading={isSaving}
                         >
                             <p className="text-foreground text-base leading-relaxed">
-                                เมื่อคุณกด Raid ไปช่องอื่น วิดเจ็ตนี้จะเล่น Credit Roll บน Overlay โดยอัตโนมัติ
+                                เมื่อคุณกด Raid ไปช่องอื่น วิดเจ็ตนี้จะเล่น Credit Roll บนโอเวอร์เลย์โดยอัตโนมัติ
                                 สรุปผู้ติดตามใหม่ สมาชิกใหม่ ผู้ที่ Raid เข้ามา และผู้สนับสนุน Bits ตลอดการสตรีมของคุณ เลื่อนขึ้นแบบเครดิตท้ายหนัง
                             </p>
                             <div className="grid gap-4 md:grid-cols-2">
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-supernova/10 text-supernova mb-3">
                                         <Heart className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">เล่นอัตโนมัติเมื่อ Raid</h3>
                                     <p className="text-sm text-muted-foreground">เริ่ม Credit Roll ทันทีที่คุณกด Raid ไปช่องอื่น</p>
                                 </div>
-                                <div className="p-4 border rounded-xl bg-card hover:bg-accent/5 transition-colors">
-                                    <div className="p-2 w-fit rounded-lg bg-primary/10 text-primary mb-3">
+                                <div className="p-4 border rounded-xl bg-card">
+                                    <div className="p-2 w-fit rounded-lg bg-info/10 text-info mb-3">
                                         <Type className="w-5 h-5" />
                                     </div>
                                     <h3 className="font-semibold mb-1">ข้อความปรับแต่งได้</h3>
@@ -229,9 +229,10 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: (
+                                            description: (<div className="space-y-3">
+                                                <p className="text-sm text-muted-foreground">เปิดวิดเจ็ตนี้เพื่อให้ระบบเล่น Credit Roll สรุปผู้สนับสนุนบนหน้าจอเมื่อคุณ Raid ไปช่องอื่น</p>
                                                 <WidgetEnabledBadge />
-                                            )
+                                            </div>)
                                         },
                                         {
                                             step: 2,
@@ -252,7 +253,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                                         />
                                                         <CategoryToggleRow
                                                             icon={<Star className="w-4 h-4" />}
-                                                            iconClassName="bg-warning/10 text-warning"
+                                                            iconClassName="bg-supernova/10 text-supernova"
                                                             title="สมาชิกใหม่"
                                                             enabled={isShowSubs}
                                                             onEnabledChange={setIsShowSubs}
@@ -266,7 +267,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                                         />
                                                         <CategoryToggleRow
                                                             icon={<Gem className="w-4 h-4" />}
-                                                            iconClassName="bg-success/10 text-success"
+                                                            iconClassName="bg-teal/10 text-teal"
                                                             title="ผู้สนับสนุน Bits"
                                                             enabled={isShowBits}
                                                             onEnabledChange={setIsShowBits}
@@ -280,8 +281,8 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: "เชื่อมต่อกับ OBS",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">นำ Overlay URL ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้ Credit Roll แสดงผลได้</p>
-                                                    <SmartOverlayUrlInput url={overlayUrl} slug={"end-credit"} onSuccess={setConfig} />
+                                                    <p className="text-sm text-muted-foreground">นำลิงก์โอเวอร์เลย์ด้านล่างนี้ไปใส่ใน OBS ของคุณ (Browser Source) เพื่อให้ Credit Roll แสดงผลได้</p>
+                                                    <SmartOverlayUrlInput url={overlayUrl} slug={"end-credit"} onSuccess={setConfig} hideLabel />
                                                     <OBSSetupHelp />
                                                 </div>
                                             )
@@ -291,7 +292,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">ตรวจสอบข้อมูลให้เรียบร้อยแล้วกดบันทึก จากนั้นกด Test เพื่อดู Credit Roll ตัวอย่างบน Overlay</p>
+                                                    <p className="text-sm text-muted-foreground">ตรวจสอบข้อมูลให้เรียบร้อยแล้วกดบันทึก จากนั้นกด ทดสอบ เพื่อดู Credit Roll ตัวอย่างบนโอเวอร์เลย์</p>
                                                     <div className="flex items-center gap-2">
                                                         <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />
                                                         <TestWidgetButton onTest={handleTest} isLoading={isTesting} />
@@ -336,7 +337,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                         />
                                         <CategoryCard
                                             icon={<Star className="w-5 h-5" />}
-                                            iconClassName="bg-warning/10 text-warning"
+                                            iconClassName="bg-supernova/10 text-supernova"
                                             title="สมาชิกใหม่"
                                             enabled={isShowSubs}
                                             onEnabledChange={setIsShowSubs}
@@ -364,7 +365,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
                                         />
                                         <CategoryCard
                                             icon={<Gem className="w-5 h-5" />}
-                                            iconClassName="bg-success/10 text-success"
+                                            iconClassName="bg-teal/10 text-teal"
                                             title="ผู้สนับสนุน Bits"
                                             enabled={isShowBits}
                                             onEnabledChange={setIsShowBits}
@@ -381,7 +382,7 @@ export function EndCreditWidget({ initialConfig, widgetType }: { initialConfig: 
 
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-2 border-b pb-2">
-                                        <Users className="w-5 h-5 text-info" />
+                                        <Users className="w-5 h-5 text-violet" />
                                         <h3 className="text-lg font-semibold">ตัวเลือกทั่วไป</h3>
                                     </div>
                                     <div className="flex items-center justify-between p-4 border rounded-lg bg-card">

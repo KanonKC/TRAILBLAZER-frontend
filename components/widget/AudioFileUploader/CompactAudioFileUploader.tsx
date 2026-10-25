@@ -80,10 +80,7 @@ export function CompactAudioFileUploader({
                     size="sm"
                     onClick={() => setIsDialogOpen(true)}
                     disabled={disabled}
-                    className={cn(
-                        "flex-1 justify-start gap-2 h-9 px-3 overflow-hidden",
-                        className?.includes("text-foreground") && "bg-transparent border-foreground/20 text-foreground hover:bg-secondary hover:text-foreground"
-                    )}
+                    className="flex-1 justify-start gap-2 h-9 px-3 overflow-hidden"
                 >
                     <AudioWaveform className="w-4 h-4 shrink-0" />
                     <span className="truncate max-w-[150px]">{displayName}</span>
@@ -95,10 +92,7 @@ export function CompactAudioFileUploader({
                         size="icon"
                         onClick={handlePlayStop}
                         disabled={disabled || isLoading}
-                        className={cn(
-                            "h-9 w-9 shrink-0",
-                            className?.includes("text-foreground") ? "bg-transparent border-foreground/20 text-foreground hover:bg-secondary hover:text-foreground" : ""
-                        )}
+                        className="h-9 w-9 shrink-0"
                     >
                         {isPlaying ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                     </Button>
@@ -114,7 +108,7 @@ export function CompactAudioFileUploader({
 
             {audioVolume !== undefined && onAudioVolumeChange && (
                 <div className="flex items-center gap-2">
-                    <Volume2 className={cn("w-3.5 h-3.5 shrink-0", className?.includes("text-foreground") ? "text-foreground" : "text-muted-foreground")} />
+                    <Volume2 className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
                     <Slider
                         value={[audioVolume]}
                         onValueChange={([v]) => onAudioVolumeChange(v)}
@@ -124,7 +118,7 @@ export function CompactAudioFileUploader({
                         disabled={disabled}
                         className="flex-1"
                     />
-                    <span className={cn("text-sm tabular-nums w-10 text-right shrink-0", className?.includes("text-foreground") ? "text-foreground" : "text-muted-foreground")}>
+                    <span className="font-mono text-sm tabular-nums w-10 text-right shrink-0 text-muted-foreground">
                         {audioVolume}%
                     </span>
                 </div>

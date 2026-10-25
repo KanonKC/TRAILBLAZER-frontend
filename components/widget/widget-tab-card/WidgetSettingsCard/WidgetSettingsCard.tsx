@@ -18,7 +18,7 @@ const WidgetSettingsCard = ({ children, widgetId, isEnabled = false, cost, onSta
             <CardHeader>
                 <CardTitle className="flex items-center gap-2 justify-between">
                     <span className="flex items-center gap-2">
-                        <Settings className="w-5 h-5 text-primary" />
+                        <Settings className="w-5 h-5 text-violet" />
                         ตั้งค่า
                     </span>
                     <div className="flex items-center gap-3">
