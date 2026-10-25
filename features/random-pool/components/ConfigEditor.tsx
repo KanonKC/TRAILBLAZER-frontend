@@ -5,6 +5,8 @@ import {
   ArrowLeft,
   Boxes,
   Dices,
+  Import,
+  User,
   MessageSquare,
   Settings2,
   Trash2,
@@ -30,7 +32,9 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import SubLabel from "@/components/SubLabel";
+import { BotProfileSelector } from "@/components/widget/BotProfileSelector";
 import { ChatMessageField } from "./ChatMessageField";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { OptionCard } from "./OptionCard";
 import WidgetSettingsCard from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCard";
 import WidgetSettingsCardContent from "@/components/widget/widget-tab-card/WidgetSettingsCard/WidgetSettingsCardContent";
@@ -56,13 +60,7 @@ const sections = [
   { id: "sec-sound", label: "เสียง" },
 ];
 
-function Section({
-  id,
-  children,
-}: {
-  id: string;
-  children: React.ReactNode;
-}) {
+function Section({ id, children }: { id: string; children: React.ReactNode }) {
   return (
     <section id={id} className="grid scroll-mt-20 gap-6">
       {children}
@@ -102,7 +100,10 @@ export function ConfigEditor({
       <button
         type="button"
         onClick={controller.backToList}
-        className={cn("text-muted-foreground hover:text-foreground flex w-fit items-center gap-2 rounded-md text-sm font-medium", FOCUS_RING)}
+        className={cn(
+          "text-muted-foreground hover:text-foreground flex w-fit items-center gap-2 rounded-md text-sm font-medium",
+          FOCUS_RING,
+        )}
       >
         <ArrowLeft className="size-4" />
         การตั้งค่าทั้งหมด
@@ -150,12 +151,12 @@ export function ConfigEditor({
       >
         <WidgetSettingsCardContent>
           {poolNotice && (
-            <Alert
-              className={ALERT_TONE[poolNotice.tone].box}
-            >
+            <Alert className={ALERT_TONE[poolNotice.tone].box}>
               {(() => {
                 const ToneIcon = ALERT_TONE[poolNotice.tone].Icon;
-                return <ToneIcon className={ALERT_TONE[poolNotice.tone].text} />;
+                return (
+                  <ToneIcon className={ALERT_TONE[poolNotice.tone].text} />
+                );
               })()}
               <AlertTitle className={ALERT_TONE[poolNotice.tone].text}>
                 {poolNotice.title}
@@ -175,7 +176,9 @@ export function ConfigEditor({
             <SectionTitle icon={Settings2}>ทั่วไป</SectionTitle>
             <div className="space-y-2">
               <Label htmlFor="config-name">ชื่อการตั้งค่า</Label>
-              <SubLabel>ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายการตั้งค่า</SubLabel>
+              <SubLabel>
+                ตั้งชื่อให้จำง่าย โดยเฉพาะถ้าคุณมีหลายการตั้งค่า
+              </SubLabel>
               <Input
                 id="config-name"
                 maxLength={100}
@@ -197,48 +200,58 @@ export function ConfigEditor({
                 }
                 rewards={controller.rewards}
                 allowNone={false}
-                getRewardDisabledNote={(reward) => controller.rewardUsedNote(reward.id)}
+                getRewardDisabledNote={(reward) =>
+                  controller.rewardUsedNote(reward.id)
+                }
               />
             </div>
-            <div className="space-y-2">
-              <Label>ลิงก์โอเวอร์เลย์</Label>
-              <OverlayUrlField
-                config={savedConfig}
-                onRefreshed={controller.reload}
-                description="แต่ละการตั้งค่ามี URL ของตัวเอง เก็บเป็นความลับเหมือนรหัสผ่าน"
-              />
-            </div>
+            <OverlayUrlField
+              showLabel
+              config={savedConfig}
+              onRefreshed={controller.reload}
+            />
           </Section>
 
           <Section id="sec-pool">
-            <SectionTitle icon={Boxes}>กองสุ่มและรายการ</SectionTitle>
-            <div
-              role="radiogroup"
-              aria-label="ที่มาของกองสุ่ม"
-              className="grid gap-2"
-            >
+            <SectionTitle icon={Boxes} tone="teal">
+              กองสุ่มและรายการ
+            </SectionTitle>
+            <div className="space-y-2">
               <Label>ที่มาของกองสุ่ม</Label>
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3">
+              <SubLabel>
+                เลือกว่าจะใช้กองสุ่มที่คุณสร้างเอง
+                หรือนำกองสุ่มสาธารณะของสตรีมเมอร์คนอื่นมาใช้
+              </SubLabel>
+              <RadioGroup
+                value="own"
+                aria-label="ที่มาของกองสุ่ม"
+                className="grid grid-cols-[repeat(auto-fit,minmax(190px,1fr))] gap-3"
+              >
                 <OptionCard
-                  icon={Boxes}
+                  id="pool-source-own"
+                  value="own"
+                  icon={User}
                   title="กองสุ่มของตัวเอง"
                   description="แก้ไขรายการและตั้งค่าได้เต็มที่"
                   checked
                 />
                 <OptionCard
-                  icon={Boxes}
+                  id="pool-source-import"
+                  value="import"
+                  icon={Import}
                   title="Import กองสุ่มของคนอื่น"
                   description="ใช้กองสุ่มสาธารณะของสตรีมเมอร์คนอื่น"
                   checked={false}
                   disabled
                   badge={<Badge variant="outline">เร็วๆ นี้</Badge>}
                 />
-              </div>
+              </RadioGroup>
             </div>
             <div className="space-y-2">
               <Label>กองสุ่มที่ใช้สุ่ม</Label>
               <SubLabel>
-                การแก้รายการที่นี่คือแก้กองสุ่มตัวจริง ข้อมูลชุดเดียวกับทุกการตั้งค่าที่ใช้กองสุ่มนี้
+                การแก้รายการที่นี่คือแก้กองสุ่มตัวจริง
+                ข้อมูลชุดเดียวกับทุกการตั้งค่าที่ใช้กองสุ่มนี้
               </SubLabel>
               <PoolPicker controller={controller} />
             </div>
@@ -246,12 +259,29 @@ export function ConfigEditor({
           </Section>
 
           <Section id="sec-draw">
-            <SectionTitle icon={Dices}>การสุ่ม</SectionTitle>
+            <SectionTitle icon={Dices} tone="violet">
+              การสุ่ม
+            </SectionTitle>
             <DrawSection controller={controller} />
           </Section>
 
           <Section id="sec-chat">
-            <SectionTitle icon={MessageSquare} tone="info">ข้อความแชท</SectionTitle>
+            <SectionTitle icon={MessageSquare} tone="info">
+              ข้อความแชท
+            </SectionTitle>
+            <div className="space-y-2">
+              <Label>บัญชีที่ใช้ส่งข้อความ</Label>
+              <SubLabel>เลือกบัญชีที่จะประกาศผลการสุ่มลงห้องแชทของคุณ</SubLabel>
+              <BotProfileSelector
+                hideLabel
+                value={draft.twitch_bot_id ?? "default"}
+                onValueChange={(value) =>
+                  controller.patchDraft({
+                    twitch_bot_id: value === "default" ? null : value,
+                  })
+                }
+              />
+            </div>
             <ChatMessageField
               value={draft.default_chat_message ?? ""}
               onChange={(value) =>
@@ -269,7 +299,9 @@ export function ConfigEditor({
           </Section>
 
           <Section id="sec-sound">
-            <SectionTitle icon={Volume2}>เสียง</SectionTitle>
+            <SectionTitle icon={Volume2} tone="supernova">
+              เสียง
+            </SectionTitle>
             <SubLabel>รองรับไฟล์ MP3, WAV, OGG ขนาดไม่เกิน 2.5 MB</SubLabel>
             <div className="space-y-2">
               <Label>เสียงตอนกำลังสุ่ม</Label>
@@ -288,7 +320,8 @@ export function ConfigEditor({
             <div className="space-y-2">
               <Label>เสียงตอนของออก</Label>
               <SubLabel>
-                เล่นตอนผลลัพธ์ปรากฏ รายการที่ไม่ได้ตั้งเสียงเฉพาะจะเล่นเสียงนี้ ตั้งเสียงเฉพาะรายการได้ในหน้าต่างแก้ไขรายการ
+                เล่นตอนผลลัพธ์ปรากฏ รายการที่ไม่ได้ตั้งเสียงเฉพาะจะเล่นเสียงนี้
+                ตั้งเสียงเฉพาะรายการได้ในหน้าต่างแก้ไขรายการ
               </SubLabel>
               <AudioFileUploader
                 hideLabel

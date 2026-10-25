@@ -20,11 +20,9 @@ import {
   draftFromConfig,
   emptyConfigDraft,
 } from "../constants";
+import { useUser } from "@/components/user-context";
 import { UploadedFile } from "@/services/uploadedFile.service";
-import {
-  WidgetQuota,
-  getWidgetQuota,
-} from "@/services/widget.service";
+import { WidgetQuota, getWidgetQuota } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 
 export type RandomPoolTab = "overview" | "quick-start" | "settings";
@@ -77,6 +75,8 @@ export function useRandomPool(
   initial: InitialData | null,
   start: RandomPoolStartOptions = {},
 ) {
+  const { user } = useUser();
+  const ownTwitchId = user?.twitchId ?? null;
   const [data, setData] = useState<InitialData>(initial ?? emptyInitialData);
   const initialConfigs = initial?.configs.data ?? [];
   const requestedConfig = initialConfigs.find(
@@ -101,6 +101,7 @@ export function useRandomPool(
           openNew
             ? `การตั้งค่าใหม่ ${initialConfigs.length + 1}`
             : "Random Pool",
+          ownTwitchId,
         ),
   );
   const [rewards, setRewards] = useState<Reward[]>([]);
@@ -167,7 +168,11 @@ export function useRandomPool(
       await action();
       return true;
     } catch (error) {
-      tbToast.error({ title: failureTitle, description: errorMessage(error), error: (error as any).response?.data });
+      tbToast.error({
+        title: failureTitle,
+        description: errorMessage(error),
+        error: (error as any).response?.data,
+      });
       return false;
     } finally {
       setBusy(false);
@@ -194,7 +199,10 @@ export function useRandomPool(
     if (data.configs.data.length >= MAX_CONFIGS) return;
     setEditingId(NEW_CONFIG_ID);
     setDraft(
-      emptyConfigDraft(`การตั้งค่าใหม่ ${data.configs.data.length + 1}`),
+      emptyConfigDraft(
+        `การตั้งค่าใหม่ ${data.configs.data.length + 1}`,
+        ownTwitchId,
+      ),
     );
     setSettingsView("edit");
   }
@@ -292,7 +300,11 @@ export function useRandomPool(
       const latest = await refresh();
       const next = latest.configs.data[0];
       setEditingId(next?.id ?? NEW_CONFIG_ID);
-      setDraft(next ? draftFromConfig(next) : emptyConfigDraft("Random Pool"));
+      setDraft(
+        next
+          ? draftFromConfig(next)
+          : emptyConfigDraft("Random Pool", ownTwitchId),
+      );
       setSettingsView("list");
       tbToast.success({ title: "ลบการตั้งค่าสำเร็จ" });
       void refreshQuota();

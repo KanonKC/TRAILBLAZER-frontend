@@ -120,7 +120,7 @@ export function PoolPicker({
       )}
 
       <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>สร้างกองสุ่มใหม่</DialogTitle>
             <DialogDescription>

@@ -26,6 +26,8 @@ export interface Config {
   pool: Pool;
   pool_state: "READY" | "DELETED" | "EMPTY" | "HIDDEN";
   twitch_reward_id: string;
+  /** Account that announces the result in chat: the streamer's own Twitch id, or null for the default bot. */
+  twitch_bot_id?: string | null;
   mode: "UNIFORM" | "WEIGHTED";
   visualization: "SHUFFLE" | "SLIDE" | "WHEEL";
   default_chat_message?: string | null;

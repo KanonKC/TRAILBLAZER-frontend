@@ -45,11 +45,15 @@ export const POOL_STATE_NOTICE: Record<
   },
 };
 
-export function emptyConfigDraft(name: string): ConfigDraft {
+export function emptyConfigDraft(
+  name: string,
+  twitchBotId: string | null = null,
+): ConfigDraft {
   return {
     name,
     pool_id: "",
     twitch_reward_id: "",
+    twitch_bot_id: twitchBotId,
     mode: "UNIFORM",
     visualization: "SHUFFLE",
     default_chat_message: "",
@@ -64,6 +68,7 @@ export function draftFromConfig(config: Config): ConfigDraft {
     name: config.name,
     pool_id: config.pool_id,
     twitch_reward_id: config.twitch_reward_id,
+    twitch_bot_id: config.twitch_bot_id ?? null,
     mode: config.mode,
     visualization: config.visualization,
     default_chat_message: config.default_chat_message ?? "",
@@ -72,8 +77,6 @@ export function draftFromConfig(config: Config): ConfigDraft {
     items: config.items.map((setting) => ({ ...setting })),
   };
 }
-
-/** Focus styles for inputs: neutral, never the primary brand color. */
 
 /** Status tones for `Alert`: border + tint, the status text color and its icon. */
 export const ALERT_TONE = {

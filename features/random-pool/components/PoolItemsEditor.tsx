@@ -11,11 +11,9 @@ import { PoolItemsGrid } from "./PoolItemsGrid";
 /** Item grid plus the edit drawer. Edits write to the real pool. */
 export function PoolItemsEditor({
   controller,
-  columns,
   simple = false,
 }: {
   controller: RandomPoolController;
-  columns?: "auto" | "five";
   /** Image and name only: hides weight, chat message and sound fields. */
   simple?: boolean;
 }) {
@@ -68,7 +66,6 @@ export function PoolItemsEditor({
       <PoolItemsGrid
         items={poolItems}
         busy={busy}
-        columns={columns}
         onEdit={edit}
         onAdd={() =>
           setEditing({

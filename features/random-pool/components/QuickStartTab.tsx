@@ -58,7 +58,6 @@ export function QuickStartTab({
                     </p>
                     <PoolItemsEditor
                       controller={controller}
-                      columns="five"
                       simple
                     />
                   </div>
@@ -95,7 +94,6 @@ export function QuickStartTab({
                 description: (
                   <OverlayUrlField
                     config={savedConfig}
-                    description="URL นี้เหมือนรหัสผ่านสตรีมของคุณ เก็บเป็นความลับ"
                     onRefreshed={controller.reload}
                   />
                 ),
