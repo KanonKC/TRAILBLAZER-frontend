@@ -2,6 +2,7 @@ import { TwitchRewardSelector } from "@/components/widget/TwitchRewardSelector";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
+import { Flame, Users } from "lucide-react";
 import { RandomDbdPerkClass } from "@/features/random-dbd-perk/types";
 import { PERKS_PER_PAGE } from "@/features/random-dbd-perk/hooks/useRandomDbdPerk";
 import { MaxPerkSelector } from "./MaxPerkSelector";
@@ -29,7 +30,7 @@ export function PerkConfigItem({ item, index, totalPerks, updatePerkClass, unit,
         if (unit === 'page') {
             newValue = val * PERKS_PER_PAGE;
         }
-        
+
         // Ensure within bounds relative to raw total
         if (newValue < 0) newValue = 0;
         if (newValue > totalPerks) newValue = totalPerks;
@@ -37,35 +38,40 @@ export function PerkConfigItem({ item, index, totalPerks, updatePerkClass, unit,
         updatePerkClass(index, 'maximum_random_size', newValue);
     };
 
+    const sideName = item.type === 'survivor' ? "Survivor" : "Killer";
+    const SideIcon = item.type === 'survivor' ? Users : Flame;
+    const enabledSwitchId = `perk-enabled-${item.type}`;
+
     return (
-        <div className="space-y-4 border p-4 rounded-xl relative">
-            <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                    <div className={cn(
-                        "p-1.5 rounded-md",
-                        item.type === 'survivor' ? "bg-info/10 text-info" : "bg-violet/10 text-violet"
-                    )}>
-                        {item.type === 'survivor' ? (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-                        ) : (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
-                        )}
-                    </div>
-                    <h3 className="text-lg font-semibold capitalize">{item.type} Perks</h3>
+        <div className="space-y-6">
+            <div className="flex items-center gap-2 border-b pb-2">
+                <SideIcon className={cn("w-5 h-5", item.type === 'survivor' ? "text-survivor" : "text-killer")} />
+                <h3 className="text-lg font-semibold">Perk ของ {sideName}</h3>
+            </div>
+
+            <div className="flex items-center justify-between p-4 border rounded-lg bg-card">
+                <div className="space-y-1">
+                    <Label htmlFor={enabledSwitchId}>เปิดการสุ่ม Perk ของ {sideName}</Label>
+                    <p className="text-sm text-muted-foreground">ผู้ชมแลกแต้มช่องเพื่อสุ่ม Perk ของฝั่งนี้ได้</p>
                 </div>
                 <Switch
+                    id={enabledSwitchId}
                     checked={item.enabled}
                     onCheckedChange={(checked) => updatePerkClass(index, 'enabled', checked)}
                 />
             </div>
 
-            <div className={cn("grid gap-4 md:grid-cols-2 transition-opacity", !item.enabled && "opacity-50 pointer-events-none")}>
+            <div className={cn("space-y-6 transition-opacity", !item.enabled && "opacity-50")}>
                 <div className="space-y-2">
-                    <Label>Twitch Reward</Label>
+                    <div className="space-y-1">
+                        <Label>แต้มช่อง</Label>
+                        <p className="text-sm text-muted-foreground">Channel Points Reward บน Twitch ที่ผู้ชมแลกเพื่อสุ่ม Perk ของ {sideName}</p>
+                    </div>
                     <TwitchRewardSelector
                         value={item.twitch_reward_id || null}
                         onValueChange={handleValueChange}
                         userInputRequired={false}
+                        disabled={!item.enabled}
                     />
                 </div>
                 <MaxPerkSelector
@@ -74,6 +80,7 @@ export function PerkConfigItem({ item, index, totalPerks, updatePerkClass, unit,
                     onCountChange={handleCountChange}
                     unit={unit}
                     onUnitChange={onUnitChange}
+                    disabled={!item.enabled}
                 />
             </div>
         </div>

@@ -21,7 +21,7 @@ export function ChatMessageField({
   const over = value.length > MAX_CHAT_MESSAGE_LENGTH;
   return (
     <div className="space-y-2">
-      <Label>ข้อความประกาศผลเริ่มต้น</Label>
+      <Label>ข้อความประกาศผล</Label>
       <SubLabel>
         บอทพิมพ์ข้อความนี้ลงแชทหลังสุ่มเสร็จ ถ้าไม่ใส่ บอทจะไม่พิมพ์อะไร
       </SubLabel>
