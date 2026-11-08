@@ -35,7 +35,7 @@ export function WidgetOverlayStepContent<Config>({
     url: string;
     slug: string;
     onSuccess: (data: Config) => void;
-    obsType?: "audio" | "image" | "text";
+    obsType?: "audio" | "image" | "video" | "text";
 }) {
     return (
         <div className="space-y-3">

@@ -6,6 +6,8 @@ export interface UploadedFile {
     name: string;
     type: string;
     size_kb: number;
+    /** Length of audio and video files; null when it could not be read. */
+    duration_ms?: number | null;
     owner_id: string;
     key: string;
     created_at: string;

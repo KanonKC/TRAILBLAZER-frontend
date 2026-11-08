@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
-import { RewardIcon } from "@/components/widget/ChannelRewardSelector";
-import type { Reward } from "../types";
+import { RewardIcon, type SelectableReward } from "./ChannelRewardSelector";
 
 /** Reward icon + title, optionally followed by its point cost. */
 export function RewardLabel({
@@ -9,7 +8,7 @@ export function RewardLabel({
   className,
   iconClassName,
 }: {
-  reward: Reward;
+  reward: SelectableReward;
   showCost?: boolean;
   className?: string;
   iconClassName?: string;
@@ -19,7 +18,7 @@ export function RewardLabel({
       <RewardIcon reward={reward} className={iconClassName} />
       <span className="truncate">{reward.title}</span>
       {showCost && (
-        <span className="text-supernova shrink-0 text-xs tabular-nums">
+        <span className="text-supernova shrink-0 text-sm tabular-nums">
           {reward.cost.toLocaleString()}
         </span>
       )}
