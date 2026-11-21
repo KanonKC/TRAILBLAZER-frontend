@@ -43,6 +43,17 @@ export interface ReactiveRewardConfig {
     widget_id: string;
     widget: ExtendedWidget;
     reactions: Reaction[];
+    /** Switching the widget on is free; points are charged by how many Reactions are active. */
+    quota: ReactiveRewardQuota;
+}
+
+export interface ReactiveRewardQuota {
+    active_count: number;
+    points_needed: number;
+    points_available: number;
+    /** Most Reactions that can be on at once with the points available to this widget. */
+    active_limit: number;
+    max_reactions: number;
 }
 
 /** What is sent when a reaction is saved. */

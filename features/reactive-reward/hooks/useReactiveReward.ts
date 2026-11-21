@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useUser } from "@/components/user-context";
 import { useTwitchRewards } from "@/hooks/use-twitch-rewards";
 import { useWidgetLifecycleState } from "@/hooks/use-widget-lifecycle-state";
-import { deleteWidget } from "@/services/widget.service";
+import { deleteWidget, listWidgets, updateWidgetEnabled, type ExtendedWidget } from "@/services/widget.service";
 import { tbToast } from "@/utils/tbToast";
 import { reactiveRewardApi } from "../api/reactiveReward.api";
 import { MAX_REACTIONS, WIDGET_SLUG } from "../constants";
@@ -44,9 +44,20 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
     const { rewards, isLoading: isRewardsLoading } = useTwitchRewards({ userInputRequired: false });
     const [editing, setEditing] = useState<EditingReaction>(null);
     const [busyReactionId, setBusyReactionId] = useState<string | null>(null);
+    // Bumped after anything that changes the points this widget uses, so the quota meter reloads
+    const [quotaVersion, setQuotaVersion] = useState(0);
+    const refreshQuotaMeter = () => setQuotaVersion((previous) => previous + 1);
+    // Same dialog the widget status switch opens when there are not enough points
+    const [showLimitDialog, setShowLimitDialog] = useState(false);
+    const [limitDialogWidgets, setLimitDialogWidgets] = useState<ExtendedWidget[]>([]);
 
     const reactions = config?.reactions ?? [];
     const canAddReaction = reactions.length < MAX_REACTIONS;
+    const quota = config?.quota;
+    const activeCount = reactions.filter((reaction) => reaction.enabled).length;
+    const activeLimit = quota?.active_limit ?? 0;
+    const pointsNeeded = quota?.points_needed ?? 0;
+    const canEnableMoreReactions = activeCount < activeLimit;
     const overlayUrl = typeof window !== "undefined" && user && config?.widget?.overlay_key
         ? `${window.location.origin}/overlays/${WIDGET_SLUG}/${user.id}?key=${config.widget.overlay_key}`
         : "";
@@ -84,6 +95,7 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
             const saved = await reactiveRewardApi.saveReaction(draft, reactionId);
             setConfig((previous) => (previous ? { ...previous, reactions: upsert(previous.reactions, saved) } : previous));
             tbToast.success({ title: "บันทึก Reaction สำเร็จ" });
+            refreshQuotaMeter();
             return true;
         } catch (error) {
             console.error("Failed to save reaction", error);
@@ -92,12 +104,57 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
         }
     };
 
+    /** Lists the other enabled widgets in the shared "not enough points" dialog, so one can be switched off. */
+    const openLimitDialog = async () => {
+        try {
+            const response = await listWidgets({ enabled: true });
+            // Switching this widget's own Reactions off is done in the list, so it is not offered here
+            setLimitDialogWidgets(response.data.filter((widget) => widget.id !== config?.widget?.id));
+        } catch (listError) {
+            console.error("Failed to fetch enabled widgets", listError);
+        }
+        setShowLimitDialog(true);
+    };
+
     const handleToggleReaction = async (reaction: Reaction, enabled: boolean) => {
+        const setEnabled = (value: boolean) =>
+            setConfig((previous) =>
+                previous
+                    ? { ...previous, reactions: previous.reactions.map((item) => (item.id === reaction.id ? { ...item, enabled: value } : item)) }
+                    : previous,
+            );
+        // The switch flips at once; the request runs after, and the switch goes back if it fails.
+        setEnabled(enabled);
         setBusyReactionId(reaction.id);
         try {
-            await handleSaveReaction(toDraft(reaction, { enabled }), reaction.id);
+            const saved = await reactiveRewardApi.saveReaction(toDraft(reaction, { enabled }), reaction.id);
+            setConfig((previous) => (previous ? { ...previous, reactions: upsert(previous.reactions, saved) } : previous));
+            tbToast.success({ title: "อัปเดตสถานะสำเร็จ" });
+            refreshQuotaMeter();
+        } catch (error) {
+            console.error("Failed to toggle reaction", error);
+            setEnabled(reaction.enabled);
+            if ((error as { response?: { status?: number } }).response?.status === 402) {
+                await openLimitDialog();
+            } else {
+                tbToast.error({ title: "อัปเดตสถานะไม่สำเร็จ", description: describeError(error), error: (error as { response?: { data?: unknown } }).response?.data });
+            }
         } finally {
             setBusyReactionId(null);
+        }
+    };
+
+    const handleDisableOtherWidget = async (widgetId: string) => {
+        try {
+            await updateWidgetEnabled(widgetId, false);
+            setLimitDialogWidgets((previous) => previous.filter((widget) => widget.id !== widgetId));
+            // The points available to this widget changed, so reload its quota
+            const fresh = await reactiveRewardApi.get();
+            setConfig((previous) => (previous ? { ...previous, quota: fresh.quota } : previous));
+            refreshQuotaMeter();
+        } catch (error) {
+            console.error("Failed to disable widget", error);
+            tbToast.error({ title: "ปิดวิดเจ็ตไม่สำเร็จ" });
         }
     };
 
@@ -106,6 +163,7 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
             await reactiveRewardApi.deleteReaction(reactionId);
             setConfig((previous) => (previous ? { ...previous, reactions: previous.reactions.filter((reaction) => reaction.id !== reactionId) } : previous));
             tbToast.success({ title: "ลบ Reaction สำเร็จ" });
+            refreshQuotaMeter();
             return true;
         } catch (error) {
             console.error("Failed to delete reaction", error);
@@ -138,6 +196,10 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
         isUserLoading,
         reactions,
         canAddReaction,
+        activeCount,
+        activeLimit,
+        pointsNeeded,
+        canEnableMoreReactions,
         overlayUrl,
         rewards,
         rewardsById,
@@ -152,6 +214,12 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
         handleDelete,
         handleSaveReaction,
         handleToggleReaction,
+        quotaVersion,
+        openLimitDialog,
+        showLimitDialog,
+        setShowLimitDialog,
+        limitDialogWidgets,
+        handleDisableOtherWidget,
         handleDeleteReaction,
         handleTestReaction,
     };

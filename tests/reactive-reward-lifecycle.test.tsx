@@ -50,6 +50,7 @@ const makeConfig = (reactions: Reaction[] = []): ReactiveRewardConfig => ({
     widget_id: "widget-1",
     widget: { id: "widget-1", enabled: true, overlay_key: "secret" } as ReactiveRewardConfig["widget"],
     reactions,
+    quota: { active_count: reactions.filter((reaction) => reaction.enabled).length, points_needed: 1, points_available: 3, active_limit: 20, max_reactions: 50 },
 });
 
 const draft: ReactionDraft = {

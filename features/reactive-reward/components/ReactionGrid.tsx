@@ -1,15 +1,14 @@
 "use client";
 
-import { CircleAlert, CircleCheck, CirclePause, Film, ImageIcon, Music, Pencil, Play, Plus } from "lucide-react";
+import { ArrowRight, CircleAlert, Pencil, Play, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import type { SelectableReward } from "@/components/widget/ChannelRewardSelector";
+import { ChannelPointsCost } from "@/components/icons/channel-points";
 import { RewardLabel } from "@/components/widget/RewardLabel";
-import { MEDIA_TYPE_LABELS } from "../constants";
-import type { Reaction, ReactionMediaType } from "../types";
+import { MEDIA_TYPE_ICONS, MEDIA_TYPE_LABELS } from "../constants";
+import type { Reaction } from "../types";
 import { MediaThumb } from "./MediaThumb";
-
-const TYPE_ICONS: Record<ReactionMediaType, typeof ImageIcon> = { IMAGE: ImageIcon, AUDIO: Music, VIDEO: Film };
 
 interface ReactionGridProps {
     reactions: Reaction[];
@@ -44,45 +43,48 @@ export function ReactionGrid({ reactions, rewardsById, rewardsLoaded, busyReacti
         );
     }
 
+    // By channel point cost from low to high. A reward not found on Twitch has no cost, so it goes last.
+    const sortedReactions = [...reactions].sort((first, second) => {
+        const firstCost = rewardsById.get(first.twitch_reward_id)?.cost ?? Number.POSITIVE_INFINITY;
+        const secondCost = rewardsById.get(second.twitch_reward_id)?.cost ?? Number.POSITIVE_INFINITY;
+        if (firstCost === secondCost) return 0;
+        return firstCost < secondCost ? -1 : 1;
+    });
+
     return (
-        <ul className="space-y-3">
-            {reactions.map((reaction) => {
+        <ul className="space-y-2">
+            {sortedReactions.map((reaction) => {
                 const reward = rewardsById.get(reaction.twitch_reward_id);
                 const problem = problemOf(reaction, rewardsLoaded && !reward);
                 const busy = busyReactionId === reaction.id;
-                const TypeIcon = TYPE_ICONS[reaction.media_type];
+                const TypeIcon = MEDIA_TYPE_ICONS[reaction.media_type];
                 return (
-                    <li key={reaction.id} className="bg-card hover:bg-secondary flex items-center gap-4 rounded-lg border p-3">
-                        <MediaThumb mediaType={reaction.media_type} url={reaction.media_url} missing={!reaction.media_file} className="size-16 shrink-0" />
-                        <div className="min-w-0 flex-1 space-y-1">
+                    <li key={reaction.id} className="bg-card hover:bg-secondary flex items-center gap-3 rounded-lg border px-3 py-2">
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
                             <RewardLabel
                                 reward={reward ?? { id: reaction.twitch_reward_id, title: reaction.twitch_reward_title, cost: 0 }}
-                                showCost={!!reward}
-                                className="font-medium"
+                                className="min-w-0 flex-1 font-medium"
                             />
-                            <p className="text-muted-foreground flex min-w-0 items-center gap-1.5 text-sm">
-                                <TypeIcon className="size-4 shrink-0" aria-hidden="true" />
-                                <span className="shrink-0">{MEDIA_TYPE_LABELS[reaction.media_type]}</span>
-                                {reaction.media_file && <span className="truncate">· {reaction.media_file.name}</span>}
-                            </p>
                             {problem ? (
-                                <p className="text-destructive flex items-center gap-1.5 text-sm">
+                                <span className="text-destructive flex min-w-0 items-center gap-1 text-sm" title={problem}>
                                     <CircleAlert className="size-4 shrink-0" aria-hidden="true" />
-                                    {problem}
-                                </p>
-                            ) : reaction.enabled ? (
-                                <p className="text-success flex items-center gap-1.5 text-sm">
-                                    <CircleCheck className="size-4 shrink-0" aria-hidden="true" />
-                                    เปิดใช้งาน
-                                </p>
-                            ) : (
-                                <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
-                                    <CirclePause className="size-4 shrink-0" aria-hidden="true" />
-                                    ปิดอยู่
-                                </p>
-                            )}
+                                    <span className="truncate">{problem}</span>
+                                </span>
+                            ) : null}
+                            <span className="flex w-16 shrink-0 justify-start">
+                                {reward && <ChannelPointsCost amount={reward.cost} className="text-muted-foreground text-sm" />}
+                            </span>
                         </div>
-                        <div className="flex shrink-0 items-center gap-2">
+                        <ArrowRight className="text-muted-foreground size-4 shrink-0" aria-hidden="true" />
+                        <div className="flex min-w-0 basis-[30%] shrink-0 items-center gap-3" title={reaction.media_file?.name}>
+                            <MediaThumb mediaType={reaction.media_type} url={reaction.media_url} missing={!reaction.media_file} className="size-10 shrink-0" iconClassName="size-5" />
+                            <span className="text-muted-foreground flex min-w-0 items-center gap-1.5 text-sm">
+                                <span className="sr-only">{MEDIA_TYPE_LABELS[reaction.media_type]}</span>
+                                <TypeIcon className="size-4 shrink-0" aria-hidden="true" />
+                                {reaction.media_file && <span className="truncate">{reaction.media_file.name}</span>}
+                            </span>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-1">
                             <Switch
                                 aria-label={`เปิดใช้งาน ${reaction.twitch_reward_title}`}
                                 checked={reaction.enabled}
@@ -92,14 +94,15 @@ export function ReactionGrid({ reactions, rewardsById, rewardsLoaded, busyReacti
                             <Button
                                 type="button"
                                 variant="outline"
-                                size="icon"
+                                size="icon-xs"
+                                className="size-7 [&_svg:not([class*='size-'])]:size-4"
                                 aria-label={`ทดสอบ ${reaction.twitch_reward_title}`}
                                 disabled={busy || !reaction.media_file}
                                 onClick={() => onTest(reaction.id)}
                             >
                                 <Play />
                             </Button>
-                            <Button type="button" variant="outline" size="icon" aria-label={`แก้ไข ${reaction.twitch_reward_title}`} onClick={() => onEdit(reaction)}>
+                            <Button type="button" variant="outline" size="icon-xs" className="size-7 [&_svg:not([class*='size-'])]:size-4" aria-label={`แก้ไข ${reaction.twitch_reward_title}`} onClick={() => onEdit(reaction)}>
                                 <Pencil />
                             </Button>
                         </div>

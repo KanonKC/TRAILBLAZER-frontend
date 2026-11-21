@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Film, FileX2, ImageIcon, Music } from "lucide-react";
+import { Film, FileX2, ImageIcon, AudioLines } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ReactionMediaType } from "../types";
 
@@ -30,7 +30,7 @@ export function MediaThumb({ mediaType, url, missing = false, className, iconCla
             {missing ? (
                 <FileX2 className={cn("size-6", iconClassName)} aria-hidden="true" />
             ) : mediaType === "AUDIO" ? (
-                <Music className={cn("size-6", iconClassName)} aria-hidden="true" />
+                <AudioLines className={cn("size-6", iconClassName)} aria-hidden="true" />
             ) : mediaType === "VIDEO" ? (
                 <>
                     {usable ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,7 @@ import {
     MAX_DISPLAY_SECONDS,
     MAX_SIZE_PERCENT,
     MEDIA_TYPE_HINTS,
+    MEDIA_TYPE_ICONS,
     MEDIA_TYPE_LABELS,
     MIN_DISPLAY_SECONDS,
     MIN_SIZE_PERCENT,
@@ -38,6 +39,10 @@ import { MediaFilePicker } from "./MediaFilePicker";
 import { PositionGrid } from "./PositionGrid";
 
 interface ReactionSheetProps {
+    /** False when every Reaction the streamer's points allow is already on. */
+    canEnableMore: boolean;
+    /** Called when the streamer tries to switch a Reaction on with no points left; opens the shared quota dialog. */
+    onQuotaFull: () => void;
     editing: EditingReaction;
     rewards: SelectableReward[];
     isRewardsLoading: boolean;
@@ -65,9 +70,9 @@ const clamp = (value: number, min: number, max: number) => Math.min(max, Math.ma
 
 function SliderField({ value, min, max, unit, onChange, label }: { value: number; min: number; max: number; unit: string; onChange: (value: number) => void; label: string }) {
     return (
-        <div className="flex items-center gap-4">
-            <Slider aria-label={label} value={[value]} onValueChange={([next]) => onChange(next)} min={min} max={max} className="flex-1" />
-            <div className="w-32">
+        <div className="space-y-3">
+            <Slider aria-label={label} value={[value]} onValueChange={([next]) => onChange(next)} min={min} max={max} className="w-full" />
+            <div className="w-full">
                 <InputGroup>
                     <InputGroupInput
                         type="number"
@@ -97,6 +102,8 @@ function ReactionSheetBody({
     onDelete,
     onTest,
     isTesting,
+    canEnableMore,
+    onQuotaFull,
     onClose,
 }: ReactionSheetProps & { reaction: Reaction | null }) {
     const form = useReactionForm(reaction, onSave);
@@ -104,6 +111,20 @@ function ReactionSheetBody({
     // The reward list must render inside the sheet: a modal sheet blocks clicks on anything portaled outside it
     const [sheetElement, setSheetElement] = useState<HTMLElement | null>(null);
     const isNew = reaction === null;
+    // Switching on takes one more active slot, unless this Reaction already holds one
+    const needsFreeSlot = !reaction?.enabled && !canEnableMore;
+    const handleEnabledChange = (checked: boolean) => {
+        if (checked && needsFreeSlot) {
+            onQuotaFull();
+            return;
+        }
+        form.setEnabled(checked);
+    };
+    // A new Reaction starts on while points are left, and off once they are used up
+    useEffect(() => {
+        if (isNew && !canEnableMore) form.setEnabled(false);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- only decides the starting value
+    }, []);
     const showsImage = form.mediaType === "IMAGE";
     const showsVisual = form.mediaType !== "AUDIO";
 
@@ -137,6 +158,7 @@ function ReactionSheetBody({
                     <div role="radiogroup" aria-labelledby="media-type-label" className="grid grid-cols-3 gap-2">
                         {MEDIA_TYPES.map((mediaType) => {
                             const selected = form.mediaType === mediaType;
+                            const TypeIcon = MEDIA_TYPE_ICONS[mediaType];
                             return (
                                 <button
                                     key={mediaType}
@@ -145,11 +167,14 @@ function ReactionSheetBody({
                                     aria-checked={selected}
                                     onClick={() => form.setMediaType(mediaType)}
                                     className={cn(
-                                        "bg-card hover:bg-secondary cursor-pointer space-y-1 rounded-lg border p-3 text-left",
+                                        "bg-card hover:bg-secondary flex cursor-pointer flex-col items-start justify-start gap-1 rounded-lg border p-3 text-left",
                                         selected && "border-primary bg-primary/10",
                                     )}
                                 >
-                                    <span className="block text-sm font-medium">{MEDIA_TYPE_LABELS[mediaType]}</span>
+                                    <span className="flex items-center gap-2 text-sm font-medium">
+                                        <TypeIcon className="size-4 shrink-0" aria-hidden="true" />
+                                        {MEDIA_TYPE_LABELS[mediaType]}
+                                    </span>
                                     <span className="text-muted-foreground block text-sm">{MEDIA_TYPE_HINTS[mediaType]}</span>
                                 </button>
                             );
@@ -232,9 +257,11 @@ function ReactionSheetBody({
                 <div className="bg-card flex items-center justify-between rounded-lg border p-4">
                     <div className="mr-2 space-y-1">
                         <Label>เปิดใช้งาน Reaction นี้</Label>
-                        <SubLabel>ปิดไว้ชั่วคราวได้โดยไม่ต้องลบ</SubLabel>
+                        <SubLabel>
+                            ปิดไว้ชั่วคราวได้โดยไม่ต้องลบ
+                        </SubLabel>
                     </div>
-                    <Switch aria-label="เปิดใช้งาน Reaction นี้" checked={form.enabled} onCheckedChange={form.setEnabled} />
+                    <Switch aria-label="เปิดใช้งาน Reaction นี้" checked={form.enabled} onCheckedChange={handleEnabledChange} />
                 </div>
             </div>
 

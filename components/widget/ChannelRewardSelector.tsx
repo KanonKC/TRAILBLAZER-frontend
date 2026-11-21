@@ -1,6 +1,7 @@
 
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox";
 import { cn } from "@/lib/utils";
+import { ChannelPointsCost } from "@/components/icons/channel-points";
 import { Gift, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -120,7 +121,7 @@ export function ChannelRewardSelector({
                                                 {disabledNote && <span className="truncate text-xs text-muted-foreground">{disabledNote}</span>}
                                             </span>
                                         </div>
-                                        <span className="text-muted-foreground text-xs tabular-nums shrink-0">{reward.cost.toLocaleString()}</span>
+                                        <ChannelPointsCost amount={reward.cost} className="text-muted-foreground text-xs" />
                                     </div>
                                 </ComboboxItem>
                                 );

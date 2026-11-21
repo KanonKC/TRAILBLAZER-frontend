@@ -104,10 +104,10 @@ describe("ReactionGrid", () => {
         expect(screen.getByText(/pic\.png/)).toBeInTheDocument();
     });
 
-    it("says whether a reaction is on or off in words, not only with a switch", () => {
+    it("shows whether a reaction is on or off with its switch", () => {
         renderGrid([makeReaction(), makeReaction({ id: "reaction-2", twitch_reward_id: "reward-2", twitch_reward_title: "Dance", enabled: false })]);
-        expect(screen.getByText("เปิดใช้งาน")).toBeInTheDocument();
-        expect(screen.getByText("ปิดอยู่")).toBeInTheDocument();
+        expect(screen.getByRole("switch", { name: /Hydrate/ })).toHaveAttribute("aria-checked", "true");
+        expect(screen.getByRole("switch", { name: /Dance/ })).toHaveAttribute("aria-checked", "false");
     });
 
     it("flags a reaction whose file was deleted, and will not test it", () => {
@@ -157,6 +157,8 @@ describe("ReactionSheet", () => {
             onDelete: vi.fn().mockResolvedValue(true),
             onTest: vi.fn(),
             isTesting: false,
+            canEnableMore: true,
+            onQuotaFull: vi.fn(),
             onClose: vi.fn(),
             ...overrides,
         };
@@ -185,6 +187,16 @@ describe("ReactionSheet", () => {
         expect(save()).toBeDisabled();
         fireEvent.click(within(screen.getByTestId("image-picker")).getByRole("button", { name: "เลือกไฟล์" }));
         expect(save()).toBeEnabled();
+    });
+
+    it("starts a new reaction switched off when the points allow no more active reactions, and opens the quota dialog on trying to switch it on", async () => {
+        const props = renderSheet("new", { canEnableMore: false });
+        const enableSwitch = await screen.findByRole("switch", { name: "เปิดใช้งาน Reaction นี้" });
+        expect(enableSwitch).toHaveAttribute("aria-checked", "false");
+        expect(enableSwitch).toBeEnabled();
+        fireEvent.click(enableSwitch);
+        expect(props.onQuotaFull).toHaveBeenCalledTimes(1);
+        expect(enableSwitch).toHaveAttribute("aria-checked", "false");
     });
 
     it("saves an image with the defaults and closes once the save went through", async () => {

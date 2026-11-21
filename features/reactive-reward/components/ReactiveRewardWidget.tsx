@@ -12,6 +12,7 @@ import { SmartOverlayUrlInput } from "@/components/widget/SmartOverlayUrlInput";
 import { WidgetStepper } from "@/components/widget/WidgetStepper/WidgetStepper";
 import WidgetStepperItems from "@/components/widget/WidgetStepper/WidgetStepperItems/WidgetStepperItems";
 import { WidgetEnableStepContent, WidgetOverlayStepContent, WidgetSettingsStepContent } from "@/components/widget/WidgetSetupStepContent";
+import { WidgetQuotaDialog } from "@/components/widget/WidgetQuotaDialog";
 import { WidgetConfigLayout } from "@/components/widget/layout/WidgetConfigLayout";
 import WidgetOverviewCard from "@/components/widget/widget-tab-card/WidgetOverviewCard";
 import WidgetQuickStartCard from "@/components/widget/widget-tab-card/WidgetQuickStartCard";
@@ -23,6 +24,7 @@ import { MAX_REACTIONS, WIDGET_SLUG } from "../constants";
 import { useReactiveReward } from "../hooks/useReactiveReward";
 import type { ReactiveRewardConfig } from "../types";
 import { ReactionGrid } from "./ReactionGrid";
+import { ReactionUsageBar } from "./ReactionUsageBar";
 import { ReactionSheet } from "./ReactionSheet";
 
 export function ReactiveRewardWidget({ initialConfig, widgetType }: { initialConfig: ReactiveRewardConfig | null; widgetType: WidgetTypeMeta }) {
@@ -39,7 +41,7 @@ export function ReactiveRewardWidget({ initialConfig, widgetType }: { initialCon
     }
 
     return (
-        <WidgetConfigLayout widgetType={widgetType}>
+        <WidgetConfigLayout widgetType={widgetType} quotaRefreshKey={reward.quotaVersion}>
             {({ triggerRefresh }) => (
                 <>
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -172,12 +174,21 @@ export function ReactiveRewardWidget({ initialConfig, widgetType }: { initialCon
                             <WidgetSettingsCard
                                 widgetId={config?.widget?.id}
                                 isEnabled={isEnabled}
-                                cost={config?.widget?.widget_type?.cost}
+                                cost={reward.pointsNeeded}
                                 onStatusChange={handleStatusChange}
                                 onSuccess={triggerRefresh}
                             >
                                 <WidgetSettingsCardContent>
                                     <div className="space-y-8">
+                                        <div className="space-y-6">
+                                            <div className="flex items-center gap-2 border-b pb-2">
+                                                <Monitor className="text-teal h-5 w-5" />
+                                                <h3 className="text-lg font-semibold">โอเวอร์เลย์</h3>
+                                            </div>
+                                            <SmartOverlayUrlInput url={reward.overlayUrl} slug={WIDGET_SLUG} onSuccess={setConfig} />
+                                            <OBSSetupHelp type="video" />
+                                        </div>
+
                                         <div className="space-y-6">
                                             <div className="flex items-center justify-between gap-2 border-b pb-2">
                                                 <div className="flex items-center gap-2">
@@ -185,9 +196,6 @@ export function ReactiveRewardWidget({ initialConfig, widgetType }: { initialCon
                                                     <h3 className="text-lg font-semibold">Reaction</h3>
                                                 </div>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-muted-foreground font-mono text-sm tabular-nums">
-                                                        {reward.reactions.length} / {MAX_REACTIONS}
-                                                    </span>
                                                     {reward.reactions.length > 0 && (
                                                         <Button type="button" size="sm" onClick={reward.openNewReaction} disabled={!reward.canAddReaction}>
                                                             <Plus />
@@ -196,6 +204,7 @@ export function ReactiveRewardWidget({ initialConfig, widgetType }: { initialCon
                                                     )}
                                                 </div>
                                             </div>
+                                            <ReactionUsageBar total={reward.reactions.length} active={reward.activeCount} />
                                             <ReactionGrid
                                                 reactions={reward.reactions}
                                                 rewardsById={reward.rewardsById}
@@ -207,15 +216,6 @@ export function ReactiveRewardWidget({ initialConfig, widgetType }: { initialCon
                                                 onToggle={reward.handleToggleReaction}
                                                 onTest={reward.handleTestReaction}
                                             />
-                                        </div>
-
-                                        <div className="space-y-6">
-                                            <div className="flex items-center gap-2 border-b pb-2">
-                                                <Monitor className="text-teal h-5 w-5" />
-                                                <h3 className="text-lg font-semibold">โอเวอร์เลย์</h3>
-                                            </div>
-                                            <SmartOverlayUrlInput url={reward.overlayUrl} slug={WIDGET_SLUG} onSuccess={setConfig} />
-                                            <OBSSetupHelp type="video" />
                                         </div>
                                     </div>
                                 </WidgetSettingsCardContent>
@@ -235,7 +235,15 @@ export function ReactiveRewardWidget({ initialConfig, widgetType }: { initialCon
                         onDelete={reward.handleDeleteReaction}
                         onTest={reward.handleTestReaction}
                         isTesting={isTesting}
+                        canEnableMore={reward.canEnableMoreReactions}
+                        onQuotaFull={reward.openLimitDialog}
                         onClose={reward.closeReaction}
+                    />
+                    <WidgetQuotaDialog
+                        open={reward.showLimitDialog}
+                        onOpenChange={reward.setShowLimitDialog}
+                        enabledWidgets={reward.limitDialogWidgets}
+                        onDisableWidget={reward.handleDisableOtherWidget}
                     />
                 </>
             )}

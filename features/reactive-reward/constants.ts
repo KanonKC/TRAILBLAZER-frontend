@@ -1,7 +1,11 @@
+import { AudioLines, Film, ImageIcon } from "lucide-react";
 import type { ReactionMediaType, ReactionPosition } from "./types";
 
 export const WIDGET_SLUG = "reactive-reward";
 export const MAX_REACTIONS = 50;
+/** Mirrors the backend price: the first point covers this many active Reactions, each further point this many more. */
+export const POINT_TIER_FIRST = 10;
+export const POINT_TIER_STEP = 5;
 
 export const MIN_DISPLAY_SECONDS = 1;
 export const MAX_DISPLAY_SECONDS = 30;
@@ -15,6 +19,12 @@ export const MEDIA_TYPE_LABELS: Record<ReactionMediaType, string> = {
     IMAGE: "รูปภาพ",
     AUDIO: "เสียง",
     VIDEO: "วิดีโอ",
+};
+
+export const MEDIA_TYPE_ICONS: Record<ReactionMediaType, typeof ImageIcon> = {
+    IMAGE: ImageIcon,
+    AUDIO: AudioLines,
+    VIDEO: Film,
 };
 
 export const MEDIA_TYPE_HINTS: Record<ReactionMediaType, string> = {
