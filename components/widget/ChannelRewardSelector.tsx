@@ -1,6 +1,7 @@
 
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox";
 import { cn } from "@/lib/utils";
+import { ChannelPointsCost } from "@/components/icons/channel-points";
 import { Gift, Loader2 } from "lucide-react";
 import { useState } from "react";
 
@@ -43,6 +44,8 @@ interface ChannelRewardSelectorProps {
     allowNone?: boolean;
     /** A reason a reward cannot be picked (for example it is used elsewhere); the item is disabled and shows the note. */
     getRewardDisabledNote?: (reward: SelectableReward) => string | null | undefined;
+    /** Inside a sheet or dialog, the element to render the list in: a modal blocks clicks on anything outside it. */
+    popupContainer?: HTMLElement | null;
 }
 
 export function ChannelRewardSelector({
@@ -53,7 +56,8 @@ export function ChannelRewardSelector({
     placeholder = "เลือกแต้มช่อง",
     disabled,
     allowNone = true,
-    getRewardDisabledNote
+    getRewardDisabledNote,
+    popupContainer
 }: ChannelRewardSelectorProps) {
     const selectedReward = rewards.find(r => r.id === value);
     const [isOpen, setIsOpen] = useState(false);
@@ -93,7 +97,7 @@ export function ChannelRewardSelector({
                     disabled={isLoading || disabled}
                 />
             </div>
-            <ComboboxContent>
+            <ComboboxContent container={popupContainer}>
                 <ComboboxList>
                     {allowNone && <ComboboxItem value={null} textValue="None">None</ComboboxItem>}
                     {isLoading ? (
@@ -117,7 +121,7 @@ export function ChannelRewardSelector({
                                                 {disabledNote && <span className="truncate text-xs text-muted-foreground">{disabledNote}</span>}
                                             </span>
                                         </div>
-                                        <span className="text-muted-foreground text-xs tabular-nums shrink-0">{reward.cost.toLocaleString()}</span>
+                                        <ChannelPointsCost amount={reward.cost} className="text-muted-foreground text-xs" />
                                     </div>
                                 </ComboboxItem>
                                 );

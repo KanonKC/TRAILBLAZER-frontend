@@ -11,7 +11,7 @@ import { HelpCircle } from "lucide-react";
 
 interface OBSSetupHelpProps {
     className?: string;
-    type?: "audio" | "image" | "text"
+    type?: "audio" | "image" | "video" | "text"
     defaultOpen?: boolean;
 }
 
@@ -32,12 +32,17 @@ export function OBSSetupHelp({ className, type = "audio", defaultOpen = false }:
                         <li>ไปที่โปรแกรม OBS จากนั้นไปที่ Sources {">"} Add Source {">"} Browser</li>
                         <li>นำลิงก์ไปใส่ไว้ที่ช่อง URL</li>
                         {
-                            type === "audio" && (
+                            (type === "audio" || type === "video") && (
                                 <>
                                     <li>กดติ๊กถูกที่ตัวเลือก Control audio via OBS {">"} กด OK</li>
                                     <li>ไปที่แถบ Audio Mixer (แถบที่มีหลอดเสียง) จากนั้นสังเกตด้านล่างจะมีรูปเฟือง ให้กดที่รูปเฟืองนั้น</li>
                                     <li>เลื่อนหาแทร็กเสียงของ Browser ที่เราตั้งค่าไปก่อนหน้า {">"} หัวข้อ Audio Monitoring เลือกเป็นแบบ Monitor and Output (ตัวเลือกที่ 3)</li>
                                 </>
+                            )
+                        }
+                        {
+                            type === "video" && (
+                                <li>ใช้ไฟล์วิดีโอ MP4 แบบ H.264 หรือ WebM เพื่อให้ OBS เล่นได้ (ไฟล์ HEVC / H.265 จะไม่ขึ้นบนสตรีม)</li>
                             )
                         }
                     </ol>

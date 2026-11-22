@@ -5,8 +5,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { 
     Dices, 
     Gift, 
-    Play, 
-    ChevronDown
+    Play,
+    ChevronDown,
+    Loader2
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
@@ -122,7 +123,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                         {
                                             step: 1,
                                             title: "เปิดใช้งานวิดเจ็ต",
-                                            description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วสุ่ม Perk ขึ้นหน้าจอสตรีมของคุณ" />
+                                            description: <WidgetEnableStepContent description="เปิดวิดเจ็ตนี้เพื่อให้ผู้ชมแลกแต้มช่องแล้วรับผลสุ่ม Perk ในแชทของคุณ" />
                                         },
                                         {
                                             step: 2,
@@ -131,8 +132,8 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                                 <div className="space-y-3">
                                                 <p className="text-sm text-muted-foreground">เลือกว่าจะตั้งค่าการสุ่ม Perk ของฝั่งไหนก่อน แต่ละฝั่งตั้งค่าแต้มช่องและจำนวน Perk แยกกัน</p>
                                                 <RadioGroup value={wizardType} onValueChange={(val) => setWizardType(val as "survivor" | "killer")} className="flex gap-4">
-                                                    <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "survivor" ? "bg-info/10 border-info/50" : "bg-transparent border-border")}><RadioGroupItem value="survivor" id="r-survivor" /><Label htmlFor="r-survivor" className="flex-1 text-info">Survivor</Label></div>
-                                                    <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "killer" ? "bg-violet/10 border-violet/50" : "bg-transparent border-border")}><RadioGroupItem value="killer" id="r-killer" /><Label htmlFor="r-killer" className="flex-1 text-violet">Killer</Label></div>
+                                                    <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "survivor" ? "bg-survivor/10 border-survivor/50" : "bg-transparent border-border")}><RadioGroupItem value="survivor" id="r-survivor" className="border-survivor text-survivor" /><Label htmlFor="r-survivor" className="flex-1 cursor-pointer text-survivor">Survivor</Label></div>
+                                                    <div className={cn("flex items-center space-x-2 border rounded-lg p-3 w-full", wizardType === "killer" ? "bg-killer/10 border-killer/50" : "bg-transparent border-border")}><RadioGroupItem value="killer" id="r-killer" className="border-killer text-killer" /><Label htmlFor="r-killer" className="flex-1 cursor-pointer text-killer">Killer</Label></div>
                                                 </RadioGroup>
                                                 </div>
                                             )
@@ -150,7 +151,6 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                                             if (index !== -1) updatePerkClass(index, 'twitch_reward_id', val);
                                                         }}
                                                         userInputRequired={false}
-                                                        placeholder="เลือก Reward..."
                                                     />
                                                 </div>
                                             )
@@ -159,9 +159,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                             step: 4,
                                             title: "กำหนดจำนวน Perk",
                                             description: (
-                                                <div className="space-y-3">
-                                                <p className="text-sm text-muted-foreground">กำหนดว่าผู้ชมแต่ละคนจะสุ่มได้สูงสุดกี่ Perk ต่อครั้ง สามารถนับเป็นจำนวน Perk หรือเป็นหน้าได้</p>
-                                                <div className="border p-4 rounded-xl bg-muted/20">
+                                                <div>
                                                     {(() => {
                                                         const currentLimitClass = perkClasses.find(c => c.type === wizardType);
                                                         const totalPerks = wizardType === 'killer' ? (config?.totalKillerPerks || 0) : (config?.totalSurvivorPerks || 0);
@@ -186,7 +184,6 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                                         );
                                                     })()}
                                                 </div>
-</div>
                                             )
                                         },
                                         {
@@ -194,7 +191,7 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                             title: "บันทึกและทดสอบ",
                                             description: (
                                                 <div className="space-y-3">
-                                                    <p className="text-sm text-muted-foreground">กดบันทึก แล้วลองกดปุ่ม Test เพื่อดูตัวอย่างผลการสุ่ม Perk บนหน้าจอสตรีมของคุณ</p>
+                                                    <p className="text-sm text-muted-foreground">กดบันทึก แล้วลองกดปุ่ม Test เพื่อดูตัวอย่างคำตอบที่ผู้ชมจะเห็นในแชท</p>
                                                     <WidgetTestControl isSaving={isSaving} isTesting={isTesting} onSave={handleSave} onTest={() => handleTest(wizardType)} canTest={!!perkClasses.find(c => c.type === wizardType)?.twitch_reward_id} />
                                                     <RandomFormatInfo />
                                                 </div>
@@ -237,10 +234,14 @@ export function RandomDbdPerkWidget({ initialConfig, widgetType }: { initialConf
                                 <DeleteWidgetButton onDelete={handleDelete} isLoading={isSaving} />
                                 <div className="flex gap-2">
                                     <DropdownMenu>
-                                        <DropdownMenuTrigger asChild><Button variant="outline" disabled={isTesting}>{isTesting ? "กำลังทดสอบ..." : <><Play className="mr-2 h-4 w-4" /> Test <ChevronDown className="ml-2 h-3 w-3 opacity-50" /></>}</Button></DropdownMenuTrigger>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="outline" className="bg-secondary border-border hover:bg-secondary hover:text-primary" disabled={isTesting}>
+                                                {isTesting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> กำลังทดสอบ...</> : <><Play className="mr-2 h-4 w-4" /> ทดสอบ <ChevronDown className="ml-2 h-3 w-3 opacity-50" /></>}
+                                            </Button>
+                                        </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => handleTest('survivor')}>Test Survivor</DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleTest('killer')}>Test Killer</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleTest('survivor')}>ทดสอบ Survivor</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleTest('killer')}>ทดสอบ Killer</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                     <SaveWidgetButton onSave={handleSave} isLoading={isSaving} />

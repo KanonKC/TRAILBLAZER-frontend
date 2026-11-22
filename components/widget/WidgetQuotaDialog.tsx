@@ -33,7 +33,7 @@ export const WidgetQuotaDialog = ({
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent className="max-w-md">
                 <AlertDialogHeader>
-                    <AlertDialogTitle>โควต้าวิดเจ็ตไม่เพียงพอ</AlertDialogTitle>
+                    <AlertDialogTitle>วิดเจ็ตพอยท์ไม่เพียงพอ</AlertDialogTitle>
                     <AlertDialogDescription asChild>
                         <div className="space-y-4">
                             <p className="text-sm text-muted-foreground">

@@ -87,7 +87,7 @@ export default function RandomDbdPerkOverlayPage() {
                     <div className="bg-black/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-2xl max-w-4xl text-center">
                         <h2 className={cn(
                             "text-2xl font-bold mb-6 tracking-wide uppercase drop-shadow-md",
-                            perkData.type === 'survivor' ? "text-blue-400" : "text-red-500"
+                            perkData.type === 'survivor' ? "text-survivor" : "text-killer"
                         )}>
                             Random {perkData.type} Perks
                         </h2>
@@ -98,8 +98,8 @@ export default function RandomDbdPerkOverlayPage() {
                                     <div className={cn(
                                         "w-24 h-24 rounded-xl flex items-center justify-center border-2 shadow-[0_0_15px_rgba(0,0,0,0.5)] relative overflow-hidden transition-transform duration-300 group-hover:scale-105",
                                         perkData.type === 'survivor'
-                                            ? "bg-gradient-to-br from-slate-800 to-slate-900 border-blue-500/30 group-hover:border-blue-500/60 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]"
-                                            : "bg-gradient-to-br from-zinc-900 to-black border-red-500/30 group-hover:border-red-500/60 group-hover:shadow-[0_0_20px_rgba(239,68,68,0.3)]"
+                                            ? "bg-gradient-to-br from-slate-800 to-slate-900 border-survivor/30 group-hover:border-survivor/60 group-hover:shadow-[0_0_20px_color-mix(in_srgb,var(--survivor)_30%,transparent)]"
+                                            : "bg-gradient-to-br from-zinc-900 to-black border-killer/30 group-hover:border-killer/60 group-hover:shadow-[0_0_20px_color-mix(in_srgb,var(--killer)_30%,transparent)]"
                                     )}>
                                         <div className="flex flex-col items-center justify-center">
                                             <span className="text-4xl font-bold text-white drop-shadow-lg leading-none mb-1">{p.page}</span>
@@ -113,7 +113,7 @@ export default function RandomDbdPerkOverlayPage() {
                                     <div className="flex items-center gap-2 text-lg font-medium text-white/90 bg-black/40 px-3 py-1 rounded-full border border-white/5">
                                         <span className={cn(
                                             "text-xs px-1.5 py-0.5 rounded font-mono font-bold",
-                                            perkData.type === 'survivor' ? "bg-blue-500/20 text-blue-300" : "bg-red-500/20 text-red-300"
+                                            perkData.type === 'survivor' ? "bg-survivor/20 text-survivor" : "bg-killer/20 text-killer"
                                         )}>
                                             POS
                                         </span>

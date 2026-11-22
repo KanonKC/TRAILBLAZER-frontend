@@ -43,7 +43,7 @@ export const QuotaMeter = ({ refreshKey }: QuotaMeterProps) => {
             <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-1.5 font-medium text-foreground">
                     <Zap className="h-4 w-4 text-supernova" />
-                    โควต้าวิดเจ็ต
+                    วิดเจ็ตพอยท์
                 </div>
                 <span
                     className={
