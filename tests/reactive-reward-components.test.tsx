@@ -81,7 +81,7 @@ describe("ReactionGrid", () => {
                 reactions={reactions}
                 rewardsById={new Map(rewards.map((reward) => [reward.id, reward]))}
                 rewardsLoaded
-                busyReactionId={null}
+                busyReactionIds={new Set()}
                 canAdd
                 {...callbacks}
                 {...overrides}
@@ -119,11 +119,11 @@ describe("ReactionGrid", () => {
     it("flags a reward that no longer exists on Twitch, but only once the rewards have loaded", () => {
         const stale = makeReaction({ twitch_reward_id: "gone", twitch_reward_title: "Old reward" });
         const { unmount } = render(
-            <ReactionGrid reactions={[stale]} rewardsById={new Map()} rewardsLoaded busyReactionId={null} canAdd {...handlers()} />,
+            <ReactionGrid reactions={[stale]} rewardsById={new Map()} rewardsLoaded busyReactionIds={new Set()} canAdd {...handlers()} />,
         );
         expect(screen.getByText("ไม่พบแต้มช่องนี้บน Twitch")).toBeInTheDocument();
         unmount();
-        render(<ReactionGrid reactions={[stale]} rewardsById={new Map()} rewardsLoaded={false} busyReactionId={null} canAdd {...handlers()} />);
+        render(<ReactionGrid reactions={[stale]} rewardsById={new Map()} rewardsLoaded={false} busyReactionIds={new Set()} canAdd {...handlers()} />);
         expect(screen.queryByText("ไม่พบแต้มช่องนี้บน Twitch")).toBeNull();
     });
 
@@ -139,7 +139,7 @@ describe("ReactionGrid", () => {
     });
 
     it("locks the controls of the reaction that is busy, and only that one", () => {
-        renderGrid([makeReaction(), makeReaction({ id: "reaction-2", twitch_reward_id: "reward-2", twitch_reward_title: "Dance" })], { busyReactionId: "reaction-1" });
+        renderGrid([makeReaction(), makeReaction({ id: "reaction-2", twitch_reward_id: "reward-2", twitch_reward_title: "Dance" })], { busyReactionIds: new Set(["reaction-1"]) });
         expect(screen.getByRole("switch", { name: "เปิดใช้งาน Hydrate" })).toBeDisabled();
         expect(screen.getByRole("button", { name: "ทดสอบ Hydrate" })).toBeDisabled();
         expect(screen.getByRole("switch", { name: "เปิดใช้งาน Dance" })).toBeEnabled();

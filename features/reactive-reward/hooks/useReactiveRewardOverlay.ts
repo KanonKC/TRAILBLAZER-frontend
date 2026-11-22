@@ -192,9 +192,11 @@ export function useReactiveRewardOverlay(userId: string, key?: string) {
         if (seenJobIds.current.size > MAX_REMEMBERED_JOBS) {
             seenJobIds.current.delete(seenJobIds.current.values().next().value as string);
         }
-        stopActive();
+        // A new item replaces the one on screen; that one is reported as ended so the queue is not left waiting for it
+        const interrupted = activeRef.current;
+        if (interrupted) finish(interrupted);
         begin(event);
-    }, [begin, stopActive]);
+    }, [begin, finish]);
 
     useOverlayEventSource(userId ? getReactiveRewardEventUrl(userId, key) : null, "reaction-play", handleEvent, {
         onOpen: () => setConnected(true),

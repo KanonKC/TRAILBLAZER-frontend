@@ -43,7 +43,15 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
     // The default of the hook hides every reward that does not ask the viewer for text, which is most of them
     const { rewards, isLoading: isRewardsLoading } = useTwitchRewards({ userInputRequired: false });
     const [editing, setEditing] = useState<EditingReaction>(null);
-    const [busyReactionId, setBusyReactionId] = useState<string | null>(null);
+    // Several Reactions can be in flight at once (quick toggles), so each one is tracked on its own
+    const [busyReactionIds, setBusyReactionIds] = useState<ReadonlySet<string>>(new Set());
+    const markBusy = (reactionId: string, busy: boolean) =>
+        setBusyReactionIds((previous) => {
+            const next = new Set(previous);
+            if (busy) next.add(reactionId);
+            else next.delete(reactionId);
+            return next;
+        });
     // Bumped after anything that changes the points this widget uses, so the quota meter reloads
     const [quotaVersion, setQuotaVersion] = useState(0);
     const refreshQuotaMeter = () => setQuotaVersion((previous) => previous + 1);
@@ -89,21 +97,6 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
         }, "ลบวิดเจ็ตไม่สำเร็จ", "Failed to delete");
     };
 
-    /** Resolves true when the reaction was saved, so the sheet knows whether to close. */
-    const handleSaveReaction = async (draft: ReactionDraft, reactionId?: string): Promise<boolean> => {
-        try {
-            const saved = await reactiveRewardApi.saveReaction(draft, reactionId);
-            setConfig((previous) => (previous ? { ...previous, reactions: upsert(previous.reactions, saved) } : previous));
-            tbToast.success({ title: "บันทึก Reaction สำเร็จ" });
-            refreshQuotaMeter();
-            return true;
-        } catch (error) {
-            console.error("Failed to save reaction", error);
-            tbToast.error({ title: "บันทึก Reaction ไม่สำเร็จ", description: describeError(error), error: (error as { response?: { data?: unknown } }).response?.data });
-            return false;
-        }
-    };
-
     /** Lists the other enabled widgets in the shared "not enough points" dialog, so one can be switched off. */
     const openLimitDialog = async () => {
         try {
@@ -116,6 +109,26 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
         setShowLimitDialog(true);
     };
 
+    /** Resolves true when the reaction was saved, so the sheet knows whether to close. */
+    const handleSaveReaction = async (draft: ReactionDraft, reactionId?: string): Promise<boolean> => {
+        try {
+            const saved = await reactiveRewardApi.saveReaction(draft, reactionId);
+            setConfig((previous) => (previous ? { ...previous, reactions: upsert(previous.reactions, saved) } : previous));
+            tbToast.success({ title: "บันทึก Reaction สำเร็จ" });
+            refreshQuotaMeter();
+            return true;
+        } catch (error) {
+            // Not enough points for another active Reaction: the same dialog as the switch, not a bare error
+            if ((error as { response?: { status?: number } }).response?.status === 402) {
+                await openLimitDialog();
+                return false;
+            }
+            console.error("Failed to save reaction", error);
+            tbToast.error({ title: "บันทึก Reaction ไม่สำเร็จ", description: describeError(error), error: (error as { response?: { data?: unknown } }).response?.data });
+            return false;
+        }
+    };
+
     const handleToggleReaction = async (reaction: Reaction, enabled: boolean) => {
         const setEnabled = (value: boolean) =>
             setConfig((previous) =>
@@ -125,7 +138,7 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
             );
         // The switch flips at once; the request runs after, and the switch goes back if it fails.
         setEnabled(enabled);
-        setBusyReactionId(reaction.id);
+        markBusy(reaction.id, true);
         try {
             const saved = await reactiveRewardApi.saveReaction(toDraft(reaction, { enabled }), reaction.id);
             setConfig((previous) => (previous ? { ...previous, reactions: upsert(previous.reactions, saved) } : previous));
@@ -140,21 +153,27 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
                 tbToast.error({ title: "อัปเดตสถานะไม่สำเร็จ", description: describeError(error), error: (error as { response?: { data?: unknown } }).response?.data });
             }
         } finally {
-            setBusyReactionId(null);
+            markBusy(reaction.id, false);
         }
     };
 
     const handleDisableOtherWidget = async (widgetId: string) => {
         try {
             await updateWidgetEnabled(widgetId, false);
-            setLimitDialogWidgets((previous) => previous.filter((widget) => widget.id !== widgetId));
-            // The points available to this widget changed, so reload its quota
-            const fresh = await reactiveRewardApi.get();
-            setConfig((previous) => (previous ? { ...previous, quota: fresh.quota } : previous));
-            refreshQuotaMeter();
         } catch (error) {
             console.error("Failed to disable widget", error);
             tbToast.error({ title: "ปิดวิดเจ็ตไม่สำเร็จ" });
+            return;
+        }
+        // The widget is off from here on, so a failure below must not be reported as a failure to disable it
+        setLimitDialogWidgets((previous) => previous.filter((widget) => widget.id !== widgetId));
+        refreshQuotaMeter();
+        try {
+            // The points available to this widget changed, so reload its quota
+            const fresh = await reactiveRewardApi.get();
+            setConfig((previous) => (previous ? { ...previous, quota: fresh.quota } : previous));
+        } catch (error) {
+            console.error("Failed to reload the quota", error);
         }
     };
 
@@ -173,7 +192,7 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
     };
 
     const handleTestReaction = async (reactionId: string) => {
-        setBusyReactionId(reactionId);
+        markBusy(reactionId, true);
         await runTesting(async () => {
             try {
                 const result = await reactiveRewardApi.testReaction(reactionId);
@@ -187,7 +206,7 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
                 tbToast.error({ title: "ทดสอบไม่สำเร็จ", description: describeError(error), error: (error as { response?: { data?: unknown } }).response?.data });
             }
         }, "ทดสอบไม่สำเร็จ", "Test failed");
-        setBusyReactionId(null);
+        markBusy(reactionId, false);
     };
 
     return {
@@ -206,7 +225,7 @@ export function useReactiveReward(initialConfig: ReactiveRewardConfig | null) {
         isRewardsLoading,
         rewardUsedBy,
         editing,
-        busyReactionId,
+        busyReactionIds,
         openNewReaction: () => setEditing("new"),
         openReaction: (reaction: Reaction) => setEditing(reaction),
         closeReaction: () => setEditing(null),

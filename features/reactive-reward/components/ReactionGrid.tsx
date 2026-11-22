@@ -15,7 +15,7 @@ interface ReactionGridProps {
     rewardsById: Map<string, SelectableReward>;
     /** False until the channel's rewards have loaded, so a slow load is not mistaken for a deleted reward. */
     rewardsLoaded: boolean;
-    busyReactionId: string | null;
+    busyReactionIds: ReadonlySet<string>;
     canAdd: boolean;
     onAdd: () => void;
     onEdit: (reaction: Reaction) => void;
@@ -30,7 +30,7 @@ function problemOf(reaction: Reaction, rewardMissing: boolean): string | null {
     return null;
 }
 
-export function ReactionGrid({ reactions, rewardsById, rewardsLoaded, busyReactionId, canAdd, onAdd, onEdit, onToggle, onTest }: ReactionGridProps) {
+export function ReactionGrid({ reactions, rewardsById, rewardsLoaded, busyReactionIds, canAdd, onAdd, onEdit, onToggle, onTest }: ReactionGridProps) {
     if (reactions.length === 0) {
         return (
             <div className="space-y-3 py-8 text-center">
@@ -56,7 +56,7 @@ export function ReactionGrid({ reactions, rewardsById, rewardsLoaded, busyReacti
             {sortedReactions.map((reaction) => {
                 const reward = rewardsById.get(reaction.twitch_reward_id);
                 const problem = problemOf(reaction, rewardsLoaded && !reward);
-                const busy = busyReactionId === reaction.id;
+                const busy = busyReactionIds.has(reaction.id);
                 const TypeIcon = MEDIA_TYPE_ICONS[reaction.media_type];
                 return (
                     <li key={reaction.id} className="bg-card hover:bg-secondary flex items-center gap-3 rounded-lg border px-3 py-2">

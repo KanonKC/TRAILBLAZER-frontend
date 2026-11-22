@@ -209,7 +209,7 @@ export function ReactiveRewardWidget({ initialConfig, widgetType }: { initialCon
                                                 reactions={reward.reactions}
                                                 rewardsById={reward.rewardsById}
                                                 rewardsLoaded={!reward.isRewardsLoading && reward.rewards.length > 0}
-                                                busyReactionId={reward.busyReactionId}
+                                                busyReactionIds={reward.busyReactionIds}
                                                 canAdd={reward.canAddReaction}
                                                 onAdd={reward.openNewReaction}
                                                 onEdit={reward.openReaction}

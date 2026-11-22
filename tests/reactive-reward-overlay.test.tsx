@@ -350,7 +350,7 @@ describe("reactive reward overlay", () => {
     });
 
     describe("several reactions", () => {
-        it("stops the running one when a new job arrives, without acking the one that was cut off", async () => {
+        it("stops the running one when a new job arrives, and acks it so the queue is not left waiting", async () => {
             mountOverlay();
             await send({ jobId: "job-1", sound_url: "https://cdn.test/sound.mp3" });
             await settle();
@@ -359,8 +359,9 @@ describe("reactive reward overlay", () => {
             await settle();
             expect(firstSound.pause).toHaveBeenCalled();
             expect(document.querySelector("img")?.getAttribute("src")).toBe("https://cdn.test/second.png");
+            expect(acked()).toEqual(["job-1"]);
             await advance(5000);
-            expect(acked()).toEqual(["job-2"]);
+            expect(acked()).toEqual(["job-1", "job-2"]);
         });
 
         it("plays a job that is delivered twice only once", async () => {

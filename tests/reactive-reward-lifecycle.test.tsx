@@ -172,7 +172,7 @@ describe("useReactiveReward", () => {
             await act(async () => { await result.current.handleToggleReaction(reaction, false); });
             expect(mocks.api.saveReaction).toHaveBeenCalledWith({ ...toDraft(reaction), enabled: false }, "reaction-1");
             expect(result.current.reactions[0].enabled).toBe(false);
-            expect(result.current.busyReactionId).toBeNull();
+            expect(result.current.busyReactionIds.size).toBe(0);
         });
 
         it("rebuilds a draft from a stored reaction without losing any setting", () => {
@@ -218,7 +218,7 @@ describe("useReactiveReward", () => {
             expect(mocks.api.testReaction).toHaveBeenCalledWith("reaction-1");
             expect(mocks.success).toHaveBeenCalledWith(expect.objectContaining({ title: "ส่งทดสอบแล้ว" }));
             expect(result.current.isTesting).toBe(false);
-            expect(result.current.busyReactionId).toBeNull();
+            expect(result.current.busyReactionIds.size).toBe(0);
         });
 
         it("explains when no overlay is connected", async () => {
